@@ -21,6 +21,9 @@ The approach Flames takes is a lot from the world of the desktop
 application development, where the user interface is expressed as
 and interacted with in terms of widgets and events. Flames takes
 this approach further and improves on it in many different ways.
+One of the major features is the architecture that implements the
+very specific way of structuring the logic and UI/UX as well as
+their interactions between themselves in your application code.
 
 ## How is This Working
 All of the client side is being handled by the interpreter that
@@ -33,10 +36,10 @@ the client that exist in the backend, where your code is running.
 And it tries to do this in a close to real time mode, as much as
 this possible, as well as ensuring the integrity of the states.
 The Flames framework is built on top of the Node.js platform, so it
-natuarally provides you with enourmous performance and scalability.
+naturally provides you with enourmous performance and scalability.
 We also bundle the UI controls built on top of Twitter Bootstrap,
-which also gives you awesome eye-candy looks and the responsiveness.
-You can customize or create from scratch the controls of your own.
+which provide you with awesome, clean looks and the responsiveness.
+You can customize or create from scratch the controls of your own too.
 
 ## Disclaimer
 Unlike a whole slew of other web development frameworks, Flames
@@ -48,3 +51,5 @@ web application, we assume that it is an application with two faces.
 One face is clean, interactive and eye candy UI/UX for the end user.
 The second face is the service provider layer, such as REST, for the
 application to be able to talk to the outer world, not just a user.
+One of the goals of the Flames framework is to provide a reliable
+platform with reusable components for rapid and fun wed development.
