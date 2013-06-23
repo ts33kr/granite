@@ -1,0 +1,14 @@
+{
+    "name": "flames",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "coffee-script": "1.6.x",
+        "socket.io": "0.9.x",
+        "cli-table": "0.2.x",
+        "winston": "0.7.x",
+        "moment": "2.0.x",
+        "colors": "0.6.x",
+        "async": "0.2.x"
+    }
+}
