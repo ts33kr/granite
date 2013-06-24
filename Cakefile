@@ -33,7 +33,7 @@ logger = require "winston"
 option "-l", "--library", "Path to the library sources"
 option "-a", "--artifact", "Path to the artifact directory"
 option "-d", "--documents", "Path to the documents directory"
-option "-ghp", "--git-hub-pages", "Publish docs to GitHub pages"
+option "-g", "--git-hub-pages", "Publish documents to GitHub pages"
 
 # This is one of the major tasks in this Cakefile, it implements
 # the generation of the documentation for the library, using the
@@ -44,6 +44,7 @@ task "documents", "generate the library documentation", (options) ->
     documents = options.documents or "documents"
     [pattern, index] = ["#{library}/**/*.coffee", "README.md"]
     options = [pattern, "Cakefile", index, "-o", documents]
+    options.append("--github") if options["git-hub-pages"]
     generator = spawn "groc", options
     generator.stdout.pipe(process.stdout)
     generator.stderr.pipe(process.stderr)
