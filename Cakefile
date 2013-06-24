@@ -43,9 +43,10 @@ task "documents", "generate the library documentation", (options) ->
     library = options.library or "library"
     documents = options.documents or "documents"
     [pattern, index] = ["#{library}/**/*.coffee", "README.md"]
-    options = [pattern, "Cakefile", index, "-o", documents]
-    options.append("--github") if options["git-hub-pages"]
-    generator = spawn "groc", options
+    parameters = [pattern, "Cakefile", index, "-o", documents]
+    parameters.push("--github") if g = "git-hub-pages" of options
+    logger.info("Publishing docs to GitHub pages".yellow) if g
+    generator = spawn "groc", parameters
     generator.stdout.pipe(process.stdout)
     generator.stderr.pipe(process.stderr)
     generator.on "exit", (status) ->
@@ -61,8 +62,8 @@ task "documents", "generate the library documentation", (options) ->
 task "compile", "compile CoffeeScript into JavaScript", (options) ->
     library = options.library or "library"
     artifact = options.artifact or "artifact"
-    options = ["-c", "-o", artifact, library]
-    compiler = spawn "coffee", options
+    parameters = ["-c", "-o", artifact, library]
+    compiler = spawn "coffee", parameters
     compiler.stdout.pipe(process.stdout)
     compiler.stderr.pipe(process.stderr)
     compiler.on "exit", (status) ->
