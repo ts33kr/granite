@@ -26,7 +26,7 @@
 logger = require "winston"
 {spawn} = require "child_process"
 
-# Here lies is the definition of the options required for some of
+# Here follows the definition of the options required for some of
 # the tasks defined in this Cakefile. Remember that the scope of
 # definition of the options is global to a Cakefile, therefore the
 # options are shared among all of the tasks and the entire file!
