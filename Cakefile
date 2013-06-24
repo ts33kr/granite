@@ -43,7 +43,7 @@ task "compile", "compile CoffeeScript into JavaScript", (options) ->
     compiler.stdout.pipe(process.stdout)
     compiler.stderr.pipe(process.stderr)
     compiler.on "exit", (status) ->
-        failure = "Failed to compile".red
-        success = "Successfuly compiled".green
-        logger.info(success) if status is 0
+        failure = "Failed to compile library".red
+        success = "Compiled library successfuly".green
         logger.error(failure) if status isnt 0
+        logger.info(success) if status is 0
