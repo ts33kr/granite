@@ -42,6 +42,7 @@ DEFAULT_DOCUMENTS = "documents"
 option "-l", "--library", "Path to the library sources"
 option "-a", "--artifact", "Path to the artifact directory"
 option "-d", "--documents", "Path to the documents directory"
+option "-w", "--watch", "Watch the library sources and recompile"
 option "-g", "--git-hub-pages", "Publish documents to GitHub pages"
 
 # This is one of the major tasks in this Cakefile, it implements
@@ -83,6 +84,9 @@ task "compile", "compile CoffeeScript into JavaScript", (options) ->
     library = options.library or DEFAULT_LIBRARY
     artifact = options.artifact or DEFAULT_ARTIFACT
     parameters = ["-c", "-o", artifact, library]
+    parameters.unshift("-w") if options.watch?
+    watching = "Watching the %s directory".blue
+    logger.info(watching, library) if options.watch?
     compiler = spawn "coffee", parameters
     compiler.stdout.pipe(process.stdout)
     compiler.stderr.pipe(process.stderr)
