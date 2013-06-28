@@ -4,6 +4,7 @@
     "private": true,
     "dependencies": {
         "coffee-script": "1.6.x",
+        "underscore": "1.4.x",
         "socket.io": "0.9.x",
         "winston": "0.7.x",
         "moment": "2.0.x",
