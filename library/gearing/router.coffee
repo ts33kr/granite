@@ -45,10 +45,12 @@ module.exports.Router = class Router extends Object
         parameters = [request, response, next]
         predicate = (routable) -> routable.matches(parameters...)
         recognized = _.find(@registry or [],  predicate) or null
-        return recognized.process(parameters...) and next() if recognized
+        if recognized? then inspected = eyes.inspect(recognized)
+        logger.debug("An #{incoming} matches #{inspected}".grey) if recognized?
+        return recognized.process(parameters...) and next() if recognized?
         logger.warn("No routable for #{incoming} request".yellow)
         matches = @fallback?.matches(request, response, next)
-        return @fallback.process(parameters...) and next() if matches
+        return @fallback.process(parameters...) and next() if matches?
         logger.warn("Fallback failed for #{incoming}".yellow); next()
 
     # Try registering a new routable object. The method checks for
