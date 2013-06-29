@@ -35,22 +35,21 @@ eyes = require "eyes"
 # This router just provides the infrastructure and boilerplating.
 module.exports.Router = class Router extends Object
 
-    # Install the routable that should handle the requests that are
-    # not handled via the registered routables. The routable has to
-    # implement the same interface as the usual routable. This method
-    # ensures this by performing the same tests as register method.
-    # Remember that it should implement the widescope matching logic.
-    installFallback: (routable) ->
-        inspected = eyes.inspect(routable)
-        [matches, process] = [routable.matches, routable.process]
-        goneMatches = "The #{routable} has no valid matches method"
-        goneProcess = "The #{routable} has no valid process method"
-        passMatches = _.isFunction(matches) and matches?.length is 3
-        passProcess = _.isFunction(process) and process?.length is 3
-        throw new Error(goneMatches) unless passMatches
-        throw new Error(goneProcess) unless passProcess
-        logger.info("Installing #{inspected} as fallback".magenta)
-        @fallback = routable
+    # The method implements a middleware (for Connect) that looks
+    # up the relevant routable and dispatches the request to the
+    # routable. If no corresponding routable is found, the method
+    # transfers the control to the pre-installed, default routable.
+    # A set of tests are performed to ensure the logical integrity.
+    lookupMiddleware: (request, response, next) ->
+        incoming = eyes.inspect(request)
+        parameters = [request, response, next]
+        predicate = (routable) -> routable.matches(parameters...)
+        recognized = _.find(@registry or [],  predicate) or null
+        return recognized.process(parameters...) and next() if recognized
+        logger.warn("No routable for #{incoming} request".yellow)
+        matches = @fallback?.matches(request, response, next)
+        return @fallback.process(parameters...) and next() if matches
+        logger.warn("Fallback failed for #{incoming}".yellow); next()
 
     # Try registering a new routable object. The method checks for
     # the object to be of the correct type, basically making sure
@@ -69,18 +68,19 @@ module.exports.Router = class Router extends Object
         logger.info("Adding #{inspected} to the registry".magenta)
         (@registry ?= []) push routable unless routable in @registry
 
-    # The method implements a middleware (for Connect) that looks
-    # up the relevant routable and dispatches the request to the
-    # routable. If no corresponding routable is found, the method
-    # transfers the control to the pre-installed, default routable.
-    # A set of tests are performed to ensure the logical integrity.
-    lookupMiddleware: (request, response, next) ->
-        incoming = eyes.inspect(request)
-        parameters = [request, response, next]
-        predicate = (routable) -> routable.matches(parameters...)
-        matched = _.find(@registry or [],  predicate) or null
-        return matched.process(parameters...) and next() if matched?
-        logger.warn("No routable for #{incoming} request".yellow)
-        matches = @fallback?.matches(request, response, next)
-        return @fallback.process(parameters...) and next() if matches
-        logger.warn("Fallback failed for #{incoming}".yellow); next()
+    # Install the routable that should handle the requests that are
+    # not handled via the registered routables. The routable has to
+    # implement the same interface as the usual routable. This method
+    # ensures this by performing the same tests as register method.
+    # Remember that it should implement the widescope matching logic.
+    installFallback: (routable) ->
+        inspected = eyes.inspect(routable)
+        [matches, process] = [routable.matches, routable.process]
+        goneMatches = "The #{routable} has no valid matches method"
+        goneProcess = "The #{routable} has no valid process method"
+        passMatches = _.isFunction(matches) and matches?.length is 3
+        passProcess = _.isFunction(process) and process?.length is 3
+        throw new Error(goneMatches) unless passMatches
+        throw new Error(goneProcess) unless passProcess
+        logger.info("Installing #{inspected} as fallback".magenta)
+        @fallback = routable
