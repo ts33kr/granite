@@ -36,6 +36,13 @@ url = require "url"
 # an internal base class, you generally should not use it directly.
 module.exports.Service = class Service extends Object
 
+    # Here follows a set of definitions that predefine the usual
+    # suspects in establishing the matching patterns. Basically,
+    # a number of convenient shorthands for wildcard patterns.
+    # Use them when you need to wildcard or do a wide match.
+    @ANY = /^.+$/
+    @ROOT = "^/$"
+
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the
     # domain/host and the path, in accordance with the patterns
