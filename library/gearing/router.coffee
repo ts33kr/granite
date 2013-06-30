@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _ = require "underscore"
 logger = require "winston"
+events = require "events"
 colors = require "colors"
 util = require "util"
 
@@ -33,7 +34,7 @@ util = require "util"
 # the supplied host, among other things. The exact matching logic
 # is up to the handlers that implement the corresponding methods.
 # This router just provides the infrastructure and boilerplating.
-module.exports.Router = class Router extends Object
+module.exports.Router = class Router extends events.EventEmitter
 
     # The method implements a middleware (for Connect) that looks
     # up the relevant routable and dispatches the request to the
@@ -68,8 +69,8 @@ module.exports.Router = class Router extends Object
         throw new Error(goneMatches) unless passMatches
         throw new Error(goneProcess) unless passProcess
         logger.info("Adding #{inspected} to the registry".magenta)
-        (@registry ?= []) push routable unless routable in @registry
-        return this
+        @registry ?= [] push routable unless routable in @registry
+        @emit("register", routable); this
 
     # Install the routable that should handle the requests that are
     # not handled via the registered routables. The routable has to
@@ -86,4 +87,4 @@ module.exports.Router = class Router extends Object
         throw new Error(goneMatches) unless passMatches
         throw new Error(goneProcess) unless passProcess
         logger.info("Installing #{inspected} as fallback".magenta)
-        @fallback = routable; return this
+        @fallback = routable; @emit("install", routable); this
