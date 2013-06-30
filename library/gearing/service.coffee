@@ -71,10 +71,12 @@ module.exports.Service = class Service extends Object
         hostname = _.first(request.headers.host.split(":"))
         domains = @constructor.domains or []
         resources = @constructor.resources or []
-        pdomain = (pattern) -> gdomain = hostname.match(pattern)
-        presource = (pattern) -> gresource = pathname.match(pattern)
-        pdomain = _.find(domains, pdomain); assert(gdomain isnt null)
-        presource = _.find(resources, presource); assert(gresource isnt null)
+        pdomain = (p) -> gdomain = hostname.match(p)
+        presource = (p) -> gresource = pathname.match(p)
+        pdomain = _.find(domains, pdomain)
+        presource = _.find(resources, presource)
+        assert.ok(gdomain isnt null, "missing domain")
+        assert.ok(gresource isnt null, "missing resource")
         return domain: gdomain, resource: gresource
 
     # This is a very basic method that adds the specified regular
