@@ -61,6 +61,7 @@ module.exports.Router = class Router extends events.EventEmitter
     # The method is idempotent, ergo no duplication of routables.
     registerRoutable: (routable) ->
         inspected = util.inspect(routable)
+        duplicate = routable in @registry or []
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{routable} has no valid matches method"
         goneProcess = "The #{routable} has no valid process method"
@@ -69,8 +70,8 @@ module.exports.Router = class Router extends events.EventEmitter
         throw new Error(goneMatches) unless passMatches
         throw new Error(goneProcess) unless passProcess
         logger.info("Adding #{inspected} to the registry".magenta)
-        @registry ?= [] push routable unless routable in @registry
-        @emit("register", routable); this
+        (@registry ?= [] push routable unless duplicate)
+        (@emit("registered", routable) unless duplicate); this
 
     # Install the routable that should handle the requests that are
     # not handled via the registered routables. The routable has to
@@ -87,4 +88,4 @@ module.exports.Router = class Router extends events.EventEmitter
         throw new Error(goneMatches) unless passMatches
         throw new Error(goneProcess) unless passProcess
         logger.info("Installing #{inspected} as fallback".magenta)
-        @fallback = routable; @emit("install", routable); this
+        @fallback = routable; @emit("fallback", routable); this
