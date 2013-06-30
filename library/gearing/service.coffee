@@ -43,6 +43,38 @@ module.exports.Service = class Service extends Object
     @ANY = /^.+$/
     @ROOT = "^/$"
 
+    # This is a very basic method that adds the specified regular
+    # expression pattern to the list of permitted resource patterns.
+    # The patterns are associated with a service class, not object.
+    # Supports implicit extraction of captured groups in the match.
+    # Use this to configure what resources should match with service.
+    @resource: (pattern) ->
+        current = util.inspect(this)
+        inspected = util.inspect(pattern)
+        duplicate = pattern in @resources or []
+        associate = "Associating #{inspected} resource with #{current}"
+        notRegexp = "The #{inspected} is not a valid regular expression"
+        throw new Error(notRegexp) unless _.isRegExp(pattern)
+        (@resources ?= []) push pattern unless duplicate
+        logger.info(associate.cyan) unless duplicate
+        return this
+
+    # This is a very basic method that adds the specified regular
+    # expression pattern to the list of permitted domain patterns.
+    # The patterns are associated with a service class, not object.
+    # Supports implicit extraction of captured groups in the match.
+    # Use this to configure what domains should match with service.
+    @domain: (pattern) ->
+        current = util.inspect(this)
+        inspected = util.inspect(pattern)
+        duplicate = pattern in @domains or []
+        associate = "Associating #{inspected} domain with #{current}"
+        notRegexp = "The #{inspected} is not a valid regular expression"
+        throw new Error(notRegexp) unless _.isRegExp(pattern)
+        (@domains ?= []) push pattern unless duplicate
+        logger.info(associate.cyan) unless duplicate
+        return this
+
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the
     # domain/host and the path, in accordance with the patterns
@@ -78,35 +110,3 @@ module.exports.Service = class Service extends Object
         assert(gdomain isnt null, "missing domain")
         assert(gresource isnt null, "missing resource")
         return domain: gdomain, resource: gresource
-
-    # This is a very basic method that adds the specified regular
-    # expression pattern to the list of permitted resource patterns.
-    # The patterns are associated with a service class, not object.
-    # Supports implicit extraction of captured groups in the match.
-    # Use this to configure what resources should match with service.
-    @resource: (pattern) ->
-        current = util.inspect(this)
-        inspected = util.inspect(pattern)
-        duplicate = pattern in @resources or []
-        associate = "Associating #{inspected} resource with #{current}"
-        notRegexp = "The #{inspected} is not a valid regular expression"
-        throw new Error(notRegexp) unless _.isRegExp(pattern)
-        (@resources ?= []) push pattern unless duplicate
-        logger.info(associate.cyan) unless duplicate
-        return this
-
-    # This is a very basic method that adds the specified regular
-    # expression pattern to the list of permitted domain patterns.
-    # The patterns are associated with a service class, not object.
-    # Supports implicit extraction of captured groups in the match.
-    # Use this to configure what domains should match with service.
-    @domain: (pattern) ->
-        current = util.inspect(this)
-        inspected = util.inspect(pattern)
-        duplicate = pattern in @domains or []
-        associate = "Associating #{inspected} domain with #{current}"
-        notRegexp = "The #{inspected} is not a valid regular expression"
-        throw new Error(notRegexp) unless _.isRegExp(pattern)
-        (@domains ?= []) push pattern unless duplicate
-        logger.info(associate.cyan) unless duplicate
-        return this
