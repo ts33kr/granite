@@ -75,8 +75,8 @@ module.exports.Service = class Service extends Object
         presource = (p) -> gresource = pathname.match(p)
         pdomain = _.find(domains, pdomain)
         presource = _.find(resources, presource)
-        assert.ok(gdomain isnt null, "missing domain")
-        assert.ok(gresource isnt null, "missing resource")
+        assert(gdomain isnt null, "missing domain")
+        assert(gresource isnt null, "missing resource")
         return domain: gdomain, resource: gresource
 
     # This is a very basic method that adds the specified regular
