@@ -73,7 +73,7 @@ module.exports.Service = class Service extends Object
         presource = (p) -> gresource = pathname.match(0)
         pdomain = _.find(domains, pdomain)
         presource = _.find(resources, presource)
-        return domains: gdomain, resources: gresource
+        return domain: gdomain, resource: gresource
 
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted resource patterns.
