@@ -69,6 +69,7 @@ module.exports.Router = class Router extends Object
         throw new Error(goneProcess) unless passProcess
         logger.info("Adding #{inspected} to the registry".magenta)
         (@registry ?= []) push routable unless routable in @registry
+        return this
 
     # Install the routable that should handle the requests that are
     # not handled via the registered routables. The routable has to
@@ -85,4 +86,4 @@ module.exports.Router = class Router extends Object
         throw new Error(goneMatches) unless passMatches
         throw new Error(goneProcess) unless passProcess
         logger.info("Installing #{inspected} as fallback".magenta)
-        @fallback = routable
+        @fallback = routable; return this
