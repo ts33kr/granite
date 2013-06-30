@@ -54,8 +54,10 @@ module.exports.Service = class Service extends Object
         resources = @constructor.resources or []
         pathname = url.parse(request.url).pathname
         hostname = _.first(request.headers.host.split(":"))
-        domainOk = _.some(domains or [], (p) -> p.test(hostname))
-        resourceOk = _.some(resources or [], (p) -> p.test(pathname))
+        pdomain = (pattern) -> pattern.test(hostname)
+        presource = (pattern) -> pattern.test(pathname)
+        domainOk = _.some(domains, pdomain)
+        resourceOk = _.some(resources, presource)
         return domainOk and resourceOk
 
     # This method should process the already matched HTTP request.
@@ -69,10 +71,10 @@ module.exports.Service = class Service extends Object
         hostname = _.first(request.headers.host.split(":"))
         domains = @constructor.domains or []
         resources = @constructor.resources or []
-        pdomain = (p) -> gdomain = hostname.match(p)
-        presource = (p) -> gresource = pathname.match(0)
-        pdomain = _.find(domains, pdomain)
-        presource = _.find(resources, presource)
+        pdomain = (pattern) -> gdomain = hostname.match(pattern)
+        presource = (pattern) -> gresource = pathname.match(pattern)
+        pdomain = _.find(domains, pdomain); assert(gdomain isnt null)
+        presource = _.find(resources, presource); assert(gresource isnt null)
         return domain: gdomain, resource: gresource
 
     # This is a very basic method that adds the specified regular
