@@ -26,7 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 _ = require "underscore"
 logger = require "winston"
 colors = require "colors"
-eyes = require "eyes"
+util = require "util"
 
 # A simple yet solid HTTP request router. This is designed to map
 # HTTP requests to the correpsonding handlers by examining URL and
@@ -41,11 +41,11 @@ module.exports.Router = class Router extends Object
     # transfers the control to the pre-installed, default routable.
     # A set of tests are performed to ensure the logical integrity.
     lookupMiddleware: (request, response, next) ->
-        incoming = eyes.inspect(request)
+        incoming = util.inspect(request)
         parameters = [request, response, next]
         predicate = (routable) -> routable.matches(parameters...)
         recognized = _.find(@registry or [],  predicate) or null
-        if recognized? then inspected = eyes.inspect(recognized)
+        if recognized? then inspected = util.inspect(recognized)
         logger.debug("An #{incoming} matches #{inspected}".grey) if recognized?
         return recognized.process(parameters...) and next() if recognized?
         logger.warn("No routable for #{incoming} request".yellow)
@@ -59,7 +59,7 @@ module.exports.Router = class Router extends Object
     # If something is wrong, this method will throw an exception.
     # The method is idempotent, ergo no duplication of routables.
     registerRoutable: (routable) ->
-        inspected = eyes.inspect(routable)
+        inspected = util.inspect(routable)
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{routable} has no valid matches method"
         goneProcess = "The #{routable} has no valid process method"
@@ -76,7 +76,7 @@ module.exports.Router = class Router extends Object
     # ensures this by performing the same tests as register method.
     # Remember that it should implement the widescope matching logic.
     installFallback: (routable) ->
-        inspected = eyes.inspect(routable)
+        inspected = util.inspect(routable)
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{routable} has no valid matches method"
         goneProcess = "The #{routable} has no valid process method"
