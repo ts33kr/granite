@@ -87,10 +87,12 @@ module.exports.Service = class Service extends Object
     @resource: (pattern) ->
         current = util.inspect(this)
         inspected = util.inspect(pattern)
+        duplicate = pattern in @resources or []
+        associate = "Associating #{inspected} resource with #{current}"
         notRegexp = "The #{inspected} is not a valid regular expression"
         throw new Error(notRegexp) unless _.isRegExp(pattern)
-        logger.info("Associating #{inspected} resource with #{current}".cyan)
-        (@resources ?= []) push pattern unless pattern in @resources
+        (@resources ?= []) push pattern unless duplicate
+        logger.info(associate.cyan) unless duplicate
         return this
 
     # This is a very basic method that adds the specified regular
@@ -101,8 +103,10 @@ module.exports.Service = class Service extends Object
     @domain: (pattern) ->
         current = util.inspect(this)
         inspected = util.inspect(pattern)
+        duplicate = pattern in @domains or []
+        associate = "Associating #{inspected} domain with #{current}"
         notRegexp = "The #{inspected} is not a valid regular expression"
         throw new Error(notRegexp) unless _.isRegExp(pattern)
-        logger.info("Associating #{inspected} domain with #{current}".cyan)
-        (@domains ?= []) push pattern unless pattern in @domains
+        (@domains ?= []) push pattern unless duplicate
+        logger.info(associate.cyan) unless duplicate
         return this
