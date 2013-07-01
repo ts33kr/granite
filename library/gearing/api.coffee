@@ -30,7 +30,7 @@ colors = require "colors"
 logger = require "winston"
 
 _ = require "lodash"
-router = require "./router"
+routing = require "./routing"
 service = require "./service"
 
 # This is an abstract base class for every service in the system
