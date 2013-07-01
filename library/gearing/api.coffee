@@ -39,6 +39,20 @@ service = require "./service"
 # It supports strictly methods defined in the HTTP specification.
 module.exports.Api = class Api extends service.Service
 
+    # This method is intended for indicating to a client that the
+    # method that has been used to make the request is not supported
+    # by this service of the internals that are comprising service.
+    # Can be used from the outside, but generally should not be done.
+    unsupported: (request, response, next) ->
+        methodNotAllowed = 405
+        codes = http.STATUS_CODES
+        message = codes[methodNotAllowed]
+        accept = request?.headers?.accept or ""
+        handles = (mime) -> accept.indexOf(mime) >= 0
+        response.statusCode methodNotAllowed
+        response.end(error: message) if handles("json")
+        response.end(message); this
+
     # Process the already macted HTTP request according to the REST
     # specification. That is, see if the request method conforms to
     # to the RFC, and if so, dispatch it onto corresponding method
@@ -48,44 +62,25 @@ module.exports.Api = class Api extends service.Service
         tokens = super(request, response, next)
         parameters = [request, response, next]
         knowns = ["GET", "PUT", "POST", "DELETE", "OPTIONS"]
-        method = request.method?.toUpperCase()?.trim()
+        method = request?.method?.toUpperCase()?.trim()
         return @unsupported(parameters...) unless method in knowns
         missing = "Missing implementation for #{method} method"
         throw new Error(missing) unless method of this
         variables = [tokens.resource, tokens.domain]
         this[method](request, response, variables...); this
 
-    # This method is intended for indicating to a client that the
-    # method that has been used to make the request is not supported
-    # by this service of the internals that are comprising service.
-    # Can be used from the outside, but generally should not be done.
-    unsupported: (request, response, next) ->
-        methodNotAllowed = 405
-        codes = http.STATUS_CODES
-        message = codes[methodNotAllowed]
-        accept = request.headers.accept or ""
+    # This method should generally be used to obtain HTTP methods that
+    # are allowed on this resources. This is not the only possible way
+    # of implementing this method, because it usually can have a lot of
+    # different interpretations other than the one in the HTTP spec.
+    OPTIONS: (request, response) ->
+        accept = request?.headers?.accept or ""
         handles = (mime) -> accept.indexOf(mime) >= 0
-        response.statusCode methodNotAllowed
-        response.end(error: message) if handles("json")
-        response.end(message); this
-
-    # Get the contents of the resources at the established path. It
-    # is a good idea for this HTTP method to be idempotent. As the
-    # rule, this method does not have to alter any contents or data
-    # of the resource. Use for unobtrusive retrieval of resources.
-    GET: @::unsupported
-
-    # Alter the contents of the resources at the established path. It
-    # usually means replacing the old contents with the new contents.
-    # This HTTP method nicely maps to UPDATE method of the storages.
-    # Use this method to repetidely replace the contents of resources.
-    PUT: @::unsupported
-
-    # Append the contents to the resources at the established path. It
-    # usually means adding new content in addition to the old one. This
-    # HTTP method nicely maps to INSERT method of the storage engines.
-    # Use this method to successively append new contents to resources.
-    POST: @::unsupported
+        knowns = ["GET", "PUT", "POST", "DELETE", "OPTIONS"]
+        checkIfSupported = (method) => @[method] isnt @unsupported
+        supported = _.filter(knowns, checkIfSupported)
+        return respons.end(methods: supported) if handles("json")
+        response.end(supported.join(", ")); this
 
     # Delete the contents of the resources at the establushed path. It
     # generally should destroy the contents of the resource for good.
@@ -93,8 +88,20 @@ module.exports.Api = class Api extends service.Service
     # HTTP methods like this one. Apply it to indicate destruction.
     DELETE: @::unsupported
 
-    # This method should generally be used to obtain HTTP methods that
-    # are allowed on this resources. This is not the only possible way
-    # of implementing this method, because it usually can have a lot of
-    # different interpretations other than the one in the HTTP spec.
-    OPTIONS: @::unsupported
+    # Append the contents to the resources at the established path. It
+    # usually means adding new content in addition to the old one. This
+    # HTTP method nicely maps to INSERT method of the storage engines.
+    # Use this method to successively append new contents to resources.
+    POST: @::unsupported
+
+    # Alter the contents of the resources at the established path. It
+    # usually means replacing the old contents with the new contents.
+    # This HTTP method nicely maps to UPDATE method of the storages.
+    # Use this method to repetidely replace the contents of resources.
+    PUT: @::unsupported
+
+    # Get the contents of the resources at the established path. It
+    # is a good idea for this HTTP method to be idempotent. As the
+    # rule, this method does not have to alter any contents or data
+    # of the resource. Use for unobtrusive retrieval of resources.
+    GET: @::unsupported
