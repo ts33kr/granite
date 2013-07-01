@@ -91,10 +91,10 @@ module.exports.Api = class Api extends service.Service
     # generally should destroy the contents of the resource for good.
     # Be sure to provide enough protection for your API for destructive
     # HTTP methods like this one. Apply it to indicate destruction.
-    DELETE: @unsupported
+    DELETE: @::unsupported
 
     # This method should generally be used to obtain HTTP methods that
     # are allowed on this resources. This is not the only possible way
     # of implementing this method, because it usually can have a lot of
     # different interpretations other than the one in the HTTP spec.
-    OPTIONS: @unsupported
+    OPTIONS: @::unsupported
