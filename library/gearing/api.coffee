@@ -85,8 +85,8 @@ module.exports.Api = class Api extends service.Service
     OPTIONS: (request, response) ->
         knowns = @constructor.SUPPORTED
         accept = request?.headers?.accept or ""
-        pathname = url.parse(request?.url)?.pathname
         handles = (mime) -> accept.indexOf(mime) >= 0
+        pathname = try url.parse(request.url).pathname
         checkIfSupported = (method) => @[method] isnt @unsupported
         supported = _.filter(knowns, checkIfSupported)
         descriptor = methods: supported, resource: pathname
