@@ -93,6 +93,13 @@ module.exports.Api = class Api extends service.Service
         return respons.end(descriptor) if handles("json")
         response.end(supported.join(", ")); this
 
+# An abstract base class with all of the HTTP methods, defined in
+# the HTTP specification and covered by the base implementation
+# stubbed with default implementations. By default, the methods
+# will throw the 405, method not allowed HTTP error status code.
+# The methods have implementations, but marked as unsupported.
+module.exports.Stub = class Stub extends Api
+
     # Delete the contents of the resources at the establushed path. It
     # generally should destroy the contents of the resource for good.
     # Be sure to provide enough protection for your API for destructive
