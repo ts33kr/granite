@@ -47,10 +47,12 @@ module.exports.Router = class Router extends events.EventEmitter
         predicate = (routable) -> routable.matches(parameters...)
         recognized = _.find(@registry or [],  predicate) or null
         if recognized? then inspected = util.inspect(recognized)
+        @emit("recognized", recognized, parameters...) if recognized?
         logger.debug("An #{incoming} matches #{inspected}".grey) if recognized?
         return recognized.process(parameters...) and next() if recognized?
         logger.warn("No routable for #{incoming} request".yellow)
         matches = @fallback?.matches(request, response, next)
+        @emit("fallback", @fallback, matches, parameters...)
         return @fallback.process(parameters...) and next() if matches?
         logger.warn("Fallback failed for #{incoming}".yellow); next()
 
@@ -88,4 +90,4 @@ module.exports.Router = class Router extends events.EventEmitter
         throw new Error(goneMatches) unless passMatches
         throw new Error(goneProcess) unless passProcess
         logger.info("Installing #{inspected} as fallback".magenta)
-        @fallback = routable; @emit("fallback", routable); this
+        @fallback = routable; @emit("installed", routable); this
