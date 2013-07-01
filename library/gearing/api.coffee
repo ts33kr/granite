@@ -58,7 +58,8 @@ module.exports.Api = class Api extends service.Service
         handles = (mime) -> accept.indexOf(mime) >= 0
         response.writeHead(methodNotAllowed, message)
         descriptor = error: message, code: methodNotAllowed
-        response.end(descriptor) if handles("json")
+        @emit("unsupported", request, response, next)
+        return response.end(descriptor) if handles("json")
         response.end(message); this
 
     # Process the already macted HTTP request according to the REST
