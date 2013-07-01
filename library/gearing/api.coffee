@@ -29,7 +29,7 @@ events = require "events"
 colors = require "colors"
 logger = require "winston"
 
-_ = require "underscore"
+_ = require "lodash"
 router = require "./router"
 service = require "./service"
 
