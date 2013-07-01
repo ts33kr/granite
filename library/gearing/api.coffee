@@ -23,6 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+url = require "url"
 http = require "http"
 events = require "events"
 colors = require "colors"
@@ -39,6 +40,12 @@ service = require "./service"
 # It supports strictly methods defined in the HTTP specification.
 module.exports.Api = class Api extends service.Service
 
+    # An array of HTTP methods (also called verbs) supported by the
+    # this abstract base class. The array of methods is strictly
+    # limited by the HTTP specification by default. You can though
+    # override it and provie support for more methods, up to you.
+    @SUPPORTED = ["GET", "PUT", "POST", "DELETE", "OPTIONS"]
+
     # This method is intended for indicating to a client that the
     # method that has been used to make the request is not supported
     # by this service of the internals that are comprising service.
@@ -49,8 +56,9 @@ module.exports.Api = class Api extends service.Service
         message = codes[methodNotAllowed]
         accept = request?.headers?.accept or ""
         handles = (mime) -> accept.indexOf(mime) >= 0
-        response.statusCode methodNotAllowed
-        response.end(error: message) if handles("json")
+        response.writeHead(methodNotAllowed, message)
+        descriptor = error: message, code: methodNotAllowed
+        response.end(descriptor) if handles("json")
         response.end(message); this
 
     # Process the already macted HTTP request according to the REST
@@ -59,9 +67,9 @@ module.exports.Api = class Api extends service.Service
     # defined in the subclass of this abstract base class. Default
     # implementation of each method will throw a not implemented.
     process: (request, response, next) ->
-        tokens = super(request, response, next)
+        knowns = @constructor.SUPPORTED
         parameters = [request, response, next]
-        knowns = ["GET", "PUT", "POST", "DELETE", "OPTIONS"]
+        tokens = super(parameters...)
         method = request?.method?.toUpperCase()?.trim()
         return @unsupported(parameters...) unless method in knowns
         missing = "Missing implementation for #{method} method"
@@ -74,12 +82,14 @@ module.exports.Api = class Api extends service.Service
     # of implementing this method, because it usually can have a lot of
     # different interpretations other than the one in the HTTP spec.
     OPTIONS: (request, response) ->
+        knowns = @constructor.SUPPORTED
         accept = request?.headers?.accept or ""
+        pathname = url.parse(request?.url)?.pathname
         handles = (mime) -> accept.indexOf(mime) >= 0
-        knowns = ["GET", "PUT", "POST", "DELETE", "OPTIONS"]
         checkIfSupported = (method) => @[method] isnt @unsupported
         supported = _.filter(knowns, checkIfSupported)
-        return respons.end(methods: supported) if handles("json")
+        descriptor = methods: supported, resource: pathname
+        return respons.end(descriptor) if handles("json")
         response.end(supported.join(", ")); this
 
     # Delete the contents of the resources at the establushed path. It
