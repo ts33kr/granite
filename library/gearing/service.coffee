@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _ = require "underscore"
 logger = require "winston"
+events = require "events"
 colors = require "colors"
 util = require "util"
 url = require "url"
@@ -34,7 +35,7 @@ url = require "url"
 # and processing logic based on domain matches and RE match/extract
 # logics, to deal with paths. Remember that this service is just a
 # an internal base class, you generally should not use it directly.
-module.exports.Service = class Service extends Object
+module.exports.Service = class Service extends events.EventEmitter
 
     # Here follows a set of definitions that predefine the usual
     # suspects in establishing the matching patterns. Basically,
@@ -56,8 +57,7 @@ module.exports.Service = class Service extends Object
         notRegexp = "The #{inspected} is not a valid regular expression"
         throw new Error(notRegexp) unless _.isRegExp(pattern)
         (@resources ?= []) push pattern unless duplicate
-        logger.info(associate.cyan) unless duplicate
-        return this
+        (logger.info(associate.cyan) unless duplicate); this
 
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted domain patterns.
@@ -72,8 +72,7 @@ module.exports.Service = class Service extends Object
         notRegexp = "The #{inspected} is not a valid regular expression"
         throw new Error(notRegexp) unless _.isRegExp(pattern)
         (@domains ?= []) push pattern unless duplicate
-        logger.info(associate.cyan) unless duplicate
-        return this
+        (logger.info(associate.cyan) unless duplicate); this
 
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the
@@ -90,6 +89,9 @@ module.exports.Service = class Service extends Object
         presource = (pattern) -> pattern.test(pathname)
         domainOk = _.some(domains, pdomain)
         resourceOk = _.some(resources, presource)
+        parameters = [request, response, next]
+        matches = domainOk and resourceOk
+        @emit("matches", matches, parameters...)
         return domainOk and resourceOk
 
     # This method should process the already matched HTTP request.
@@ -109,4 +111,6 @@ module.exports.Service = class Service extends Object
         presource = _.find(resources, presource)
         assert(gdomain isnt null, "missing domain")
         assert(gresource isnt null, "missing resource")
+        parameters = [request, response, next]
+        @emit("process", gdomain, gresource, parameters...)
         return domain: gdomain, resource: gresource
