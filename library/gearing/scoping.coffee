@@ -66,8 +66,8 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # will fail with en error, since this is considered a critical
     # error. You should always use this method instead of manual.
     @lookupOrFail: (aliases...) ->
+        registry = @REGISTRY ?= {}
         joined = aliases.join(", ")
-        registry = @constructor.REGISTRY ?= {}
         notFound = "Could not found any of #{joined} scoped"
         logger.info("Looking up any of #{joined} scopes".grey)
         found = (v for own k, v of registry when k in aliases)
@@ -78,7 +78,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # This means initialization of all its necessary routines and
     # setting up whatever this scope needs to set. The default
     # implementation takes care only of loading the proper config.
-    incorporate(kernel) ->
+    incorporate: (kernel) ->
         fpath = "#{@directory}/#{@tag}.json"
         nconf.defaults(@defaults or @::DEFAULTS or {})
         nconf.overrides(@overrides or @::OVERRIDES or {})
@@ -91,7 +91,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # This means stripping down all the necessary routines and other
     # resources that are mandated by this this scope object. Default
     # implementation does not do almost anything, so it is up to you.
-    disperse(kernel) ->
+    disperse: (kernel) ->
         fpath = "#{@directory}/#{@tag}.json"
         logger.info("Dissipating the #{@tag} scope".grey)
         logger.info("Scope used #{fpath} for config".grey)
