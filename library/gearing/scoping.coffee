@@ -72,7 +72,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
         logger.info("Looking up any of #{joined} scopes".grey)
         found = (v for own k, v of globals when k in aliases)
         throw new Error(notFound) unless found.length > 0
-        _.head(found); this
+        _.head(found)
 
     # This method is responsible for starting up the scope object.
     # This means initialization of all its necessary routines and
