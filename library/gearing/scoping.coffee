@@ -91,7 +91,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # This means stripping down all the necessary routines and other
     # resources that are mandated by this this scope object. Default
     # implementation does not do almost anything, so it is up to you.
-    dissipate(kernel) ->
+    disperse(kernel) ->
         fpath = "#{@directory}/#{@tag}.json"
         logger.info("Dissipating the #{@tag} scope".grey)
         logger.info("Scope used #{fpath} for config".grey)
