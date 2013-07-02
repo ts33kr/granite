@@ -58,16 +58,16 @@ module.exports.Scope = class Scope extends events.EventEmitter
         globals = @::GLOBALS ?= {}
         existent = (tag) -> tag of globals and not override
         valids = _.filter(aliases, (a) -> not existent(a))
-        globals[@tag] = @ unless existent(@tag)
-        globals[alias] = @ for alias in valids
+        globals[@tag] = this unless existent(@tag)
+        globals[alias] = this for alias in valids
 
     # Lookup the possibly existent scope with one of the following
     # alises as a tag. If no matching candidates exist, the method
     # will fail with en error, since this is considered a critical
     # error. You should always use this method instead of manual.
     @lookupOrFail: (aliases...) ->
-        joined = aliases.join(", ")
         globals = @::GLOBALS ?= {}
+        joined = aliases.join(", ")
         notFound = "Could not found any of #{joined} scoped"
         logger.info("Looking up any of #{joined} scopes".grey)
         found = (v for own k, v of globals when k in aliases)
