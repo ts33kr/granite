@@ -66,8 +66,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # will fail with en error, since this is considered a critical
     # error. You should always use this method instead of manual.
     @lookupOrFail: (aliases...) ->
-        registry = @REGISTRY ?= {}
-        joined = aliases.join(", ")
+        registry = @REGISTRY ?= {}; joined = aliases.join(", ")
         notFound = "Could not found any of #{joined} scoped"
         logger.info("Looking up any of #{joined} scopes".grey)
         found = (v for own k, v of registry when k in aliases)
