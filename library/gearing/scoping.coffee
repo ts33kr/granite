@@ -54,23 +54,23 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # of scopes, unless this instance already exists there. This
     # registry exists for easing looking up the scope by its tag.
     # You may provide a number of aliaes for this scope instance.
-    pushToGlobals: (override, aliases...) ->
-        globals = @::GLOBALS ?= {}
-        existent = (tag) -> tag of globals and not override
+    pushToRegistry: (override, aliases...) ->
+        registry = @constructor.REGISTRY ?= {}
+        existent = (tag) -> tag of registry and not override
         valids = _.filter(aliases, (a) -> not existent(a))
-        globals[@tag] = this unless existent(@tag)
-        globals[alias] = this for alias in valids
+        registry[@tag] = this unless existent(@tag)
+        registry[alias] = this for alias in valids
 
     # Lookup the possibly existent scope with one of the following
     # alises as a tag. If no matching candidates exist, the method
     # will fail with en error, since this is considered a critical
     # error. You should always use this method instead of manual.
     @lookupOrFail: (aliases...) ->
-        globals = @::GLOBALS ?= {}
         joined = aliases.join(", ")
+        registry = @constructor.REGISTRY ?= {}
         notFound = "Could not found any of #{joined} scoped"
         logger.info("Looking up any of #{joined} scopes".grey)
-        found = (v for own k, v of globals when k in aliases)
+        found = (v for own k, v of registry when k in aliases)
         throw new Error(notFound) unless found.length > 0
         _.head(found)
 

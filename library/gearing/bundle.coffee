@@ -43,7 +43,7 @@ service = require "./scoping"
 module.exports.PRODUCTION = new Scope "production", ->
     @synopsis = "Final production environment for end users"
     @defaults = server: {hostname: "localhost", port: 80}
-    @pushToGlobals(yes, @tag.toUpperCase())
+    @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"
 
 # One of the predefined scopes, baked into the framework. Scopes
@@ -53,7 +53,7 @@ module.exports.PRODUCTION = new Scope "production", ->
 module.exports.STAGING = new Scope "staging", ->
     @synopsis = "An environment between staging and production"
     @defaults = server: {hostname: "localhost", port: 80}
-    @pushToGlobals(yes, @tag.toUpperCase())
+    @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"
 
 # One of the predefined scopes, baked into the framework. Scopes
@@ -63,7 +63,7 @@ module.exports.STAGING = new Scope "staging", ->
 module.exports.DEVELOPMENT = new Scope "development", ->
     @synopsis = "Unstable working environment for developers"
     @defaults = server: {hostname: "localhost", port: 8081}
-    @pushToGlobals(yes, @tag.toUpperCase())
+    @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"
 
 # One of the predefined scopes, baked into the framework. Scopes
@@ -73,5 +73,5 @@ module.exports.DEVELOPMENT = new Scope "development", ->
 module.exports.TESTING = new Scope "testing", ->
     @synopsis = "Isolated environment for running the tests"
     @defaults = server: {hostname: "localhost", port: 8081}
-    @pushToGlobals(yes, @tag.toUpperCase())
+    @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"
