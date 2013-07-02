@@ -56,10 +56,10 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # You may provide a number of aliaes for this scope instance.
     pushToGlobals: (override, aliases...) ->
         globals = @::GLOBALS ?= {}
-        existant = (tag) -> tag of globals and not override
-        fresh = _.filter(aliases, (a) -> not existant(a))
-        globals[@tag] = @ unless existant(@tag)
-        globals[alias] = @ for alias in fresh
+        existent = (tag) -> tag of globals and not override
+        valids = _.filter(aliases, (a) -> not existent(a))
+        globals[@tag] = @ unless existent(@tag)
+        globals[alias] = @ for alias in valids
 
     # Lookup the possibly existent scope with one of the following
     # alises as a tag. If no matching candidates exist, the method
