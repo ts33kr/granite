@@ -82,7 +82,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
         nconf.defaults(@defaults or @constructor.DEFAULTS or {})
         nconf.overrides(@overrides or @constructor.OVERRIDES or {})
         logger.info("Starting up the #{@tag} scope".cyan)
-        logger.info("Loading the #{@fpath} config".cyan)
+        logger.info("Loading the #{fpath} config".cyan)
         exists = fs.existsSync fpath
         nconf.file fpath if exists
 
