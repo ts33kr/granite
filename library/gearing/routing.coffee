@@ -48,7 +48,6 @@ module.exports.Router = class Router extends events.EventEmitter
     # transfers the control to the pre-installed, default routable.
     # A set of tests are performed to ensure the logical integrity.
     lookupMiddleware: (request, response, next) ->
-        gig()
         incoming = util.inspect(request.url)
         parameters = [request, response, next]
         predicate = (routable) -> routable.matches(parameters...)
