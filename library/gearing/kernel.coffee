@@ -31,6 +31,7 @@ nconf = require "nconf"
 util = require "util"
 
 _ = require "lodash"
+bundles = require "./bundles"
 routing = require "./routing"
 service = require "./service"
 scoping = require "./scoping"

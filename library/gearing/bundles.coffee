@@ -40,7 +40,7 @@ scoping = require "./scoping"
 # that are bundled with the framework are pretty standard and
 # should generally cover 95% percent of the typical web needs.
 # Of course you are free to define as much scopes as you need.
-module.exports.PRODUCTION = new Scope "production", ->
+module.exports.PRODUCTION = new scoping.Scope "production", ->
     @synopsis = "Final production environment for end users"
     @defaults = server: {hostname: "localhost", port: 80}
     @pushToRegistry(yes, @tag.toUpperCase())
@@ -50,7 +50,7 @@ module.exports.PRODUCTION = new Scope "production", ->
 # that are bundled with the framework are pretty standard and
 # should generally cover 95% percent of the typical web needs.
 # Of course you are free to define as much scopes as you need.
-module.exports.STAGING = new Scope "staging", ->
+module.exports.STAGING = new scoping.Scope "staging", ->
     @synopsis = "An environment between staging and production"
     @defaults = server: {hostname: "localhost", port: 80}
     @pushToRegistry(yes, @tag.toUpperCase())
@@ -60,7 +60,7 @@ module.exports.STAGING = new Scope "staging", ->
 # that are bundled with the framework are pretty standard and
 # should generally cover 95% percent of the typical web needs.
 # Of course you are free to define as much scopes as you need.
-module.exports.DEVELOPMENT = new Scope "development", ->
+module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @synopsis = "Unstable working environment for developers"
     @defaults = server: {hostname: "localhost", port: 8081}
     @pushToRegistry(yes, @tag.toUpperCase())
@@ -70,7 +70,7 @@ module.exports.DEVELOPMENT = new Scope "development", ->
 # that are bundled with the framework are pretty standard and
 # should generally cover 95% percent of the typical web needs.
 # Of course you are free to define as much scopes as you need.
-module.exports.TESTING = new Scope "testing", ->
+module.exports.TESTING = new scoping.Scope "testing", ->
     @synopsis = "Isolated environment for running the tests"
     @defaults = server: {hostname: "localhost", port: 8081}
     @pushToRegistry(yes, @tag.toUpperCase())

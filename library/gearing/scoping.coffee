@@ -46,8 +46,8 @@ module.exports.Scope = class Scope extends events.EventEmitter
     constructor: (tag, synopsis) ->
         @tag = tag if _.isString(tag)
         @synopsis = synopsis if _.isString(synopsis)
-        @directory = @::DIRECTORY or __dirname
-        initializer = find(arguments, _.isFunction)
+        @directory = @constructor.DIRECTORY or __dirname
+        initializer = _.find(arguments, _.isFunction)
         initializer?.call(@, tag, synopsis)
 
     # Push the current scope instance into the global registry
