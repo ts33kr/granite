@@ -23,13 +23,17 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
-_ = require "lodash"
 connect = require "connect"
 logger = require "winston"
 events = require "events"
 colors = require "colors"
 nconf = require "nconf"
 util = require "util"
+
+_ = require "lodash"
+routing = require "./routing"
+service = require "./service"
+scoping = require "./scoping"
 
 # This is a primary gateway interface for the framework. This class
 # provides methods and routines necessary to bootstrap the framework
