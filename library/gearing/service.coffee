@@ -44,7 +44,7 @@ module.exports.Service = class Service extends events.EventEmitter
     # suspects in establishing the matching patterns. Basically,
     # a number of convenient shorthands for wildcard patterns.
     # Use them when you need to wildcard or do a wide match.
-    @EVERYWHERE = null; @INDEX = "^/$"; @ANY = /^.+$/
+    @EVERYWHERE = undefined; @INDEX = "^/$"; @ANY = /^.+$/
 
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted resource patterns.
