@@ -56,6 +56,8 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         arts = [@title, "larry3d"]
         asciify arts..., (error, art) =>
             util.puts art.toString().blue
+            identify = "Running kernel %s, codename %s"
+            logger.info(identify.grey, @version, @codename)
             initializer?.apply(@)
 
     # Create a new instance of the kernel, run all the prerequisites
