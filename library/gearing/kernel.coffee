@@ -53,9 +53,9 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @title = "flames"
         @version = "0.1.0"
         @codename = "cripple"
-        arts = [@title, "larry3d"]
+        header = [@title, "larry3d"]
         idents = [@version, @codename]
-        asciify arts..., (error, art) =>
+        asciify header..., (error, art) =>
             util.puts art.toString().blue
             identify = "Running kernel %s, codename %s"
             logger.info(identify.grey, idents...)
