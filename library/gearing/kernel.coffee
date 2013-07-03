@@ -75,10 +75,10 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     # to provide a Connect setup procedure to your own liking, etc.
     setupConnectPipeline: (middlewares...) ->
         @connect = connect()
-        connect.use(connect.query())
-        connect.use(connect.favicon())
-        connect.use(connect.bodyParser())
-        connect.use(connect.errorHandler())
-        connect.use(connect.cookieParser())
-        connect.use(@router.connectMiddleware)
-        connect.use m for m in middlewares
+        @connect.use(connect.query())
+        @connect.use(connect.favicon())
+        @connect.use(connect.bodyParser())
+        @connect.use(connect.errorHandler())
+        @connect.use(connect.cookieParser())
+        @connect.use(@router.connectMiddleware)
+        @connect.use m for m in middlewares
