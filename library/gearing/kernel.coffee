@@ -71,7 +71,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         port = nconf.get("server:port")
         hostname = nconf.get("server:hostname")
         message = "Booted up the kernel instance".red
-        running = "Running server at %s:%s".magenta
+        running = "Running HTTP server at %s:%s".magenta
         logger.info(running, hostname, port)
         @server.listen(port, hostname)
         logger.info(message); this
