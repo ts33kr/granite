@@ -43,7 +43,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # and a synopsis (short description of the scope) parameters.
     # The constructor of the scope should only associate the data.
     # The scope startup logic should be implemented in the method.
-    construct: (tag, synopsis) ->
+    constructor: (tag, synopsis) ->
         @tag = tag if _.isString(tag)
         @synopsis = synopsis if _.isString(synopsis)
         @directory = @::DIRECTORY or __dirname
