@@ -55,12 +55,13 @@ module.exports.Router = class Router extends events.EventEmitter
         if recognized? then inspected = util.inspect(recognized)
         @emit("recognized", recognized, parameters...) if recognized?
         logger.debug("An #{incoming} matches #{inspected}".grey) if recognized?
-        return recognized.process(parameters...) and next() if recognized?
+        return recognized.process(parameters...) if recognized?
         logger.warn("No routable for #{incoming} request".yellow)
         matches = @fallback?.matches(request, response, next)
         @emit("fallback", @fallback, matches, parameters...)
-        return @fallback.process(parameters...) and next() if matches?
-        logger.warn("Fallback failed for #{incoming}".yellow); next()
+        return @fallback.process(parameters...) if matches?
+        logger.warn("Fallback failed for #{incoming}".yellow)
+        next() unless response.headersSent
 
     # Try registering a new routable object. The method checks for
     # the object to be of the correct type, basically making sure
@@ -68,8 +69,8 @@ module.exports.Router = class Router extends events.EventEmitter
     # If something is wrong, this method will throw an exception.
     # The method is idempotent, ergo no duplication of routables.
     registerRoutable: (routable) ->
-        inspected = util.inspect(routable)
-        duplicate = routable in @registry or []
+        inspected = routable.constructor.name
+        duplicate = routable in (@registry or [])
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{routable} has no valid matches method"
         goneProcess = "The #{routable} has no valid process method"
@@ -78,7 +79,7 @@ module.exports.Router = class Router extends events.EventEmitter
         throw new Error(goneMatches) unless passMatches
         throw new Error(goneProcess) unless passProcess
         logger.info("Adding #{inspected} to the registry".magenta)
-        (@registry ?= [] push routable unless duplicate)
+        ((@registry ?= []).push routable unless duplicate)
         (@emit("registered", routable) unless duplicate); this
 
     # Install the routable that should handle the requests that are

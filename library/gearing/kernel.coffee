@@ -83,7 +83,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     setupRoutableServices: ->
         tag = nconf.get("NODE_ENV")
         passes = _.isString(tag)
-        c = (s) -> @router.registerRoutable new s
+        c = (s) => @router.registerRoutable new s
         noTag = "No NODE_ENV variable found"
         throw new Error(noTag) unless passes
         @scope = scoping.Scope.lookupOrFail tag

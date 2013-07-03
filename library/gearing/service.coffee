@@ -23,6 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+assert = require "assert"
 logger = require "winston"
 events = require "events"
 colors = require "colors"
@@ -44,7 +45,7 @@ module.exports.Service = class Service extends events.EventEmitter
     # suspects in establishing the matching patterns. Basically,
     # a number of convenient shorthands for wildcard patterns.
     # Use them when you need to wildcard or do a wide match.
-    @EVERYWHERE = undefined; @INDEX = "^/$"; @ANY = /^.+$/
+    @EVERYWHERE = undefined; @INDEX = /^\/$/; @ANY = /^.+$/
 
     # Every service has to have a public constructor that accepts
     # the kernel instance as a parameter. You can override it as
@@ -58,14 +59,13 @@ module.exports.Service = class Service extends events.EventEmitter
     # Supports implicit extraction of captured groups in the match.
     # Use this to configure what resources should match with service.
     @resource: (pattern) ->
-        current = util.inspect(this)
         inspected = util.inspect(pattern)
-        duplicate = pattern in @resources or []
-        associate = "Associating #{inspected} resource with #{current}"
+        duplicate = pattern in (@resources or [])
+        associate = "Associating #{inspected} resource with #{@name}"
         notRegexp = "The #{inspected} is not a valid regular expression"
         throw new Error(notRegexp) unless _.isRegExp(pattern)
-        (@resources ?= []) push pattern unless duplicate
-        (logger.info(associate.cyan) unless duplicate); this
+        (@resources ?= []).push pattern unless duplicate
+        (logger.debug(associate.cyan) unless duplicate); this
 
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted domain patterns.
@@ -73,14 +73,13 @@ module.exports.Service = class Service extends events.EventEmitter
     # Supports implicit extraction of captured groups in the match.
     # Use this to configure what domains should match with service.
     @domain: (pattern) ->
-        current = util.inspect(this)
         inspected = util.inspect(pattern)
-        duplicate = pattern in @domains or []
-        associate = "Associating #{inspected} domain with #{current}"
+        duplicate = pattern in (@domains or [])
+        associate = "Associating #{inspected} domain with #{@name}"
         notRegexp = "The #{inspected} is not a valid regular expression"
         throw new Error(notRegexp) unless _.isRegExp(pattern)
-        (@domains ?= []) push pattern unless duplicate
-        (logger.info(associate.cyan) unless duplicate); this
+        (@domains ?= []).push pattern unless duplicate
+        (logger.debug(associate.cyan) unless duplicate); this
 
     # Publish the current service class (not instance) to the slots
     # in the specified scopes. If the service already exist in some
@@ -88,19 +87,20 @@ module.exports.Service = class Service extends events.EventEmitter
     # are not specified, the service will be published everywhere.
     @publish: (scopes...) ->
         registry = scoping.Scope.REGISTRY or {}
-        exists = (scope) -> this in (scope.services or [])
-        p = (scope) -> (scope.services ?= []).push @
-        n = (scope) -> logger.info(notification, @, scope)
+        scopes = undefined is scopes is [undefined]
+        exists = (scope) => this in (scope.services or [])
+        p = (scope) => (scope.services ?= []).push this
+        n = (scope) => logger.debug(notification, @name, scope.tag)
         notification = "Publishing %s service to %s scope".grey
         scopes = _.values(registry) unless scopes?.length > 0
-        (p(s); n(s)) for s in scopes when not exists(s)
+        (p(s); n(s)) for own i, s of scopes when not exists(s)
 
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the
     # domain/host and the path, in accordance with the patterns
     # that were used for configuring the class of this service.
     matches: (request, response, next) ->
-        return no unless request.headers.url?
+        return no unless request.url?
         return no unless request.headers.host?
         domains = @constructor.domains or []
         resources = @constructor.resources or []
