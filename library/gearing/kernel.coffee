@@ -74,6 +74,8 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @scope = scoping.Scope.lookupOrFail tag
         @scope.incorporate this
         @router = new routing.Router(this)
+        @middleware = @router.lookupMiddleware
+        @middleware = @middleware.bind(@router)
         c(s) for s in @scope.services or []
 
     # Setup the Connect middleware framework along with the default
@@ -85,10 +87,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @connect.use(connect.query())
         @connect.use(connect.favicon())
         @connect.use(connect.bodyParser())
-        @connect.use(connect.errorHandler())
         @connect.use(connect.cookieParser())
-        @connect.use(() -> @router.connectMiddleware)
         @connect.use m for m in middlewares
-        @server = http.createServer(connect)
-
-Kernel.boot()
+        @server = http.createServer(@connect)
+        @connect.use(@middleware)
