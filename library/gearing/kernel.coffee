@@ -38,6 +38,18 @@ util = require "util"
 # Please refer to the documentation of the methods for more info.
 module.exports.Kernel = class Kernel extends events.EventEmitter
 
+    # Create a new instance of the kernel, run all the prerequisites
+    # that are necessary, do the configuration on the kernel, then
+    # boot it up, using the hostname and port parameters from config.
+    # Please use this static method instead of manually launching up.
+    @boot: ->
+        nconf.env().argv()
+        kernel = new Kernel
+        kernel.setupRoutableServices()
+        kernel.setupConnectPipeline()
+        message = "Booting up the kernel".red
+        logger.info(message); kernel
+
     # This method sets up the necessary internal toolkits, such as
     # the determined scope and the router, which is then are wired
     # in with the located and instantiated services. Please refer
