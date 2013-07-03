@@ -28,6 +28,7 @@ connect = require "connect"
 logger = require "winston"
 events = require "events"
 colors = require "colors"
+nconf = require "nconf"
 util = require "util"
 
 # This is a primary gateway interface for the framework. This class
@@ -36,6 +37,20 @@ util = require "util"
 # is both an abstract base class as well as a ready to use bootstrap.
 # Please refer to the documentation of the methods for more info.
 module.exports.Kernel = class Kernel extends events.EventEmitter
+
+    # This method sets up the necessary internal toolkits, such as
+    # the determined scope and the router, which is then are wired
+    # in with the located and instantiated services. Please refer
+    # to the implementation on how and what is being done exactly.
+    setupRoutableServices: ->
+        tag = nconf.get("NODE_ENV")
+        passes = _.isString(tag)
+        c = (s) -> @router.registerRoutable new s
+        noTag = "No NODE_ENV variable found"
+        throw new Error(noTag) unless passes
+        @scope = scoping.Scope.lookupOrFail tag
+        @router = new routing.Router(this)
+        c(s) for s in @scope.services or []
 
     # Setup the Connect middleware framework along with the default
     # pipeline of middlewares necessary for the Flames framework to

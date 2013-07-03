@@ -36,6 +36,12 @@ util = require "util"
 # This router just provides the infrastructure and boilerplating.
 module.exports.Router = class Router extends events.EventEmitter
 
+    # Every router has to have a public constructor that accepts
+    # the kernel instance as a parameter. You can override it as
+    # you see fit, but be sure to invoke the super constructor and
+    # it is highly advised to store the kernel instance in object.
+    constructor: (@kernel) ->
+
     # The method implements a middleware (for Connect) that looks
     # up the relevant routable and dispatches the request to the
     # routable. If no corresponding routable is found, the method

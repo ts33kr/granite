@@ -46,6 +46,12 @@ module.exports.Service = class Service extends events.EventEmitter
     # Use them when you need to wildcard or do a wide match.
     @EVERYWHERE = undefined; @INDEX = "^/$"; @ANY = /^.+$/
 
+    # Every service has to have a public constructor that accepts
+    # the kernel instance as a parameter. You can override it as
+    # you see fit, but be sure to invoke the super constructor and
+    # it is highly advised to store the kernel instance in object.
+    constructor: (@kernel) ->
+
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted resource patterns.
     # The patterns are associated with a service class, not object.
