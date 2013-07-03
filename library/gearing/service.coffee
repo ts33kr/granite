@@ -23,12 +23,15 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
-_ = require "lodash"
 logger = require "winston"
 events = require "events"
 colors = require "colors"
 util = require "util"
 url = require "url"
+
+_ = require "lodash"
+routing = require "./routing"
+scoping = require "./scoping"
 
 # This is an abstract base class for every kind of service in this
 # framework and the end user application. It provides the matching
@@ -73,6 +76,19 @@ module.exports.Service = class Service extends events.EventEmitter
         throw new Error(notRegexp) unless _.isRegExp(pattern)
         (@domains ?= []) push pattern unless duplicate
         (logger.info(associate.cyan) unless duplicate); this
+
+    # Publish the current service class (not instance) to the slots
+    # in the specified scopes. If the service already exist in some
+    # of the specified scopes, it will not be added again. If scopes
+    # are not specified, the service will be published everywhere.
+    @publish: (scopes...) ->
+        registry = scoping.Scope.REGISTRY or {}
+        exists = (scope) -> this in (scope.services or [])
+        p = (scope) -> (scope.services ?= []).push @
+        n = (scope) -> logger.info(notification, @, scope)
+        notification = "Publishing %s service to %s scope".grey
+        scopes = _.values(registry) unless scopes.length > 0
+        (p(s); n(s)) for s in scopes when not exists(s)
 
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the

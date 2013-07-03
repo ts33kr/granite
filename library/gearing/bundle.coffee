@@ -34,7 +34,7 @@ fs = require "fs"
 _ = require "lodash"
 routing = require "./routing"
 service = require "./service"
-service = require "./scoping"
+scoping = require "./scoping"
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
