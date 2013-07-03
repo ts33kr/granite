@@ -68,7 +68,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
     @lookupOrFail: (aliases...) ->
         registry = @REGISTRY ?= {}; joined = aliases.join(", ")
         notFound = "Could not found any of #{joined} scoped"
-        logger.info("Looking up any of #{joined} scopes".grey)
+        logger.info("Looking up any of this scopes: %s".grey, joined)
         found = (v for own k, v of registry when k in aliases)
         throw new Error(notFound) unless found.length > 0
         _.head(found)
@@ -81,8 +81,8 @@ module.exports.Scope = class Scope extends events.EventEmitter
         fpath = "#{@directory}/#{@tag}.json"
         nconf.defaults(@defaults or @constructor.DEFAULTS or {})
         nconf.overrides(@overrides or @constructor.OVERRIDES or {})
-        logger.info("Starting up the #{@tag} scope".cyan)
-        logger.info("Loading the #{fpath} config".cyan)
+        logger.info("Incorporating up the #{@tag} scope".cyan)
+        logger.info("Reading the #{fpath} config".cyan)
         exists = fs.existsSync fpath
         nconf.file fpath if exists
 
