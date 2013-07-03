@@ -82,16 +82,15 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     # to the implementation on how and what is being done exactly.
     setupRoutableServices: ->
         tag = nconf.get("NODE_ENV")
-        passes = _.isString(tag)
+        missing = "No NODE_ENV variable found"
         c = (s) => @router.registerRoutable new s
-        noTag = "No NODE_ENV variable found"
-        throw new Error(noTag) unless passes
+        throw new Error(missing) unless _.isString(tag)
         @scope = scoping.Scope.lookupOrFail tag
         @scope.incorporate this
-        @router = new routing.Router(this)
+        @router = new routing.Router this
         @middleware = @router.lookupMiddleware
-        @middleware = @middleware.bind(@router)
-        c(s) for s in @scope.services or []
+        @middleware = @middleware.bind @router
+        c(s) for s in (@scope.services or [])
 
     # Setup the Connect middleware framework along with the default
     # pipeline of middlewares necessary for the Flames framework to
