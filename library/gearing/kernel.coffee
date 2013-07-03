@@ -29,8 +29,8 @@ logger = require "winston"
 events = require "events"
 colors = require "colors"
 nconf = require "nconf"
-util = require "util"
 http = require "http"
+util = require "util"
 
 _ = require "lodash"
 bundles = require "./bundles"
@@ -50,16 +50,15 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     # the purpose of setting up the configurations will never be
     # changed, such as the kernel self identification tokens.
     constructor: (initializer) ->
-        @title = "flames"
-        @version = "0.1.0"
-        @codename = "cripple"
-        header = [@title, "larry3d"]
-        idents = [@version, @codename]
-        asciify header..., (error, art) =>
-            util.puts art.toString().blue
+        specification = "../../package"
+        @package = require specification
+        branding = [@package.name, "larry3d"]
+        types = [@package.version, @package.codename]
+        asciify branding..., (error, banner) =>
+            util.puts banner.toString().blue
             identify = "Running kernel %s, codename %s"
-            logger.info(identify.grey, idents...)
-            initializer?.apply(@)
+            logger.info(identify.underline, types...)
+            initializer?.apply(this)
 
     # Create a new instance of the kernel, run all the prerequisites
     # that are necessary, do the configuration on the kernel, then
