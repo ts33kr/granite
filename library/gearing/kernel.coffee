@@ -55,7 +55,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         branding = [@package.name, "larry3d"]
         types = [@package.version, @package.codename]
         asciify branding..., (error, banner) =>
-            util.puts banner.toString().blue
+            util.puts banner.toString().blue unless error
             identify = "Running kernel %s, codename: %s"
             logger.info(identify.underline, types...)
             initializer?.apply(this)
