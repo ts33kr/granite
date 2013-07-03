@@ -23,6 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
 events = require "events"
@@ -44,22 +45,34 @@ scoping = require "./scoping"
 # Please refer to the documentation of the methods for more info.
 module.exports.Kernel = class Kernel extends events.EventEmitter
 
+    # The public constructor of the kernel instrances. Generally
+    # you should neither use it directly, not override. It serves
+    # the purpose of setting up the configurations will never be
+    # changed, such as the kernel self identification tokens.
+    constructor: (initializer) ->
+        @title = "flames"
+        @version = "0.1.0"
+        @codename = "cripple"
+        arts = [@title, "larry3d"]
+        asciify arts..., (error, art) =>
+            util.puts art.toString().blue
+            initializer?.apply(@)
+
     # Create a new instance of the kernel, run all the prerequisites
     # that are necessary, do the configuration on the kernel, then
     # boot it up, using the hostname and port parameters from config.
     # Please use this static method instead of manually launching up.
-    @boot: ->
+    @boot: -> new Kernel ->
         nconf.env().argv()
-        kernel = new Kernel
-        kernel.setupRoutableServices()
-        kernel.setupConnectPipeline()
+        @setupRoutableServices()
+        @setupConnectPipeline()
         port = nconf.get("server:port")
         hostname = nconf.get("server:hostname")
         message = "Booted up the kernel instance".red
         running = "Running server at %s:%s".magenta
         logger.info(running, hostname, port)
-        kernel.server.listen(port, hostname)
-        logger.info(message); kernel
+        @server.listen(port, hostname)
+        logger.info(message); this
 
     # This method sets up the necessary internal toolkits, such as
     # the determined scope and the router, which is then are wired
