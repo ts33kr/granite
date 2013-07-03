@@ -29,6 +29,7 @@ events = require "events"
 colors = require "colors"
 nconf = require "nconf"
 util = require "util"
+http = require "http"
 
 _ = require "lodash"
 bundles = require "./bundles"
@@ -52,7 +53,12 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         kernel = new Kernel
         kernel.setupRoutableServices()
         kernel.setupConnectPipeline()
-        message = "Booting up the kernel".red
+        port = nconf.get("server:port")
+        hostname = nconf.get("server:hostname")
+        message = "Booted up the kernel instance".red
+        running = "Running server at %s:%s".magenta
+        logger.info(running, hostname, port)
+        kernel.server.listen(port, hostname)
         logger.info(message); kernel
 
     # This method sets up the necessary internal toolkits, such as
@@ -66,6 +72,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         noTag = "No NODE_ENV variable found"
         throw new Error(noTag) unless passes
         @scope = scoping.Scope.lookupOrFail tag
+        @scope.incorporate this
         @router = new routing.Router(this)
         c(s) for s in @scope.services or []
 
@@ -80,5 +87,8 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @connect.use(connect.bodyParser())
         @connect.use(connect.errorHandler())
         @connect.use(connect.cookieParser())
-        @connect.use(@router.connectMiddleware)
+        @connect.use(() -> @router.connectMiddleware)
         @connect.use m for m in middlewares
+        @server = http.createServer(connect)
+
+Kernel.boot()

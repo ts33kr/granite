@@ -79,10 +79,10 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # implementation takes care only of loading the proper config.
     incorporate: (kernel) ->
         fpath = "#{@directory}/#{@tag}.json"
-        nconf.defaults(@defaults or @::DEFAULTS or {})
-        nconf.overrides(@overrides or @::OVERRIDES or {})
-        logger.info("Starting up the #{tag} scope".cyan)
-        logger.info("Loading the #{fpath} config".cyan)
+        nconf.defaults(@defaults or @constructor.DEFAULTS or {})
+        nconf.overrides(@overrides or @constructor.OVERRIDES or {})
+        logger.info("Starting up the #{@tag} scope".cyan)
+        logger.info("Loading the #{@fpath} config".cyan)
         exists = fs.existsSync fpath
         nconf.file fpath if exists
 
