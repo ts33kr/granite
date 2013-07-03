@@ -44,8 +44,7 @@ module.exports.Service = class Service extends events.EventEmitter
     # suspects in establishing the matching patterns. Basically,
     # a number of convenient shorthands for wildcard patterns.
     # Use them when you need to wildcard or do a wide match.
-    @ANY = /^.+$/
-    @ROOT = "^/$"
+    @EVERYWHERE = null; @INDEX = "^/$"; @ANY = /^.+$/
 
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted resource patterns.
@@ -87,7 +86,7 @@ module.exports.Service = class Service extends events.EventEmitter
         p = (scope) -> (scope.services ?= []).push @
         n = (scope) -> logger.info(notification, @, scope)
         notification = "Publishing %s service to %s scope".grey
-        scopes = _.values(registry) unless scopes.length > 0
+        scopes = _.values(registry) unless scopes?.length > 0
         (p(s); n(s)) for s in scopes when not exists(s)
 
     # This method determines whether the supplied HTTP request
