@@ -69,8 +69,8 @@ module.exports.Router = class Router extends events.EventEmitter
     # If something is wrong, this method will throw an exception.
     # The method is idempotent, ergo no duplication of routables.
     registerRoutable: (routable) ->
-        inspected = routable.constructor.name
         duplicate = routable in (@registry or [])
+        inspected = "#{routable.constructor.name} service"
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{routable} has no valid matches method"
         goneProcess = "The #{routable} has no valid process method"
@@ -78,7 +78,7 @@ module.exports.Router = class Router extends events.EventEmitter
         passProcess = _.isFunction(process) and process?.length is 3
         throw new Error(goneMatches) unless passMatches
         throw new Error(goneProcess) unless passProcess
-        logger.info("Adding #{inspected} to the registry".magenta)
+        logger.info("Adding #{inspected} to the router".blue)
         ((@registry ?= []).push routable unless duplicate)
         (@emit("registered", routable) unless duplicate); this
 
@@ -96,5 +96,5 @@ module.exports.Router = class Router extends events.EventEmitter
         passProcess = _.isFunction(process) and process?.length is 3
         throw new Error(goneMatches) unless passMatches
         throw new Error(goneProcess) unless passProcess
-        logger.info("Installing #{inspected} as fallback".magenta)
+        logger.info("Installing #{inspected} as fallback".blue)
         @fallback = routable; @emit("installed", routable); this

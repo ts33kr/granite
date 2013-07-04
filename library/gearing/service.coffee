@@ -61,6 +61,8 @@ module.exports.Service = class Service extends events.EventEmitter
     @resource: (pattern) ->
         inspected = util.inspect(pattern)
         duplicate = pattern in (@resources or [])
+        regexify = (s) -> new RegExp(RegExp.escape(s))
+        pattern = regexify(pattern)  if _.isString(pattern)
         associate = "Associating #{inspected} resource with #{@name}"
         notRegexp = "The #{inspected} is not a valid regular expression"
         throw new Error(notRegexp) unless _.isRegExp(pattern)
@@ -75,6 +77,8 @@ module.exports.Service = class Service extends events.EventEmitter
     @domain: (pattern) ->
         inspected = util.inspect(pattern)
         duplicate = pattern in (@domains or [])
+        regexify = (s) -> new RegExp(RegExp.escape(s))
+        pattern = regexify(pattern)  if _.isString(pattern)
         associate = "Associating #{inspected} domain with #{@name}"
         notRegexp = "The #{inspected} is not a valid regular expression"
         throw new Error(notRegexp) unless _.isRegExp(pattern)

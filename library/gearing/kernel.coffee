@@ -34,6 +34,7 @@ http = require "http"
 util = require "util"
 
 _ = require "lodash"
+extendz = require "./extends"
 bundles = require "./bundles"
 routing = require "./routing"
 service = require "./service"
