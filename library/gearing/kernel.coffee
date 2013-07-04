@@ -72,13 +72,14 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @setupConnectPipeline()
         server = nconf.get("server")
         secure = nconf.get("secure")
+        hostname = nconf.get("server:hostname")
         message = "Booted up the kernel instance".red
         rserver = "Running HTTP server at %s:%s".magenta
         rsecure = "Running HTTPS server at %s:%s".magenta
-        logger.info(rserver, server.hostname, server.port)
-        logger.info(rsecure, server.hostname, secure.port)
-        @secure.listen(secure, port, hostname)
-        @server.listen(port, hostname)
+        logger.info(rserver, hostname, server.port) if @server
+        logger.info(rsecure, hostname, secure.port) if @secure
+        @secure?.listen(secure, secure.port, hostname)
+        @server?.listen(server.port, hostname)
         logger.info(message); this
 
     # This method sets up the necessary internal toolkits, such as
@@ -109,6 +110,6 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @connect.use(connect.bodyParser())
         @connect.use(connect.cookieParser())
         @connect.use m for m in middlewares
-        @server = http.createServer(@connect)
-        @secure = https.createServer(@connect)
+        @server = try http.createServer(@connect)
+        @secure = try https.createServer(@connect)
         @connect.use(@middleware)
