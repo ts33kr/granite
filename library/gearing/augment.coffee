@@ -52,6 +52,7 @@ module.exports.Augment = class Augment extends events.EventEmitter
     # where it needs to be wired in. Please do not use it directly.
     constructor: (@resource) ->
         @service = class extends api.Stub
+        @emit("construct", @resource, @service)
         @service.publish api.Stub.EVERYWHERE
         @service.domain api.Stub.ANY
         @service.resource @resource
