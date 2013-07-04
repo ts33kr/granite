@@ -44,6 +44,21 @@ module.exports.describe = (method, descriptor) ->
     method.document = new Document(method)
     descriptor.apply(method, document)
 
+# Traverse all of the services that are registered with the router
+# and collect the documentation for each method, then given this
+# information, build a hierarhical tree object of all the methods
+# and the services that implement them and return to the invoker.
+module.exports.collect = (kernel) ->
+    services = kernel.router.services
+    _.map services, (service) -> do (service) ->
+        supported = constructor.SUPPORTED
+        constructor = service.constructor
+        unsupported = service.unsupported
+        implemented = (m) -> service[m] isnt unsupported
+        doc = (m) -> service[m].document or new Document
+        filtered = _.filter(supported, implemented)
+        _.object(filtered, _.map(filtered, doc))
+
 # Descriptor of some method of arbitrary service, in a structured
 # and expected way, so that it can later be used to programmatically
 # process such documentation and do with it whatever is necessary.
