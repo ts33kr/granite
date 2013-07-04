@@ -39,6 +39,14 @@ service = require "./service"
 scoping = require "./scoping"
 api = require "./api"
 
+# Install the augmenten driven DSL into all of the specified
+# namespace. Use this method, rather than directly invoking
+# the corresponding class method of the Augment class object.
+module.exports = (namespaces...) ->
+    install = Augment.installAugmentMethods
+    bounded = install.bind(Augment)
+    bounded(n) for n in namespaces
+
 # This class is the internals and the working facade of the DSL for
 # shorthand and convenient definition of new REST services. Rather
 # than using full blown, class driver creating of services, you are
