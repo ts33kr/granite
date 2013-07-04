@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _ = require "lodash"
 connect = require "connect"
+moment = require "moment"
 logger = require "winston"
 events = require "events"
 colors = require "colors"
@@ -72,6 +73,17 @@ module.exports.Scope = class Scope extends events.EventEmitter
         found = (v for own k, v of registry when k in aliases)
         throw new Error(notFound) unless found.length > 0
         _.head(found)
+
+    # The utilitary method that is being called by implementation of
+    # the incorporation method to establish the desirable facade for
+    # logging. The options from the config may be used to configure
+    # various options of the logger, such as output format, etc.
+    @setupLoggingFacade: (kernel) ->
+        format = "DD/MM/YYYY @ hh:mm:ss"
+        stamp = -> moment().format format
+        options = timestamp: stamp, colorize: yes
+        logger.remove logger.transports.Console
+        logger.add(logger.transports.Console, options)
 
     # This method is responsible for starting up the scope object.
     # This means initialization of all its necessary routines and

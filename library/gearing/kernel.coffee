@@ -29,6 +29,7 @@ logger = require "winston"
 events = require "events"
 colors = require "colors"
 nconf = require "nconf"
+https = require "https"
 http = require "http"
 util = require "util"
 
@@ -54,6 +55,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @package = require specification
         branding = [@package.name, "larry3d"]
         types = [@package.version, @package.codename]
+        scoping.Scope.setupLoggingFacade(this)
         asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
             identify = "Running kernel %s, codename: %s"
@@ -68,11 +70,14 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         nconf.env().argv()
         @setupRoutableServices()
         @setupConnectPipeline()
-        port = nconf.get("server:port")
-        hostname = nconf.get("server:hostname")
+        server = nconf.get("server")
+        secure = nconf.get("secure")
         message = "Booted up the kernel instance".red
-        running = "Running HTTP server at %s:%s".magenta
-        logger.info(running, hostname, port)
+        rserver = "Running HTTP server at %s:%s".magenta
+        rsecure = "Running HTTPS server at %s:%s".magenta
+        logger.info(rserver, server.hostname, server.port)
+        logger.info(rsecure, server.hostname, secure.port)
+        @secure.listen(secure, port, hostname)
         @server.listen(port, hostname)
         logger.info(message); this
 
@@ -80,7 +85,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     # the determined scope and the router, which is then are wired
     # in with the located and instantiated services. Please refer
     # to the implementation on how and what is being done exactly.
-    setupRoutableServices: ->
+    setupRoutableServices: (services...) ->
         tag = nconf.get("NODE_ENV")
         missing = "No NODE_ENV variable found"
         c = (s) => @router.registerRoutable new s
@@ -91,6 +96,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @middleware = @router.lookupMiddleware
         @middleware = @middleware.bind @router
         c(s) for s in (@scope.services or [])
+        c(s) for s in (services or [])
 
     # Setup the Connect middleware framework along with the default
     # pipeline of middlewares necessary for the Flames framework to
@@ -104,4 +110,5 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @connect.use(connect.cookieParser())
         @connect.use m for m in middlewares
         @server = http.createServer(@connect)
+        @secure = https.createServer(@connect)
         @connect.use(@middleware)
