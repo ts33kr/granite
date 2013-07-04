@@ -91,7 +91,7 @@ module.exports.Service = class Service extends events.EventEmitter
     # are not specified, the service will be published everywhere.
     @publish: (scopes...) ->
         registry = scoping.Scope.REGISTRY or {}
-        scopes = undefined if scopes is [undefined]
+        scopes = undefined if _.isEqual scopes, [undefined]
         exists = (scope) => this in (scope.services or [])
         p = (scope) => (scope.services ?= []).push this
         n = (scope) => logger.debug(notification, @name, scope.tag)
