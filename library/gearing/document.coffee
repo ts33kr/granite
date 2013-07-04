@@ -23,6 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+_ = require "lodash"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
@@ -42,17 +43,17 @@ module.exports.describe = (method, descriptor) ->
     missing = "No descriptor function has been given"
     throw new Error(missing) unless validated
     method.document = new Document(method)
-    descriptor.apply(method, document)
+    descriptor.apply(method.document)
 
 # Traverse all of the services that are registered with the router
 # and collect the documentation for each method, then given this
 # information, build a hierarhical tree object of all the methods
 # and the services that implement them and return to the invoker.
 module.exports.collect = (kernel) ->
-    services = kernel.router.services
+    services = kernel.router.registry
     _.map services, (service) -> do (service) ->
-        supported = constructor.SUPPORTED
         constructor = service.constructor
+        supported = constructor.SUPPORTED
         unsupported = service.unsupported
         implemented = (m) -> service[m] isnt unsupported
         doc = (m) -> service[m].document or new Document
@@ -69,7 +70,7 @@ module.exports.Document = class Document extends events.EventEmitter
     # described by this document. If you do not supply results
     # this method will return you one, assuming it was set before.
     # Results is a description of data returned by the method.
-    @results: (results) ->
+    results: (results) ->
         return @$results if arguments.length is 0
         isResults = _.isString results
         noResults = "The results is not a string"
@@ -80,7 +81,7 @@ module.exports.Document = class Document extends events.EventEmitter
     # described by this document. If you do not supply description
     # this method will return you one, assuming it was set before.
     # Synopsis is a brief story of what this service method does.
-    @synopsis: (synopsis) ->
+    synopsis: (synopsis) ->
         return @$synopsis if arguments.length is 0
         isSynopsis = _.isString synopsis
         noSynopsis = "The synopsis is not a string"
@@ -91,7 +92,7 @@ module.exports.Document = class Document extends events.EventEmitter
     # is being described by this document. If you do no supply any
     # arguments this method will return already described arguments.
     # Argument consists of name, approximate type and description.
-    @argument: (identify, typeable, description) ->
+    argument: (identify, typeable, description) ->
         return @$argument if arguments.length is 0
         isIdentify = _.isString(identify)
         isTypeable = _.isString(typeable)

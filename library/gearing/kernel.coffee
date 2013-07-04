@@ -114,3 +114,16 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @server = try http.createServer(@connect)
         @secure = try https.createServer(@connect)
         @connect.use(@middleware)
+
+augment = require "./augment"
+document = require "./document"
+instance = Kernel.bootstrap()
+augment(@)
+
+test = @GET "/api/test", (request, response) ->
+    docs = document.collect @kernel
+    response.end JSON.stringify docs
+
+document.describe test, ->
+    @synopsis("what the fuck?")
+    @argument("id", "integer", "ID of the fucker")
