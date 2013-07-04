@@ -42,6 +42,7 @@ api = require "./api"
 # Install the augmenten driven DSL into all of the specified
 # namespace. Use this method, rather than directly invoking
 # the corresponding class method of the Augment class object.
+# Typical use is to invoke it on `this` object inside module.
 module.exports = (namespaces...) ->
     install = Augment.installAugmentMethods
     bounded = install.bind(Augment)
