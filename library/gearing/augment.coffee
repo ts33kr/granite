@@ -77,6 +77,7 @@ module.exports.Augment = class Augment extends events.EventEmitter
             namespace[method] = (resource, implementation) =>
                 augment = Augment.augmentForResource resource
                 augment.service::[method] = implementation
+                implementation.service = service
 
     # Obtain the augment object for the specified resource. If such
     # an object does not exist, it will be automatically created and
