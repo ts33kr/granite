@@ -83,6 +83,18 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @server?.listen(server.port, hostname)
         logger.info(message); this
 
+    # Shutdown the kernel instance. This includes shutting down both
+    # HTTP and HTTPS server that may be running, stopping the router
+    # and unregistering all the services as a precauting. After that
+    # the scope is being dispersed and some events are being emited.
+    shutdownKernel: ->
+        try @router.shutdownRouter()
+        s.unregister() for s in @router.registry
+        try @server.close(); try @secure.close()
+        shutdown = "Shutting the kernel down".red
+        logger.info(shutdown); @emit("shutdown")
+        @scope.disperse(); this
+
     # This method sets up the necessary internal toolkits, such as
     # the determined scope and the router, which is then are wired
     # in with the located and instantiated services. Please refer
