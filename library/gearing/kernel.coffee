@@ -39,6 +39,7 @@ bundles = require "./bundles"
 routing = require "./routing"
 service = require "./service"
 scoping = require "./scoping"
+plumbs = require "./plumbs"
 
 # This is a primary gateway interface for the framework. This class
 # provides methods and routines necessary to bootstrap the framework
@@ -122,6 +123,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @connect.use(connect.favicon())
         @connect.use(connect.bodyParser())
         @connect.use(connect.cookieParser())
+        @connect.use(plumbs.sender())
         @connect.use m for m in middlewares
         @server = try http.createServer(@connect)
         @secure = try https.createServer(@connect)
