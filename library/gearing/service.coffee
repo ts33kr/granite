@@ -99,6 +99,22 @@ module.exports.Service = class Service extends events.EventEmitter
         scopes = _.values(registry) unless scopes?.length > 0
         (p(s); n(s)) for own i, s of scopes when not exists(s)
 
+    # Unregister the current service instance from the kernel router.
+    # You should call this method only after the service has been
+    # previously registered with the kernel router. This method does
+    # modify the router register, ergo does write access to kernel.
+    unregister: ->
+        noKernel = "No kernel reference found"
+        noRouter = "Could not access the router"
+        unreg = "Unregistering the %s service"
+        throw new Error(noKernel) unless @kernel?
+        registry = kernel.router?.registry
+        throw new Error(noRouter) unless registry?
+        filtered = _.without(registry, this)
+        @emit("unregister", @kernel, @router)
+        logger.info(unreg, this.constructor.name)
+        kernel.router.registry = filtered; this
+
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the
     # domain/host and the path, in accordance with the patterns
