@@ -58,7 +58,8 @@ module.exports.collect = (kernel) ->
         implemented = (m) -> service[m] isnt unsupported
         doc = (m) -> service[m].document or new Document
         filtered = _.filter(supported, implemented)
-        _.object(filtered, _.map(filtered, doc))
+        methods = _.object(filtered, _.map(filtered, doc))
+        service: service, methods: methods
 
 # Descriptor of some method of arbitrary service, in a structured
 # and expected way, so that it can later be used to programmatically
