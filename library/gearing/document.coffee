@@ -75,6 +75,7 @@ module.exports.Document = class Document extends events.EventEmitter
         isResults = _.isString results
         noResults = "The results is not a string"
         throw new Error(noResults) unless isResults
+        @emit("results", arguments...)
         @$results = results.toString()
 
     # Either get or set the description of the method that is being
@@ -86,6 +87,7 @@ module.exports.Document = class Document extends events.EventEmitter
         isSynopsis = _.isString synopsis
         noSynopsis = "The synopsis is not a string"
         throw new Error(noSynopsis) unless isSynopsis
+        @emit("synopsis", arguments...)
         @$synopsis = synopsis.toString()
 
     # Either get or set the argument information of the method that
@@ -103,6 +105,7 @@ module.exports.Document = class Document extends events.EventEmitter
         throw new Error(noIdentify) unless isIdentify
         throw new Error(noTypeable) unless isTypeable
         throw new Error(noDescription) unless isDescription
+        @emit("argument", arguments...)
         (@$argument ?= []).push
             description: description
             identify: identify
