@@ -48,19 +48,21 @@ module.exports.Router = class Router extends events.EventEmitter
     # transfers the control to the pre-installed, default routable.
     # A set of tests are performed to ensure the logical integrity.
     lookupMiddleware: (request, response, next) ->
-        incoming = util.inspect(request.url)
+        incoming = "#{request.url.underline}"
         parameters = [request, response, next]
         predicate = (routable) -> routable.matches(parameters...)
         recognized = _.find(@registry or [],  predicate) or null
-        if recognized? then inspected = util.inspect(recognized)
+        if recognized then constructor = recognized.constructor
+        inspected = constructor?.nick or constructor?.name
         @emit("recognized", recognized, parameters...) if recognized?
-        logger.debug("An #{incoming} matches #{inspected}".grey) if recognized?
+        matching = "Request #{incoming} matches #{inspected} service"
+        logger.debug(matching.grey) if recognized?
         return recognized.process(parameters...) if recognized?
         logger.warn("No routable for #{incoming} request".yellow)
         matches = @fallback?.matches(request, response, next)
         @emit("fallback", @fallback, matches, parameters...)
         return @fallback.process(parameters...) if matches?
-        logger.warn("Fallback failed for #{incoming}".yellow)
+        logger.warn("No fallback for #{incoming} request".yellow)
         next() unless response.headersSent
 
     # Try registering a new routable object. The method checks for
