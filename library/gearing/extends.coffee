@@ -37,5 +37,4 @@ RegExp.escape = (string) ->
 # pattern. The implementation was borrowed from StackOverflow thread.
 RegExp::unescape = ->
     replace = @source.replace /\\\//g, "/"
-    replace = replace.replace /\$/g, ""
-    replace = replace.replace /\^/g, ""
+    replace = replace.replace /[\$\^]/g, ""
