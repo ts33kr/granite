@@ -30,8 +30,10 @@ events = require "events"
 colors = require "colors"
 nconf = require "nconf"
 https = require "https"
+paths = require "path"
 http = require "http"
 util = require "util"
+fs = require "fs"
 
 _ = require "lodash"
 extendz = require "./extends"
@@ -89,6 +91,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         throw new Error noArray unless isArray
         watch = @watcher.watchDirectory.bind @watcher
         watch directory for directory in subjects; @
+        watch paths.resolve __dirname, "../vendor"
 
     # Create a new instance of the kernel, run all the prerequisites
     # that are necessary, do the configuration on the kernel, then
