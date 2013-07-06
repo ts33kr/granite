@@ -47,6 +47,7 @@ module.exports.ApiDoc = class ApiDoc extends api.Stub
     # These invocations establish the parameters which are going
     # to be used for matching HTTP requests against this service.
     # Typically an HTTP pathname pattern and a domain name pattern.
+    # Try not to put constraints on the domain, unless necessary.
     @resource "/api/doc"
     @domain @ANY
 
