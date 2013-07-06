@@ -103,7 +103,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
     # It takes care of either initial loading and registering of
     # services or the hot swapping of the services that changed.
     hotSwappingUnlink: (path) ->
-        absolute = fs.realpathSync path
+        absolute = paths.resolve path
         modules = @constructor.EXTENSIONS
         extension = paths.extname absolute
         return unless extension in modules
