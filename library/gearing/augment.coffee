@@ -63,6 +63,7 @@ module.exports.Augment = class Augment extends events.EventEmitter
         @service = class extends api.Stub
         @emit("construct", @resource, @service)
         @service.publish api.Stub.EVERYWHERE
+        @service.nick = @resource.unescape()
         @service.domain api.Stub.ANY
         @service.resource @resource
 

@@ -104,15 +104,17 @@ module.exports.Service = class Service extends events.EventEmitter
     # previously registered with the kernel router. This method does
     # modify the router register, ergo does write access to kernel.
     unregister: ->
+        nick = @constructor?.nick
+        name = @constructor?.name
         noKernel = "No kernel reference found"
         noRouter = "Could not access the router"
-        unreg = "Unregistering the %s service".yellow
+        unregister = "Unregistering the %s service"
         throw new Error(noKernel) unless @kernel?
         registry = @kernel.router?.registry
         throw new Error(noRouter) unless registry?
         filtered = _.without(registry, this)
         @emit("unregister", @kernel, @router)
-        logger.info(unreg, this.constructor.name)
+        logger.info(unregister.yellow, nick or name)
         @kernel.router.registry = filtered; this
 
     # This method determines whether the supplied HTTP request

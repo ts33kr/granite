@@ -69,11 +69,13 @@ module.exports.Router = class Router extends events.EventEmitter
     # If something is wrong, this method will throw an exception.
     # The method is idempotent, ergo no duplication of routables.
     registerRoutable: (routable) ->
+        nick = routable?.constructor?.nick
+        name = routable?.constructor?.name
+        inspected = "#{nick or name} service"
         duplicate = routable in (@registry or [])
-        inspected = "#{routable.constructor.name} service"
         [matches, process] = [routable.matches, routable.process]
-        goneMatches = "The #{routable} has no valid matches method"
-        goneProcess = "The #{routable} has no valid process method"
+        goneMatches = "The #{inspected} has no valid matches method"
+        goneProcess = "The #{inspected} has no valid process method"
         passMatches = _.isFunction(matches) and matches?.length is 3
         passProcess = _.isFunction(process) and process?.length is 3
         throw new Error(goneMatches) unless passMatches
@@ -88,10 +90,12 @@ module.exports.Router = class Router extends events.EventEmitter
     # ensures this by performing the same tests as register method.
     # Remember that it should implement the widescope matching logic.
     installFallback: (routable) ->
-        inspected = util.inspect(routable)
+        nick = routable?.constructor?.nick
+        name = routable?.constructor?.name
+        inspected = "#{nick or name} service"
         [matches, process] = [routable.matches, routable.process]
-        goneMatches = "The #{routable} has no valid matches method"
-        goneProcess = "The #{routable} has no valid process method"
+        goneMatches = "The #{inspected} has no valid matches method"
+        goneProcess = "The #{inspected} has no valid process method"
         passMatches = _.isFunction(matches) and matches?.length is 3
         passProcess = _.isFunction(process) and process?.length is 3
         throw new Error(goneMatches) unless passMatches

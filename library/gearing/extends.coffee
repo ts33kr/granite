@@ -30,3 +30,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 RegExp.escape = (string) ->
     primary = /[-\/\\^$*+?.()|[\]{}]/g
     string.replace primary, "\\$&"
+
+# Extend the native RegExp object to implement method for unescaping
+# a supplied string. Unscaping here means substituting all the RE back
+# characters so that it cannot be used inside of the regular expression
+# pattern. The implementation was borrowed from StackOverflow thread.
+RegExp::unescape = ->
+    replace = @source.replace /\\\//g, "/"
+    replace = replace.replace /\$/g, ""
+    replace = replace.replace /\^/g, ""
