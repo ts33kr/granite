@@ -78,7 +78,7 @@ module.exports.Augment = class Augment extends events.EventEmitter
             namespace[method] = (resource, implementation) =>
                 augment = Augment.augmentForResource resource
                 augment.service::[method] = implementation
-                implementation.service = service
+                implementation.service = augment.service
                 implementation.augment = augment
                 implementation
 
