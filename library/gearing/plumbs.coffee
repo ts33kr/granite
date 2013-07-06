@@ -34,6 +34,21 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+# This middleware is really a wrapper around the `Connect` logger
+# that pipes all the request logs to the `Winston` instances that
+# is used throughout the framework to provide logging capabilities.
+# The format is takes from the `NConf` config or the default `dev`.
+module.exports.logger = ->
+    levelKey = "log:request:level"
+    formatKey = "log:request:format"
+    format = nconf.get(formatKey) or "dev"
+    level = nconf.get(levelKey) or "debug"
+    filter = (string) -> string.replace "\n", ""
+    writer = (data) -> logger.log level, filter data
+    options = stream: write: writer
+    options.format = format
+    connect.logger options
+
 # A middleware that adds a `send` method to the response object.
 # This allows for automatic setting of `Content-Type` headers
 # based on the content that is being sent away. Use this method

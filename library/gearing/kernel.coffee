@@ -137,11 +137,12 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     # to provide a Connect setup procedure to your own liking, etc.
     setupConnectPipeline: (middlewares...) ->
         @connect = connect()
-        @connect.use(connect.query())
-        @connect.use(connect.favicon())
-        @connect.use(connect.bodyParser())
-        @connect.use(connect.cookieParser())
-        @connect.use(plumbs.sender())
+        @connect.use connect.query()
+        @connect.use connect.favicon()
+        @connect.use connect.bodyParser()
+        @connect.use connect.cookieParser()
+        @connect.use plumbs.sender()
+        @connect.use plumbs.logger()
         @connect.use m for m in middlewares
         @server = try http.createServer(@connect)
         @secure = try https.createServer(@connect)
