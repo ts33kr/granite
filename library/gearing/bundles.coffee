@@ -44,6 +44,7 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @synopsis = "Final production environment for end users"
     @defaults = server: {hostname: "localhost", port: 80}
     @defaults.secure = port: 443, key: "key.pem", cert: "cert.pem"
+    @defaults.watching = ["library", "modules", "web"]
     @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"
 
@@ -55,6 +56,7 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @synopsis = "An environment between staging and production"
     @defaults = server: {hostname: "localhost", port: 80}
     @defaults.secure = port: 443, key: "key.pem", cert: "cert.pem"
+    @defaults.watching = ["library", "modules", "web"]
     @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"
 
@@ -66,6 +68,7 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @synopsis = "Unstable working environment for developers"
     @defaults = server: {hostname: "localhost", port: 8081}
     @defaults.secure = port: 1443, key: "key.pem", cert: "cert.pem"
+    @defaults.watching = ["library", "modules", "web"]
     @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"
 
@@ -77,5 +80,6 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @synopsis = "Isolated environment for running the tests"
     @defaults = server: {hostname: "localhost", port: 8081}
     @defaults.secure = port: 1443, key: "key.pem", cert: "cert.pem"
+    @defaults.watching = ["library", "modules", "web"]
     @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"

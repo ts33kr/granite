@@ -79,7 +79,7 @@ module.exports.Router = class Router extends events.EventEmitter
         throw new Error(goneMatches) unless passMatches
         throw new Error(goneProcess) unless passProcess
         logger.info("Adding #{inspected} to the router".blue)
-        ((@registry ?= []).push routable unless duplicate)
+        (@registry ?= []).push routable unless duplicate
         (@emit("registered", routable) unless duplicate); this
 
     # Install the routable that should handle the requests that are

@@ -40,6 +40,7 @@ routing = require "./routing"
 service = require "./service"
 scoping = require "./scoping"
 plumbs = require "./plumbs"
+watch = require "./watch"
 
 # This is a primary gateway interface for the framework. This class
 # provides methods and routines necessary to bootstrap the framework
@@ -76,6 +77,19 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         logger.info(shutdown); @emit("shutdown")
         @scope.disperse(); this
 
+    # Instantiate a hot swapping watcher for this kernel and setup
+    # the watcher per the scoping configuration to watch for certain
+    # directories. Please refer to the `Watcher` implementation for
+    # more information on its operations and configuration routines.
+    setupHotloadWatcher: ->
+        @watcher = new watch.Watcher this
+        subjects = nconf.get "watching"
+        isArray = _.isArray subjects
+        noArray = "No watching configuration"
+        throw new Error noArray unless isArray
+        watch = @watcher.watchDirectory.bind @watcher
+        watch directory for directory in subjects; @
+
     # Create a new instance of the kernel, run all the prerequisites
     # that are necessary, do the configuration on the kernel, then
     # boot it up, using the hostname and port parameters from config.
@@ -84,6 +98,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         nconf.env().argv()
         @setupRoutableServices()
         @setupConnectPipeline()
+        @setupHotloadWatcher()
         server = nconf.get("server")
         secure = nconf.get("secure")
         hostname = nconf.get("server:hostname")
