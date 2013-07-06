@@ -108,12 +108,12 @@ module.exports.Service = class Service extends events.EventEmitter
         noRouter = "Could not access the router"
         unreg = "Unregistering the %s service"
         throw new Error(noKernel) unless @kernel?
-        registry = kernel.router?.registry
+        registry = @kernel.router?.registry
         throw new Error(noRouter) unless registry?
         filtered = _.without(registry, this)
         @emit("unregister", @kernel, @router)
         logger.info(unreg, this.constructor.name)
-        kernel.router.registry = filtered; this
+        @kernel.router.registry = filtered; this
 
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the
