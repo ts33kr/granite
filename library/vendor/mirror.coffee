@@ -38,23 +38,41 @@ api = require "../gearing/api"
 service = require "../gearing/service"
 document = require "../gearing/document"
 
+# This service exposes the entiry hierarchical structure of the
+# service documentation, as they scanned and found in the current
+# kernel instance. It exposes the data in a structured hierarchy
+# encoded with JSON. Please refer to the implementation for info.
 module.exports.ApiDoc = class ApiDoc extends api.Stub
 
-    @domain @ANY
+    # These invocations establish the parameters which are going
+    # to be used for matching HTTP requests against this service.
+    # Typically an HTTP pathname pattern and a domain name pattern.
     @resource "/api/doc"
+    @domain @ANY
 
+    # Get the contents of the resources at the established path. It
+    # is a good idea for this HTTP method to be idempotent. As the
+    # rule, this method does not have to alter any contents or data
+    # of the resource. Use for unobtrusive retrieval of resources.
     GET: (request, response) ->
         collected = document.collect @kernel
         response.send _.map collected, (record) ->
             constructor = record.service.constructor
-            name: constructor.nick or constructor.name
-            path: _.head(constructor.resources).unescape()
-            methods: _.map record.methods, (doc, name) ->
+            title: constructor.nick or constructor.name
+            pathname: _.head(constructor.resources)?.unescape()
+            patterns: _.map constructor.resources, "source"
+            methods: _.map record.methods, (doc, method) ->
+                exmaple: doc.example()
                 argument: doc.argument()
                 synopsis: doc.synopsis()
                 results: doc.results()
-                name: name
+                inputs: doc.inputs()
+                method: method
 
+    # This block describes certain method a abrbitrary service. The
+    # exact process of how it is being documented depends on how the
+    # documented function is implemented. Please refer to `Document`
+    # class and its module implementation for more information on it.
     document.describe @::GET, ->
         @synopsis "Get all of the APIs in the system"
         @results "An array of objects, each describes services"
