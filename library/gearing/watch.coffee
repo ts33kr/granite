@@ -154,8 +154,9 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         notExists = "Dir %s does not exist, not watching"
         exists = fs.existsSync directory.toString()
         throw new Error(notString) unless _.isString directory
-        logger.warn notExists.red, directory unless exists
-        logger.info "Watching %s dir for modules".blue, directory
+        logger.warn notExists.grey, directory unless exists
+        relative = paths.relative __dirname, directory
+        logger.info "Watching %s dir for modules".blue, relative
         watcher = chokidar.watch directory.toString()
         watcher.on "unlink", @hotSwappingUnlink.bind @
         watcher.on "change", @hotSwappingChange.bind @
