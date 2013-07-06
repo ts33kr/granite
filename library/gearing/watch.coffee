@@ -165,7 +165,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
     # should be used only by the watcher internals, not directly.
     collectServices: (required) ->
         exports = _.values (required.exports or [])
-        isService = (s) -> s::?process? and s::?matches?
+        isService = (s) -> s::process? and s::matches?
         isAugment = (s) -> s.augment instanceof augment.Augment
         augments = _.filter exports, isAugment
         augments = augments.map (a) -> a.service
