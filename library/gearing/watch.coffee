@@ -74,7 +74,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         return if resolved of require.cache
         go = => @reviewServices resolved
         relative = paths.relative process.cwd(), path
-        logger.info("Addition at %s".cyan, relative)
+        logger.info "Adding at %s".cyan, relative.underline
         try require resolved; go() catch error
             message = "Exception in module at #{path}:\r\n%s"
             logger.warn message.red, error.stack
@@ -96,7 +96,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         delete require.cache[resolved] if cached
         go = => @reviewServices resolved
         relative = paths.relative process.cwd(), path
-        logger.info("Changing at %s".cyan, relative)
+        logger.info "Changing at %s".cyan, relative.underline
         try require resolved; go() catch error
             message = "Exception in module at #{path}:\r\n%s"
             logger.warn message.red, error.stack
@@ -112,7 +112,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         extension = paths.extname absolute
         return unless extension in modules
         relative = paths.relative process.cwd(), path
-        logger.info("Unlinking at %s".cyan, relative)
+        logger.info "Unlink at %s".cyan, relative.underline
         registry = @kernel.router?.registry or []
         originate = (s) -> s.constructor.origin?.filename
         predicate = (s) -> originate(s) is absolute
@@ -153,7 +153,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         dependents = _.filter dependents, originate
         return unless dependents.length > 0
         message = "Forced watch enabled, swapping services: %s"
-        logger.info message.cyan, dependents.length
+        logger.warn message.grey, dependents.length
         change = @hotSwappingChange.bind this
         @forcedHotSwappingInProgress = yes
         change originate dep for dep in dependents
@@ -183,7 +183,8 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         throw new Error(notString) unless _.isString directory
         logger.warn notExists.grey, directory unless exists
         relative = paths.relative process.cwd(), directory
-        logger.info "Watching %s dir for modules".blue, relative
+        watching = "Watching %s directory for modules"
+        logger.info watching.blue, relative.underline
         watcher = chokidar.watch directory.toString()
         watcher.on "unlink", @hotSwappingUnlink.bind @
         watcher.on "change", @hotSwappingChange.bind @
