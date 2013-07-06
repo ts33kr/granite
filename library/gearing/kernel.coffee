@@ -92,7 +92,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         throw new Error noArray unless isArray
         watch = @watcher.watchDirectory.bind @watcher
         watch directory for directory in subjects; @
-        watch paths.resolve __dirname, "../vendor"
+        watch paths.resolve __dirname, "../vending"
 
     # Create a new instance of the kernel, run all the prerequisites
     # that are necessary, do the configuration on the kernel, then
