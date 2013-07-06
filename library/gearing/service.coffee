@@ -106,7 +106,7 @@ module.exports.Service = class Service extends events.EventEmitter
     unregister: ->
         noKernel = "No kernel reference found"
         noRouter = "Could not access the router"
-        unreg = "Unregistering the %s service"
+        unreg = "Unregistering the %s service".yellow
         throw new Error(noKernel) unless @kernel?
         registry = @kernel.router?.registry
         throw new Error(noRouter) unless registry?
