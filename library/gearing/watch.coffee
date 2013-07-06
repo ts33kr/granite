@@ -73,6 +73,8 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         return if resolved is entrypoint
         return if resolved of require.cache
         go = => @reviewServices resolved
+        relative = paths.relative process.cwd(), path
+        logger.info("Addition at %s".cyan, relative)
         try require resolved; go() catch error
             message = "Exception in module at #{path}:\r\n%s"
             logger.warn message.red, error.stack
@@ -93,6 +95,8 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         return if resolved is entrypoint
         delete require.cache[resolved] if cached
         go = => @reviewServices resolved
+        relative = paths.relative process.cwd(), path
+        logger.info("Changing at %s".cyan, relative)
         try require resolved; go() catch error
             message = "Exception in module at #{path}:\r\n%s"
             logger.warn message.red, error.stack
@@ -107,6 +111,8 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         modules = @constructor.EXTENSIONS
         extension = paths.extname absolute
         return unless extension in modules
+        relative = paths.relative process.cwd(), path
+        logger.info("Unlinking at %s".cyan, relative)
         registry = @kernel.router?.registry or []
         originate = (s) -> s.constructor.origin?.filename
         predicate = (s) -> originate(s) is absolute
@@ -176,7 +182,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         exists = fs.existsSync directory.toString()
         throw new Error(notString) unless _.isString directory
         logger.warn notExists.grey, directory unless exists
-        relative = paths.relative __dirname, directory
+        relative = paths.relative process.cwd(), directory
         logger.info "Watching %s dir for modules".blue, relative
         watcher = chokidar.watch directory.toString()
         watcher.on "unlink", @hotSwappingUnlink.bind @
