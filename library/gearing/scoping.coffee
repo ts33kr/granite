@@ -86,7 +86,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
         noLevel = "No logging level specified"
         throw new Error(noLevel) unless options.level
         logger.remove logger.transports.Console
-        logger.add(logger.transports.Console, options)
+        logger.add logger.transports.Console, options
 
     # This method is responsible for starting up the scope object.
     # This means initialization of all its necessary routines and
