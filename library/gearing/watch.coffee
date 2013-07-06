@@ -131,6 +131,27 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         spawn = (s) => register new s @kernel
         distincted = _.unique services
         spawn s for s in distincted
+        @attemptForceHotswap cached
+
+    # If enabled by the scoping configuration, this method will try
+    # to hotswap and reload all modules and services that have been
+    # loaded by the watcher. This is useful to reload modules and
+    # services when other modules (possible dependencies) change.
+    attemptForceHotswap: (cached) ->
+        return unless nconf.get("watch:force")
+        return if @forcedHotSwappingInProgress
+        registry = @kernel.router?.registry or []
+        originate = (s) -> s.constructor.origin?.id
+        predicate = (s) -> originate(s) isnt cached.id
+        dependents = _.filter registry, predicate
+        dependents = _.filter dependents, originate
+        return unless dependents.length > 0
+        message = "Forced watch enabled, swapping services: %s"
+        logger.info message.cyan, dependents.length
+        change = @hotSwappingChange.bind this
+        @forcedHotSwappingInProgress = yes
+        change originate dep for dep in dependents
+        delete @forcedHotSwappingInProgress
 
     # Given the required module, scan the `exports` object that it
     # publishes and find all the possible services that it defines.

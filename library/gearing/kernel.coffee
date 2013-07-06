@@ -85,7 +85,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     # more information on its operations and configuration routines.
     setupHotloadWatcher: ->
         @watcher = new watch.Watcher this
-        subjects = nconf.get "watching"
+        subjects = nconf.get "watch:dirs"
         isArray = _.isArray subjects
         noArray = "No watching configuration"
         throw new Error noArray unless isArray
