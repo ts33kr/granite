@@ -56,11 +56,12 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     # the purpose of setting up the configurations will never be
     # changed, such as the kernel self identification tokens.
     constructor: (initializer) ->
+        nconf.env().argv()
         specification = "../../package"
         @package = require specification
         branding = [@package.name, "larry3d"]
         types = [@package.version, @package.codename]
-        scoping.Scope.setupLoggingFacade(this)
+        scoping.Scope.setupLoggingFacade this
         asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
             identify = "Running kernel %s, codename: %s"
@@ -98,7 +99,6 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     # boot it up, using the hostname and port parameters from config.
     # Please use this static method instead of manually launching up.
     @bootstrap: -> new Kernel ->
-        nconf.env().argv()
         @setupRoutableServices()
         @setupConnectPipeline()
         @setupHotloadWatcher()

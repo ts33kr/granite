@@ -37,16 +37,18 @@ DEFAULT_ARTIFACT = "artifact"
 DEFAULT_DOCUMENTS = "documents"
 DEFAULT_MODULES = "node_modules"
 DEFAULT_SCOPING = "development"
+DEFAULT_LOGGING = "info"
 
 # Here follows the definition of the options required for some of
 # the tasks defined in this Cakefile. Remember that the scope of
 # definition of the options is global to a Cakefile, therefore the
 # options are shared among all of the tasks and the entire file!
-option "-l", "--library", "Path to the library sources"
-option "-m", "--modules", "Path to the modules directory"
-option "-a", "--artifact", "Path to the artifact directory"
-option "-d", "--documents", "Path to the documents directory"
-option "-s", "--scoping", "The name of the scope to boot kernel"
+option "-l", "--library [PATH]", "Path to the library sources"
+option "-m", "--modules [PATH]", "Path to the modules directory"
+option "-a", "--artifact [PATH]", "Path to the artifact directory"
+option "-d", "--documents [PATH]", "Path to the documents directory"
+option "-s", "--scoping [SCOPE]", "The name of the scope to boot kernel"
+option "-i", "--logging [LEVEL]", "The level to use for the logging output"
 option "-w", "--watch", "Watch the library sources and recompile"
 option "-g", "--git-hub-pages", "Publish documents to GitHub pages"
 option "-n", "--clean-modules", "Remove node_modules during cleanup"
@@ -58,7 +60,9 @@ option "-n", "--clean-modules", "Remove node_modules during cleanup"
 task "bootstrap", "bootstrap the framework kernel", (options) ->
     library = options.library or DEFAULT_LIBRARY
     scoping = options.scoping or DEFAULT_SCOPING
+    logging = options.logging or DEFAULT_LOGGING
     process.env["NODE_ENV"] = scoping.toString()
+    process.env["log:level"] = logging.toString()
     deduced = "./#{library}/gearing/kernel.coffee"
     instance = require(deduced).Kernel.bootstrap()
 

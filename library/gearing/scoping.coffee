@@ -82,6 +82,9 @@ module.exports.Scope = class Scope extends events.EventEmitter
         format = "DD/MM/YYYY @ hh:mm:ss"
         stamp = -> moment().format format
         options = timestamp: stamp, colorize: yes
+        options.level = nconf.get("log:level")
+        noLevel = "No logging level specified"
+        throw new Error(noLevel) unless options.level
         logger.remove logger.transports.Console
         logger.add(logger.transports.Console, options)
 
@@ -95,8 +98,8 @@ module.exports.Scope = class Scope extends events.EventEmitter
         nconf.overrides(@overrides or @constructor.OVERRIDES or {})
         logger.info("Incorporating up the #{@tag} scope".cyan)
         logger.info("Reading the #{fpath} config".cyan)
-        exists = fs.existsSync fpath
-        nconf.file fpath if exists
+        exists = fs.existsSync fpath; nconf.file fpath if exists
+        @constructor.setupLoggingFacade kernel
 
     # This method is responsible for shutting down the scope object.
     # This means stripping down all the necessary routines and other
