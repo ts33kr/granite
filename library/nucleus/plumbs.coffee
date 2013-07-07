@@ -53,7 +53,7 @@ module.exports.params = (kernel) ->
 module.exports.redirect = (kernel) ->
     (request, response, next) ->
         response.redirect = (url, status) ->
-            relocated = 302
+            relocated = status or 302
             codes = http.STATUS_CODES
             message = codes[relocated]
             response.setHeader "Location", url
