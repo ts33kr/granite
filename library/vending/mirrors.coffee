@@ -34,9 +34,9 @@ http = require "http"
 util = require "util"
 
 _ = require "lodash"
-api = require "../gearing/api"
-service = require "../gearing/service"
-document = require "../gearing/document"
+api = require "../nucleus/api"
+service = require "../nucleus/service"
+document = require "../nucleus/document"
 
 # This service exposes the entiry hierarchical structure of the
 # service documentation, as they scanned and found in the current

@@ -63,7 +63,7 @@ task "bootstrap", "bootstrap the framework kernel", (options) ->
     logging = options.logging or DEFAULT_LOGGING
     process.env["NODE_ENV"] = scoping.toString()
     process.env["log:level"] = logging.toString()
-    deduced = "./#{library}/gearing/kernel.coffee"
+    deduced = "./#{library}/nucleus/kernel.coffee"
     instance = require(deduced).Kernel.bootstrap()
 
 # This is one of the major tasks in this Cakefile, it implements
