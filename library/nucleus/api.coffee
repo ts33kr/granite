@@ -106,12 +106,14 @@ module.exports.Stub = class Stub extends Api
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. If this returns a
     # truthful boolean, the service will NOT call implementation.
+    # Please be sure invoke the super implementation, if override!
     preprocess: (request, response, resource, domain) ->
 
     # A hook that will be called after invoking the API method
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. This method accepts
     # a value that was returned by the implementation as extra param.
+    # Please be sure invoke the super implementation, if override!
     postprocess: (request, response, result, resource, domain) ->
 
     # Delete the contents of the resources at the establushed path. It
