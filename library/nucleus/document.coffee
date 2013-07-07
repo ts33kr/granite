@@ -42,7 +42,7 @@ module.exports.describe = (method, descriptor) ->
     validated = _.isFunction(descriptor)
     missing = "No descriptor function has been given"
     throw new Error(missing) unless validated
-    method.document = new Document(method)
+    method.document = new Document
     descriptor.apply(method.document)
 
 # Traverse all of the services that are registered with the router
