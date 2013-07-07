@@ -24,6 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 _ = require "lodash"
+query = require "querystring"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
@@ -38,11 +39,15 @@ util = require "util"
 # that are in use by the current kernel and the servers. It may
 # be very useful for automatic generation of correct URLs and all
 # other content that requires the specific reference to the host.
-module.exports.withHost = (ssl = no, parts...) ->
-    parts = parts.join "/" if parts
+module.exports.withHost = (ssl = no, parts, params, segment) ->
+    params = query.stringify params if params?
+    parts = parts.join "/" if _.isArray parts
     server = nconf.get("server:port")
     secure = nconf.get("secure:port")
     port = if ssl then secure else server
     hostname = nconf.get("server:hostname")
     hostname = "#{hostname}:#{port}"
-    hostname += "/#{parts}" if parts
+    hostname += "/#{parts}" if parts?
+    hostname += "?#{params}" if params?
+    hostname += "##{segment}" if segment?
+    hostname.toString()

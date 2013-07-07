@@ -76,6 +76,6 @@ module.exports.ApiDoc = class ApiDoc extends api.Stub
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
     document.describe @::GET, ->
-        @example tools.withHost no, "api", "doc"
+        @example tools.withHost no, ["api", "doc"]
         @synopsis "Get all of the APIs in the system"
         @results "An array of objects, each describes services"
