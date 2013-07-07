@@ -47,6 +47,8 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
     @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
+    @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
+    @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"
 
@@ -61,6 +63,8 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
     @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
+    @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
+    @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"
 
@@ -75,6 +79,8 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
     @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
+    @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
+    @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"
 
@@ -89,5 +95,7 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
     @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
+    @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
+    @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"

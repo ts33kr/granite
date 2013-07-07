@@ -102,19 +102,54 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     @bootstrap: -> new Kernel ->
         @setupRoutableServices()
         @setupConnectPipeline()
+        @setupListeningServers()
         @setupHotloadWatcher()
         @broker = new content.Broker
-        server = nconf.get("server")
+        message = "Booted up the kernel instance"
+        logger.info(message.red); this
+
+    # Create and configure the HTTP and HTTPS servers to listen at
+    # the configured addresses and ports. This method reads up the
+    # scoping configuration in order to obtain the data necessary
+    # for instantiating, configuring and launching up the servers.
+    setupListeningServers: ->
+        try @startupHttpsServer() catch error
+            message = "Exception while launching HTTPS server:\r\n%s"
+            logger.warn message.red, error.stack; process.exit -1
+        try @startupHttpServer() catch error
+            message = "Exception while launching HTTP server:\r\n%s"
+            logger.warn message.red, error.stack; process.exit -1
+
+    # Setup and launch either HTTP or HTTPS servers to listen at
+    # the configured addresses and ports. This method reads up the
+    # scoping configuration in order to obtain the data necessary
+    # for instantiating, configuring and launching up the servers.
+    startupHttpsServer: ->
+        options = new Object
         secure = nconf.get("secure")
         hostname = nconf.get("server:hostname")
-        message = "Booted up the kernel instance".red
-        rserver = "Running HTTP server at %s:%s".magenta
+        key = paths.relative process.cwd(), secure.key
+        cert = paths.relative process.cwd(), secure.cert
+        logger.info("Using SSL key at %s".grey, key)
+        logger.info("Using SSL cert at %s".grey, cert)
+        options.key = fs.readFileSync paths.resolve key
+        options.cert = fs.readFileSync paths.resolve cert
         rsecure = "Running HTTPS server at %s:%s".magenta
-        logger.info(rserver, hostname, server.port) if @server
-        logger.info(rsecure, hostname, secure.port) if @secure
-        @secure?.listen(secure, secure.port, hostname)
+        logger.info(rsecure, hostname, secure.port)
+        @secure = https.createServer(options, @connect)
+        @secure?.listen(secure.port, hostname)
+
+    # Setup and launch either HTTP or HTTPS servers to listen at
+    # the configured addresses and ports. This method reads up the
+    # scoping configuration in order to obtain the data necessary
+    # for instantiating, configuring and launching up the servers.
+    startupHttpServer: ->
+        server = nconf.get("server")
+        hostname = nconf.get("server:hostname")
+        rserver = "Running HTTP server at %s:%s".magenta
+        logger.info(rserver, hostname, server.port)
+        @server = http.createServer(@connect)
         @server?.listen(server.port, hostname)
-        logger.info(message); this
 
     # This method sets up the necessary internal toolkits, such as
     # the determined scope and the router, which is then are wired
@@ -149,6 +184,4 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @connect.use plumbs.sender this
         @connect.use plumbs.logger this
         @connect.use m for m in middlewares
-        @server = try http.createServer(@connect)
-        @secure = try https.createServer(@connect)
         @connect.use(@middleware)
