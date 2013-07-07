@@ -41,11 +41,13 @@ util = require "util"
 module.exports.accepts = -> (request, response, next) ->
     response.accepts = (mimes...) ->
         accept = request?.headers?.accept or ""
-        handles = (mime) -> accept.indexOf(mime) >= 0
-        normalize = (mime) -> mime.toLowerCase()
-        normalized = _.map mimes, normalize
-        accept = normalize accept
-        _.find normalized, handles
+        handles = (pattern) -> pattern.test accept
+        patternize = (s) -> new RegExp RegExp.escape s
+        regexps = _.filter mimes, (x) ->_.isRegexp x
+        strings = _.filter mimes, (x) ->_.isString x
+        strings = _.map strings, patternize
+        merged = _.merge regexps, strings
+        _.find merged, handles
     next() unless request.headersSent
 
 # This middleware is really a wrapper around the `Connect` logger
