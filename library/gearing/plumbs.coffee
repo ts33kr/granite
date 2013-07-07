@@ -43,7 +43,9 @@ module.exports.sender = (kernel) ->
         response.send = (content, typed, keepAlive) ->
             @setHeader "Content-Type", typed if typed?
             return @write content.toString() if typed?
-            kernel.broker.negotiate content
+            negotiator = kernel.broker.negotiate
+            negotiator = negotiator.bind kernel.broker
+            negotiator request, response, content
             response.end() unless keepAlive
         next() unless request.headersSent
 
@@ -57,7 +59,7 @@ module.exports.accepts = (kernel) ->
             accept = request?.headers?.accept or ""
             handles = (pattern) -> pattern.test accept
             patternize = (s) -> new RegExp RegExp.escape s
-            regexps = _.filter mimes, (x) ->_.isRegexp x
+            regexps = _.filter mimes, (x) ->_.isRegExp x
             strings = _.filter mimes, (x) ->_.isString x
             strings = _.map strings, patternize
             merged = _.merge regexps, strings
