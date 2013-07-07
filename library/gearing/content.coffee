@@ -40,5 +40,24 @@ util = require "util"
 # using the correct protocol, meaning correct `Content-Type`, etc.
 module.exports.Broker = class Broker extends events.EventEmitter
 
+    # Content negotiate the request/response pair to use the correct
+    # protocol. The protocol is implemented by the associated flusher
+    # that might or might not have been previously associated with
+    # the specified regular expression pattern that matches `Accept`.
+    negotiate: (request, response, content) ->
+        registry = @constructor.registry ?= {}
+        for own pattern, flusher of registry
+            matches = response.accepts pattern
+            return flusher arguments... if matches
+        response.write content.toString()
+
+    # Register the specified content flusher with the broker. The
+    # flusher is associated with the pattern that will be used to
+    # match the request/response pair to be handled by the flusher.
+    # Please refer to the `accepts` middleware for more information.
     @associate: (pattern, flusher) ->
-    negotiate: (content) ->
+        registry = @registry ?= {}
+        stringified = _.isString pattern
+        regexify = (s) -> new RegExp RegExp.escape s
+        pattern = regexify pattern if stringified
+        registry[pattern] = flusher; this

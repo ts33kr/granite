@@ -34,6 +34,19 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+# A middleware that adds a `send` method to the response object.
+# This allows for automatic setting of `Content-Type` headers
+# based on the content that is being sent away. Use this method
+# rather than writing and ending the request in a direct way.
+module.exports.sender = (kernel) ->
+    (request, response, next) ->
+        response.send = (content, typed, keepAlive) ->
+            @setHeader "Content-Type", typed if typed?
+            return @write content.toString() if typed?
+            kernel.broker.negotiate content
+            response.end() unless keepAlive
+        next() unless request.headersSent
+
 # This plumbing add an `accepts` method onto the HTTP resonse object
 # which check if the request/response pair has an HTTP accept header
 # set to any of the values supplied when invoking this method. It is
@@ -65,22 +78,3 @@ module.exports.logger = (kernel) ->
     options = stream: write: writer
     options.format = format
     connect.logger options
-
-# A middleware that adds a `send` method to the response object.
-# This allows for automatic setting of `Content-Type` headers
-# based on the content that is being sent away. Use this method
-# rather than writing and ending the request in a direct way.
-module.exports.sender = (kernel) ->
-    (request, response, next) ->
-        response.send = (content, ending) ->
-            header = "Content-Type";
-            jsoned = "application/json"
-            object = _.isObject content
-            doesHtml = response.accepts "html"
-            spaces = if doesHtml then 4 else null
-            string = (x) -> JSON.stringify x, null, spaces
-            @setHeader header, jsoned if object
-            @write string content if object
-            @write content unless object
-            @end() unless ending
-        next() unless request.headersSent

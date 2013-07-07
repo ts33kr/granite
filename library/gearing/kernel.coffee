@@ -41,6 +41,7 @@ bundles = require "./bundles"
 routing = require "./routing"
 service = require "./service"
 scoping = require "./scoping"
+content = require "./content"
 plumbs = require "./plumbs"
 watch = require "./watch"
 
@@ -102,6 +103,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @setupRoutableServices()
         @setupConnectPipeline()
         @setupHotloadWatcher()
+        @broker = new content.Broker
         server = nconf.get("server")
         secure = nconf.get("secure")
         hostname = nconf.get("server:hostname")
