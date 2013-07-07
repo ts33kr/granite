@@ -41,23 +41,40 @@ util = require "util"
 module.exports.Broker = class Broker extends events.EventEmitter
 
     # Content negotiate the request/response pair to use the correct
-    # protocol. The protocol is implemented by the associated flusher
-    # that might or might not have been previously associated with
-    # the specified regular expression pattern that matches `Accept`.
+    # protocol. The protocol is implemented by the content negotiator
+    # that might or might not have been previously add to the broker.
+    # The negotiator returns a function if it can handle the pair.
     negotiate: (request, response, content) ->
-        registry = @constructor.registry ?= {}
-        for own pattern, flusher of registry
-            matches = response.accepts pattern
-            return flusher arguments... if matches
+        registry = @constructor.registry ?= []
+        for own index, negotiator of registry
+            args = [request, response, content]
+            flusher = negotiator arguments...
+            handles = _.isFunction flusher
+            return flusher args... if handles
         response.write content.toString()
 
-    # Register the specified content flusher with the broker. The
-    # flusher is associated with the pattern that will be used to
-    # match the request/response pair to be handled by the flusher.
-    # Please refer to the `accepts` middleware for more information.
-    @associate: (pattern, flusher) ->
-        registry = @registry ?= {}
-        stringified = _.isString pattern
-        regexify = (s) -> new RegExp RegExp.escape s
-        pattern = regexify pattern if stringified
-        registry[pattern] = flusher; this
+    # Register the specified content negotiator with the broker. The
+    # The negotiator returns a function if it can handle the request
+    # and response pair. If specific negotiator cannot handle the
+    # pair, it should return anything other than a function object.
+    @associate: (negotiator) ->
+        isValid = _.isFunction negotiator
+        invalid = "Checker is not a valid method"
+        throw new Error(invalid) unless isValid
+        (@registry ?= []).unshift negotiator
+
+    # Associate the JSON negotiator with the broker. This method
+    # checks if the content is either `Object` or `Array`, and if
+    # it is then it sets the appropriate `Content-Type` header and
+    # writes out the properly encoded JSON response to the client.
+    @associate (request, response, content) ->
+        isArray = _.isArray content
+        isObject = _.isObject content
+        return unless isArray or isObject
+        (request, response, content) ->
+            jsonType = "application/json"
+            doesHtml = response.accepts /html/
+            spaces = if doesHtml then 4 else null
+            response.setHeader "Content-Type", jsonType
+            jsoned = (x) -> JSON.stringify x, null, spaces
+            response.write jsoned content
