@@ -34,6 +34,22 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+# A middleware that adds a `redirect` method to the response object.
+# This redirects to the supplied URL with the 302 status code and
+# the corresponding reason phrase. This method also sets some of the
+# necessary headers, such as nullary `Content-Length` and some other.
+module.exports.redirect = (kernel) ->
+    (request, response, next) ->
+        response.redirect = (url, status) ->
+            relocated = 302
+            codes = http.STATUS_CODES
+            message = codes[relocated]
+            response.setHeader "Location", url
+            response.setHeader "Content-Length", 0
+            response.writeHead relocated, message
+            response.end undefined
+        next() unless request.headersSent
+
 # A middleware that adds a `send` method to the response object.
 # This allows for automatic setting of `Content-Type` headers
 # based on the content that is being sent away. Use this method
