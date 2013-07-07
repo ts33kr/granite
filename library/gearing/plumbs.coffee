@@ -80,3 +80,14 @@ module.exports.logger = (kernel) ->
     options = stream: write: writer
     options.format = format
     connect.logger options
+
+# This middleware is really a wrapper around the `Connect` session
+# middleware. The reason it wraps it is to automatically configure
+# the session storage using the kernel and scoping configuration
+# data. It is automatically connected by the kernel instance.
+module.exports.session = (kernel) ->
+    options = nconf.get("session")
+    defined = _.isObject options
+    noSession = "No session settings in scope"
+    throw new Error(noSession) unless defined
+    connect.session options
