@@ -75,7 +75,10 @@ module.exports.Api = class Api extends service.Service
         missing = "Missing implementation for #{method} method"
         throw new Error(missing) unless method of this
         variables = [tokens.resource, tokens.domain]
-        this[method](request, response, variables...); this
+        flags = @preprocess(request, response, variables...)
+        return if response.headersSent or flags is yes
+        result = @[method](request, response, variables...)
+        @postprocess(request, response, result, variables)
 
     # This method should generally be used to obtain HTTP methods that
     # are allowed on this resources. This is not the only possible way
@@ -98,6 +101,18 @@ module.exports.Api = class Api extends service.Service
 # will throw the 405, method not allowed HTTP error status code.
 # The methods have implementations, but marked as unsupported.
 module.exports.Stub = class Stub extends Api
+
+    # A hook that will be called prior to invoking the API method
+    # implementation. Please refer to this prototype signature for
+    # information on the parameters it accepts. If this returns a
+    # truthful boolean, the service will NOT call implementation.
+    preprocess: (request, response, resource, domain) ->
+
+    # A hook that will be called after invoking the API method
+    # implementation. Please refer to this prototype signature for
+    # information on the parameters it accepts. This method accepts
+    # a value that was returned by the implementation as extra param.
+    postprocess: (request, response, result, resource, domain) ->
 
     # Delete the contents of the resources at the establushed path. It
     # generally should destroy the contents of the resource for good.
