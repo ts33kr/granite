@@ -54,12 +54,11 @@ module.exports.Api = class Api extends service.Service
         methodNotAllowed = 405
         codes = http.STATUS_CODES
         message = codes[methodNotAllowed]
-        accept = request?.headers?.accept or ""
-        handles = (mime) -> accept.indexOf(mime) >= 0
+        doesJson = response.accepts "json"
         response.writeHead(methodNotAllowed, message)
         descriptor = error: message, code: methodNotAllowed
         @emit("unsupported", request, response, next)
-        return response.send descriptor if handles("json")
+        return response.send descriptor if doesJson
         response.send message; this
 
     # Process the already macted HTTP request according to the REST
@@ -84,13 +83,12 @@ module.exports.Api = class Api extends service.Service
     # different interpretations other than the one in the HTTP spec.
     OPTIONS: (request, response) ->
         knowns = @constructor.SUPPORTED
-        accept = request?.headers?.accept or ""
-        handles = (mime) -> accept.indexOf(mime) >= 0
+        doesJson = response.accepts "json"
         pathname = try url.parse(request.url).pathname
         checkIfSupported = (method) => @[method] isnt @unsupported
         supported = _.filter(knowns, checkIfSupported)
         descriptor = methods: supported, resource: pathname
-        return respons.send descriptor if handles("json")
+        return respons.send descriptor if doesJson
         response.send supported.join ", "; this
 
 # An abstract base class with all of the HTTP methods, defined in
