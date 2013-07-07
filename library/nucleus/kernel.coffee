@@ -178,6 +178,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @connect.use connect.favicon()
         @connect.use connect.bodyParser()
         @connect.use connect.cookieParser()
+        @connect.use plumbs.params this
         @connect.use plumbs.redirect this
         @connect.use plumbs.session this
         @connect.use plumbs.accepts this

@@ -34,6 +34,18 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+# This middleware is a little handy utility that merges the set
+# of parameters, specifically the ones transferred via query or
+# via body mechanism into one object that can be used to easily
+# access the parameters without thinking about transfer mechanism.
+module.exports.params = (kernel) ->
+    (request, response, next) ->
+        body = request.body or {}
+        query = request.query or {}
+        params = _.extend query, body
+        response.params = params
+        next() unless request.headersSent
+
 # A middleware that adds a `redirect` method to the response object.
 # This redirects to the supplied URL with the 302 status code and
 # the corresponding reason phrase. This method also sets some of the
