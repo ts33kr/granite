@@ -59,8 +59,8 @@ module.exports.Api = class Api extends service.Service
         response.writeHead(methodNotAllowed, message)
         descriptor = error: message, code: methodNotAllowed
         @emit("unsupported", request, response, next)
-        return response.end(descriptor) if handles("json")
-        response.end(message); this
+        return response.send descriptor if handles("json")
+        response.send message; this
 
     # Process the already macted HTTP request according to the REST
     # specification. That is, see if the request method conforms to
@@ -90,8 +90,8 @@ module.exports.Api = class Api extends service.Service
         checkIfSupported = (method) => @[method] isnt @unsupported
         supported = _.filter(knowns, checkIfSupported)
         descriptor = methods: supported, resource: pathname
-        return respons.end(descriptor) if handles("json")
-        response.end(supported.join(", ")); this
+        return respons.send descriptor if handles("json")
+        response.send supported.join ", "; this
 
 # An abstract base class with all of the HTTP methods, defined in
 # the HTTP specification and covered by the base implementation
