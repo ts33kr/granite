@@ -1,8 +1,26 @@
 {
-    "private": true,
     "name": "flames",
     "version": "0.0.1",
     "codename": "cripple",
+    "main": "index.coffee",
+
+    "description": "The unconventional web development framework",
+    "keywords": ["web", "framework", "http", "rest", "json"],
+    "bugs": "http://github.com/ts33kr/flames/issues",
+    "homepage": "http://ts33kr.github.io/flames/",
+    "license": "Simplified BSD-3",
+
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ts33kr/flames.git"
+    },
+
+    "author": {
+        "name": "Alex Cherniuk",
+        "email": "ts33kr@gmail.com",
+        "url": "http://ua.linkedin.com/in/ts33kr"
+    },
+
     "dependencies": {
         "coffee-script": "1.6.x",
         "socket.io": "0.9.x",
