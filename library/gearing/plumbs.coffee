@@ -34,6 +34,20 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+# This plumbing add an `accepts` method onto the HTTP resonse object
+# which check if the request/response pair has an HTTP accept header
+# set to any of the values supplied when invoking this method. It is
+# very useful to use this method to negiotate the content type field.
+module.exports.accepts = -> (request, response, next) ->
+    response.accepts = (mimes...) ->
+        accept = request?.headers?.accept or ""
+        handles = (mime) -> accept.indexOf(mime) >= 0
+        normalize = (mime) -> mime.toLowerCase()
+        normalized = _.map mimes, normalize
+        accept = normalize accept
+        _.find normalized, handles
+    next() unless request.headersSent
+
 # This middleware is really a wrapper around the `Connect` logger
 # that pipes all the request logs to the `Winston` instances that
 # is used throughout the framework to provide logging capabilities.
@@ -58,9 +72,8 @@ module.exports.sender = -> (request, response, next) ->
         header = "Content-Type";
         jsoned = "application/json"
         object = _.isObject content
-        accept = request?.headers?.accept or ""
-        handles = (mime) -> accept.indexOf(mime) >= 0
-        spaces = if handles("html") then 4 else null
+        doesHtml = response.accepts "html"
+        spaces = if doesHtml then 4 else null
         string = (x) -> JSON.stringify x, null, spaces
         @setHeader header, jsoned if object
         @write string content if object

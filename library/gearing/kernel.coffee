@@ -141,6 +141,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @connect.use connect.favicon()
         @connect.use connect.bodyParser()
         @connect.use connect.cookieParser()
+        @connect.use plumbs.accepts()
         @connect.use plumbs.sender()
         @connect.use plumbs.logger()
         @connect.use m for m in middlewares
