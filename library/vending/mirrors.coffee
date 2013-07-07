@@ -59,7 +59,7 @@ module.exports.ApiDoc = class ApiDoc extends api.Stub
         collected = document.collect @kernel
         response.send _.map collected, (record) ->
             constructor = record.service.constructor
-            title: constructor.nick or constructor.name
+            identify: constructor.nick or constructor.name
             pathname: _.head(constructor.resources)?.unescape()
             patterns: _.map constructor.resources, "source"
             methods: _.map record.methods, (doc, method) ->
