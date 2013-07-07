@@ -28,6 +28,7 @@ wrench = require "wrench"
 colors = require "colors"
 logger = require "winston"
 paths = require "path"
+fs = require "fs"
 
 # This method is the base method for very important functionality.
 # It scans the supplied directory, find all the modules there and
@@ -40,6 +41,7 @@ collectModules = (directory) ->
     isSupported = (name) -> ext(name) is c
     directory = "#{__dirname}/#{directory}"
     ingest = (x) -> require "#{directory}/#{x}"
+    return {} unless fs.existsSync directory
     scanSync = wrench.readdirSyncRecursive
     scanned = scanSync directory.toString()
     supported = _.filter scanned, isSupported
