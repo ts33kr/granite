@@ -54,7 +54,7 @@ module.exports.Api = class Api extends service.Service
         methodNotAllowed = 405
         codes = http.STATUS_CODES
         message = codes[methodNotAllowed]
-        doesJson = response.accepts "json"
+        doesJson = response.accepts /json/
         response.writeHead(methodNotAllowed, message)
         descriptor = error: message, code: methodNotAllowed
         @emit("unsupported", request, response, next)
@@ -83,7 +83,7 @@ module.exports.Api = class Api extends service.Service
     # different interpretations other than the one in the HTTP spec.
     OPTIONS: (request, response) ->
         knowns = @constructor.SUPPORTED
-        doesJson = response.accepts "json"
+        doesJson = response.accepts /json/
         pathname = try url.parse(request.url).pathname
         checkIfSupported = (method) => @[method] isnt @unsupported
         supported = _.filter(knowns, checkIfSupported)
