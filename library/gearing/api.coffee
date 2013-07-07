@@ -89,7 +89,8 @@ module.exports.Api = class Api extends service.Service
         supported = _.filter(knowns, checkIfSupported)
         descriptor = methods: supported, resource: pathname
         return respons.send descriptor if doesJson
-        response.send supported.join ", "; this
+        formatted = supported.join(", ") + "\r\n"
+        response.send formatted; this
 
 # An abstract base class with all of the HTTP methods, defined in
 # the HTTP specification and covered by the base implementation
