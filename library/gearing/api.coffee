@@ -88,7 +88,7 @@ module.exports.Api = class Api extends service.Service
         checkIfSupported = (method) => @[method] isnt @unsupported
         supported = _.filter(knowns, checkIfSupported)
         descriptor = methods: supported, resource: pathname
-        return respons.send descriptor if doesJson
+        return response.send descriptor if doesJson
         formatted = supported.join(", ") + "\r\n"
         response.send formatted; this
 
