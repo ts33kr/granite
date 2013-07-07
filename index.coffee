@@ -54,5 +54,5 @@ collectModules = (directory) ->
 # information on how this is being done. See the modules in the
 # framework library to see the structure of the built hieararchy.
 module.exports.nucleus = collectModules "library/nucleus"
-module.exports.visuals = collectModules "library/visuals"
+module.exports.visualize = collectModules "library/visualize"
 module.exports.widgets = collectModules "library/widgets"
