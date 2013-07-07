@@ -43,7 +43,7 @@ service = require "../nucleus/service"
 # providing the boilerplate for ensuring that the connection is
 # going through the HTTPS channel. If a request is not going via
 # SSL transport then redirect the current request to such one.
-module.exports.StubWithSsl = class StubWithSsl extends api.Stub
+module.exports.SslStub = class SslStub extends api.Stub
 
     # A hook that will be called prior to invoking the API method
     # implementation. Please refer to this prototype signature for
