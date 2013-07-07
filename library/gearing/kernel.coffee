@@ -141,9 +141,9 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @connect.use connect.favicon()
         @connect.use connect.bodyParser()
         @connect.use connect.cookieParser()
-        @connect.use plumbs.accepts()
-        @connect.use plumbs.sender()
-        @connect.use plumbs.logger()
+        @connect.use plumbs.accepts this
+        @connect.use plumbs.sender this
+        @connect.use plumbs.logger this
         @connect.use m for m in middlewares
         @server = try http.createServer(@connect)
         @secure = try https.createServer(@connect)

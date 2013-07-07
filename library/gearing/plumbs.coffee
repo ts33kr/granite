@@ -38,23 +38,24 @@ util = require "util"
 # which check if the request/response pair has an HTTP accept header
 # set to any of the values supplied when invoking this method. It is
 # very useful to use this method to negiotate the content type field.
-module.exports.accepts = -> (request, response, next) ->
-    response.accepts = (mimes...) ->
-        accept = request?.headers?.accept or ""
-        handles = (pattern) -> pattern.test accept
-        patternize = (s) -> new RegExp RegExp.escape s
-        regexps = _.filter mimes, (x) ->_.isRegexp x
-        strings = _.filter mimes, (x) ->_.isString x
-        strings = _.map strings, patternize
-        merged = _.merge regexps, strings
-        _.find merged, handles
-    next() unless request.headersSent
+module.exports.accepts = (kernel) ->
+    (request, response, next) ->
+        response.accepts = (mimes...) ->
+            accept = request?.headers?.accept or ""
+            handles = (pattern) -> pattern.test accept
+            patternize = (s) -> new RegExp RegExp.escape s
+            regexps = _.filter mimes, (x) ->_.isRegexp x
+            strings = _.filter mimes, (x) ->_.isString x
+            strings = _.map strings, patternize
+            merged = _.merge regexps, strings
+            _.find merged, handles
+        next() unless request.headersSent
 
 # This middleware is really a wrapper around the `Connect` logger
 # that pipes all the request logs to the `Winston` instances that
 # is used throughout the framework to provide logging capabilities.
 # The format is takes from the `NConf` config or the default `dev`.
-module.exports.logger = ->
+module.exports.logger = (kernel) ->
     levelKey = "log:request:level"
     formatKey = "log:request:format"
     format = nconf.get(formatKey) or "dev"
@@ -69,16 +70,17 @@ module.exports.logger = ->
 # This allows for automatic setting of `Content-Type` headers
 # based on the content that is being sent away. Use this method
 # rather than writing and ending the request in a direct way.
-module.exports.sender = -> (request, response, next) ->
-    response.send = (content, ending) ->
-        header = "Content-Type";
-        jsoned = "application/json"
-        object = _.isObject content
-        doesHtml = response.accepts "html"
-        spaces = if doesHtml then 4 else null
-        string = (x) -> JSON.stringify x, null, spaces
-        @setHeader header, jsoned if object
-        @write string content if object
-        @write content unless object
-        @end() unless ending
-    next() unless request.headersSent
+module.exports.sender = (kernel) ->
+    (request, response, next) ->
+        response.send = (content, ending) ->
+            header = "Content-Type";
+            jsoned = "application/json"
+            object = _.isObject content
+            doesHtml = response.accepts "html"
+            spaces = if doesHtml then 4 else null
+            string = (x) -> JSON.stringify x, null, spaces
+            @setHeader header, jsoned if object
+            @write string content if object
+            @write content unless object
+            @end() unless ending
+        next() unless request.headersSent
