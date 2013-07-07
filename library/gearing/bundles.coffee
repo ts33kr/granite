@@ -45,7 +45,7 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @defaults = server: {hostname: "localhost", port: 80}
     @defaults.secure = port: 443, key: "key.pem", cert: "cert.pem"
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
-    @defaults.watch = dirs: ["library", "modules"], force: yes
+    @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
     @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"
@@ -59,7 +59,7 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @defaults = server: {hostname: "localhost", port: 80}
     @defaults.secure = port: 443, key: "key.pem", cert: "cert.pem"
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
-    @defaults.watch = dirs: ["library", "modules"], force: yes
+    @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
     @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"
@@ -73,7 +73,7 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults = server: {hostname: "localhost", port: 8081}
     @defaults.secure = port: 1443, key: "key.pem", cert: "cert.pem"
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
-    @defaults.watch = dirs: ["library", "modules"], force: yes
+    @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
     @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"
@@ -87,7 +87,7 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults = server: {hostname: "localhost", port: 8081}
     @defaults.secure = port: 1443, key: "key.pem", cert: "cert.pem"
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
-    @defaults.watch = dirs: ["library", "modules"], force: yes
+    @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
     @pushToRegistry(yes, @tag.toUpperCase())
     @directory = "config"
