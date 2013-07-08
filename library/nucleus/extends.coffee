@@ -47,5 +47,5 @@ RegExp.escape = (string) ->
 # characters so that it cannot be used inside of the regular expression
 # pattern. The implementation was borrowed from StackOverflow thread.
 RegExp::unescape = ->
-    replace = @source.replace /\\\//g, "/"
-    replace.replace /[\$\^]/g, ""
+    string = @source.replace /\\\//g, "/"
+    string.replace /[\$\^]/g, ""
