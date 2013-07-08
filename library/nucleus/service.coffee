@@ -90,11 +90,12 @@ module.exports.Service = class Service extends events.EventEmitter
     # of the specified scopes, it will not be added again. If scopes
     # are not specified, the service will be published everywhere.
     @publish: (scopes...) ->
+        inspected = @nick or @name
         registry = scoping.Scope.REGISTRY or {}
         scopes = undefined if _.isEqual scopes, [undefined]
         exists = (scope) => this in (scope.services or [])
         p = (scope) => (scope.services ?= []).push this
-        n = (scope) => logger.debug(notification, @name, scope.tag)
+        n = (scope) => logger.debug(notification, inspected, scope.tag)
         notification = "Publishing %s service to %s scope".grey
         scopes = _.values(registry) unless scopes?.length > 0
         (p(s); n(s)) for own i, s of scopes when not exists(s)
