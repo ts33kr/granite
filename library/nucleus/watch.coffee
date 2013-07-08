@@ -126,6 +126,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
     reviewServices: (resolved) ->
         cached = require.cache[resolved]
         services = @collectServices cached
+        notAbstract = (s) -> s.ABSTRACT isnt s
         registry = @kernel.router?.registry or []
         originate = (s) -> s.constructor.origin?.id
         predicate = (s) -> originate(s) is resolved
@@ -135,7 +136,8 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         register = @kernel.router.registerRoutable
         register = register.bind @kernel.router
         spawn = (s) => register new s @kernel
-        distincted = _.unique services
+        concrete = _.filter services, notAbstract
+        distincted = _.unique concrete
         spawn s for s in distincted
         @attemptForceHotswap cached
 

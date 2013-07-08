@@ -40,6 +40,12 @@ service = require "./service"
 # It supports strictly methods defined in the HTTP specification.
 module.exports.Api = class Api extends service.Service
 
+    # This is a marker that indicates to some internal substsems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete service implementation. It
+    # mainly is used by the `Watcher` to distinguish the abstracts.
+    @ABSTRACT = this
+
     # An array of HTTP methods (also called verbs) supported by the
     # this abstract base class. The array of methods is strictly
     # limited by the HTTP specification by default. You can though
@@ -101,6 +107,12 @@ module.exports.Api = class Api extends service.Service
 # will throw the 405, method not allowed HTTP error status code.
 # The methods have implementations, but marked as unsupported.
 module.exports.Stub = class Stub extends Api
+
+    # This is a marker that indicates to some internal substsems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete service implementation. It
+    # mainly is used by the `Watcher` to distinguish the abstracts.
+    @ABSTRACT = this
 
     # A hook that will be called prior to invoking the API method
     # implementation. Please refer to this prototype signature for

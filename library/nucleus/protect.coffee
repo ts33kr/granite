@@ -45,6 +45,12 @@ service = require "../nucleus/service"
 # SSL transport then redirect the current request to such one.
 module.exports.SslStub = class SslStub extends api.Stub
 
+    # This is a marker that indicates to some internal substsems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete service implementation. It
+    # mainly is used by the `Watcher` to distinguish the abstracts.
+    @ABSTRACT = this
+
     # A hook that will be called prior to invoking the API method
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. If this returns a

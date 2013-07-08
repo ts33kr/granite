@@ -41,6 +41,12 @@ scoping = require "./scoping"
 # an internal base class, you generally should not use it directly.
 module.exports.Service = class Service extends events.EventEmitter
 
+    # This is a marker that indicates to some internal substsems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete service implementation. It
+    # mainly is used by the `Watcher` to distinguish the abstracts.
+    @ABSTRACT = this
+
     # Here follows a set of definitions that predefine the usual
     # suspects in establishing the matching patterns. Basically,
     # a number of convenient shorthands for wildcard patterns.
