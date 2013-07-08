@@ -31,6 +31,7 @@ util = require "util"
 url = require "url"
 
 _ = require "lodash"
+extendz = require "./extends"
 routing = require "./routing"
 scoping = require "./scoping"
 
@@ -45,7 +46,7 @@ module.exports.Service = class Service extends events.EventEmitter
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete service implementation. It
     # mainly is used by the `Watcher` to distinguish the abstracts.
-    @ABSTRACT = this
+    @abstract yes
 
     # Here follows a set of definitions that predefine the usual
     # suspects in establishing the matching patterns. Basically,

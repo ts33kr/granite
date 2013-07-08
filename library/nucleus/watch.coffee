@@ -37,6 +37,7 @@ util = require "util"
 fs = require "fs"
 
 _ = require "lodash"
+extendz = require "./extends"
 routing = require "./routing"
 service = require "./service"
 augment = require "./augment"
@@ -126,7 +127,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
     reviewServices: (resolved) ->
         cached = require.cache[resolved]
         services = @collectServices cached
-        notAbstract = (s) -> s.ABSTRACT isnt s
+        notAbstract = (s) -> not s.abstract()
         registry = @kernel.router?.registry or []
         originate = (s) -> s.constructor.origin?.id
         predicate = (s) -> originate(s) is resolved

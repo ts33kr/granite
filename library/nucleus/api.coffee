@@ -30,6 +30,7 @@ colors = require "colors"
 logger = require "winston"
 
 _ = require "lodash"
+extendz = require "./extends"
 routing = require "./routing"
 service = require "./service"
 
@@ -44,7 +45,7 @@ module.exports.Api = class Api extends service.Service
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete service implementation. It
     # mainly is used by the `Watcher` to distinguish the abstracts.
-    @ABSTRACT = this
+    @abstract yes
 
     # An array of HTTP methods (also called verbs) supported by the
     # this abstract base class. The array of methods is strictly

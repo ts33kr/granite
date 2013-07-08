@@ -23,6 +23,17 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+# A universal method to both check and set the indicator of whether
+# an object is an abstract class or not. This is very useful for
+# implementing proper architectural abstractions and concretizations.
+# Use this method rather than directly setting and check for markers.
+Object.defineProperty Object::, "abstract",
+    enumerable: no, value: (boolean) ->
+        isAbstract = @$abstract is this
+        return isAbstract unless boolean?
+        return @$abstract = this if boolean
+        delete @$abstract; @$abstract is @
+
 # Extend the native RegExp object to implement method for escaping
 # a supplied string. Escaping here means substituting all the RE
 # characters so that it can be used inside of the regular expression

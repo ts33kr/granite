@@ -38,6 +38,7 @@ _ = require "lodash"
 api = require "../nucleus/api"
 tools = require "../nucleus/tools"
 service = require "../nucleus/service"
+extendz = require "./extends"
 
 # This is an abstract base class API stub service. Its purpose is
 # providing the boilerplate for ensuring that the connection is
@@ -49,7 +50,7 @@ module.exports.SslStub = class SslStub extends api.Stub
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete service implementation. It
     # mainly is used by the `Watcher` to distinguish the abstracts.
-    @ABSTRACT = this
+    @abstract yes
 
     # A hook that will be called prior to invoking the API method
     # implementation. Please refer to this prototype signature for
