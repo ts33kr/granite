@@ -39,15 +39,6 @@ service = require "./service"
 scoping = require "./scoping"
 api = require "./api"
 
-# Install the augmenten driven DSL into all of the specified
-# namespace. Use this method, rather than directly invoking
-# the corresponding class method of the Augment class object.
-# Typical use is to invoke it on `this` object inside module.
-module.exports = (namespaces...) ->
-    install = Augment.installAugmentMethods
-    bounded = install.bind(Augment)
-    bounded(n) for n in namespaces
-
 # This class is the internals and the working facade of the DSL for
 # shorthand and convenient definition of new REST services. Rather
 # than using full blown, class driver creating of services, you are
@@ -60,21 +51,22 @@ module.exports.Augment = class Augment extends events.EventEmitter
     # The service is then gets registered and published at places
     # where it needs to be wired in. Please do not use it directly.
     constructor: (@resource) ->
-        @service = class extends api.Stub
+        @service = class extends @foundation
         @emit("construct", @resource, @service)
-        @service.publish api.Stub.EVERYWHERE
+        @service.publish @foundation.EVERYWHERE
         @service.nick = @resource.unescape()
-        @service.domain api.Stub.ANY
+        @service.domain @foundation.ANY
         @service.resource @resource
 
     # The very important routine, that creates a set of proxy methods
     # that, when invoked, will do the necessary magic to replace the
     # corresponding method (HTTP verb) with the supplied implementation.
     # It uses the Api to query for a set of support HTTP methods here.
-    @installAugmentMethods: (namespace) ->
-        supported = api.Api.SUPPORTED
+    @installStubMethods: (namespace, foundation) ->
+        @foundation = foundation or api.Stub
+        supported = @foundation.SUPPORTED
         _.forEach supported, (method) -> do (method) ->
-            msg = "Installing augment proxies for %s"
+            msg = "Installing stub method proxy for %s"
             logger.debug(msg.grey, method.toUpperCase())
             namespace[method] = (resource, implementation) =>
                 augment = Augment.augmentForResource resource
@@ -83,16 +75,29 @@ module.exports.Augment = class Augment extends events.EventEmitter
                 implementation.augment = augment
                 implementation
 
+    # The very important routine that creates a set of proxy methods
+    # that transparently call the static method of the supplied
+    # foundation. This is necessary to provide augmented syntax for
+    # the complex services who provide static method for definition.
+    @installServiceMethods: (namespace, foundation) ->
+        @foundation = foundation or api.Stub
+        _.foreach _.methods @foundation, (method) -> do (method) ->
+            msg = "Installing service method proxy for %s"
+            logger.debug(msg.grey, method.toUpperCase())
+            namespace[method] = (resource, parameters...) =>
+                augment = Augment.augmentForResource resource
+                augment.service[method](parameters...)
+
     # Obtain the augment object for the specified resource. If such
     # an object does not exist, it will be automatically created and
     # put in place so that it can later be found. The resource can be
     # either a simple string or a regular expression pattern object.
     @augmentForResource: (resource) ->
         storage = @storage ?= {}
-        inspected = util.inspect(resource)
-        regexify = (s) -> new RegExp(RegExp.escape(s))
-        resource = regexify(resource)  if _.isString(resource)
+        inspected = util.inspect resource
+        regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
+        resource = regexify resource  if _.isString resource
         notRegexp = "The #{inspected} is not a valid regular expression"
-        throw new Error(notRegexp) unless _.isRegExp(resource)
+        throw new Error(notRegexp) unless _.isRegExp resource
         return augment if augment = storage[resource.source]
-        storage[resource.source] = new Augment(resource)
+        storage[resource.source] = new Augment resource
