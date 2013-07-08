@@ -70,6 +70,7 @@ module.exports.Augment = class Augment extends events.EventEmitter
             logger.debug(msg.grey, method.toUpperCase())
             namespace[method] = (resource, implementation) =>
                 forResource = Augment.augmentForResource
+                forResource = forResource.bind Augment
                 augment = forResource resource, foundation
                 augment.service::[method] = implementation
                 implementation.service = augment.service
@@ -87,7 +88,9 @@ module.exports.Augment = class Augment extends events.EventEmitter
             msg = "Installing service method proxy for %s"
             logger.debug(msg.grey, method.toUpperCase())
             namespace[method] = (resource, parameters...) =>
-                augment = Augment.augmentForResource resource
+                forResource = Augment.augmentForResource
+                forResource = forResource.bind Augment
+                augment = forResource resource, foundation
                 method = augment.service[method]
                 bound = method.bind augment.service
                 bound parameters...
