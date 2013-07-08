@@ -50,11 +50,11 @@ module.exports.Augment = class Augment extends events.EventEmitter
     # and then created the respective service, per augment object.
     # The service is then gets registered and published at places
     # where it needs to be wired in. Please do not use it directly.
-    constructor: (@resource) ->
+    constructor: (@resource, @foundation) ->
         @service = class extends @foundation
+        @service.nick = @resource.unescape()
         @emit("construct", @resource, @service)
         @service.publish @foundation.EVERYWHERE
-        @service.nick = @resource.unescape()
         @service.domain @foundation.ANY
         @service.resource @resource
 
@@ -63,13 +63,14 @@ module.exports.Augment = class Augment extends events.EventEmitter
     # corresponding method (HTTP verb) with the supplied implementation.
     # It uses the Api to query for a set of support HTTP methods here.
     @installStubMethods: (namespace, foundation) ->
-        @foundation = foundation or api.Stub
-        supported = @foundation.SUPPORTED
+        foundation = foundation or api.Stub
+        supported = foundation.SUPPORTED
         _.forEach supported, (method) -> do (method) ->
             msg = "Installing stub method proxy for %s"
             logger.debug(msg.grey, method.toUpperCase())
             namespace[method] = (resource, implementation) =>
-                augment = Augment.augmentForResource resource
+                forResource = Augment.augmentForResource
+                augment = forResource resource, foundation
                 augment.service::[method] = implementation
                 implementation.service = augment.service
                 implementation.augment = augment
@@ -80,24 +81,28 @@ module.exports.Augment = class Augment extends events.EventEmitter
     # foundation. This is necessary to provide augmented syntax for
     # the complex services who provide static method for definition.
     @installServiceMethods: (namespace, foundation) ->
-        @foundation = foundation or api.Stub
-        _.foreach _.methods @foundation, (method) -> do (method) ->
+        foundation = foundation or api.Stub
+        methods = _.methods foundation
+        _.forEach methods, (method) -> do (method) ->
             msg = "Installing service method proxy for %s"
             logger.debug(msg.grey, method.toUpperCase())
             namespace[method] = (resource, parameters...) =>
                 augment = Augment.augmentForResource resource
-                augment.service[method](parameters...)
+                method = augment.service[method]
+                bound = method.bind augment.service
+                bound parameters...
 
     # Obtain the augment object for the specified resource. If such
     # an object does not exist, it will be automatically created and
     # put in place so that it can later be found. The resource can be
     # either a simple string or a regular expression pattern object.
-    @augmentForResource: (resource) ->
+    @augmentForResource: (resource, foundation) ->
         storage = @storage ?= {}
         inspected = util.inspect resource
+        foundation = foundation or api.Stub
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
         resource = regexify resource  if _.isString resource
         notRegexp = "The #{inspected} is not a valid regular expression"
         throw new Error(notRegexp) unless _.isRegExp resource
         return augment if augment = storage[resource.source]
-        storage[resource.source] = new Augment resource
+        storage[resource.source] = new Augment resource, foundation
