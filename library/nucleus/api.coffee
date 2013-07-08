@@ -44,7 +44,7 @@ module.exports.Api = class Api extends service.Service
     # this abstract base class. The array of methods is strictly
     # limited by the HTTP specification by default. You can though
     # override it and provie support for more methods, up to you.
-    @SUPPORTED = ["GET", "PUT", "POST", "DELETE", "OPTIONS"]
+    @SUPPORTED = ["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"]
 
     # This method is intended for indicating to a client that the
     # method that has been used to make the request is not supported
@@ -115,6 +115,12 @@ module.exports.Stub = class Stub extends Api
     # a value that was returned by the implementation as extra param.
     # Please be sure invoke the super implementation, if override!
     postprocess: (request, response, result, resource, domain) ->
+
+    # Alter the contents of the resources at the established path. It
+    # usually means partial replacing contents with the new contents.
+    # This HTTP method nicely maps to UPDATE method of the storages.
+    # Use this method to partially replace the contents of resources.
+    PATCH: @::unsupported
 
     # Delete the contents of the resources at the establushed path. It
     # generally should destroy the contents of the resource for good.
