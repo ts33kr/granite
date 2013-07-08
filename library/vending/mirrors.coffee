@@ -64,7 +64,7 @@ module.exports.ApiDoc = class ApiDoc extends api.Stub
             pathname: _.head(constructor.resources)?.unescape()
             patterns: _.map constructor.resources, "source"
             methods: _.map record.methods, (doc, method) ->
-                exmaple: doc.example()
+                example: doc.example()
                 argument: doc.argument()
                 synopsis: doc.synopsis()
                 results: doc.results()
