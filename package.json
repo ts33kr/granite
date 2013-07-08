@@ -21,6 +21,11 @@
         "url": "http://ua.linkedin.com/in/ts33kr"
     },
 
+    "licences": [{
+        "type": "Simplified BSD-3",
+        "url": "https://github.com/ts33kr/flames/blob/master/LICENSE.md"
+    }],
+
     "dependencies": {
         "coffee-script": "1.6.x",
         "socket.io": "0.9.x",
