@@ -59,12 +59,12 @@ module.exports.Service = class Service extends events.EventEmitter
     # Supports implicit extraction of captured groups in the match.
     # Use this to configure what resources should match with service.
     @resource: (pattern) ->
-        inspected = @nick or @name
+        identify = @nick or @name
         duplicate = pattern in (@resources or [])
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
         pattern = regexify(pattern)  if _.isString(pattern)
         inspected = pattern.unescape()?.underline or pattern.source
-        associate = "Associating #{inspected} resource with #{inspected}"
+        associate = "Associating #{inspected} resource with #{identify}"
         notRegexp = "The #{inspected} is not a valid regular expression"
         throw new Error(notRegexp) unless _.isRegExp(pattern)
         (@resources ?= []).push pattern unless duplicate
@@ -76,12 +76,12 @@ module.exports.Service = class Service extends events.EventEmitter
     # Supports implicit extraction of captured groups in the match.
     # Use this to configure what domains should match with service.
     @domain: (pattern) ->
-        inspected = @nick or @name
+        identify = @nick or @name
         duplicate = pattern in (@domains or [])
         regexify = (s) -> new RegExp(RegExp.escape(s))
         pattern = regexify(pattern)  if _.isString(pattern)
         inspected = pattern.unescape()?.underline or pattern.source
-        associate = "Associating #{inspected} domain with #{inspected}"
+        associate = "Associating #{inspected} domain with #{identify}"
         notRegexp = "The #{inspected} is not a valid regular expression"
         throw new Error(notRegexp) unless _.isRegExp(pattern)
         (@domains ?= []).push pattern unless duplicate
