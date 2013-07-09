@@ -102,6 +102,20 @@ module.exports.Element = class Element extends Abstract
         throw new Error invalid unless correct
         @$prefix = prefix.toString()
 
+    # Resolve the specific node by its tag. The method is recursive
+    # and will look under the entire tree of this element. If no node
+    # whose tag matches the supplied one can be found, the method
+    # should return either undefined or false value, but not a node.
+    resolve: (tag) ->
+        correct = _.isString tag
+        return this if @tag is tag
+        invalid "The supplied node is not string"
+        throw new Error invalid unless correct
+        for own node in (@children or [])
+            return node if node.tag is tag
+            element = node instanceof Element
+            return n if n = node.reslove tag
+
     # Remove the supplied node from array of children nodes of
     # this element. The node undergoes some substantial testing
     # before it will be removed. If the node does not exist in the
