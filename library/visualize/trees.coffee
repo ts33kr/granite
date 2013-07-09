@@ -110,7 +110,25 @@ module.exports.Identity = class Identity extends Abstract
         @emit "prefix", this, @$prefix, prefix
         @$prefix = prefix.toString()
 
-# This class represents an implementation of the abstract tree node
+# This class represents an implementation of non abstract tree node
+# that implements semantics of the named, valueable node, equal to
+# XML attrubte. This node implementation inherits the identity ABC
+# and therefore provides the naming and identification capabilities.
+module.exports.Attribute = class Attribute extends Identity
+
+    # Either get or set the attr content value string for this
+    # element. For the semantics of the name please refer to the
+    # XML and/or SGML specification documents. If the value param
+    # is not supplied, this method will return the current value.
+    value: (value) ->
+        correct = _.isString value
+        return @$value unless value?
+        invalid = "Value is not a string"
+        throw new Error invalid unless correct
+        @emit "value", this, @$value, value
+        @$value = value.toString()
+
+# This class represents an implementation of non abstract tree node
 # that implements semantics of the hierarhical tree branch, equal to
 # XML element. This node can contain child elements in the preserved
 # order that they were added in. Also contains the name of the tag.
