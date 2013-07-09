@@ -89,6 +89,7 @@ module.exports.Element = class Element extends Abstract
         return @$name unless name?
         invalid = "Name is not a string"
         throw new Error invalid unless correct
+        @emit("name", this, @$name, name)
         @$name = name.toString()
 
     # Either get or set the identification prefix string for this
@@ -100,6 +101,7 @@ module.exports.Element = class Element extends Abstract
         return @$prefix unless prefix?
         invalid = "Prefix is not a string"
         throw new Error invalid unless correct
+        @emit("prefix", this, @$prefix, prefix)
         @$prefix = prefix.toString()
 
     # Resolve the specific node by its tag. The method is recursive
@@ -113,8 +115,8 @@ module.exports.Element = class Element extends Abstract
         throw new Error invalid unless correct
         for own node in (@children or [])
             return node if node.tag is tag
-            element = node instanceof Element
-            return n if n = node.reslove tag
+            continue unless node instanceof Element
+            return child if child = node.reslove tag
 
     # Remove the supplied node from array of children nodes of
     # this element. The node undergoes some substantial testing
