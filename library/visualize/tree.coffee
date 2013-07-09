@@ -73,3 +73,59 @@ module.exports.Abstract = class Abstract extends events.EventEmitter
         listened = super event, origin, parameters...
         return if event.suppressing or @supermassive
         try @parent?.emit event, origin, parameters...
+
+# This class represents an implementation of the abstract tree node
+# that implements semantics of the hierarhical tree branch, equal to
+# XML element. This node can contain child elements in the preserved
+# order that they were added in. Also contains the name of the tag.
+module.exports.Element = class Element extends Abstract
+
+    # Either get or set the identification name string for this
+    # element. For the semantics of the name please refer to the
+    # XML and/or SGML specification documents. If the name param
+    # is not supplied, this method will return the current name.
+    name: (name) ->
+        correct = _.isString name
+        return @$name unless name?
+        invalid = "Name is not a string"
+        throw new Error invalid unless correct
+        @$name = name.toString()
+
+    # Either get or set the identification prefix string for this
+    # element. For the semantics of the prefix please refer to the
+    # XML and/or SGML specification documents. If the prefix param
+    # is not supplied, this method will return the current prefix.
+    prefix: (prefix) ->
+        correct = _.isString prefix
+        return @$prefix unless prefix?
+        invalid = "Prefix is not a string"
+        throw new Error invalid unless correct
+        @$prefix = prefix.toString()
+
+    # Prepend the supplied node to the array of children nodes of
+    # this element. The node undergoes some substantial testing
+    # before it will be added. If the node already exists in the
+    # element then it will not be added again. Idempotent method.
+    prepend: (node) ->
+        correct = node instanceof Abstract
+        invalid "The supplied node is not valid"
+        abstract = "The supplied not is abstract"
+        isEqual = (n) -> n.tag is node.tag
+        throw new Error invalid unless correct
+        throw new Error abstract if node.abstract()
+        exists = _.find @children or [], isEqual
+        (@children ?= []).unshift node unless exists
+
+    # Append the supplied node to the array of children nodes of
+    # this element. The node undergoes some substantial testing
+    # before it will be added. If the node already exists in the
+    # element then it will not be added again. Idempotent method.
+    append: (node) ->
+        correct = node instanceof Abstract
+        invalid "The supplied node is not valid"
+        abstract = "The supplied not is abstract"
+        isEqual = (n) -> n.tag is node.tag
+        throw new Error invalid unless correct
+        throw new Error abstract if node.abstract()
+        exists = _.find @children or [], isEqual
+        (@children ?= []).push node unless exists
