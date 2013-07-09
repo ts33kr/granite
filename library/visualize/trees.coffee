@@ -111,6 +111,24 @@ module.exports.Identity = class Identity extends Abstract
         @$prefix = prefix.toString()
 
 # This class represents an implementation of non abstract tree node
+# that implements semantics of the textal content node, equal to
+# XML text content. This node implementation inherits the root ABC
+# and therefore provides no extra capabilies beyond what is does.
+module.exports.Content = class Content extends Abstract
+
+    # Either get or set the attr textual content string for this
+    # element. For the semantics of the name please refer to the
+    # XML and/or SGML specification documents. If the value content
+    # is not supplied, this method will return the current content.
+    content: (content) ->
+        correct = _.isString content
+        return @$content unless content?
+        invalid = "Content is not a string"
+        throw new Error invalid unless correct
+        @emit "content", this, @$content, content
+        @$content = content.toString()
+
+# This class represents an implementation of non abstract tree node
 # that implements semantics of the named, valueable node, equal to
 # XML attrubte. This node implementation inherits the identity ABC
 # and therefore provides the naming and identification capabilities.
