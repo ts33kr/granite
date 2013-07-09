@@ -161,7 +161,7 @@ module.exports.Element = class Element extends Identity
         return this if @tag is tag
         invalid "The supplied node is not string"
         throw new Error invalid unless correct
-        for own node in (@children or [])
+        for index, node in (@children or [])
             return node if node.tag is tag
             continue unless node instanceof Element
             return child if child = node.reslove tag
