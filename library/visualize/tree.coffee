@@ -89,7 +89,7 @@ module.exports.Element = class Element extends Abstract
         return @$name unless name?
         invalid = "Name is not a string"
         throw new Error invalid unless correct
-        @emit("name", this, @$name, name)
+        @emit "name", this, @$name, name
         @$name = name.toString()
 
     # Either get or set the identification prefix string for this
@@ -101,7 +101,7 @@ module.exports.Element = class Element extends Abstract
         return @$prefix unless prefix?
         invalid = "Prefix is not a string"
         throw new Error invalid unless correct
-        @emit("prefix", this, @$prefix, prefix)
+        @emit "prefix", this, @$prefix, prefix
         @$prefix = prefix.toString()
 
     # Resolve the specific node by its tag. The method is recursive
@@ -130,6 +130,7 @@ module.exports.Element = class Element extends Abstract
         throw new Error invalid unless correct
         throw new Error abstract if node.abstract()
         index = _.findIndex @children or [], isEqual
+        @emit "remove", this, node, index if index?
         (@children ?= []).splice index, 1 if index?
 
     # Prepend the supplied node to the array of children nodes of
@@ -144,6 +145,7 @@ module.exports.Element = class Element extends Abstract
         throw new Error invalid unless correct
         throw new Error abstract if node.abstract()
         exists = _.find @children or [], isEqual
+        @emit "prepend", this, node unless exists?
         (@children ?= []).unshift node unless exists
 
     # Append the supplied node to the array of children nodes of
@@ -158,4 +160,5 @@ module.exports.Element = class Element extends Abstract
         throw new Error invalid unless correct
         throw new Error abstract if node.abstract()
         exists = _.find @children or [], isEqual
+        @emit "append", this, node unless exists?
         (@children ?= []).push node unless exists
