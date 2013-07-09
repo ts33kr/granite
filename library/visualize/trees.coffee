@@ -74,11 +74,17 @@ module.exports.Abstract = class Abstract extends events.EventEmitter
         return if event.suppressing or @supermassive
         try @parent?.emit event, origin, parameters...
 
-# This class represents an implementation of the abstract tree node
-# that implements semantics of the hierarhical tree branch, equal to
-# XML element. This node can contain child elements in the preserved
-# order that they were added in. Also contains the name of the tag.
-module.exports.Element = class Element extends Abstract
+# This is an abstract base class for nodes that have the identity
+# attached next to them. The identify consists of an optional prefix
+# and not mandatory name, both expressed as strings. This class is
+# a conretization of the top-level tree node abstract base class
+module.exports.Identity = class Identity extends Abstract
+
+    # This is a marker that indicates to some internal substsems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete class implementation. This
+    # mainly is used to exclude or account for abstract classes.
+    @abstract yes
 
     # Either get or set the identification name string for this
     # element. For the semantics of the name please refer to the
@@ -103,6 +109,12 @@ module.exports.Element = class Element extends Abstract
         throw new Error invalid unless correct
         @emit "prefix", this, @$prefix, prefix
         @$prefix = prefix.toString()
+
+# This class represents an implementation of the abstract tree node
+# that implements semantics of the hierarhical tree branch, equal to
+# XML element. This node can contain child elements in the preserved
+# order that they were added in. Also contains the name of the tag.
+module.exports.Element = class Element extends Identity
 
     # Resolve the specific node by its tag. The method is recursive
     # and will look under the entire tree of this element. If no node
