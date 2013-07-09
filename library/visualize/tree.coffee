@@ -102,6 +102,20 @@ module.exports.Element = class Element extends Abstract
         throw new Error invalid unless correct
         @$prefix = prefix.toString()
 
+    # Remove the supplied node from array of children nodes of
+    # this element. The node undergoes some substantial testing
+    # before it will be removed. If the node does not exist in the
+    # element then the method will return as is. Idempotent method.
+    remove: (node) ->
+        correct = node instanceof Abstract
+        invalid "The supplied node is not valid"
+        abstract = "The supplied not is abstract"
+        isEqual = (n) -> n.tag is node.tag
+        throw new Error invalid unless correct
+        throw new Error abstract if node.abstract()
+        index = _.findIndex @children or [], isEqual
+        (@children ?= []).splice index, 1 if index?
+
     # Prepend the supplied node to the array of children nodes of
     # this element. The node undergoes some substantial testing
     # before it will be added. If the node already exists in the
