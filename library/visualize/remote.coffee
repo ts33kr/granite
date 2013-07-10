@@ -37,28 +37,28 @@ http = require "http"
 util = require "util"
 fs = require "fs"
 
-# A shorthand method for creating an instances of the remote object.
+# A shorthand method for creating an instances of the executables.
 # This method is better than explicitly creating new objects, since
 # it is shorter and has nicer syntax. Please use this, instead of
-# directly creating new remote object. Refer to the later for info.
-module.exports.executable = (@executable) ->
-    detected = _.isFunction @executable
-    executable = "The argument is not executable"
+# directly creating new executable. Refer to the later for info.
+module.exports.executable = (@callable) ->
+    detected = _.isFunction @callable
+    executable = "The argument is not a function"
     throw new Error executable unless detected
-    return new Remote @executable
+    return new Executable @callable
 
 # A class that represents a wrapped remote function. It accept the
 # native, normal function and then stores it for later. Then when
 # requested, it emits the function source code as a string and if
 # requested - optionally emits stringified application construct
 # around it. This is used to remote execute functions on the site.
-module.exports.Remote = class Remote extends events.EventEmitter
+module.exports.Executable = class Executable extends events.EventEmitter
 
     # A public constructor that takes the executable for a function
     # object. Beware, this must be a singular, simple function, not
     # a constructor, not a bound method. It must not have any sort
     # of dependencies, because it will executed in different place.
-    constructor: (@executable) ->
+    constructor: (@callable) ->
 
     # Generation a string representation of the function invocation
     # in JavaScript, so that it can be executed remotely on site. An
@@ -66,11 +66,11 @@ module.exports.Remote = class Remote extends events.EventEmitter
     # and a set of arguments that must be scalars or similar to them.
     # This method does not do any processing of args, inserts raws.
     unprocessed: (binder, parameters...) ->
-        detected = _.isFunction @executable
+        detected = _.isFunction @callable
         executable = "No executable has been set"
         throw new Error executable unless detected
         joined = parameters.join(", ").toString()
-        stringified = @executable.toString()
+        stringified = @callable.toString()
         inspected.unshift binder or "this"
         "(#{stringified}).apply(#{joined})"
 
@@ -79,13 +79,13 @@ module.exports.Remote = class Remote extends events.EventEmitter
     # invocation may be bound to an arbitrary remote this variable
     # and a set of arguments that must be scalars or similar to them.
     # This method does process the args, each arg being inspected.
-    invocation: (binder, parameters...) ->
+    processed: (binder, parameters...) ->
         inspector = util.inspect
-        detected = _.isFunction @executable
+        detected = _.isFunction @callable
         executable = "No executable has been set"
         throw new Error executable unless detected
         inspected = _.map parameters, inspector
         joined = inspected.join(", ").toString()
-        stringified = @executable.toString()
+        stringified = @callable.toString()
         inspected.unshift binder or "this"
         "(#{stringified}).apply(#{joined})"
