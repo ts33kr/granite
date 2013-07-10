@@ -37,6 +37,19 @@ http = require "http"
 util = require "util"
 fs = require "fs"
 
+# A shorthand method for creating new instances of the objectables.
+# This method is better than explicitly creating new objects, since
+# it is shorter and has nicer syntax. Please use this, instead of
+# directly creating new objectables. Refer to the later for info.
+module.exports.objectable = (@objectable) ->
+    detected = _.isFunction @objectable
+    passed = -> @objectable.length is 0
+    objectable = "The argument is not a function"
+    wrapping = "The wrapper must not have arguments"
+    throw new Error objectable unless detected
+    throw new Error wrapping unless passed()
+    return new Objectable @objectable
+
 # A shorthand method for creating new instances of the executables.
 # This method is better than explicitly creating new objects, since
 # it is shorter and has nicer syntax. Please use this, instead of
@@ -46,6 +59,52 @@ module.exports.executable = (@executable) ->
     executable = "The argument is not a function"
     throw new Error executable unless detected
     return new Executable @executable
+
+# A class that represents a wrapped remote classes. It accepts the
+# class wrapped in function and then stores it for later. Then when
+# requested, it emits the class object source code as a string and if
+# requested - optionally emits stringified application construct
+# around it. This is used to remote create class objects on the site.
+module.exports.Objectable = class Objectable extends events.EventEmitter
+
+    # A public constructor that takes the wrapped class object for
+    # an objectible object. Beware, when you are passing the class
+    # definitin in here, remember that the definition is most likely
+    # will be executed on a remote side, with differen environment.
+    constructor: (@objectable) ->
+
+    # Generation of string representation of the object instantiation
+    # in JavaScript, so that it can be executed remotely on site. An
+    # object instantiation invocation cannot be bound to other than
+    # only a set of arguments that must be scalars or similar to them.
+    # This method does not do any processing of args, inserts raws.
+    unprocessed: (parameters...) ->
+        detected = _.isFunction @objectable
+        passed = -> @objectable.length is 0
+        objectable = "No valid objectable has been set"
+        wrapping = "The wrapper must not have arguments"
+        throw new Error objectable unless detected
+        throw new Error wrapping unless passed()
+        joined = parameters.join(", ").toString()
+        stringified = @objectable.toString()
+        "new ((#{stringified})()) (#{joined})"
+
+    # Generation of string representation of the object instantiation
+    # in JavaScript, so that it can be executed remotely on site. An
+    # object instantiation invocation cannot be bound to other than
+    # only a set of arguments that must be scalars or similar to them.
+    # This method does process the args, each arg being inspected.
+    processed: (parameters...) ->
+        detected = _.isFunction @objectable
+        passed = -> @objectable.length is 0
+        objectable = "No valid objectable has been set"
+        wrapping = "The wrapper must not have arguments"
+        throw new Error objectable unless detected
+        throw new Error wrapping unless passed()
+        inspected = _.map parameters, inspector
+        joined = inspected.join(", ").toString()
+        stringified = @objectable.toString()
+        "new ((#{stringified})()) (#{joined})"
 
 # A class that represents a wrapped remote function. It accept the
 # native, normal function and then stores it for later. Then when
@@ -60,7 +119,7 @@ module.exports.Executable = class Executable extends events.EventEmitter
     # of dependencies, because it will executed in different place.
     constructor: (@executable) ->
 
-    # Generation a string representation of the function invocation
+    # Generation of string representation of the function invocation
     # in JavaScript, so that it can be executed remotely on site. An
     # invocation may be bound to an arbitrary remote this variable
     # and a set of arguments that must be scalars or similar to them.
@@ -69,12 +128,12 @@ module.exports.Executable = class Executable extends events.EventEmitter
         detected = _.isFunction @executable
         executable = "No valid executable has been set"
         throw new Error executable unless detected
+        parameters.unshift binder or "this"
         joined = parameters.join(", ").toString()
         stringified = @executable.toString()
-        inspected.unshift binder or "this"
         "(#{stringified}).apply(#{joined})"
 
-    # Generation a string representation of the function invocation
+    # Generation of string representation of the function invocation
     # in JavaScript, so that it can be executed remotely on site. An
     # invocation may be bound to an arbitrary remote this variable
     # and a set of arguments that must be scalars or similar to them.
