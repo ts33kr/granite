@@ -62,6 +62,7 @@ module.exports.Deposit = class Deposit extends events.EventEmitter
         throw new Error noSubject unless tag of @storage
         timeout = (s, f) => setTimeout f, s
         timeout mseconds, (parameters...) =>
+            @emit "expired", tag, mseconds
             get tag, yes if tag of @storage
 
     # Associate the supplied subject with the supplied UUID tag and
