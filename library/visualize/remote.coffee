@@ -41,11 +41,11 @@ fs = require "fs"
 # This method is better than explicitly creating new objects, since
 # it is shorter and has nicer syntax. Please use this, instead of
 # directly creating new executable. Refer to the later for info.
-module.exports.executable = (@callable) ->
-    detected = _.isFunction @callable
-    callable = "The argument is not a function"
-    throw new Error callable unless detected
-    return new Executable @callable
+module.exports.executable = (@executable) ->
+    detected = _.isFunction @executable
+    executable = "The argument is not a function"
+    throw new Error executable unless detected
+    return new Executable @executable
 
 # A class that represents a wrapped remote function. It accept the
 # native, normal function and then stores it for later. Then when
@@ -58,7 +58,7 @@ module.exports.Executable = class Executable extends events.EventEmitter
     # object. Beware, this must be a singular, simple function, not
     # a constructor, not a bound method. It must not have any sort
     # of dependencies, because it will executed in different place.
-    constructor: (@callable) ->
+    constructor: (@executable) ->
 
     # Generation a string representation of the function invocation
     # in JavaScript, so that it can be executed remotely on site. An
@@ -66,11 +66,11 @@ module.exports.Executable = class Executable extends events.EventEmitter
     # and a set of arguments that must be scalars or similar to them.
     # This method does not do any processing of args, inserts raws.
     unprocessed: (binder, parameters...) ->
-        detected = _.isFunction @callable
-        callable = "No valid callable has been set"
-        throw new Error callable unless detected
+        detected = _.isFunction @executable
+        executable = "No valid executable has been set"
+        throw new Error executable unless detected
         joined = parameters.join(", ").toString()
-        stringified = @callable.toString()
+        stringified = @executable.toString()
         inspected.unshift binder or "this"
         "(#{stringified}).apply(#{joined})"
 
@@ -81,11 +81,11 @@ module.exports.Executable = class Executable extends events.EventEmitter
     # This method does process the args, each arg being inspected.
     processed: (binder, parameters...) ->
         inspector = util.inspect
-        detected = _.isFunction @callable
-        callable = "No valid callable has been set"
-        throw new Error callable unless detected
+        detected = _.isFunction @executable
+        executable = "No valid executable has been set"
+        throw new Error executable unless detected
         inspected = _.map parameters, inspector
         joined = inspected.join(", ").toString()
-        stringified = @callable.toString()
+        stringified = @executable.toString()
         inspected.unshift binder or "this"
         "(#{stringified}).apply(#{joined})"
