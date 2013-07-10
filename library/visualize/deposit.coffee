@@ -53,6 +53,17 @@ module.exports.Deposit = class Deposit extends events.EventEmitter
         throw new Error noKernel unless isKernel
         @storage = @kernel[@tag] = {}
 
+    # Spawn the keepalive watcher that runs after the specified amount
+    # of time, expressed at milliseconds, and if such an entry still
+    # exists in the kernel storage, remove it using the get method. If
+    # the entry does not exist at the point of call, it throws errors.
+    keepalive: (tag = uuid.v1(), mseconds) ->
+        noSubject = "Cannot locate entry at #{tag}"
+        throw new Error noSubject unless tag of @storage
+        timeout = (s, f) => setTimeout f, s
+        timeout mseconds, (parameters...) =>
+            get tag, yes if tag of @storage
+
     # Associate the supplied subject with the supplied UUID tag and
     # store the pair in the kernel driven storage. If the UUID tag
     # is not supplied, it will be automatically issued and returned
