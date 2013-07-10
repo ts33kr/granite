@@ -64,13 +64,28 @@ module.exports.Remote = class Remote extends events.EventEmitter
     # in JavaScript, so that it can be executed remotely on site. An
     # invocation may be bound to an arbitrary remote this variable
     # and a set of arguments that must be scalars or similar to them.
+    # This method does not do any processing of args, inserts raws.
+    unprocessed: (binder, parameters...) ->
+        detected = _.isFunction @executable
+        executable = "No executable has been set"
+        throw new Error executable unless detected
+        joined = parameters.join(", ").toString()
+        stringified = @executable.toString()
+        inspected.unshift binder or "this"
+        "(#{stringified}).apply(#{joined})"
+
+    # Generation a string representation of the function invocation
+    # in JavaScript, so that it can be executed remotely on site. An
+    # invocation may be bound to an arbitrary remote this variable
+    # and a set of arguments that must be scalars or similar to them.
+    # This method does process the args, each arg being inspected.
     invocation: (binder, parameters...) ->
         inspector = util.inspect
         detected = _.isFunction @executable
         executable = "No executable has been set"
         throw new Error executable unless detected
         inspected = _.map parameters, inspector
+        joined = inspected.join(", ").toString()
         stringified = @executable.toString()
         inspected.unshift binder or "this"
-        joined = inspected.join(", ").toString()
         "(#{stringified}).apply(#{joined})"
