@@ -37,7 +37,7 @@ http = require "http"
 util = require "util"
 fs = require "fs"
 
-# A shorthand method for creating an instances of the executables.
+# A shorthand method for creating new instances of the executables.
 # This method is better than explicitly creating new objects, since
 # it is shorter and has nicer syntax. Please use this, instead of
 # directly creating new executable. Refer to the later for info.
@@ -67,8 +67,8 @@ module.exports.Executable = class Executable extends events.EventEmitter
     # This method does not do any processing of args, inserts raws.
     unprocessed: (binder, parameters...) ->
         detected = _.isFunction @callable
-        executable = "No executable has been set"
-        throw new Error executable unless detected
+        callable = "No valid callable has been set"
+        throw new Error callable unless detected
         joined = parameters.join(", ").toString()
         stringified = @callable.toString()
         inspected.unshift binder or "this"
@@ -82,8 +82,8 @@ module.exports.Executable = class Executable extends events.EventEmitter
     processed: (binder, parameters...) ->
         inspector = util.inspect
         detected = _.isFunction @callable
-        executable = "No executable has been set"
-        throw new Error executable unless detected
+        callable = "No valid callable has been set"
+        throw new Error callable unless detected
         inspected = _.map parameters, inspector
         joined = inspected.join(", ").toString()
         stringified = @callable.toString()
