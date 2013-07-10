@@ -68,9 +68,10 @@ module.exports.Deposit = class Deposit extends events.EventEmitter
     # it up using the supplied UUID tag. Altough this method does not
     # require you to supply a tag, please do this as it is necessary.
     # If the record is not found at the storage, exception is thrown.
-    get: (tag = uuid.v1()) ->
+    get: (tag = uuid.v1(), destroy) ->
         noSubject = "Cannot found entry at #{tag}"
         noTagging = "The supplied tagging is not valid"
         throw new Error noTagging unless _.isString tag
         throw new Error noSubject unless tag of @storage
-        return @storage[tag] or undefined
+        preempt = -> delete @storage[tag] if destroy
+        value = @storage[tag]; preempt(); value
