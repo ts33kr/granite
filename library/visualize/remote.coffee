@@ -43,8 +43,8 @@ fs = require "fs"
 # directly creating new executable. Refer to the later for info.
 module.exports.executable = (@callable) ->
     detected = _.isFunction @callable
-    executable = "The argument is not a function"
-    throw new Error executable unless detected
+    callable = "The argument is not a function"
+    throw new Error callable unless detected
     return new Executable @callable
 
 # A class that represents a wrapped remote function. It accept the
