@@ -175,7 +175,7 @@ module.exports.Element = class Element extends Identity
     remove: (node) ->
         correct = node instanceof Abstract
         invalid "The supplied node is not valid"
-        abstract = "The supplied not is abstract"
+        abstract = "The supplied node is abstract"
         isEqual = (n) -> n.tag is node.tag
         throw new Error invalid unless correct
         throw new Error abstract if node.abstract()
@@ -190,7 +190,7 @@ module.exports.Element = class Element extends Identity
     prepend: (node) ->
         correct = node instanceof Abstract
         invalid "The supplied node is not valid"
-        abstract = "The supplied not is abstract"
+        abstract = "The supplied node is abstract"
         isEqual = (n) -> n.tag is node.tag
         throw new Error invalid unless correct
         throw new Error abstract if node.abstract()
@@ -205,7 +205,7 @@ module.exports.Element = class Element extends Identity
     append: (node) ->
         correct = node instanceof Abstract
         invalid "The supplied node is not valid"
-        abstract = "The supplied not is abstract"
+        abstract = "The supplied node is abstract"
         isEqual = (n) -> n.tag is node.tag
         throw new Error invalid unless correct
         throw new Error abstract if node.abstract()
