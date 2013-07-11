@@ -58,6 +58,8 @@ module.exports.Abstract = class Abstract extends events.EventEmitter
         correct = correct or not @parent?
         abstract = "Cannot create abstract nodes"
         invalid = "Not valid parent node object"
+        tagging = "The supplied tagging is not valid"
+        throw new Error tagging unless _.isSring tag
         throw new Error abstract if @abstract()
         throw new Error invalid unless correct
 
