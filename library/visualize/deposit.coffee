@@ -23,11 +23,18 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
-url = require "url"
-http = require "http"
+uuid = require "node-uuid"
+asciify = require "asciify"
+connect = require "connect"
+logger = require "winston"
 events = require "events"
 colors = require "colors"
-logger = require "winston"
+nconf = require "nconf"
+https = require "https"
+paths = require "path"
+http = require "http"
+util = require "util"
+fs = require "fs"
 
 _ = require "lodash"
 extendz = require "./../nucleus/extends"
