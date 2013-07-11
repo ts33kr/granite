@@ -161,7 +161,7 @@ module.exports.Element = class Element extends Identity
     resolve: (tag) ->
         correct = _.isString tag
         return this if @tag is tag
-        invalid "The supplied node is not string"
+        invalid "The supplied tag is not string"
         throw new Error invalid unless correct
         for index, node in (@children or [])
             return node if node.tag is tag
