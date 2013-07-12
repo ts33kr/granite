@@ -101,7 +101,7 @@ module.exports.Objectable = class Objectable extends events.EventEmitter
         wrapping = "The wrapper must not have arguments"
         throw new Error objectable unless detected
         throw new Error wrapping unless passed()
-        inspected = _.map parameters, inspector
+        inspected = _.map parameters, util.inspect
         joined = inspected.join(", ").toString()
         stringified = @objectable.toString()
         "new ((#{stringified})()) (#{joined})"
@@ -139,11 +139,10 @@ module.exports.Executable = class Executable extends events.EventEmitter
     # and a set of arguments that must be scalars or similar to them.
     # This method does process the args, each arg being inspected.
     processed: (binder, parameters...) ->
-        inspector = util.inspect
         detected = _.isFunction @executable
         executable = "No valid executable has been set"
         throw new Error executable unless detected
-        inspected = _.map parameters, inspector
+        inspected = _.map parameters, util.inspect
         joined = inspected.join(", ").toString()
         stringified = @executable.toString()
         inspected.unshift binder or "this"
