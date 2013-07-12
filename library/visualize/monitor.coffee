@@ -44,6 +44,13 @@ fs = require "fs"
 # is the mechanism that keeps the synchronization between the trees.
 module.exports.Monitor = class Monitor extends events.EventEmitter
 
+
+    # This is the reference of the DOM events that need to be
+    # monitored by the monitor and possible by some other entities
+    # in the framework subsustems. The actual registry of events is
+    # being loaded from the module in this dir, called `reference`.
+    @REFERENCE = require "#{__dirname}/reference"
+
     # Public constructor for creating new monitor object. Please do
     # not use it directly, since managing the lifecyle of the monitor
     # object is the responsibility of the internal services that are

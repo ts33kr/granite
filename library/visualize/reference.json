@@ -1,0 +1,23 @@
+[
+    {"event": "keyup", "attribute": "onkeyup"},
+    {"event": "keydown", "attribute": "onkeydown"},
+    {"event": "keypress", "attribute": "onkeypress"},
+    {"event": "load", "attribute": "onload"},
+    {"event": "abort", "attribute": "onabort"},
+    {"event": "error", "attribute": "onerror"},
+    {"event": "resize", "attribute": "onresize"},
+    {"event": "scroll", "attribute": "onscroll"},
+    {"event": "click", "attribute": "onclick"},
+    {"event": "mouseup", "attribute": "onmouseup"},
+    {"event": "dblclick", "attribute": "ondblclick"},
+    {"event": "mousedown", "attribute": "onmousedown"},
+    {"event": "mouseover", "attribute": "onmouseover"},
+    {"event": "mousemove", "attribute": "onmousemove"},
+    {"event": "mouseout", "attribute": "onmouseout"},
+    {"event": "select", "attribute": "onselect"},
+    {"event": "change", "attribute": "onchange"},
+    {"event": "submot", "attribute": "onsubmit"},
+    {"event": "reset", "attribute": "onreset"},
+    {"event": "focus", "attribute": "onfocus"},
+    {"event": "blur", "attribute": "onblur"}
+]
