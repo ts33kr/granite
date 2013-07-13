@@ -44,7 +44,6 @@ fs = require "fs"
 # is the mechanism that keeps the synchronization between the trees.
 module.exports.Monitor = class Monitor extends events.EventEmitter
 
-
     # This is the reference of the DOM events that need to be
     # monitored by the monitor and possible by some other entities
     # in the framework subsustems. The actual registry of events is
