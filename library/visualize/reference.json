@@ -16,7 +16,7 @@
     {"event": "mouseout", "attribute": "onmouseout"},
     {"event": "select", "attribute": "onselect"},
     {"event": "change", "attribute": "onchange"},
-    {"event": "submot", "attribute": "onsubmit"},
+    {"event": "submit", "attribute": "onsubmit"},
     {"event": "reset", "attribute": "onreset"},
     {"event": "focus", "attribute": "onfocus"},
     {"event": "blur", "attribute": "onblur"}
