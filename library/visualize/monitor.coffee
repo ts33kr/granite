@@ -61,6 +61,28 @@ module.exports.Monitor = class Monitor extends events.EventEmitter
         throw new Error noTagging unless _.isSring tag
         throw new Error noKernel unless isKernel
 
+    # Attach one of the ends of the monitor to the previously bound
+    # transport instance. This method will attach the specific event
+    # handlers for all of the reference events, which will transfer
+    # the event into the corresponding event on the bound element.
+    attachToTransport: -> for descriptor in @constructor.REFERENCE
+        @transport.on descriptor.event, (event, origin, context) ->
+            resolved = @element.resolve origin
+            missing = "Cannot resolve element #{origin}"
+            throw new Error missing unless resolved?
+            @element.emit event, resolved, context
+
+    # Attach one of the ends of the monitor to the previously bound
+    # element instance. This method will attach the specific event
+    # handlers for all of the reference events, which will transfer
+    # the event into the corresponding event on the bound transport.
+    attachToTransport: -> for descriptor in @constructor.REFERENCE
+        @element.on descriptor.event, (event, origin, context) ->
+            tagging = @element.tag or undefined
+            missing = "The element has not tag attached"
+            throw new Error missing unless tagging?
+            @transport.emit event, tagging, context
+
     # Set the transport channel of this session. If the transport is
     # not supplied, the method will return the transport instead of
     # setting one. The transport will be tested to ensure that it is
