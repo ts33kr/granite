@@ -53,15 +53,24 @@ module.exports.Abstract = class Abstract extends events.EventEmitter
     # implementations. By default it accepts parent node as param.
     # Each node should generally know its parent in order to create
     # complete and functional hierarchical tree for navigating it.
-    constructor: (@parent, @tag = uuid.v1()) ->
-        correct = @parent instanceof Abstract
-        correct = correct or not @parent?
+    constructor: (parent, @tag = uuid.v1()) ->
         abstract = "Cannot create abstract nodes"
-        invalid = "Not valid parent node object"
         tagging = "The supplied tagging is not valid"
         throw new Error tagging unless _.isSring tag
         throw new Error abstract if @abstract()
+        @parent parent if parent?
+
+    # Either get or set the parent node for this this current node.
+    # If you do not supply the parent argument then the method will
+    # lookup and return the currently established parent node. Please
+    # use this method to get or set parent, instead of doing directly.
+    parent: (parent) ->
+        return @$parent unless parent?
+        correct = parent instanceof Abstract
+        invalid = "Parent is not a valid node"
         throw new Error invalid unless correct
+        @emit "parent", this, @$parent, parent
+        @$parent = parent
 
     # The overriding of the standard `EventEmiter` emit method. This
     # implementation always keep track of the sender and propagates
