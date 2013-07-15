@@ -203,6 +203,7 @@ module.exports.Element = class Element extends Identity
         isEqual = (n) -> n.tag is node.tag
         throw new Error invalid unless correct
         throw new Error abstract if node.abstract()
+        previous = node.parent(); node.parent this
         exists = _.find @children or [], isEqual
         @emit "prepend", this, node unless exists?
         (@children ?= []).unshift node unless exists
@@ -218,6 +219,7 @@ module.exports.Element = class Element extends Identity
         isEqual = (n) -> n.tag is node.tag
         throw new Error invalid unless correct
         throw new Error abstract if node.abstract()
+        previous = node.parent(); node.parent this
         exists = _.find @children or [], isEqual
         @emit "append", this, node unless exists?
         (@children ?= []).push node unless exists
