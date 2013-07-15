@@ -66,22 +66,29 @@ module.exports.Monitor = class Monitor extends events.EventEmitter
     # handlers for all of the reference events, which will transfer
     # the event into the corresponding event on the bound element.
     attachToTransport: -> for descriptor in @constructor.REFERENCE
-        @transport.on descriptor.event, (event, origin, context) ->
-            resolved = @element.resolve origin
+        @transport().on descriptor.event, (event, origin, context) ->
+            resolved = @element().resolve origin
+            wrapped = context.Context.wrap context
             missing = "Cannot resolve element #{origin}"
             throw new Error missing unless resolved?
-            @element.emit event, resolved, context
+            wrapped.foreign yes unless wrapped.foreign()
+            @element.emit event, resolved, wrapped
 
     # Attach one of the ends of the monitor to the previously bound
     # element instance. This method will attach the specific event
     # handlers for all of the reference events, which will transfer
     # the event into the corresponding event on the bound transport.
     attachToElement: -> for descriptor in @constructor.REFERENCE
-        @element.on descriptor.event, (event, origin, context) ->
-            tagging = @element.tag or undefined
+        @element().on descriptor.event, (event, origin, context) ->
+            tagging = origin.tag or undefined
             missing = "The element has not tag attached"
+            wrapping = "The context parameter is invalid"
+            wrapped = context instanceof context.Context
             throw new Error missing unless tagging?
-            @transport.emit event, tagging, context
+            throw new Error wrapping unless wrapped
+            return if context?.foreign() is yes
+            unwrapped = context.unwrap or undefined
+            @transport.emit event, tagging, unwrapped
 
     # Set the transport channel of this session. If the transport is
     # not supplied, the method will return the transport instead of
