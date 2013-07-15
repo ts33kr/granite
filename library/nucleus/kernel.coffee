@@ -74,6 +74,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     # and unregistering all the services as a precauting. After that
     # the scope is being dispersed and some events are being emited.
     shutdownKernel: ->
+        util.puts require("os").EOL
         try @router.shutdownRouter()
         s.unregister() for s in @router.registry
         try @server.close(); try @secure.close()
