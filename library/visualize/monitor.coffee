@@ -76,7 +76,7 @@ module.exports.Monitor = class Monitor extends events.EventEmitter
     # element instance. This method will attach the specific event
     # handlers for all of the reference events, which will transfer
     # the event into the corresponding event on the bound transport.
-    attachToTransport: -> for descriptor in @constructor.REFERENCE
+    attachToElement: -> for descriptor in @constructor.REFERENCE
         @element.on descriptor.event, (event, origin, context) ->
             tagging = @element.tag or undefined
             missing = "The element has not tag attached"
