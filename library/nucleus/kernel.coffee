@@ -106,6 +106,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @setupHotloadWatcher()
         @broker = new content.Broker
         message = "Booted up the kernel instance"
+        process.on "SIGINT", => @shutdownKernel()
         logger.info(message.red); this
 
     # Create and configure the HTTP and HTTPS servers to listen at
