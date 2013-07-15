@@ -47,7 +47,7 @@ module.exports.Context = class Context extends Object
     # flag for any context instance. If the foreign flag is in place
     # that means that the context originated from outside of the scope
     # and the event that it is associated with originated on a client.
-    @defineProperty Context::, "foreign",
+    Object.defineProperty Context::, "foreign",
         enumerable: no, value: (foreign) ->
             correct = _.isBoolean foreign
             return @$foreign unless foreign?
