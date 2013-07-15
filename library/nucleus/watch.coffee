@@ -75,7 +75,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         return if resolved of require.cache
         go = => @reviewServices resolved
         relative = paths.relative process.cwd(), path
-        logger.info "Adding at %s".cyan, relative.underline
+        logger.info "Addition at %s".cyan, relative.underline
         try require resolved; go() catch error
             message = "Exception in module at #{path}:\r\n%s"
             logger.warn message.red, error.stack
@@ -113,7 +113,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         extension = paths.extname absolute
         return unless extension in modules
         relative = paths.relative process.cwd(), path
-        logger.info "Unlink at %s".cyan, relative.underline
+        logger.info "Unlinking at %s".cyan, relative.underline
         registry = @kernel.router?.registry or []
         originate = (s) -> s.constructor.origin?.filename
         predicate = (s) -> originate(s) is absolute
