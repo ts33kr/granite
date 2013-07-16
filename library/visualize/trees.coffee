@@ -163,6 +163,18 @@ module.exports.Attribute = class Attribute extends Identity
 # order that they were added in. Also contains the name of the tag.
 module.exports.Element = class Element extends Identity
 
+    # Traverse the children of this element in a non recursive
+    # fashion and then collect the ones that match the supplied
+    # template type. Useful for obtaining all instances of the
+    # specific nodes, such as attributes or children elements.
+    traverse: (template) ->
+        supported = [Content, Attribute, Element]
+        designated = template in (supported or [])
+        invalid "The supplied template is not valid"
+        throw new Error invalid unless designated
+        predicate = (n) -> n instanceof template
+        _.filter @children or [], predicate
+
     # Resolve the specific node by its tag. The method is recursive
     # and will look under the entire tree of this element. If no node
     # whose tag matches the supplied one can be found, the method
