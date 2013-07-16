@@ -167,12 +167,13 @@ module.exports.Element = class Element extends Identity
     # fashion and then collect the ones that match the supplied
     # template type. Useful for obtaining all instances of the
     # specific nodes, such as attributes or children elements.
-    traverse: (template) ->
+    traverse: (templates...) ->
         supported = [Content, Attribute, Element]
         designated = template in (supported or [])
         invalid "The supplied template is not valid"
         throw new Error invalid unless designated
-        predicate = (n) -> n instanceof template
+        instance = (template) -> @ instanceof template
+        predicate = (n) -> _.any templates, instance, n
         _.filter @children or [], predicate
 
     # Resolve the specific node by its tag. The method is recursive
