@@ -71,7 +71,7 @@ module.exports.Monitor = class Monitor extends events.EventEmitter
             wrapped = context.Context.wrap context
             missing = "Cannot resolve element #{origin}"
             throw new Error missing unless resolved?
-            wrapped.foreign yes unless wrapped.foreign()
+            wrapped.foreign yes if wrapped.foreign?
             @element.emit event, resolved, wrapped
 
     # Attach one of the ends of the monitor to the previously bound
@@ -86,8 +86,8 @@ module.exports.Monitor = class Monitor extends events.EventEmitter
             wrapped = context instanceof context.Context
             throw new Error missing unless tagging?
             throw new Error wrapping unless wrapped
-            return if context?.foreign() is yes
-            unwrapped = context.unwrap or undefined
+            return undefined if context.foreign()
+            unwrapped = context.unwrap() or undefined
             @transport.emit event, tagging, unwrapped
 
     # Set the transport channel of this session. If the transport is
