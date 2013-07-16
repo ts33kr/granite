@@ -80,7 +80,7 @@ module.exports.Abstract = class Abstract extends events.EventEmitter
         correct = origin instanceof Abstract
         invalid = "Not a valid origin node object"
         throw new Error invalid unless correct
-        event.suppress = -> event.suppressing = yes
+        event.suppress = -> @suppressing = yes
         listened = super event, origin, parameters...
         return if event.suppressing or @supermassive
         try @parent?.emit event, origin, parameters...
