@@ -49,8 +49,8 @@ kernel = require "./../nucleus/kernel"
 # directly creating new objectables. Refer to the later for info.
 module.exports.objectable = (parameters...) ->
     objectable = new Objectable parameters...
-    objectable.sourcing().remote = objectable
-    check = _.isFunction objectable.sourcing()
+    objectable.sourcing()().remote = objectable
+    check = _.isObject objectable.sourcing()()
     assert.ok check; objectable.sourcing()()
 
 # A shorthand method for creating new instances of the executables.
