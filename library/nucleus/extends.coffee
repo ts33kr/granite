@@ -23,6 +23,33 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+_ = require "lodash"
+uuid = require "node-uuid"
+strace = require "stack-trace"
+asciify = require "asciify"
+connect = require "connect"
+logger = require "winston"
+events = require "events"
+colors = require "colors"
+nconf = require "nconf"
+https = require "https"
+paths = require "path"
+http = require "http"
+util = require "util"
+fs = require "fs"
+
+# This method is a stub that must be called in the abstract methods
+# who do not have any implementation. When called, this method will
+# spit out the relevant error about the caller method. It would say
+# that the method is abstract and has no implementation attached to.
+Object.defineProperty Object::, "unimplemented",
+    enumerable: no, value: (parameters...) ->
+        stack = strace.get arguments.callee
+        caller = _.head stack or undefined
+        identification = caller.getMethodName()
+        naming = "abstract method #{identification}"
+        throw new Error "#{naming} is not implemented"
+
 # A universal method to both check and set the indicator of whether
 # an object is an abstract class or not. This is very useful for
 # implementing proper architectural abstractions and concretizations.
