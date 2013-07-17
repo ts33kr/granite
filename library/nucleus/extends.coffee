@@ -43,7 +43,7 @@ fs = require "fs"
 # spit out the relevant error about the caller method. It would say
 # that the method is abstract and has no implementation attached to.
 Object.defineProperty Object::, "unimplemented",
-    enumerable: no, value: (parameters...) ->
+    enumerable: no, value: (archarguments) ->
         stack = strace.get arguments.callee
         caller = _.head stack or undefined
         identification = caller.getMethodName()
