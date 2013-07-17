@@ -83,14 +83,14 @@ module.exports.Remotable = class Remotable extends events.EventEmitter
     # arbitrary remotable action invoke cannot be bound to other than
     # only a set of arguments that must be scalars or similar to them.
     # This method does process the args, each arg being inspected.
-    processed: (parameters...) -> @unimplemented()
+    processed: (parameters...) -> @unimplemented arguments
 
     # Generation of string representation of the remotable action
     # in JavaScript, so that it can be executed remotely on site. An
     # arbitrary remotable action invoke cannot be bound to other than
     # only a set of arguments that must be scalars or similar to them.
     # This method does not do any processing of args, inserts raws.
-    unprocessed: (parameters...) -> @unimplemented()
+    unprocessed: (parameters...) -> @unimplemented arguments
 
     # Either get or set the sourcing object for this remotable
     # implementation. The sourcing object is the programmatically
