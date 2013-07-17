@@ -29,6 +29,7 @@ connect = require "connect"
 logger = require "winston"
 events = require "events"
 colors = require "colors"
+assert = require "assert"
 nconf = require "nconf"
 https = require "https"
 paths = require "path"
@@ -46,24 +47,21 @@ kernel = require "./../nucleus/kernel"
 # This method is better than explicitly creating new objects, since
 # it is shorter and has nicer syntax. Please use this, instead of
 # directly creating new objectables. Refer to the later for info.
-module.exports.objectable = (objectable) ->
-    detected = _.isFunction objectable
-    passed = -> objectable.length is 0
-    objectable = "The argument is not a function"
-    wrapping = "The wrapper must not have arguments"
-    throw new Error objectable unless detected
-    throw new Error wrapping unless passed()
-    return new Objectable objectable
+module.exports.objectable = (parameters...) ->
+    objectable = new Objectable parameters...
+    objectable.sourcing().remote = objectable
+    check = _.isFunction objectable.sourcing()
+    assert.ok check; objectable.sourcing()()
 
 # A shorthand method for creating new instances of the executables.
 # This method is better than explicitly creating new objects, since
 # it is shorter and has nicer syntax. Please use this, instead of
 # directly creating new executable. Refer to the later for info.
-module.exports.executable = (executable) ->
-    detected = _.isFunction executable
-    executable = "The argument is not a function"
-    throw new Error executable unless detected
-    return new Executable executable
+module.exports.executable = (parameters...) ->
+    executable = new Executable parameters...
+    executable.sourcing().remote = executable
+    check = _.isFunction executable.sourcing()
+    assert.ok check; executable.sourcing()
 
 # A formal abstract base class for all remoted objects. It merely
 # shapes up the common interfaces exposed by all of the remotable
@@ -116,7 +114,14 @@ module.exports.Objectable = class Objectable extends Remotable
     # an objectible object. Beware, when you are passing the class
     # definitin in here, remember that the definition is most likely
     # will be executed on a remote side, with differen environment.
-    constructor: (objectable) -> @sourcing objectable
+    constructor: (objectable) ->
+        detected = _.isFunction objectable
+        passed = -> objectable.length is 0
+        objectable = "The argument is not a function"
+        wrapping = "The wrapper must not have arguments"
+        throw new Error objectable unless detected
+        throw new Error wrapping unless passed()
+        @sourcing objectable; this
 
     # Generation of string representation of the object instantiation
     # in JavaScript, so that it can be executed remotely on site. An
@@ -162,7 +167,11 @@ module.exports.Executable = class Executable extends Remotable
     # object. Beware, this must be a singular, simple function, not
     # a constructor, not a bound method. It must not have any sort
     # of dependencies, because it will executed in different place.
-    constructor: (executable) -> @sourcing executable
+    constructor: (executable) ->
+        detected = _.isFunction executable
+        executable = "The argument is not a function"
+        throw new Error executable unless detected
+        @sourcing executable; this
 
     # Generation of string representation of the function invocation
     # in JavaScript, so that it can be executed remotely on site. An
