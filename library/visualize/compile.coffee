@@ -23,7 +23,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
-_ = require "lodash"
 uuid = require "node-uuid"
 asciify = require "asciify"
 connect = require "connect"
@@ -36,6 +35,11 @@ paths = require "path"
 http = require "http"
 util = require "util"
 fs = require "fs"
+
+_ = require "lodash"
+trees = require "./trees"
+extendz = require "./../nucleus/extends"
+{Element, Content, Attribute} = trees
 
 # This class is a rough draft implementation of the tree compiler.
 # It compiles the entiry tree (or subtree) recursively into a subset
