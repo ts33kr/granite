@@ -115,11 +115,11 @@ module.exports.Objectable = class Objectable extends Remotable
     # definitin in here, remember that the definition is most likely
     # will be executed on a remote side, with differen environment.
     constructor: (objectable) ->
-        detected = _.isFunction objectable
         barebones = objectable.length is 0
+        functional = _.isFunction objectable
         inconsistent = "The argument is not a function"
         wrapping = "The wrapper must not have arguments"
-        throw new Error inconsistent unless detected
+        throw new Error inconsistent unless functional
         throw new Error wrapping unless barebones
         @sourcing objectable; this
 
@@ -168,9 +168,12 @@ module.exports.Executable = class Executable extends Remotable
     # a constructor, not a bound method. It must not have any sort
     # of dependencies, because it will executed in different place.
     constructor: (executable) ->
-        detected = _.isFunction executable
-        executable = "The argument is not a function"
-        throw new Error executable unless detected
+        dependable = _.isMethod executable
+        functional = _.isFunction executable
+        inconsistent = "The argument is not a function"
+        dependent = "The argument is a dependent method"
+        throw new Error inconsistent unless functional
+        throw new Error dependent if dependable
         @sourcing executable; this
 
     # Generation of string representation of the function invocation
