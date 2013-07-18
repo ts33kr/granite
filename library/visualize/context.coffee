@@ -37,11 +37,18 @@ http = require "http"
 util = require "util"
 fs = require "fs"
 
+_ = require "lodash"
+trees = require "./trees"
+remote = require "./remote"
+extendz = require "./../nucleus/extends"
+{Element, Content, Attribute} = trees
+{executable, objectable} = remote
+
 # This class is a wrapper for a context object that comes along with
 # an arbitrary event sent or received at either transport or element.
 # At this point this is just an abstraction for future usage that may
 # or may not be later implemented. Specifically, serialization logic.
-module.exports.Context = class Context extends Object
+module.exports.Context = objectable -> class Context extends Object
 
     # Defines the property that either fetches or sets the foreign
     # flag for any context instance. If the foreign flag is in place
