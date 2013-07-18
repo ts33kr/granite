@@ -49,9 +49,10 @@ kernel = require "./../nucleus/kernel"
 # directly creating new objectables. Refer to the later for info.
 module.exports.objectable = (parameters...) ->
     objectable = new Objectable parameters...
-    objectable.sourcing()().remote = objectable
-    check = _.isObject objectable.sourcing()()
-    assert.ok check; objectable.sourcing()()
+    compiledOnce = objectable.sourcing()()
+    compiledOnce.remote = objectable
+    check = _.isObject compiledOnce
+    assert.ok check; compiledOnce
 
 # A shorthand method for creating new instances of the executables.
 # This method is better than explicitly creating new objects, since
@@ -129,12 +130,12 @@ module.exports.Objectable = class Objectable extends Remotable
     # only a set of arguments that must be scalars or similar to them.
     # This method does not do any processing of args, inserts raws.
     unprocessed: (parameters...) ->
-        detected = _.isFunction @sourcing()
-        passed = -> @sourcing().length is 0
-        objectable = "No valid objectable has been set"
+        barebones = @sourcing().length is 0
+        functional = _.isFunction @sourcing()
+        inconsistent = "The argument is not a function"
         wrapping = "The wrapper must not have arguments"
-        throw new Error objectable unless detected
-        throw new Error wrapping unless passed()
+        throw new Error inconsistent unless functional
+        throw new Error wrapping unless barebones
         joined = parameters.join(", ").toString()
         stringified = @sourcing().toString()
         "new ((#{stringified})()) (#{joined})"
@@ -145,12 +146,12 @@ module.exports.Objectable = class Objectable extends Remotable
     # only a set of arguments that must be scalars or similar to them.
     # This method does process the args, each arg being inspected.
     processed: (parameters...) ->
-        detected = _.isFunction @sourcing()
-        passed = -> @sourcing().length is 0
-        objectable = "No valid objectable has been set"
+        barebones = @sourcing().length is 0
+        functional = _.isFunction @sourcing()
+        inconsistent = "The argument is not a function"
         wrapping = "The wrapper must not have arguments"
-        throw new Error objectable unless detected
-        throw new Error wrapping unless passed()
+        throw new Error inconsistent unless functional
+        throw new Error wrapping unless barebones
         inspected = _.map parameters, util.inspect
         joined = inspected.join(", ").toString()
         stringified = @sourcing().toString()
@@ -182,9 +183,9 @@ module.exports.Executable = class Executable extends Remotable
     # and a set of arguments that must be scalars or similar to them.
     # This method does not do any processing of args, inserts raws.
     unprocessed: (binder, parameters...) ->
-        detected = _.isFunction @sourcing()
+        functional = _.isFunction @sourcing()
         executable = "No valid executable has been set"
-        throw new Error executable unless detected
+        throw new Error executable unless functional
         parameters.unshift binder or "this"
         joined = parameters.join(", ").toString()
         stringified = @sourcing().toString()
@@ -196,9 +197,9 @@ module.exports.Executable = class Executable extends Remotable
     # and a set of arguments that must be scalars or similar to them.
     # This method does process the args, each arg being inspected.
     processed: (binder, parameters...) ->
-        detected = _.isFunction @sourcing()
+        functional = _.isFunction @sourcing()
         executable = "No valid executable has been set"
-        throw new Error executable unless detected
+        throw new Error executable unless functional
         inspected = _.map parameters, util.inspect
         joined = inspected.join(", ").toString()
         stringified = @sourcing().toString()
