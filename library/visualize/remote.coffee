@@ -100,8 +100,8 @@ module.exports.Remotable = class Remotable extends events.EventEmitter
         return @$sourcing unless sourcing?
         invalid = "Sourcing is not correct"
         throw new Error invalid unless correct
-        @emit "sourcing", this, @$sourcing, sourcing
-        @$sourcing = sourcing.toString()
+        @emit "sourcing", @$sourcing, sourcing
+        @$sourcing = sourcing
 
 # A class that represents a wrapped remote classes. It accepts the
 # class wrapped in function and then stores it for later. Then when
@@ -116,11 +116,11 @@ module.exports.Objectable = class Objectable extends Remotable
     # will be executed on a remote side, with differen environment.
     constructor: (objectable) ->
         detected = _.isFunction objectable
-        passed = -> objectable.length is 0
-        objectable = "The argument is not a function"
+        barebones = objectable.length is 0
+        inconsistent = "The argument is not a function"
         wrapping = "The wrapper must not have arguments"
-        throw new Error objectable unless detected
-        throw new Error wrapping unless passed()
+        throw new Error inconsistent unless detected
+        throw new Error wrapping unless barebones
         @sourcing objectable; this
 
     # Generation of string representation of the object instantiation
