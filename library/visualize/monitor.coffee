@@ -72,7 +72,8 @@ module.exports.Monitor = class Monitor extends events.EventEmitter
             missing = "Cannot resolve element #{origin}"
             throw new Error missing unless resolved?
             wrapped.foreign yes if wrapped.foreign?
-            @element.emit event, resolved, wrapped
+            @element().emit event, resolved, wrapped
+            @transport().emit "acknowledge", context
 
     # Attach one of the ends of the monitor to the previously bound
     # element instance. This method will attach the specific event
@@ -88,7 +89,7 @@ module.exports.Monitor = class Monitor extends events.EventEmitter
             throw new Error wrapping unless wrapped
             return undefined if context.foreign()
             unwrapped = context.unwrap() or undefined
-            @transport.emit event, tagging, unwrapped
+            @transport().emit event, tagging, unwrapped
 
     # Set the transport channel of this session. If the transport is
     # not supplied, the method will return the transport instead of
