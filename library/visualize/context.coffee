@@ -50,6 +50,31 @@ extendz = require "./../nucleus/extends"
 # or may not be later implemented. Specifically, serialization logic.
 module.exports.Context = objectable -> class Context extends Object
 
+    # Defines the property that either fetches or sets the timestamp
+    # value for any context instance. Usually, the entity creating
+    # a new context instance will assign issue a creation timestamp
+    # expressed as some integral, non negative value. The typically
+    # used mechanism is using the UNIX timestamps, dervided from it.
+    Object.defineProperty @prototype, "stamps",
+        enumerable: no, value: (stamps) ->
+            correct = _.isNumber stamps
+            return @$stamps unless stamps?
+            invalid = "Stamps is not a number"
+            throw new Error invalid unless correct
+            @$stamps = stamps
+
+    # Defines the property that either fetches or sets the stamping
+    # value for any context instance. Usually, the entity creating
+    # a new context instance will mark it with a unique identifier.
+    # Typically this should be an issued v1 time based UUID tag.
+    Object.defineProperty @prototype, "imprint",
+        enumerable: no, value: (imprint) ->
+            correct = _.isString imprint
+            return @$imprint unless imprint?
+            invalid = "Imprint is not a string"
+            throw new Error invalid unless correct
+            @$imprint = imprint
+
     # Defines the property that either fetches or sets the foreign
     # flag for any context instance. If the foreign flag is in place
     # that means that the context originated from outside of the scope
