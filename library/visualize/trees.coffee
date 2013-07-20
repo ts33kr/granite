@@ -207,8 +207,8 @@ module.exports.Element = class Element extends Identity
         throw new Error invalid unless correct
         throw new Error abstract if node.abstract()
         index = _.findIndex @children or [], isEqual
-        @emit "remove", this, node, index if index?
         (@children ?= []).splice index, 1 if index?
+        @emit "remove", this, node, index if index?
 
     # Prepend the supplied node to the array of children nodes of
     # this element. The node undergoes some substantial testing
@@ -223,8 +223,8 @@ module.exports.Element = class Element extends Identity
         throw new Error abstract if node.abstract()
         previous = node.parent(); node.parent this
         exists = _.find @children or [], isEqual
-        @emit "prepend", this, node unless exists?
         (@children ?= []).unshift node unless exists
+        @emit "prepend", this, node unless exists
 
     # Append the supplied node to the array of children nodes of
     # this element. The node undergoes some substantial testing
@@ -239,5 +239,5 @@ module.exports.Element = class Element extends Identity
         throw new Error abstract if node.abstract()
         previous = node.parent(); node.parent this
         exists = _.find @children or [], isEqual
-        @emit "append", this, node unless exists?
         (@children ?= []).push node unless exists
+        @emit "append", this, node unless exists
