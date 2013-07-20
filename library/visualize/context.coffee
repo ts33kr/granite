@@ -54,7 +54,7 @@ module.exports.Context = objectable -> class Context extends Object
     # flag for any context instance. If the foreign flag is in place
     # that means that the context originated from outside of the scope
     # and the event that it is associated with originated on a client.
-    Object.defineProperty Context::, "foreign",
+    Object.defineProperty @prototype, "foreign",
         enumerable: no, value: (foreign) ->
             correct = _.isBoolean foreign
             return @$foreign unless foreign?
@@ -66,7 +66,7 @@ module.exports.Context = objectable -> class Context extends Object
     # this point the implementation is fairly simple and it simply
     # wraps the new instance of context around the supplied object.
     # If something other than object is supplied, it will complain.
-    @wrap: (source) -> new this source
+    @wrap: (source) -> Object.create @prototype
 
     # Unwrap the current instance of the context to return the pure
     # source object that can be transported via transport channel to
