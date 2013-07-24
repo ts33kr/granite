@@ -53,7 +53,7 @@ module.exports.Augment = class Augment extends events.EventEmitter
     constructor: (@resource, @foundation) ->
         @service = class extends @foundation
         @service.nick = @resource.unescape()
-        @emit("construct", @resource, @service)
+        @emit "construct", @resource, @service
         @service.publish @foundation.EVERYWHERE
         @service.domain @foundation.ANY
         @service.resource @resource
@@ -106,6 +106,6 @@ module.exports.Augment = class Augment extends events.EventEmitter
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
         resource = regexify resource  if _.isString resource
         notRegexp = "The #{inspected} is not a valid regular expression"
-        throw new Error(notRegexp) unless _.isRegExp resource
+        throw new Error notRegexp unless _.isRegExp resource
         return augment if augment = storage[resource.source]
         storage[resource.source] = new Augment resource, foundation
