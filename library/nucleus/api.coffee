@@ -62,9 +62,9 @@ module.exports.Api = class Api extends service.Service
         codes = http.STATUS_CODES
         message = codes[methodNotAllowed]
         doesJson = response.accepts /json/
-        response.writeHead(methodNotAllowed, message)
+        response writeHead methodNotAllowed, message
         descriptor = error: message, code: methodNotAllowed
-        @emit("unsupported", request, response, next)
+        @emit "unsupported", request, response, next
         return response.send descriptor if doesJson
         response.send message; this
 
@@ -78,14 +78,14 @@ module.exports.Api = class Api extends service.Service
         parameters = [request, response, next]
         tokens = super(parameters...)
         method = request?.method?.toUpperCase()?.trim()
-        return @unsupported(parameters...) unless method in knowns
+        return @unsupported parameters... unless method in knowns
         missing = "Missing implementation for #{method} method"
-        throw new Error(missing) unless method of this
+        throw new Error missing unless method of this
         variables = [tokens.resource, tokens.domain]
-        flags = @preprocess(request, response, variables...)
+        flags = @preprocess request, response, variables...
         return if response.headersSent or flags is yes
         result = @[method](request, response, variables...)
-        @postprocess(request, response, result, variables)
+        @postprocess request, response, result, variables
 
     # This method should generally be used to obtain HTTP methods that
     # are allowed on this resources. This is not the only possible way
@@ -96,7 +96,7 @@ module.exports.Api = class Api extends service.Service
         doesJson = response.accepts /json/
         pathname = try url.parse(request.url).pathname
         checkIfSupported = (method) => @[method] isnt @unsupported
-        supported = _.filter(knowns, checkIfSupported)
+        supported = _.filter knowns, checkIfSupported
         descriptor = methods: supported, resource: pathname
         return response.send descriptor if doesJson
         formatted = supported.join(", ") + "\r\n"
@@ -133,28 +133,28 @@ module.exports.Stub = class Stub extends Api
     # usually means partial replacing contents with the new contents.
     # This HTTP method nicely maps to UPDATE method of the storages.
     # Use this method to partially replace the contents of resources.
-    PATCH: @::unsupported
+    PATCH: @prototype.unsupported
 
     # Delete the contents of the resources at the establushed path. It
     # generally should destroy the contents of the resource for good.
     # Be sure to provide enough protection for your API for destructive
     # HTTP methods like this one. Apply it to indicate destruction.
-    DELETE: @::unsupported
+    DELETE: @prototype.unsupported
 
     # Append the contents to the resources at the established path. It
     # usually means adding new content in addition to the old one. This
     # HTTP method nicely maps to INSERT method of the storage engines.
     # Use this method to successively append new contents to resources.
-    POST: @::unsupported
+    POST: @prototype.unsupported
 
     # Alter the contents of the resources at the established path. It
     # usually means replacing the old contents with the new contents.
     # This HTTP method nicely maps to UPDATE method of the storages.
     # Use this method to repetidely replace the contents of resources.
-    PUT: @::unsupported
+    PUT: @prototype.unsupported
 
     # Get the contents of the resources at the established path. It
     # is a good idea for this HTTP method to be idempotent. As the
     # rule, this method does not have to alter any contents or data
     # of the resource. Use for unobtrusive retrieval of resources.
-    GET: @::unsupported
+    GET: @prototype.unsupported
