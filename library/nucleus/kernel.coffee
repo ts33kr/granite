@@ -66,8 +66,8 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
             identify = "Running kernel %s, codename: %s"
-            logger.info(identify.underline, types...)
-            initializer?.apply(this)
+            logger.info identify.underline, types...
+            initializer?.apply this
 
     # Shutdown the kernel instance. This includes shutting down both
     # HTTP and HTTPS server that may be running, stopping the router
@@ -79,7 +79,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         s.unregister() for s in @router.registry
         try @server.close(); try @secure.close()
         shutdown = "Shutting the kernel down".red
-        logger.info(shutdown); @emit("shutdown")
+        logger.info shutdown; @emit "shutdown"
         @scope.disperse(); this
 
     # Instantiate a hot swapping watcher for this kernel and setup
@@ -108,7 +108,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @broker = new content.Broker
         message = "Booted up the kernel instance"
         process.on "SIGINT", => @shutdownKernel()
-        logger.info(message.red); this
+        logger.info message.red; this
 
     # Create and configure the HTTP and HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
@@ -128,40 +128,40 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     # for instantiating, configuring and launching up the servers.
     startupHttpsServer: ->
         options = new Object
-        secure = nconf.get("secure")
-        hostname = nconf.get("server:hostname")
+        secure = nconf.get "secure"
+        hostname = nconf.get "server:hostname"
         key = paths.relative process.cwd(), secure.key
         cert = paths.relative process.cwd(), secure.cert
-        logger.info("Using SSL key at %s".grey, key)
-        logger.info("Using SSL cert at %s".grey, cert)
+        logger.info "Using SSL key at %s".grey, key
+        logger.info "Using SSL cert at %s".grey, cert
         options.key = fs.readFileSync paths.resolve key
         options.cert = fs.readFileSync paths.resolve cert
         rsecure = "Running HTTPS server at %s:%s".magenta
-        logger.info(rsecure, hostname, secure.port)
-        @secure = https.createServer(options, @connect)
-        @secure?.listen(secure.port, hostname)
+        logger.info rsecure, hostname, secure.port
+        @secure = https.createServer options, @connect
+        @secure?.listen secure.port, hostname
 
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
     # scoping configuration in order to obtain the data necessary
     # for instantiating, configuring and launching up the servers.
     startupHttpServer: ->
-        server = nconf.get("server")
-        hostname = nconf.get("server:hostname")
+        server = nconf.get "server"
+        hostname = nconf.get "server:hostname"
         rserver = "Running HTTP server at %s:%s".magenta
-        logger.info(rserver, hostname, server.port)
-        @server = http.createServer(@connect)
-        @server?.listen(server.port, hostname)
+        logger.info rserver, hostname, server.port
+        @server = http.createServer @connect
+        @server?.listen server.port, hostname
 
     # This method sets up the necessary internal toolkits, such as
     # the determined scope and the router, which is then are wired
     # in with the located and instantiated services. Please refer
     # to the implementation on how and what is being done exactly.
     setupRoutableServices: (services...) ->
-        tag = nconf.get("NODE_ENV")
+        tag = nconf.get "NODE_ENV"
         missing = "No NODE_ENV variable found"
         c = (s) => @router.registerRoutable new s @
-        throw new Error(missing) unless _.isString(tag)
+        throw new Error missing unless _.isString tag
         @scope = scoping.Scope.lookupOrFail tag
         @scope.incorporate this
         @router = new routing.Router this
