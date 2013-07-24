@@ -39,11 +39,11 @@ util = require "util"
 # process such documentation and do with it whatever is necessary.
 # This approach gives unique ability to build self documented APIs.
 module.exports.describe = (method, descriptor) ->
-    validated = _.isFunction(descriptor)
+    validated = _.isFunction descriptor
     missing = "No descriptor function has been given"
-    throw new Error(missing) unless validated
+    throw new Error missing unless validated
     method.document = new Document
-    descriptor.apply(method.document)
+    descriptor.apply method.document
 
 # Traverse all of the services that are registered with the router
 # and collect the documentation for each method, then given this
@@ -57,8 +57,8 @@ module.exports.collect = (kernel) ->
         unsupported = service.unsupported
         implemented = (m) -> service[m] isnt unsupported
         doc = (m) -> service[m].document or new Document
-        filtered = _.filter(supported, implemented)
-        methods = _.object(filtered, _.map(filtered, doc))
+        filtered = _.filter supported, implemented
+        methods = _.object filtered, _.map(filtered, doc)
         service: service, methods: methods
 
 # Descriptor of some method of arbitrary service, in a structured
@@ -75,8 +75,8 @@ module.exports.Document = class Document extends events.EventEmitter
         return @$example if arguments.length is 0
         isExample = _.isString example
         noExample = "The example is not a string"
-        throw new Error(noExample) unless isExample
-        @emit("example", arguments...)
+        throw new Error noExample unless isExample
+        @emit "example", arguments...
         @$example = example.toString()
 
     # Either get or set the inputs of the method that is being
@@ -87,8 +87,8 @@ module.exports.Document = class Document extends events.EventEmitter
         return @$inputs if arguments.length is 0
         isInputs = _.isString inputs
         noInputs = "The inputs is not a string"
-        throw new Error(noInputs) unless isInputs
-        @emit("inputs", arguments...)
+        throw new Error noInputs unless isInputs
+        @emit "inputs", arguments...
         @$inputs = inputs.toString()
 
     # Either get or set the results of the method that is being
@@ -99,8 +99,8 @@ module.exports.Document = class Document extends events.EventEmitter
         return @$results if arguments.length is 0
         isResults = _.isString results
         noResults = "The results is not a string"
-        throw new Error(noResults) unless isResults
-        @emit("results", arguments...)
+        throw new Error noResults unless isResults
+        @emit "results", arguments...
         @$results = results.toString()
 
     # Either get or set the description of the method that is being
@@ -111,8 +111,8 @@ module.exports.Document = class Document extends events.EventEmitter
         return @$synopsis if arguments.length is 0
         isSynopsis = _.isString synopsis
         noSynopsis = "The synopsis is not a string"
-        throw new Error(noSynopsis) unless isSynopsis
-        @emit("synopsis", arguments...)
+        throw new Error noSynopsis unless isSynopsis
+        @emit "synopsis", arguments...
         @$synopsis = synopsis.toString()
 
     # Either get or set the argument information of the method that
@@ -121,16 +121,16 @@ module.exports.Document = class Document extends events.EventEmitter
     # Argument consists of name, approximate type and description.
     argument: (identify, typeable, description) ->
         return @$argument if arguments.length is 0
-        isIdentify = _.isString(identify)
-        isTypeable = _.isString(typeable)
-        isDescription = _.isString(description)
+        isIdentify = _.isString identify
+        isTypeable = _.isString typeable
+        isDescription = _.isString description
         noIdentify = "The identify is not a string"
         noTypeable = "The typeable is not a string"
         noDescription = "The description is not a string"
-        throw new Error(noIdentify) unless isIdentify
-        throw new Error(noTypeable) unless isTypeable
-        throw new Error(noDescription) unless isDescription
-        @emit("argument", arguments...)
+        throw new Error noIdentify unless isIdentify
+        throw new Error noTypeable unless isTypeable
+        throw new Error noDescription unless isDescription
+        @emit "argument", arguments...
         (@$argument ?= []).push
             description: description
             identify: identify
