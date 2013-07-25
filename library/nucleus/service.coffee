@@ -69,13 +69,13 @@ module.exports.Service = class Service extends events.EventEmitter
         identify = @nick or @name
         duplicate = pattern in (@resources or [])
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
-        pattern = regexify(pattern)  if _.isString(pattern)
+        pattern = regexify pattern  if _.isString pattern
         inspected = pattern.unescape()?.underline or pattern.source
         associate = "Associating #{inspected} resource with #{identify}"
         notRegexp = "The #{inspected} is not a valid regular expression"
-        throw new Error(notRegexp) unless _.isRegExp(pattern)
+        throw new Error notRegexp unless _.isRegExp pattern
         (@resources ?= []).push pattern unless duplicate
-        (logger.debug(associate.cyan) unless duplicate); this
+        (logger.debug associate.cyan unless duplicate); this
 
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted domain patterns.
@@ -85,14 +85,14 @@ module.exports.Service = class Service extends events.EventEmitter
     @domain: (pattern) ->
         identify = @nick or @name
         duplicate = pattern in (@domains or [])
-        regexify = (s) -> new RegExp(RegExp.escape(s))
+        regexify = (s) -> new RegExp RegExp.escape(s)
         pattern = regexify(pattern)  if _.isString(pattern)
         inspected = pattern.unescape()?.underline or pattern.source
         associate = "Associating #{inspected} domain with #{identify}"
         notRegexp = "The #{inspected} is not a valid regular expression"
-        throw new Error(notRegexp) unless _.isRegExp(pattern)
+        throw new Error notRegexp unless _.isRegExp pattern
         (@domains ?= []).push pattern unless duplicate
-        (logger.debug(associate.cyan) unless duplicate); this
+        (logger.debug associate.cyan unless duplicate); this
 
     # Publish the current service class (not instance) to the slots
     # in the specified scopes. If the service already exist in some
@@ -106,8 +106,8 @@ module.exports.Service = class Service extends events.EventEmitter
         p = (scope) => (scope.services ?= []).push this
         n = (scope) => logger.debug(notification, inspected, scope.tag)
         notification = "Publishing %s service to %s scope".grey
-        scopes = _.values(registry) unless scopes?.length > 0
-        (p(s); n(s)) for own i, s of scopes when not exists(s)
+        scopes = _.values registry unless scopes?.length > 0
+        (p(s); n(s)) for own i, s of scopes when not exists s
 
     # Unregister the current service instance from the kernel router.
     # You should call this method only after the service has been
@@ -119,12 +119,12 @@ module.exports.Service = class Service extends events.EventEmitter
         noKernel = "No kernel reference found"
         noRouter = "Could not access the router"
         unregister = "Unregistering the %s service"
-        throw new Error(noKernel) unless @kernel?
+        throw new Error noKernel unless @kernel?
         registry = @kernel.router?.registry
-        throw new Error(noRouter) unless registry?
-        filtered = _.without(registry, this)
-        @emit("unregister", @kernel, @router)
-        logger.info(unregister.yellow, nick or name)
+        throw new Error noRouter unless registry?
+        filtered = _.without registry, this
+        @emit "unregister", @kernel, @router
+        logger.info unregister.yellow, nick or name
         @kernel.router.registry = filtered; this
 
     # This method determines whether the supplied HTTP request
@@ -137,14 +137,14 @@ module.exports.Service = class Service extends events.EventEmitter
         domains = @constructor.domains or []
         resources = @constructor.resources or []
         pathname = url.parse(request.url).pathname
-        hostname = _.first(request.headers.host.split(":"))
-        pdomain = (pattern) -> pattern.test(hostname)
-        presource = (pattern) -> pattern.test(pathname)
-        domainOk = _.some(domains, pdomain)
-        resourceOk = _.some(resources, presource)
+        hostname = _.first request.headers.host.split ":"
+        pdomain = (pattern) -> pattern.test hostname
+        presource = (pattern) -> pattern.test pathname
+        domainOk = _.some domains, pdomain
+        resourceOk = _.some resources, presource
         parameters = [request, response, next]
         matches = domainOk and resourceOk
-        @emit("matches", matches, parameters...)
+        @emit "matches", matches, parameters...
         return domainOk and resourceOk
 
     # This method should process the already matched HTTP request.
@@ -155,15 +155,15 @@ module.exports.Service = class Service extends events.EventEmitter
     process: (request, response, next) ->
         gdomain = null; gresource = null
         pathname = url.parse(request.url).pathname
-        hostname = _.first(request.headers.host.split(":"))
+        hostname = _.first request.headers.host.split ":"
         domains = @constructor.domains or []
         resources = @constructor.resources or []
-        pdomain = (p) -> gdomain = hostname.match(p)
-        presource = (p) -> gresource = pathname.match(p)
-        pdomain = _.find(domains, pdomain)
-        presource = _.find(resources, presource)
-        assert(gdomain isnt null, "missing domain")
-        assert(gresource isnt null, "missing resource")
+        pdomain = (p) -> gdomain = hostname.match p
+        presource = (p) -> gresource = pathname.match p
+        pdomain = _.find domains, pdomain
+        presource = _.find resources, presource
+        assert gdomain isnt null, "missing domain"
+        assert gresource isnt null, "missing resource"
         parameters = [request, response, next]
-        @emit("process", gdomain, gresource, parameters...)
+        @emit "process", gdomain, gresource, parameters...
         return domain: gdomain, resource: gresource
