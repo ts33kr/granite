@@ -42,10 +42,10 @@ util = require "util"
 module.exports.urlWithHost = (ssl = no, parts, params, segment) ->
     params = query.stringify params if params?
     parts = parts.join "/" if _.isArray parts
-    server = nconf.get("server:port")
-    secure = nconf.get("secure:port")
+    server = nconf.get "server:port"
+    secure = nconf.get "secure:port"
     port = if ssl then secure else server
-    hostname = nconf.get("server:hostname")
+    hostname = nconf.get "server:hostname"
     hostname = "#{hostname}:#{port}"
     hostname += "/#{parts}" if parts?
     hostname += "?#{params}" if params?
