@@ -187,4 +187,4 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @connect.use plumbs.sender this
         @connect.use plumbs.logger this
         @connect.use m for m in middlewares
-        @connect.use(@middleware)
+        @connect.use @middleware
