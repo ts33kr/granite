@@ -24,6 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 _ = require "lodash"
+assert = require "assert"
 connect = require "connect"
 moment = require "moment"
 logger = require "winston"
@@ -46,10 +47,10 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # The scope startup logic should be implemented in the method.
     constructor: (tag, synopsis) ->
         @tag = tag if _.isString(tag)
-        @synopsis = synopsis if _.isString(synopsis)
+        @synopsis = synopsis if _.isString synopsis
         @directory = @constructor.DIRECTORY or __dirname
-        initializer = _.find(arguments, _.isFunction)
-        initializer?.call(@, tag, synopsis)
+        initializer = _.find arguments, _.isFunction
+        initializer?.call this, tag, synopsis
 
     # Push the current scope instance into the global registry
     # of scopes, unless this instance already exists there. This
@@ -58,8 +59,8 @@ module.exports.Scope = class Scope extends events.EventEmitter
     pushToRegistry: (override, aliases...) ->
         registry = @constructor.REGISTRY ?= {}
         existent = (tag) -> tag of registry and not override
-        valids = _.filter(aliases, (a) -> not existent(a))
-        registry[@tag] = this unless existent(@tag)
+        valids = _.filter aliases, (a) -> not existent(a)
+        registry[@tag] = this unless existent @tag
         registry[alias] = this for alias in valids
 
     # Lookup the possibly existent scope with one of the following
@@ -71,8 +72,8 @@ module.exports.Scope = class Scope extends events.EventEmitter
         notFound = "Could not found any of #{joined} scoped"
         logger.info("Looking up any of this scopes: %s".grey, joined)
         found = (v for own k, v of registry when k in aliases)
-        throw new Error(notFound) unless found.length > 0
-        _.head(found)
+        throw new Error notFound unless found.length > 0
+        assert.ok _.isObject scope = _.head(found); scope
 
     # The utilitary method that is being called by implementation of
     # the incorporation method to establish the desirable facade for
@@ -82,9 +83,9 @@ module.exports.Scope = class Scope extends events.EventEmitter
         format = "DD/MM/YYYY @ hh:mm:ss"
         stamp = -> moment().format format
         options = timestamp: stamp, colorize: yes
-        options.level = nconf.get("log:level")
+        options.level = nconf.get "log:level"
         noLevel = "No logging level specified"
-        throw new Error(noLevel) unless options.level
+        throw new Error noLevel unless options.level
         logger.remove logger.transports.Console
         logger.add logger.transports.Console, options
 
@@ -96,8 +97,8 @@ module.exports.Scope = class Scope extends events.EventEmitter
         fpath = "#{@directory}/#{@tag}.json"
         nconf.defaults(@defaults or @constructor.DEFAULTS or {})
         nconf.overrides(@overrides or @constructor.OVERRIDES or {})
-        logger.info("Incorporating up the #{@tag} scope".cyan)
-        logger.info("Reading the #{fpath} config".cyan)
+        logger.info "Incorporating up the #{@tag} scope".cyan
+        logger.info "Reading the #{fpath} config".cyan
         exists = fs.existsSync fpath; nconf.file fpath if exists
         @constructor.setupLoggingFacade kernel
 
@@ -107,5 +108,5 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # implementation does not do almost anything, so it is up to you.
     disperse: (kernel) ->
         fpath = "#{@directory}/#{@tag}.json"
-        logger.info("Dissipating the #{@tag} scope".grey)
-        logger.info("Scope used #{fpath} for config".grey)
+        logger.info "Dissipating the #{@tag} scope".grey
+        logger.info "Scope used #{fpath} for config".grey
