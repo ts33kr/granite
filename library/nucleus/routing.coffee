@@ -50,19 +50,19 @@ module.exports.Router = class Router extends events.EventEmitter
     lookupMiddleware: (request, response, next) ->
         incoming = "#{request.url.underline}"
         parameters = [request, response, next]
-        predicate = (routable) -> routable.matches(parameters...)
+        predicate = (routable) -> routable.matches parameters...
         recognized = _.find(@registry or [],  predicate) or null
         if recognized then constructor = recognized.constructor
         inspected = constructor?.nick or constructor?.name
-        @emit("recognized", recognized, parameters...) if recognized?
+        @emit "recognized", recognized, parameters... if recognized?
         matching = "Request #{incoming} matches #{inspected} service"
-        logger.debug(matching.grey) if recognized?
-        return recognized.process(parameters...) if recognized?
-        logger.warn("No routable for #{incoming} request".yellow)
-        matches = @fallback?.matches(request, response, next)
-        @emit("fallback", @fallback, matches, parameters...)
-        return @fallback.process(parameters...) if matches?
-        logger.warn("No fallback for #{incoming} request".yellow)
+        logger.debug matching.grey if recognized?
+        return recognized.process parameters... if recognized?
+        logger.warn "No routable for #{incoming} request".yellow
+        matches = @fallback?.matches request, response, next
+        @emit "fallback", @fallback, matches, parameters...
+        return @fallback.process parameters... if matches?
+        logger.warn "No fallback for #{incoming} request".yellow
         next() unless response.headersSent
 
     # Try registering a new routable object. The method checks for
@@ -80,11 +80,11 @@ module.exports.Router = class Router extends events.EventEmitter
         goneProcess = "The #{inspected} has no valid process method"
         passMatches = _.isFunction(matches) and matches?.length is 3
         passProcess = _.isFunction(process) and process?.length is 3
-        throw new Error(goneMatches) unless passMatches
-        throw new Error(goneProcess) unless passProcess
-        logger.info("Adding #{inspected} to the router".blue)
+        throw new Error goneMatches unless passMatches
+        throw new Error goneProcess unless passProcess
+        logger.info "Adding #{inspected} to the router".blue
         (@registry ?= []).push routable unless duplicate
-        (@emit("registered", routable) unless duplicate); this
+        (@emit "registered", routable unless duplicate); this
 
     # Install the routable that should handle the requests that are
     # not handled via the registered routables. The routable has to
@@ -100,7 +100,7 @@ module.exports.Router = class Router extends events.EventEmitter
         goneProcess = "The #{inspected} has no valid process method"
         passMatches = _.isFunction(matches) and matches?.length is 3
         passProcess = _.isFunction(process) and process?.length is 3
-        throw new Error(goneMatches) unless passMatches
-        throw new Error(goneProcess) unless passProcess
-        logger.info("Installing #{inspected} as fallback".blue)
-        @fallback = routable; @emit("installed", routable); this
+        throw new Error goneMatches unless passMatches
+        throw new Error goneProcess unless passProcess
+        logger.info "Installing #{inspected} as fallback".blue
+        @fallback = routable; @emit "installed", routable; this
