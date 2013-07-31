@@ -71,13 +71,13 @@ module.exports.Document = class Document extends events.EventEmitter
     # described by this document. If you do not supply example
     # this method will return you one, assuming it was set before.
     # Example is a URL with query that shows example invocation.
-    example: (example) ->
-        return @$example if arguments.length is 0
-        isExample = _.isString example
-        noExample = "The example is not a string"
-        throw new Error noExample unless isExample
-        @emit "example", arguments...
-        @$example = example.toString()
+    follows: (follows) ->
+        return @$follows if arguments.length is 0
+        isFollows = _.isString follows
+        noFollows = "The follows is not a string"
+        throw new Error noFollows unless isFollows
+        @emit "follows", arguments...
+        @$follows = follows.toString()
 
     # Either get or set the inputs of the method that is being
     # described by this document. If you do not supply inputs
