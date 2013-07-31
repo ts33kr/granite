@@ -70,6 +70,18 @@ module.exports.Document = class Document extends events.EventEmitter
     # Either get or set the example of the method that is being
     # described by this document. If you do not supply example
     # this method will return you one, assuming it was set before.
+    # Notes are warning/beware messages about the implementation.
+    notes: (notes) ->
+        return @$notes if arguments.length is 0
+        isNotes = _.isString notes
+        noNotes = "The notes is not a string"
+        throw new Error noNotes unless isNotes
+        @emit "notes", arguments...
+        @$notes = notes.toString()
+
+    # Either get or set the example of the method that is being
+    # described by this document. If you do not supply example
+    # this method will return you one, assuming it was set before.
     # Example is a URL with query that shows example invocation.
     follows: (follows) ->
         return @$follows if arguments.length is 0

@@ -64,6 +64,7 @@ module.exports.ApiDoc = class ApiDoc extends api.Stub
             pathname: _.head(constructor.resources)?.unescape()
             patterns: _.map constructor.resources, "source"
             methods: _.map record.methods, (doc, method) ->
+                notes: doc.notes()
                 follows: doc.follows()
                 argument: doc.argument()
                 synopsis: doc.synopsis()
@@ -77,5 +78,6 @@ module.exports.ApiDoc = class ApiDoc extends api.Stub
     # class and its module implementation for more information on it.
     document.describe @prototype.GET, ->
         @follows tools.urlWithHost no, ["api", "doc"]
+        @notes "See the Document class for more information"
         @synopsis "Get all of the APIs available in the system"
         @results "An array of objects, each describes a service"
