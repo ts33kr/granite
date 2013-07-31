@@ -60,6 +60,21 @@ module.exports.Service = class Service extends events.EventEmitter
     # it is highly advised to store the kernel instance in object.
     constructor: (@kernel) ->
 
+    # Either obtain or set the HTTP location of the current service.
+    # If not location has been set, but the one is requested then
+    # the deduced default is returned. Default location is the first
+    # resource regular expression pattern being unescaped to string.
+    location: (location) ->
+        resources = @constructor.resources
+        auto = _.head(resources)?.unescape()
+        @$location = auto if @$location is undefined
+        return @$location if arguments.length is 0
+        isLocation = _.isString location
+        noLocation = "The location is not a string"
+        throw new Error noLocation unless isLocation
+        @emit "location", arguments...
+        @$location = location.toString()
+
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted resource patterns.
     # The patterns are associated with a service class, not object.

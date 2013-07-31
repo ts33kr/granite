@@ -61,8 +61,8 @@ module.exports.ApiDoc = class ApiDoc extends stubs.Restful
         collected = document.collect @kernel
         response.send _.map collected, (record) ->
             constructor = record.service.constructor
+            location: record.service.location()
             identify: constructor.nick or constructor.name
-            pathname: _.head(constructor.resources)?.unescape()
             patterns: _.map constructor.resources, "source"
             methods: _.map record.methods, (doc, method) ->
                 notes: doc.notes()
@@ -78,8 +78,8 @@ module.exports.ApiDoc = class ApiDoc extends stubs.Restful
     # exact process of how it is being documented depends on how the
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
-    document.describe @prototype.GET, ->
-        @follows tools.urlWithHost no, ["api", "doc"]
+    document.describe @prototype.GET, (method, service) ->
+        @follows tools.urlWithHost no, service.location()
         @notes "See the Document class for more information"
         @synopsis "Get all of the APIs available in the system"
         @results "An array of objects, each describes a service"

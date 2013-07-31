@@ -50,4 +50,4 @@ module.exports.urlWithHost = (ssl = no, parts, params, segment) ->
     hostname += "/#{parts}" if parts?
     hostname += "?#{params}" if params?
     hostname += "##{segment}" if segment?
-    hostname.toString()
+    hostname.toString().replace "//", "/"
