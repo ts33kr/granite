@@ -59,9 +59,12 @@ module.exports.SecureStub = class SecureStub extends stubs.Restful
     # truthful boolean, the service will NOT call implementation.
     # Please be sure invoke the super implementation, if override!
     preprocess: (request, response, resource, domain) ->
-        protectedUrl = tools.urlWithHost yes
         return if super request, response, resource, domain
         return if encrypted = request?.connection?.encrypted
-        current = pathname: request.url, query: request.params
-        current.host = protectedUrl;  current.protocol = "https"
-        response.redirect url.format current; response.headersSent
+        protectedUrl = tools.urlWithHost yes
+        current = url.parse protectedUrl
+        current.pathname = request.url
+        current.query = request.params
+        compiled = url.format current
+        response.redirect compiled
+        response.headersSent
