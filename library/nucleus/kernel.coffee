@@ -80,7 +80,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         try @server.close(); try @secure.close()
         shutdown = "Shutting the kernel down".red
         logger.info shutdown; @emit "shutdown"
-        @scope.disperse(); this
+        @scope.disperse(); process.exit -1; this
 
     # Instantiate a hot swapping watcher for this kernel and setup
     # the watcher per the scoping configuration to watch for certain
