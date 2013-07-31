@@ -48,4 +48,4 @@ extendz = require "./../nucleus/extends"
 # passing of the structural events and data. That is, when a tree
 # changes it is the pusher who delivers the structural changes info
 # to the remote site, utilizing the transport channel of the monitor.
-module.exports.Pusher = class Pusher extends monitor.Monitor
+module.exports.Physics = class Physics extends monitor.Monitor
