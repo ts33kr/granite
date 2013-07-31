@@ -66,6 +66,7 @@ module.exports.Monitor = class Monitor extends events.EventEmitter
     # handlers for all of the reference events, which will transfer
     # the event into the corresponding event on the bound element.
     attachToTransport: -> for descriptor in @constructor.REFERENCE
+        @transport().removeAllListeners(descriptor.event)
         @transport().on descriptor.event, (event, origin, context) ->
             resolved = @element().resolve origin
             wrapped = context.Context.wrap context
@@ -80,6 +81,7 @@ module.exports.Monitor = class Monitor extends events.EventEmitter
     # handlers for all of the reference events, which will transfer
     # the event into the corresponding event on the bound transport.
     attachToElement: -> for descriptor in @constructor.REFERENCE
+        @transport().removeAllListeners(descriptor.event)
         @element().on descriptor.event, (event, origin, context) ->
             tagging = origin.tag or undefined
             missing = "The element has not tag attached"
