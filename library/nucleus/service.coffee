@@ -61,9 +61,10 @@ module.exports.Service = class Service extends events.EventEmitter
     constructor: (@kernel) ->
 
     # Either obtain or set the HTTP location of the current service.
-    # If not location has been set, but the one is requested then
-    # the deduced default is returned. Default location is the first
-    # resource regular expression pattern being unescaped to string.
+    # This method is a proxy that forwards the invocation to the
+    # service constructor, for the purpose of easy access to service
+    # location when programmatically operating on the instances. Do
+    # refer to the original constructor method for more information.
     location: -> @constructor.location arguments...
 
     # Either obtain or set the HTTP location of the current service.
