@@ -59,7 +59,8 @@ module.exports.collect = (kernel) ->
         doc = (m) -> service[m].document or new Document
         filtered = _.filter supported, implemented
         methods = _.object filtered, _.map(filtered, doc)
-        doc.descriptor kernel for method, doc of methods
+        args = (method) -> [method, service, kernel]
+        doc.descriptor args(m)... for m, doc of methods
         service: service, methods: methods
 
 # Descriptor of some method of arbitrary service, in a structured
