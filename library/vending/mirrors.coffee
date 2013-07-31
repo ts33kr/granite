@@ -77,5 +77,5 @@ module.exports.ApiDoc = class ApiDoc extends api.Stub
     # class and its module implementation for more information on it.
     document.describe @prototype.GET, ->
         @follows tools.urlWithHost no, ["api", "doc"]
-        @synopsis "Get all of the APIs in the system"
-        @results "An array of objects, each describes services"
+        @synopsis "Get all of the APIs available in the system"
+        @results "An array of objects, each describes a service"
