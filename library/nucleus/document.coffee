@@ -147,3 +147,20 @@ module.exports.Document = class Document extends events.EventEmitter
             description: description
             identify: identify
             typeable: typeable
+
+    # Either get or set the failure information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # Each failure consists of the expected code and reason for fail
+    failure: (code, reasoning) ->
+        return @$failure if arguments.length is 0
+        isCode = _.isNumber code
+        isReasoning = _.isString reasoning
+        noCode = "The code is not a number"
+        noReasoning = "The reasoning is not a string"
+        throw new Error noCode unless isCode
+        throw new Error noReasoning unless isReasoning
+        @emit "failure", arguments...
+        (@$failure ?= []).push
+            reasoning: reasoning
+            code: code

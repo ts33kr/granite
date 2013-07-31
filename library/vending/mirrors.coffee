@@ -66,6 +66,7 @@ module.exports.ApiDoc = class ApiDoc extends api.Stub
             methods: _.map record.methods, (doc, method) ->
                 notes: doc.notes()
                 follows: doc.follows()
+                failure: doc.failure()
                 argument: doc.argument()
                 synopsis: doc.synopsis()
                 results: doc.results()
