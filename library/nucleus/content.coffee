@@ -60,7 +60,7 @@ module.exports.Broker = class Broker extends events.EventEmitter
     @associate: (negotiator) ->
         isValid = _.isFunction negotiator
         invalid = "Checker is not a valid method"
-        throw new Error(invalid) unless isValid
+        throw new Error invalid unless isValid
         (@registry ?= []).unshift negotiator
 
     # Associate the JSON negotiator with the broker. This method
