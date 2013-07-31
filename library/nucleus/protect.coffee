@@ -36,6 +36,7 @@ url = require "url"
 
 _ = require "lodash"
 api = require "../nucleus/api"
+stubs = require "../nucleus/stubs"
 tools = require "../nucleus/tools"
 service = require "../nucleus/service"
 extendz = require "./extends"
@@ -44,7 +45,7 @@ extendz = require "./extends"
 # providing the boilerplate for ensuring that the connection is
 # going through the HTTPS channel. If a request is not going via
 # SSL transport then redirect the current request to such one.
-module.exports.SecureStub = class SecureStub extends api.Stub
+module.exports.SecureStub = class SecureStub extends stubs.Restful
 
     # This is a marker that indicates to some internal substsems
     # that this class has to be considered abstract and therefore

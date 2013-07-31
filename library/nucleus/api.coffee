@@ -33,6 +33,7 @@ _ = require "lodash"
 extendz = require "./extends"
 routing = require "./routing"
 service = require "./service"
+document = require "./document"
 
 # This is an abstract base class for every service in the system
 # and in the end user application that provides a REST interface
@@ -87,6 +88,19 @@ module.exports.Api = class Api extends service.Service
         result = @[method](request, response, variables...)
         @postprocess request, response, result, variables
 
+# This is an abstract base class for every service in the system
+# and in the end user application that provides a REST interface
+# to some arbitrary resource, determined by HTTP path and guarded
+# by the domain matching. This is the crucial piece of framework.
+# It supports strictly methods defined in the HTTP specification.
+module.exports.WithOptions = class WithOptions extends Api
+
+    # This is a marker that indicates to some internal substsems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete class implementation. This
+    # mainly is used to exclude or account for abstract classes.
+    @abstract yes
+
     # This method should generally be used to obtain HTTP methods that
     # are allowed on this resources. This is not the only possible way
     # of implementing this method, because it usually can have a lot of
@@ -102,59 +116,11 @@ module.exports.Api = class Api extends service.Service
         formatted = supported.join(", ") + "\r\n"
         response.send formatted; this
 
-# An abstract base class with all of the HTTP methods, defined in
-# the HTTP specification and covered by the base implementation
-# stubbed with default implementations. By default, the methods
-# will throw the 405, method not allowed HTTP error status code.
-# The methods have implementations, but marked as unsupported.
-module.exports.Stub = class Stub extends Api
-
-    # This is a marker that indicates to some internal substsems
-    # that this class has to be considered abstract and therefore
-    # can not be treated as a complete class implementation. This
-    # mainly is used to exclude or account for abstract classes.
-    @abstract yes
-
-    # A hook that will be called prior to invoking the API method
-    # implementation. Please refer to this prototype signature for
-    # information on the parameters it accepts. If this returns a
-    # truthful boolean, the service will NOT call implementation.
-    # Please be sure invoke the super implementation, if override!
-    preprocess: (request, response, resource, domain) ->
-
-    # A hook that will be called after invoking the API method
-    # implementation. Please refer to this prototype signature for
-    # information on the parameters it accepts. This method accepts
-    # a value that was returned by the implementation as extra param.
-    # Please be sure invoke the super implementation, if override!
-    postprocess: (request, response, result, resource, domain) ->
-
-    # Alter the contents of the resources at the established path. It
-    # usually means partial replacing contents with the new contents.
-    # This HTTP method nicely maps to UPDATE method of the storages.
-    # Use this method to partially replace the contents of resources.
-    PATCH: @prototype.unsupported
-
-    # Delete the contents of the resources at the establushed path. It
-    # generally should destroy the contents of the resource for good.
-    # Be sure to provide enough protection for your API for destructive
-    # HTTP methods like this one. Apply it to indicate destruction.
-    DELETE: @prototype.unsupported
-
-    # Append the contents to the resources at the established path. It
-    # usually means adding new content in addition to the old one. This
-    # HTTP method nicely maps to INSERT method of the storage engines.
-    # Use this method to successively append new contents to resources.
-    POST: @prototype.unsupported
-
-    # Alter the contents of the resources at the established path. It
-    # usually means replacing the old contents with the new contents.
-    # This HTTP method nicely maps to UPDATE method of the storages.
-    # Use this method to repetidely replace the contents of resources.
-    PUT: @prototype.unsupported
-
-    # Get the contents of the resources at the established path. It
-    # is a good idea for this HTTP method to be idempotent. As the
-    # rule, this method does not have to alter any contents or data
-    # of the resource. Use for unobtrusive retrieval of resources.
-    GET: @prototype.unsupported
+    # This block describes certain method a abrbitrary service. The
+    # exact process of how it is being documented depends on how the
+    # documented function is implemented. Please refer to `Document`
+    # class and its module implementation for more information on it.
+    document.describe @prototype.OPTIONS, ->
+        @notes "This method is default implemented for each service"
+        @synopsis "Get a set of HTTP methods supported by services"
+        @results "An array of supported methods, JSON or string"
