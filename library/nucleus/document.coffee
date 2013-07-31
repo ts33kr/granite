@@ -43,7 +43,7 @@ module.exports.describe = (method, descriptor) ->
     missing = "No descriptor function has been given"
     throw new Error missing unless validated
     method.document = new Document
-    descriptor.apply method.document
+    method.document.descriptor = descriptor
 
 # Traverse all of the services that are registered with the router
 # and collect the documentation for each method, then given this
@@ -59,6 +59,7 @@ module.exports.collect = (kernel) ->
         doc = (m) -> service[m].document or new Document
         filtered = _.filter supported, implemented
         methods = _.object filtered, _.map(filtered, doc)
+        doc.descriptor kernel for method, doc of methods
         service: service, methods: methods
 
 # Descriptor of some method of arbitrary service, in a structured
