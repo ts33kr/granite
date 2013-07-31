@@ -46,8 +46,10 @@ module.exports.urlWithHost = (ssl = no, parts, params, segment) ->
     secure = nconf.get "secure:port"
     port = if ssl then secure else server
     hostname = nconf.get "server:hostname"
-    hostname = "#{hostname}:#{port}"
-    hostname += "/#{parts}" if parts?
-    hostname += "?#{params}" if params?
-    hostname += "##{segment}" if segment?
-    hostname.toString().replace "//", "/"
+    scheme = if ssl then "https" else "http"
+    dedup = (string) -> string.replace("//", "/")
+    url = "#{scheme}://#{hostname}:#{port}"
+    url += dedup("/#{parts}") if parts?
+    url += "?#{params}" if params?
+    url += "##{segment}" if segment?
+    _.escape url.toString()
