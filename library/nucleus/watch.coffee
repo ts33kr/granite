@@ -174,6 +174,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         augments = augments.map (a) -> a.service
         services = _.filter exports, isService
         services = _.merge services, augments
+        _.unique services
 
     # Watch the specified directory for addition and changing of
     # the files, looking for modules with services there and then
