@@ -43,7 +43,7 @@ document = require "./document"
 # It supports strictly methods defined in the HTTP specification.
 module.exports.Api = class Api extends service.Service
 
-    # This is a marker that indicates to some internal substsems
+    # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete class implementation. This
     # mainly is used to exclude or account for abstract classes.
@@ -96,7 +96,7 @@ module.exports.Api = class Api extends service.Service
 # It supports strictly methods defined in the HTTP specification.
 module.exports.WithOptions = class WithOptions extends Api
 
-    # This is a marker that indicates to some internal substsems
+    # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete class implementation. This
     # mainly is used to exclude or account for abstract classes.

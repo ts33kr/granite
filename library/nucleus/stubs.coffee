@@ -42,7 +42,7 @@ service = require "./service"
 # The methods have implementations, but marked as unsupported.
 module.exports.Restful = class Restful extends api.WithOptions
 
-    # This is a marker that indicates to some internal substsems
+    # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete class implementation. This
     # mainly is used to exclude or account for abstract classes.

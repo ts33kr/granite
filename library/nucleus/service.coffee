@@ -42,7 +42,7 @@ scoping = require "./scoping"
 # an internal base class, you generally should not use it directly.
 module.exports.Service = class Service extends events.EventEmitter
 
-    # This is a marker that indicates to some internal substsems
+    # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete class implementation. This
     # mainly is used to exclude or account for abstract classes.

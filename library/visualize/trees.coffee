@@ -48,7 +48,7 @@ kernel = require "./../nucleus/kernel"
 # Defines the foundation for tree traversal and event propagation.
 module.exports.Abstract = class Abstract extends events.EventEmitter
 
-    # This is a marker that indicates to some internal substsems
+    # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete class implementation. This
     # mainly is used to exclude or account for abstract classes.
@@ -96,7 +96,7 @@ module.exports.Abstract = class Abstract extends events.EventEmitter
 # a conretization of the top-level tree node abstract base class
 module.exports.Identity = class Identity extends Abstract
 
-    # This is a marker that indicates to some internal substsems
+    # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete class implementation. This
     # mainly is used to exclude or account for abstract classes.
