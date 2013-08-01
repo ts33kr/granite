@@ -53,9 +53,10 @@ module.exports.Router = class Router extends events.EventEmitter
         predicate = (routable) -> routable.matches parameters...
         recognized = _.find(@registry or [],  predicate) or null
         if recognized then constructor = recognized.constructor
-        inspected = (constructor?.nick or constructor?.name).underline
+        inspected = (constructor?.nick or constructor?.name)
+        identify = inspected.toString().underline
         @emit "recognized", recognized, parameters... if recognized?
-        matching = "Request #{incoming} matches #{inspected} service"
+        matching = "Request #{incoming} matches #{identify} service"
         logger.debug matching.grey if recognized?
         return recognized.process parameters... if recognized?
         logger.warn "No routable for #{incoming} request".yellow
@@ -74,7 +75,7 @@ module.exports.Router = class Router extends events.EventEmitter
         nick = routable?.constructor?.nick
         name = routable?.constructor?.name
         inspected = nick or name or undefined
-        identify = inspected.underline
+        identify = inspected.toString().underline
         duplicate = routable in (@registry or [])
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{inspected} has no valid matches method"
@@ -96,6 +97,7 @@ module.exports.Router = class Router extends events.EventEmitter
         nick = routable?.constructor?.nick
         name = routable?.constructor?.name
         inspected = nick or name or undefined
+        identify = inspected.toString().underline
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{inspected} has no valid matches method"
         goneProcess = "The #{inspected} has no valid process method"
@@ -103,5 +105,5 @@ module.exports.Router = class Router extends events.EventEmitter
         passProcess = _.isFunction(process) and process?.length is 3
         throw new Error goneMatches unless passMatches
         throw new Error goneProcess unless passProcess
-        logger.info "Fallback to #{inspected.underline} service".blue
+        logger.info "Fallback to #{identify} service".blue
         @fallback = routable; @emit "installed", routable; this
