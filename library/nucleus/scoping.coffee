@@ -70,7 +70,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
     @lookupOrFail: (aliases...) ->
         registry = @REGISTRY ?= {}; joined = aliases.join(", ")
         notFound = "Could not found any of #{joined} scoped"
-        logger.info("Looking up any of this scopes: %s".grey, joined)
+        logger.info "Looking up any of this scopes: %s".grey, joined
         found = (v for own k, v of registry when k in aliases)
         throw new Error notFound unless found.length > 0
         assert.ok _.isObject scope = _.head(found); scope
@@ -97,8 +97,8 @@ module.exports.Scope = class Scope extends events.EventEmitter
         fpath = "#{@directory}/#{@tag}.json"
         nconf.defaults(@defaults or @constructor.DEFAULTS or {})
         nconf.overrides(@overrides or @constructor.OVERRIDES or {})
-        logger.info "Incorporating up the #{@tag} scope".cyan
-        logger.info "Reading the #{fpath} config".cyan
+        logger.info "Incorporating up the #{@tag.bold} scope".cyan
+        logger.info "Reading the #{fpath.underline} config".cyan
         exists = fs.existsSync fpath; nconf.file fpath if exists
         @constructor.setupLoggingFacade kernel
 
@@ -108,5 +108,5 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # implementation does not do almost anything, so it is up to you.
     disperse: (kernel) ->
         fpath = "#{@directory}/#{@tag}.json"
-        logger.info "Dissipating the #{@tag} scope".grey
-        logger.info "Scope used #{fpath} for config".grey
+        logger.info "Dissipating the #{@tag.bold} scope".grey
+        logger.info "Scope used #{fpath.underline} for config".grey
