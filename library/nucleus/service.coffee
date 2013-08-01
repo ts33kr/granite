@@ -86,7 +86,7 @@ module.exports.Service = class Service extends events.EventEmitter
     # Supports implicit extraction of captured groups in the match.
     # Use this to configure what resources should match with service.
     @resource: (pattern) ->
-        identify = @nick or @name
+        identify = (@nick or @name).underline
         duplicate = pattern in (@resources or [])
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
         pattern = regexify pattern  if _.isString pattern
@@ -95,7 +95,7 @@ module.exports.Service = class Service extends events.EventEmitter
         notRegexp = "The #{inspected} is not a valid regular expression"
         throw new Error notRegexp unless _.isRegExp pattern
         (@resources ?= []).push pattern unless duplicate
-        (logger.debug associate.cyan unless duplicate); this
+        (logger.debug associate.grey unless duplicate); this
 
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted domain patterns.
@@ -103,7 +103,7 @@ module.exports.Service = class Service extends events.EventEmitter
     # Supports implicit extraction of captured groups in the match.
     # Use this to configure what domains should match with service.
     @domain: (pattern) ->
-        identify = @nick or @name
+        identify = (@nick or @name).underline
         duplicate = pattern in (@domains or [])
         regexify = (s) -> new RegExp RegExp.escape(s)
         pattern = regexify(pattern)  if _.isString(pattern)
@@ -112,7 +112,7 @@ module.exports.Service = class Service extends events.EventEmitter
         notRegexp = "The #{inspected} is not a valid regular expression"
         throw new Error notRegexp unless _.isRegExp pattern
         (@domains ?= []).push pattern unless duplicate
-        (logger.debug associate.cyan unless duplicate); this
+        (logger.debug associate.grey unless duplicate); this
 
     # Publish the current service class (not instance) to the slots
     # in the specified scopes. If the service already exist in some

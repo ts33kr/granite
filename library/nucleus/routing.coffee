@@ -53,7 +53,7 @@ module.exports.Router = class Router extends events.EventEmitter
         predicate = (routable) -> routable.matches parameters...
         recognized = _.find(@registry or [],  predicate) or null
         if recognized then constructor = recognized.constructor
-        inspected = constructor?.nick or constructor?.name
+        inspected = (constructor?.nick or constructor?.name).underline
         @emit "recognized", recognized, parameters... if recognized?
         matching = "Request #{incoming} matches #{inspected} service"
         logger.debug matching.grey if recognized?
