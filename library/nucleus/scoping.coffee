@@ -109,4 +109,4 @@ module.exports.Scope = class Scope extends events.EventEmitter
     disperse: (kernel) ->
         fpath = "#{@directory}/#{@tag}.json"
         logger.info "Dissipating the #{@tag.bold} scope".grey
-        logger.info "Scope used #{fpath.underline} for config".grey
+        logger.info "Used #{fpath.underline} as config".grey

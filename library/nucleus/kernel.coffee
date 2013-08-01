@@ -132,8 +132,8 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         hostname = nconf.get "server:hostname"
         key = paths.relative process.cwd(), secure.key
         cert = paths.relative process.cwd(), secure.cert
-        logger.info "Using SSL key at %s".grey, key
-        logger.info "Using SSL cert at %s".grey, cert
+        logger.info "Using SSL key file at %s".grey, key
+        logger.info "Using SSL cert file at %s".grey, cert
         options.key = fs.readFileSync paths.resolve key
         options.cert = fs.readFileSync paths.resolve cert
         rsecure = "Running HTTPS server at %s:%s".magenta

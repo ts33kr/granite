@@ -136,15 +136,16 @@ module.exports.Service = class Service extends events.EventEmitter
     unregister: ->
         nick = @constructor?.nick
         name = @constructor?.name
+        inspected = (nick or name).underline
         noKernel = "No kernel reference found"
         noRouter = "Could not access the router"
-        unregister = "Unregistering the %s service"
+        unregister = "Removing %s service"
         throw new Error noKernel unless @kernel?
         registry = @kernel.router?.registry
         throw new Error noRouter unless registry?
         filtered = _.without registry, this
         @emit "unregister", @kernel, @router
-        logger.info unregister.yellow, nick or name
+        logger.info unregister.yellow, inspected
         @kernel.router.registry = filtered; this
 
     # This method determines whether the supplied HTTP request

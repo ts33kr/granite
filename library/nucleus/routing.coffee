@@ -73,7 +73,7 @@ module.exports.Router = class Router extends events.EventEmitter
     registerRoutable: (routable) ->
         nick = routable?.constructor?.nick
         name = routable?.constructor?.name
-        inspected = "#{nick or name} service"
+        inspected = nick or name or undefined
         duplicate = routable in (@registry or [])
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{inspected} has no valid matches method"
@@ -82,7 +82,7 @@ module.exports.Router = class Router extends events.EventEmitter
         passProcess = _.isFunction(process) and process?.length is 3
         throw new Error goneMatches unless passMatches
         throw new Error goneProcess unless passProcess
-        logger.info "Adding #{inspected} to the router".blue
+        logger.info "Attaching #{inspected.underline} service".blue
         (@registry ?= []).push routable unless duplicate
         (@emit "registered", routable unless duplicate); this
 
@@ -94,7 +94,7 @@ module.exports.Router = class Router extends events.EventEmitter
     installFallback: (routable) ->
         nick = routable?.constructor?.nick
         name = routable?.constructor?.name
-        inspected = "#{nick or name} service"
+        inspected = nick or name or undefined
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{inspected} has no valid matches method"
         goneProcess = "The #{inspected} has no valid process method"
@@ -102,5 +102,5 @@ module.exports.Router = class Router extends events.EventEmitter
         passProcess = _.isFunction(process) and process?.length is 3
         throw new Error goneMatches unless passMatches
         throw new Error goneProcess unless passProcess
-        logger.info "Installing #{inspected} as fallback".blue
+        logger.info "Fallback to #{inspected.underline} service".blue
         @fallback = routable; @emit "installed", routable; this
