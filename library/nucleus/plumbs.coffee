@@ -68,13 +68,14 @@ module.exports.redirect = (kernel) ->
 # rather than writing and ending the request in a direct way.
 module.exports.sender = (kernel) ->
     (request, response, next) ->
-        response.send = (content, typed, keepAlive) ->
+        response.send = (content, typed, keepalive) ->
+            @emit "sending", content, typed, keepalive
             @setHeader "Content-Type", typed if typed?
             return @write content.toString() if typed?
             negotiator = kernel.broker.negotiate
             negotiator = negotiator.bind kernel.broker
             negotiator request, response, content
-            response.end() unless keepAlive
+            response.end() unless keepalive
         next() unless request.headersSent
 
 # This plumbing add an `accepts` method onto the HTTP resonse object
