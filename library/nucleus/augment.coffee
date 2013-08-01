@@ -37,6 +37,7 @@ _ = require "lodash"
 routing = require "./routing"
 service = require "./service"
 scoping = require "./scoping"
+stubs = require "./stubs"
 api = require "./api"
 
 # This class is the internals and the working facade of the DSL for
@@ -102,7 +103,7 @@ module.exports.Augment = class Augment extends events.EventEmitter
     @augmentForResource: (resource, foundation) ->
         storage = @storage ?= {}
         inspected = util.inspect resource
-        foundation = foundation or api.Stub
+        foundation = foundation or stubs.Restful
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
         resource = regexify resource  if _.isString resource
         notRegexp = "The #{inspected} is not a regular expression"
