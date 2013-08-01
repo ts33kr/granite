@@ -105,7 +105,7 @@ module.exports.Augment = class Augment extends events.EventEmitter
         foundation = foundation or api.Stub
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
         resource = regexify resource  if _.isString resource
-        notRegexp = "The #{inspected} is not a valid regular expression"
+        notRegexp = "The #{inspected} is not a regular expression"
         throw new Error notRegexp unless _.isRegExp resource
         return augment if augment = storage[resource.source]
         storage[resource.source] = new Augment resource, foundation
