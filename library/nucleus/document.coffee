@@ -51,6 +51,7 @@ module.exports.describe = (method, descriptor) ->
 # and the services that implement them and return to the invoker.
 module.exports.collect = (kernel) ->
     services = kernel.router.registry
+    logger.debug "Collecting API documentation"
     _.map services, (service) -> do (service) ->
         constructor = service.constructor
         supported = constructor.SUPPORTED
