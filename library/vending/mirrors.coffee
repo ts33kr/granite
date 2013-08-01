@@ -83,3 +83,9 @@ module.exports.ApiDoc = class ApiDoc extends stubs.Restful
         @notes "See the Document class for more information"
         @synopsis "Get all of the APIs available in the system"
         @results "An array of objects, each describes a service"
+
+augment = require "../nucleus/augment"
+augment.Augment.installStubMethods this
+
+@GET "/api/test", (request, response) ->
+    response.send test: 123

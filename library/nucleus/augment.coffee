@@ -64,7 +64,7 @@ module.exports.Augment = class Augment extends events.EventEmitter
     # corresponding method (HTTP verb) with the supplied implementation.
     # It uses the Api to query for a set of support HTTP methods here.
     @installStubMethods: (namespace, foundation) ->
-        foundation = foundation or api.Stub
+        foundation = foundation or stubs.Restful
         supported = foundation.SUPPORTED
         _.forEach supported, (method) -> do (method) ->
             msg = "Installing stub method proxy for %s"
@@ -83,7 +83,7 @@ module.exports.Augment = class Augment extends events.EventEmitter
     # foundation. This is necessary to provide augmented syntax for
     # the complex services who provide static method for definition.
     @installServiceMethods: (namespace, foundation) ->
-        foundation = foundation or api.Stub
+        foundation = foundation or stubs.Restful
         methods = _.methods foundation
         _.forEach methods, (method) -> do (method) ->
             msg = "Installing service method proxy for %s"
