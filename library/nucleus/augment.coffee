@@ -55,7 +55,6 @@ module.exports.Augment = class Augment extends events.EventEmitter
         @service = class extends @foundation
         @service.nick = @resource.unescape()
         @emit "construct", @resource, @service
-        @service.publish @foundation.EVERYWHERE
         @service.domain @foundation.ANY
         @service.resource @resource
 

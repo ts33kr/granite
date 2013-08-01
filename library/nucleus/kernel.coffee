@@ -167,7 +167,6 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @router = new routing.Router this
         @middleware = @router.lookupMiddleware
         @middleware = @middleware.bind @router
-        c(s) for s in (@scope.services or [])
         c(s) for s in (services or [])
 
     # Setup the Connect middleware framework along with the default

@@ -78,7 +78,7 @@ module.exports.Service = class Service extends events.EventEmitter
         isLocation = _.isString location
         noLocation = "The location is not a string"
         throw new Error noLocation unless isLocation
-        @$location = location.toString()
+        @$location = location.toString(); this
 
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted resource patterns.
@@ -113,21 +113,6 @@ module.exports.Service = class Service extends events.EventEmitter
         throw new Error notRegexp unless _.isRegExp pattern
         (@domains ?= []).push pattern unless duplicate
         (logger.debug associate.grey unless duplicate); this
-
-    # Publish the current service class (not instance) to the slots
-    # in the specified scopes. If the service already exist in some
-    # of the specified scopes, it will not be added again. If scopes
-    # are not specified, the service will be published everywhere.
-    @publish: (scopes...) ->
-        inspected = @nick or @name
-        registry = scoping.Scope.REGISTRY or {}
-        scopes = undefined if _.isEqual scopes, [undefined]
-        exists = (scope) => this in (scope.services or [])
-        p = (scope) => (scope.services ?= []).push this
-        n = (scope) => logger.debug(notification, inspected, scope.tag)
-        notification = "Publishing %s service to %s scope".grey
-        scopes = _.values registry unless scopes?.length > 0
-        (p(s); n(s)) for own i, s of scopes when not exists s
 
     # Unregister the current service instance from the kernel router.
     # You should call this method only after the service has been
