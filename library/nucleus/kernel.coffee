@@ -78,7 +78,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         try @router.shutdownRouter()
         s.unregister() for s in @router.registry
         try @server.close(); try @secure.close()
-        shutdown = "Shutting the kernel down".red
+        shutdown = "Shutting the kernel instance down".red
         logger.info shutdown; @emit "shutdown"
         @scope.disperse(); process.exit -1; this
 

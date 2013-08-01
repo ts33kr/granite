@@ -139,7 +139,7 @@ module.exports.Service = class Service extends events.EventEmitter
         inspected = (nick or name).underline
         noKernel = "No kernel reference found"
         noRouter = "Could not access the router"
-        unregister = "Removing %s service"
+        unregister = "Removing %s service instance"
         throw new Error noKernel unless @kernel?
         registry = @kernel.router?.registry
         throw new Error noRouter unless registry?

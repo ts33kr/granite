@@ -74,6 +74,7 @@ module.exports.Router = class Router extends events.EventEmitter
         nick = routable?.constructor?.nick
         name = routable?.constructor?.name
         inspected = nick or name or undefined
+        identify = inspected.underline
         duplicate = routable in (@registry or [])
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{inspected} has no valid matches method"
@@ -82,7 +83,7 @@ module.exports.Router = class Router extends events.EventEmitter
         passProcess = _.isFunction(process) and process?.length is 3
         throw new Error goneMatches unless passMatches
         throw new Error goneProcess unless passProcess
-        logger.info "Attaching #{inspected.underline} service".blue
+        logger.info "Attaching #{identify} service instance".blue
         (@registry ?= []).push routable unless duplicate
         (@emit "registered", routable unless duplicate); this
 
