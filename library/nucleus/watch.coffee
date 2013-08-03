@@ -168,9 +168,9 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
     collectServices: (required) ->
         globals = _.values(required or {})
         exports = _.values(required.exports or {})
-        isClass = (s) -> _.isObject(s) and s.prototype
+        hasProto = (s) -> _.isObject(s) and s.prototype
         isService = (s) -> s::process? and s::matches?
-        isTyped = (s) -> isClass(s) and isService(s)
+        isTyped = (s) -> hasProto(s) and isService(s)
         unscoped = _.filter globals, isTyped
         services = _.filter exports, isTyped
         services = _.merge services, unscoped
