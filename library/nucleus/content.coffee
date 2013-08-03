@@ -48,10 +48,24 @@ module.exports.Broker = class Broker extends events.EventEmitter
         registry = @constructor.registry ?= []
         for own index, negotiator of registry
             args = [request, response, content]
-            flusher = negotiator arguments...
+            bounded = negotiator.bind this
+            flusher = bounded arguments...
             handles = _.isFunction flusher
             return flusher args... if handles
-        response.write content.toString()
+        @push response, content.toString()
+
+    # Push the encoded content to the response write stream. This is
+    # an utility method whose implementation is tweaked to the way it
+    # is being used by this class. It has to do with the way this method
+    # writes out the `Content-Length` header deduced from encoded size.
+    push: (response, encoded) ->
+        valid = _.isString encoded
+        areSent = response.headersSent
+        invalid = "Invalid encoded content"
+        throw new Error invalid unless valid
+        args = ["Content-Length", encoded.length]
+        response.setHeader args... unless areSent
+        response.write encoded
 
     # Register the specified content negotiator with the broker. The
     # The negotiator returns a function if it can handle the request
@@ -71,10 +85,10 @@ module.exports.Broker = class Broker extends events.EventEmitter
         isArray = _.isArray content
         isObject = _.isObject content
         return unless isArray or isObject
-        (request, response, content) ->
+        (request, response, content) =>
             jsonType = "application/json"
             doesHtml = response.accepts /html/
             spaces = if doesHtml then 4 else null
             response.setHeader "Content-Type", jsonType
             jsoned = (x) -> JSON.stringify x, null, spaces
-            response.write jsoned content
+            @push response, jsoned content
