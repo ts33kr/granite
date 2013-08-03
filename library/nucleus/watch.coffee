@@ -166,11 +166,13 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
     # This find regular services as well as augmented services. It
     # should be used only by the watcher internals, not directly.
     collectServices: (required) ->
-        globals = _.values (required or {})
-        exports = _.values (required.exports or {})
+        globals = _.values(required or {})
+        exports = _.values(required.exports or {})
+        isClass = (s) -> _.isObject(s) and s.prototype
         isService = (s) -> s::process? and s::matches?
-        unscoped = _.filter globals, isService
-        services = _.filter exports, isService
+        isTyped = (s) -> isClass(s) and isService(s)
+        unscoped = _.filter globals, isTyped
+        services = _.filter exports, isTyped
         services = _.merge services, unscoped
         _.unique services
 
