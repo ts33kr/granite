@@ -54,7 +54,7 @@ module.exports.Router = class Router extends events.EventEmitter
         recognized = _.find(@registry or [],  predicate) or null
         if recognized then constructor = recognized.constructor
         inspected = (constructor?.nick or constructor?.name)
-        identify = inspected.toString().underline
+        identify = inspected?.toString()?.underline
         @emit "recognized", recognized, parameters... if recognized?
         matching = "Request #{incoming} matches #{identify} service"
         logger.debug matching.grey if recognized?
