@@ -72,9 +72,9 @@ module.exports.Service = class Service extends events.EventEmitter
     # the deduced default is returned. Default location is the first
     # resource regular expression pattern being unescaped to string.
     @location: (location) ->
-        auto = _.head(@resources)?.unescape()
-        @$location = auto if @$location is undefined
-        return @$location if arguments.length is 0
+        current = => @$location? or automatic
+        automatic = _.head(@resources)?.unescape()
+        return current() if arguments.length is 0
         isLocation = _.isString location
         noLocation = "The location is not a string"
         throw new Error noLocation unless isLocation
