@@ -40,7 +40,6 @@ _ = require "lodash"
 extendz = require "./extends"
 routing = require "./routing"
 service = require "./service"
-augment = require "./augment"
 
 # Watcher is responsible for automatic discovery and hot loading of
 # the modules that contain services. It can be configured to watch
@@ -167,13 +166,12 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
     # This find regular services as well as augmented services. It
     # should be used only by the watcher internals, not directly.
     collectServices: (required) ->
-        exports = _.values (required.exports or [])
+        globals = _.values (required or {})
+        exports = _.values (required.exports or {})
         isService = (s) -> s::process? and s::matches?
-        isAugment = (s) -> s.augment instanceof augment.Augment
-        augments = _.filter exports, isAugment
-        augments = augments.map (a) -> a.service
+        unscoped = _.filter globals, isService
         services = _.filter exports, isService
-        services = _.merge services, augments
+        services = _.merge services, unscoped
         _.unique services
 
     # Watch the specified directory for addition and changing of
