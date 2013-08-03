@@ -35,18 +35,32 @@ extendz = require "./extends"
 routing = require "./routing"
 service = require "./service"
 
-# An abstract base class with all of the HTTP methods, defined in
-# the HTTP specification and covered by the base implementation
-# stubbed with default implementations. By default, the methods
-# will throw the 405, method not allowed HTTP error status code.
-# The methods have implementations, but marked as unsupported.
-module.exports.Restful = class Restful extends api.WithOptions
+# This abstract base class is an intermediary in the chain of other
+# ABC classes that eventually comprise the hierarchy that yields a
+# ready to use ABC to an end user. This one contains prototypes of
+# the hooks that are called within the service during the operations.
+# Please refer to each signature for more information on functioning.
+module.exports.WithHooks = class WithHooks extends api.WithOptions
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete class implementation. This
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
+
+    # A hook that will be called prior to sending the content over
+    # to the requester. Please refer to this prototype signature for
+    # information on the parameters it accepts. If this returns a
+    # truthful boolean, the content will NOT be sent to the response.
+    # Please be sure invoke the super implementation, if override!
+    prepushing: (response, content) ->
+
+    # A hook that will be called after the sending the content over
+    # to the requester. Please refer to this prototype signature for
+    # information on the parameters it accepts. This method accepts
+    # a value that was returned by the implementation as extra param.
+    # Please be sure invoke the super implementation, if override!
+    postpushing: (response, content, result) ->
 
     # A hook that will be called prior to invoking the API method
     # implementation. Please refer to this prototype signature for
@@ -61,6 +75,19 @@ module.exports.Restful = class Restful extends api.WithOptions
     # a value that was returned by the implementation as extra param.
     # Please be sure invoke the super implementation, if override!
     postprocess: (request, response, result, resource, domain) ->
+
+# An abstract base class with all of the HTTP methods, defined in
+# the HTTP specification and covered by the base implementation
+# stubbed with default implementations. By default, the methods
+# will throw the 405, method not allowed HTTP error status code.
+# The methods have implementations, but marked as unsupported.
+module.exports.Restful = class Restful extends WithHooks
+
+    # This is a marker that indicates to some internal subsystems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete class implementation. This
+    # mainly is used to exclude or account for abstract classes.
+    @abstract yes
 
     # Alter the contents of the resources at the established path. It
     # usually means partial replacing contents with the new contents.

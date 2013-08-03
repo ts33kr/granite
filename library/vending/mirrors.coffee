@@ -59,7 +59,7 @@ module.exports.ApiDoc = class ApiDoc extends stubs.Restful
     # of the resource. Use for unobtrusive retrieval of resources.
     GET: (request, response) ->
         collected = document.collect @kernel
-        response.send _.map collected, (record) ->
+        @push response, _.map collected, (record) ->
             constructor = record.service.constructor
             location: record.service.location()
             identify: constructor.nick or constructor.name
