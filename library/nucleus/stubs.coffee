@@ -60,7 +60,7 @@ module.exports.WithHooks = class WithHooks extends api.WithOptions
     # information on the parameters it accepts. This method accepts
     # a value that was returned by the implementation as extra param.
     # Please be sure invoke the super implementation, if override!
-    postpushing: (response, content, result) ->
+    postpushing: (results, response, content) ->
 
     # A hook that will be called prior to invoking the API method
     # implementation. Please refer to this prototype signature for
@@ -74,7 +74,7 @@ module.exports.WithHooks = class WithHooks extends api.WithOptions
     # information on the parameters it accepts. This method accepts
     # a value that was returned by the implementation as extra param.
     # Please be sure invoke the super implementation, if override!
-    postprocess: (request, response, result, resource, domain) ->
+    postprocess: (results, request, response, resource, domain) ->
 
 # An abstract base class with all of the HTTP methods, defined in
 # the HTTP specification and covered by the base implementation

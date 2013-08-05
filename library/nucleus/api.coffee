@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 url = require "url"
 http = require "http"
+util = require "util"
 events = require "events"
 colors = require "colors"
 logger = require "winston"
@@ -68,8 +69,8 @@ module.exports.Api = class Api extends service.Service
         @emit "yield", this, response, content
         flags = @prepushing? response, content
         return if areSent() or flags is yes
-        @postpushing? response, content,
-            response.send content
+        @postpushing? response.send content,
+            response, content
 
     # This method is intended for indicating to a client that the
     # method that has been used to make the request is not supported
@@ -102,8 +103,8 @@ module.exports.Api = class Api extends service.Service
         variables = [tokens.resource, tokens.domain]
         flags = @preprocess request, response, variables...
         return if response.headersSent or flags is yes
-        result = @[method](request, response, variables...)
-        @postprocess request, response, result, variables
+        results = @[method](request, response, variables...)
+        @postprocess results, request, response, variables
 
 # This is an abstract base class for every service in the system
 # and in the end user application that provides a REST interface
