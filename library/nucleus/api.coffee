@@ -66,7 +66,7 @@ module.exports.Api = class Api extends service.Service
         isContent = content isnt undefined
         noContent = "No valid content supplied"
         throw new Error noContent unless isContent
-        @emit "yield", this, response, content
+        @emit "push", this, response, content
         flags = @prepushing? response, content
         return if areSent() or flags is yes
         @postpushing? response.send content,
