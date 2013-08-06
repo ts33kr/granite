@@ -69,7 +69,7 @@ module.exports.Api = class Api extends service.Service
         @emit "push", this, response, content
         flags = @prepushing? response, content
         return if areSent() or flags is yes
-        @postpushing? response.send content,
+        @postpushing? response.send(content),
             response, content
 
     # This method is intended for indicating to a client that the
