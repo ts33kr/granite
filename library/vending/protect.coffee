@@ -39,7 +39,7 @@ api = require "../nucleus/api"
 stubs = require "../nucleus/stubs"
 tools = require "../nucleus/tools"
 service = require "../nucleus/service"
-extendz = require "./extends"
+extendz = require "./../nucleus/extends"
 
 # This is an abstract base class API stub service. Its purpose is
 # providing the boilerplate for ensuring that the connection is
