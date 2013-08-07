@@ -34,6 +34,22 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+# A fancy method for dynamically changing the inheritance chain of
+# the existing classes. This method rebases the current class to
+# use the supplied base class as its direct ancestor. The supplied
+# class must conform to the basic class requirements, such as have
+# a valid __super__ descriptor, among some other prototypal things.
+Object.defineProperty Object::, "rebased",
+    enumerable: no, value: (baseclass) ->
+    isClass = _.isObject baseclass.__super__
+    noClass = "The argument is not a class"
+    throw new Error noClass unless isClass
+    _.extend r = receiver = this, baseclass
+    `function ctor() {this.constructor = r}`
+    ctor.prototype = baseclass.prototype
+    this.__super__ = baseclass.prototype
+    this.prototype = new ctor(); this
+
 # Scan the supplied class and return an entire inheritance hierarchy
 # of classes. The hierarchy is represented as an array of prototypes
 # that follow in the order they appear in the chain: starting from
@@ -53,22 +69,6 @@ Object.defineProperty Object::, "hierarchy",
             chaining.push constructor
             subject = constructor
         return chaining or []
-
-# A fancy method for dynamically changing the inheritance chain of
-# the existing classes. This method rebases the current class to
-# use the supplied base class as its direct ancestor. The supplied
-# class must conform to the basic class requirements, such as have
-# a valid __super__ descriptor, among some other prototypal things.
-Object.defineProperty Object::, "rebased",
-    enumerable: no, value: (baseclass) ->
-        isClass = _.isObject baseclass.__super__
-        noClass = "The argument is not a class"
-        throw new Error noClass unless isClass
-        _.extend r = receiver = this, baseclass
-        `function ctor() {this.constructor = r}`
-        ctor.prototype = baseclass.prototype
-        this.__super__ = baseclass.prototype
-        this.prototype = new ctor(); this
 
 # A complicated piece of functionality for merging arbitrary classes
 # into the linear hierarchical inheritance chain of existing class.
