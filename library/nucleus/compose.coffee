@@ -40,7 +40,7 @@ util = require "util"
 # between the foreign and common peers in the inheritance chain. Do
 # refer to the implementation for the understanding of what happens.
 Object.defineProperty Object::, "compose",
-    enumerable: no, value: (compound) ->
+    enumerable: no, value: (compound, shader) ->
         current = this.hierarchy()
         foreign = compound.hierarchy()
         identity = compound.name or compound.nick
@@ -52,6 +52,7 @@ Object.defineProperty Object::, "compose",
         throw new Error orphans if _.isEmpty commons
         duplicate = (parent) -> class extends parent
         differentiated = _.take current, orphan
+        duplicate = _.identity unless shader
         alternative = _.map differentiated, duplicate
         tails = alternative.pop().rebased compound
         rebased = (acc, cls) -> cls.rebased acc; cls
@@ -89,6 +90,8 @@ Object.defineProperty Object::, "rebased",
         throw new Error noClass unless isClass
         _.extend r = receiver = this, baseclass
         `function ctor() {this.constructor = r}`
+        original = this.prototype or {}
         ctor.prototype = baseclass.prototype
         this.__super__ = baseclass.prototype
-        this.prototype = new ctor(); this
+        this.prototype = new ctor() or original
+        _.extend this.prototype, original; @
