@@ -40,7 +40,7 @@ util = require "util"
 # This approach gives unique ability to build self documented APIs.
 module.exports.describe = (method, descriptor) ->
     validated = _.isFunction descriptor
-    missing = "No descriptor function has been given"
+    missing = "The #{descriptor} is not a descriptor"
     throw new Error missing unless validated
     method.document = new Document
     method.document.descriptor = descriptor
