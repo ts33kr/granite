@@ -81,7 +81,7 @@ module.exports.Api = class Api extends service.Service
         codes = http.STATUS_CODES
         message = codes[methodNotAllowed]
         doesJson = response.accepts /json/
-        response writeHead methodNotAllowed, message
+        response.writeHead methodNotAllowed, message
         descriptor = error: message, code: methodNotAllowed
         @emit "unsupported", request, response, next
         return response.send descriptor if doesJson
