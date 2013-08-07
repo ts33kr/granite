@@ -54,6 +54,7 @@ Object.defineProperty Object::, "compose",
         differentiated = _.take current, orphan
         duplicate = _.identity unless shader
         alternative = _.map differentiated, duplicate
+        return @rebased compound if _.isEmpty alternative
         tails = alternative.pop().rebased compound
         rebased = (acc, cls) -> cls.rebased acc; cls
         @rebased _.foldr alternative, rebased, tails
@@ -85,8 +86,8 @@ Object.defineProperty Object::, "hierarchy",
 # a valid __super__ descriptor, among some other prototypal things.
 Object.defineProperty Object::, "rebased",
     enumerable: no, value: (baseclass) ->
-        isClass = _.isObject baseclass.__super__
-        noClass = "The argument is not a class"
+        isClass = _.isObject baseclass?.__super__
+        noClass = "The #{baseclass} is not a class"
         throw new Error noClass unless isClass
         _.extend r = receiver = this, baseclass
         `function ctor() {this.constructor = r}`
