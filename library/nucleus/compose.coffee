@@ -41,14 +41,14 @@ util = require "util"
 # a valid __super__ descriptor, among some other prototypal things.
 Object.defineProperty Object::, "rebased",
     enumerable: no, value: (baseclass) ->
-    isClass = _.isObject baseclass.__super__
-    noClass = "The argument is not a class"
-    throw new Error noClass unless isClass
-    _.extend r = receiver = this, baseclass
-    `function ctor() {this.constructor = r}`
-    ctor.prototype = baseclass.prototype
-    this.__super__ = baseclass.prototype
-    this.prototype = new ctor(); this
+        isClass = _.isObject baseclass.__super__
+        noClass = "The argument is not a class"
+        throw new Error noClass unless isClass
+        _.extend r = receiver = this, baseclass
+        `function ctor() {this.constructor = r}`
+        ctor.prototype = baseclass.prototype
+        this.__super__ = baseclass.prototype
+        this.prototype = new ctor(); this
 
 # Scan the supplied class and return an entire inheritance hierarchy
 # of classes. The hierarchy is represented as an array of prototypes
