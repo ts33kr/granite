@@ -79,17 +79,16 @@ Object.defineProperty Object::, "compose",
     enumerable: no, value: (compound) ->
         current = this.hierarchy()
         foreign = compound.hierarchy()
-        copied = compound in current
         identity = compound.name or compound.nick
         duplicate = "Duplicate #{identity} compound"
-        throw new Error duplicate if copied
+        throw new Error duplicate if compound in current
         orphan = (shape) -> shape not in commons
         commons = _.intersection current, foreign
         orphans = "No common base classes in hierarchy"
         throw new Error orphans if _.isEmpty commons
-        extender = (base) -> class extends base
-        diffs = _.take current, orphan
-        diffs = _.map diffs, extender
-        tails = diffs.pop().rebased compound
-        rebased = (r, x) -> x.rebased r; x
-        @rebased _.foldr diffs, rebased, tails
+        duplicate = (parent) -> class extends parent
+        differentiated = _.take current, orphan
+        alternative = _.map differentiated, duplicate
+        tails = alternative.pop().rebased compound
+        rebased = (acc, cls) -> cls.rebased acc; cls
+        @rebased _.foldr alternative, rebased, tails
