@@ -86,13 +86,13 @@ module.exports.Document = class Document extends events.EventEmitter
     # described by this document. If you do not supply example
     # this method will return you one, assuming it was set before.
     # Example is a URL with query that shows example invocation.
-    follows: (follows) ->
-        return @$follows if arguments.length is 0
-        isFollows = _.isString follows
-        noFollows = "The follows is not a string"
-        throw new Error noFollows unless isFollows
-        @emit "follows", arguments...
-        @$follows = follows.toString()
+    leads: (leads) ->
+        return @$leads if arguments.length is 0
+        isLeads = _.isString leads
+        noLeads = "The leads is not a string"
+        throw new Error noLeads unless isLeads
+        @emit "leads", arguments...
+        @$leads = leads.toString()
 
     # Either get or set the inputs of the method that is being
     # described by this document. If you do not supply inputs
@@ -106,17 +106,17 @@ module.exports.Document = class Document extends events.EventEmitter
         @emit "inputs", arguments...
         @$inputs = inputs.toString()
 
-    # Either get or set the results of the method that is being
-    # described by this document. If you do not supply results
+    # Either get or set the outputs of the method that is being
+    # described by this document. If you do not supply outputs
     # this method will return you one, assuming it was set before.
-    # Results is a description of data returned by the method.
-    results: (results) ->
-        return @$results if arguments.length is 0
-        isResults = _.isString results
-        noResults = "The results is not a string"
-        throw new Error noResults unless isResults
-        @emit "results", arguments...
-        @$results = results.toString()
+    # Outputs is a description of data returned by the method.
+    outputs: (outputs) ->
+        return @$outputs if arguments.length is 0
+        isOutputs = _.isString outputs
+        noOutputs = "The outputs is not a string"
+        throw new Error noOutputs unless isOutputs
+        @emit "outputs", arguments...
+        @$outputs = outputs.toString()
 
     # Either get or set the description of the method that is being
     # described by this document. If you do not supply description

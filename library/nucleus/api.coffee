@@ -139,7 +139,7 @@ module.exports.WithOptions = class WithOptions extends Api
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
     document.describe @prototype.OPTIONS, (method, service) ->
-        @follows tools.urlWithHost no, service.location()
+        @leads tools.urlWithHost no, service.location()
         @notes "This method is default implemented for each service"
         @synopsis "Get a set of HTTP methods supported by services"
-        @results "An array of supported methods, JSON or string"
+        @outputs "An array of supported methods, JSON or string"

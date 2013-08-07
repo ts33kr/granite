@@ -66,11 +66,11 @@ module.exports.ApiDoc = class ApiDoc extends stubs.Restful
             patterns: _.map constructor.resources, "source"
             methods: _.map record.methods, (doc, method) ->
                 notes: doc.notes()
-                follows: doc.follows()
+                leads: doc.leads()
                 failure: doc.failure()
                 argument: doc.argument()
                 synopsis: doc.synopsis()
-                results: doc.results()
+                outputs: doc.outputs()
                 inputs: doc.inputs()
                 method: method
 
@@ -79,7 +79,7 @@ module.exports.ApiDoc = class ApiDoc extends stubs.Restful
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
     document.describe @prototype.GET, (method, service) ->
-        @follows tools.urlWithHost no, service.location()
+        @leads tools.urlWithHost no, service.location()
         @notes "See the Document class for more information"
         @synopsis "Get all of the APIs available in the system"
-        @results "An array of objects, each describes a service"
+        @outputs "An array of objects, each describes a service"
