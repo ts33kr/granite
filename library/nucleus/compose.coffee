@@ -79,6 +79,10 @@ Object.defineProperty Object::, "compose",
     enumerable: no, value: (compound) ->
         current = this.hierarchy()
         foreign = compound.hierarchy()
+        copied = compound in current
+        identity = compound.name or compound.nick
+        duplicate = "Duplicate #{identity} compound"
+        throw new Error duplicate if copied
         orphan = (shape) -> shape not in commons
         commons = _.intersection current, foreign
         orphans = "No common base classes in hierarchy"
