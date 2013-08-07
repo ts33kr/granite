@@ -43,7 +43,11 @@ module.exports.describe = (method, descriptor) ->
     missing = "The #{descriptor} is not a descriptor"
     throw new Error missing unless validated
     method.document ?= new Document
-    method.document.descriptor = descriptor
+    previous = method.document.descriptor
+    method.document.descriptor = ->
+        ok = _.isFunction previous
+        previous.apply @, arguments if ok
+        descriptor.apply @, arguments
 
 # Traverse all of the services that are registered with the router
 # and collect the documentation for each method, then given this
