@@ -74,7 +74,7 @@ module.exports.ApiDoc = class ApiDoc extends stubs.Restful
                 inputs: doc.inputs()
                 method: method
 
-    # This block describes certain method a abrbitrary service. The
+    # This block describes certain method of abrbitrary service. The
     # exact process of how it is being documented depends on how the
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
