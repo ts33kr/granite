@@ -103,6 +103,7 @@ module.exports.Monitor = class Monitor extends events.EventEmitter
         correct = transport instanceof events.EventEmitter
         throw new Error invalid unless correct
         @emit "transport", this, @$transport, transport
+        (@$transport or undefined)?.removeAllListeners()
         attachToTransport @$transport = transport; this
 
     # Set the root tree element of this session. If the element is
@@ -115,4 +116,5 @@ module.exports.Monitor = class Monitor extends events.EventEmitter
         correct = element instanceof trees.Element
         throw new Error invalid unless correct
         @emit "element", this, @$element, element
+        (@$element or undefined)?.removeAllListeners()
         attachToElement @$element = element; this
