@@ -126,7 +126,6 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
     reviewServices: (resolved) ->
         cached = require.cache[resolved]
         services = @collectServices cached
-        notAbstract = (s) -> not s.abstract()
         registry = @kernel.router?.registry or []
         originate = (s) -> s.constructor.origin?.id
         predicate = (s) -> originate(s) is resolved
@@ -136,9 +135,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         register = @kernel.router.registerRoutable
         register = register.bind @kernel.router
         spawn = (s) => register new s @kernel
-        concrete = _.filter services, notAbstract
-        distincted = _.unique concrete
-        spawn s for s in distincted
+        spawn s for s in services
         @attemptForceHotswap cached
 
     # If enabled by the scoping configuration, this method will try
@@ -169,11 +166,13 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         globals = _.values(required or {})
         exports = _.values(required.exports or {})
         hasProto = (s) -> _.isObject(s) and s.prototype
-        isService = (s) -> s::process? and s::matches?
+        isService = (s) -> s.inherits service.Service
+        isFinal = (s) -> not s.abstract()
         isTyped = (s) -> hasProto(s) and isService(s)
         unscoped = _.filter globals, isTyped
         services = _.filter exports, isTyped
         services = _.merge services, unscoped
+        services = _.filter services, isFinal
         _.unique services
 
     # Watch the specified directory for addition and changing of

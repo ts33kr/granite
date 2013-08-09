@@ -37,6 +37,7 @@ fs = require "fs"
 
 _ = require "lodash"
 extendz = require "./extends"
+compose = require "./compose"
 bundles = require "./bundles"
 routing = require "./routing"
 service = require "./service"
