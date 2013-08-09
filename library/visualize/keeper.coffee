@@ -42,7 +42,7 @@ fs = require "fs"
 # necessary objects. The monitor implements passing of events and
 # data between the server side and the client side interpreter. It
 # is the mechanism that keeps the synchronization between the trees.
-module.exports.Monitor = class Monitor extends events.EventEmitter
+module.exports.Keeper = class Keeper extends events.EventEmitter
 
     # This is the reference of the DOM events that need to be
     # monitored by the monitor and possible by some other entities

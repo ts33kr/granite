@@ -38,14 +38,14 @@ fs = require "fs"
 
 _ = require "lodash"
 trees = require "./trees"
-monitor = require "./monitor"
+keeper = require "./keeper"
 compile = require "./compile"
 extendz = require "./../nucleus/extends"
 {Element, Content, Attribute} = trees
 
-# Physics is the continuation of the `Monitor` class implementation.
+# Physics is the continuation of the `Keeper` class implementation.
 # It takes care of one specific class of event and data passing, the
 # passing of the structural events and data. That is, when a tree
 # changes it is the physics who delivers the structural changes info
 # to the remote site, utilizing the transport channel of the monitor.
-module.exports.Physics = class Physics extends monitor.Monitor
+module.exports.Physics = class Physics extends keeper.Keeper
