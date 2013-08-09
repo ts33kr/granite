@@ -93,11 +93,9 @@ module.exports.Api = class Api extends service.Service
     # defined in the subclass of this abstract base class. Default
     # implementation of each method will throw a not implemented.
     process: (request, response, next) ->
-        knowns = @constructor.SUPPORTED
-        parameters = [request, response, next]
-        tokens = super(parameters...)
         method = request?.method?.toUpperCase()?.trim()
-        return @unsupported parameters... unless method in knowns
+        [tokens, knowns] = [super, @constructor.SUPPORTED]
+        return @unsupported arguments... unless method in knowns
         missing = "Missing implementation for #{method} method"
         throw new Error missing unless method of this
         variables = [tokens.resource, tokens.domain]
