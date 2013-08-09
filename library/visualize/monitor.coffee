@@ -60,6 +60,7 @@ module.exports.Monitor = class Monitor extends events.EventEmitter
         noTagging = "The supplied tagging is not valid"
         throw new Error noTagging unless _.isSring tag
         throw new Error noKernel unless isKernel
+        logger.debug "Constructed monitor %s", @tag
 
     # Attach one of the ends of the monitor to the previously bound
     # transport instance. This method will attach the specific event
@@ -104,6 +105,7 @@ module.exports.Monitor = class Monitor extends events.EventEmitter
         throw new Error invalid unless correct
         @emit "transport", this, @$transport, transport
         (@$transport or undefined)?.removeAllListeners()
+        logger.debug "Attach monitor %s to transport", @tag
         attachToTransport @$transport = transport; this
 
     # Set the root tree element of this session. If the element is
@@ -117,4 +119,5 @@ module.exports.Monitor = class Monitor extends events.EventEmitter
         throw new Error invalid unless correct
         @emit "element", this, @$element, element
         (@$element or undefined)?.removeAllListeners()
+        logger.debug "Attach monitor %s to element", @tag
         attachToElement @$element = element; this
