@@ -120,6 +120,6 @@ module.exports.Scope = class Scope extends events.EventEmitter
         logger.info "Dissipating the #{@tag.bold} scope".grey
         logger.info "Used #{fpath.underline} as config".grey
         for directory in nconf.get("environment:dirs") or []
-            msg = "Wiping out the directory at %s".yellow
+            msg = "Wiping out the env directory at %s".yellow
             logger.info msg, directory.underline
             rmdirSyncRecursive directory, yes
