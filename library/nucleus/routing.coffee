@@ -86,7 +86,8 @@ module.exports.Router = class Router extends events.EventEmitter
         throw new Error goneProcess unless passProcess
         logger.info "Attaching #{identify} service instance".blue
         (@registry ?= []).push routable unless duplicate
-        (@emit "registered", routable unless duplicate); this
+        @emit "registered", routable unless duplicate
+        routable.register?(); this
 
     # Install the routable that should handle the requests that are
     # not handled via the registered routables. The routable has to
@@ -106,4 +107,5 @@ module.exports.Router = class Router extends events.EventEmitter
         throw new Error goneMatches unless passMatches
         throw new Error goneProcess unless passProcess
         logger.info "Fallback to #{identify} service".blue
-        @fallback = routable; @emit "installed", routable; this
+        @fallback = routable; @emit "fallback", routable
+        @fallback.install?(); this
