@@ -128,10 +128,11 @@ module.exports.Service = class Service extends events.EventEmitter
         throw new Error noKernel unless @kernel?
         registry = @kernel.router?.registry
         throw new Error noRouter unless registry?
-        filtered = _.without registry, this
         @emit "unregister", @kernel, @router
         logger.info unregister.yellow, inspected
-        @kernel.router.registry = filtered; this
+        index = _.indexOf registry, this
+        assert index >= 0, "never registered"
+        registry.splice index, 1; this
 
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the
