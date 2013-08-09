@@ -34,6 +34,9 @@ nconf = require "nconf"
 util = require "util"
 fs = require "fs"
 
+{spawn} = require "child_process"
+{rmdirSyncRecursive} = require "wrench"
+
 # This is a primary gateway interface for the framework. This class
 # provides methods and routines necessary to bootstrap the framework
 # and the end user application constructed within the framework. It
@@ -110,3 +113,8 @@ module.exports.Scope = class Scope extends events.EventEmitter
         fpath = "#{@directory}/#{@tag}.json"
         logger.info "Dissipating the #{@tag.bold} scope".grey
         logger.info "Used #{fpath.underline} as config".grey
+        logger.info "Preparing to remove the cleanup dirs"
+        for directory in nconf.get("cleanup:dirs") or []
+            msg = "Wiping out the directory at %s".yellow
+            logger.info msg, directory.underline
+            rmdirSyncRecursive directory, yes
