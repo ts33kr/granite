@@ -100,7 +100,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # employing the UUID v4 format. If unique param is set to false
     # than the path will be set to prefix without the unique part.
     envPath: (basis, prefix, unique=uuid.v4()) ->
-        dirs = nconf.get("environment:dirs") or []
+        dirs = nconf.get("env:dirs") or []
         unknown = "Env dir #{basis} is not managed"
         assert _.isString(prefix), "invalid prefix"
         throw new Error unknown unless basis in dirs
@@ -119,8 +119,8 @@ module.exports.Scope = class Scope extends events.EventEmitter
         logger.info "Reading the #{fpath.underline} config".cyan
         exists = fs.existsSync fpath; nconf.file fpath if exists
         @constructor.setupLoggingFacade kernel
-        for directory in nconf.get("environment:dirs") or []
-            mode = nconf.get("environment:mode")
+        for directory in nconf.get("env:dirs") or []
+            mode = nconf.get("env:mode")
             msg = "Environment mkdir at %s with 0%s mode".yellow
             logger.info msg, directory.underline, mode.toString 8
             mkdirSyncRecursive directory, mode
@@ -133,7 +133,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
         fpath = "#{@directory}/#{@tag}.json"
         logger.info "Dissipating the #{@tag.bold} scope".grey
         logger.info "Used #{fpath.underline} as config".grey
-        for directory in nconf.get("environment:dirs") or []
+        for directory in nconf.get("env:dirs") or []
             msg = "Wiping out the env directory at %s".yellow
             logger.info msg, directory.underline
             rmdirSyncRecursive directory, yes
