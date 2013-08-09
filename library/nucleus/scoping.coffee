@@ -36,6 +36,7 @@ fs = require "fs"
 
 {spawn} = require "child_process"
 {rmdirSyncRecursive} = require "wrench"
+{mkdirSyncRecursive} = require "wrench"
 
 # This is a primary gateway interface for the framework. This class
 # provides methods and routines necessary to bootstrap the framework
@@ -104,6 +105,11 @@ module.exports.Scope = class Scope extends events.EventEmitter
         logger.info "Reading the #{fpath.underline} config".cyan
         exists = fs.existsSync fpath; nconf.file fpath if exists
         @constructor.setupLoggingFacade kernel
+        for directory in nconf.get("environment:dirs") or []
+            mode = nconf.get("environment:mode")
+            msg = "Environment mkdir at %s with 0%s mode".yellow
+            logger.info msg, directory.underline, mode.toString 8
+            mkdirSyncRecursive directory, mode
 
     # This method is responsible for shutting down the scope object.
     # This means stripping down all the necessary routines and other
@@ -113,8 +119,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
         fpath = "#{@directory}/#{@tag}.json"
         logger.info "Dissipating the #{@tag.bold} scope".grey
         logger.info "Used #{fpath.underline} as config".grey
-        logger.info "Preparing to remove the cleanup dirs"
-        for directory in nconf.get("cleanup:dirs") or []
+        for directory in nconf.get("environment:dirs") or []
             msg = "Wiping out the directory at %s".yellow
             logger.info msg, directory.underline
             rmdirSyncRecursive directory, yes

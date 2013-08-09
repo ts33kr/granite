@@ -43,13 +43,13 @@ scoping = require "./scoping"
 module.exports.PRODUCTION = new scoping.Scope "production", ->
     @synopsis = "Final production environment for end users"
     @defaults = server: {hostname: "localhost", port: 80}
+    @defaults.environment = dirs: ["temp", "run", "var"], mode: 0o666
     @defaults.secure = port: 443, key: "key.pem", cert: "cert.pem"
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
     @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
-    @defaults.cleanup = dirs: ["temp", "run", "var"]
     @pushToRegistry yes, @tag.toUpperCase()
     @directory = "config"
 
@@ -60,13 +60,13 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
 module.exports.STAGING = new scoping.Scope "staging", ->
     @synopsis = "An environment between staging and production"
     @defaults = server: {hostname: "localhost", port: 80}
+    @defaults.environment = dirs: ["temp", "run", "var"], mode: 0o666
     @defaults.secure = port: 443, key: "key.pem", cert: "cert.pem"
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
     @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
-    @defaults.cleanup = dirs: ["temp", "run", "var"]
     @pushToRegistry yes, @tag.toUpperCase()
     @directory = "config"
 
@@ -77,13 +77,13 @@ module.exports.STAGING = new scoping.Scope "staging", ->
 module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @synopsis = "Unstable working environment for developers"
     @defaults = server: {hostname: "localhost", port: 8081}
+    @defaults.environment = dirs: ["temp", "run", "var"], mode: 0o666
     @defaults.secure = port: 1443, key: "key.pem", cert: "cert.pem"
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
     @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
-    @defaults.cleanup = dirs: ["temp", "run", "var"]
     @pushToRegistry yes, @tag.toUpperCase()
     @directory = "config"
 
@@ -94,12 +94,12 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
 module.exports.TESTING = new scoping.Scope "testing", ->
     @synopsis = "Isolated environment for running the tests"
     @defaults = server: {hostname: "localhost", port: 8081}
+    @defaults.environment = dirs: ["temp", "run", "var"], mode: 0o666
     @defaults.secure = port: 1443, key: "key.pem", cert: "cert.pem"
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
     @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
-    @defaults.cleanup = dirs: ["temp", "run", "var"]
     @pushToRegistry yes, @tag.toUpperCase()
     @directory = "config"
