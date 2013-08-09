@@ -74,13 +74,14 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     # HTTP and HTTPS server that may be running, stopping the router
     # and unregistering all the services as a precauting. After that
     # the scope is being dispersed and some events are being emited.
-    shutdownKernel: ->
+    shutdownKernel: (reason) ->
         util.puts require("os").EOL
+        logger.warn reason.toString().red
         try @router.shutdownRouter()
         s.unregister() for s in @router.registry
         try @server.close(); try @secure.close()
         shutdown = "Shutting the kernel instance down".red
-        logger.info shutdown; @emit "shutdown"
+        logger.warn shutdown; @emit "shutdown"
         @scope.disperse(); process.exit -1; this
 
     # Instantiate a hot swapping watcher for this kernel and setup
@@ -108,7 +109,10 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @setupHotloadWatcher()
         @broker = new content.Broker
         message = "Booted up the kernel instance"
-        process.on "SIGINT", => @shutdownKernel()
+        sigint = "Received the SIGINT (interrupt signal)"
+        sigterm = "Received the SIGTERM (terminate signal)"
+        process.on "SIGINT", => @shutdownKernel sigint
+        process.on "SIGTERM", => @shutdownKernel sigterm
         logger.info message.red; this
 
     # Create and configure the HTTP and HTTPS servers to listen at
