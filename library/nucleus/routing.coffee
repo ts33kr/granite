@@ -74,7 +74,7 @@ module.exports.Router = class Router extends events.EventEmitter
     registerRoutable: (routable) ->
         nick = routable?.constructor?.nick
         name = routable?.constructor?.name
-        inspected = nick or name or undefined
+        inspected = nick or name or typeof routable
         identify = inspected.toString().underline
         duplicate = routable in (@registry or [])
         [matches, process] = [routable.matches, routable.process]
@@ -97,7 +97,7 @@ module.exports.Router = class Router extends events.EventEmitter
     installFallback: (routable) ->
         nick = routable?.constructor?.nick
         name = routable?.constructor?.name
-        inspected = nick or name or undefined
+        inspected = nick or name or typeof routable
         identify = inspected.toString().underline
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{inspected} has no valid matches method"
