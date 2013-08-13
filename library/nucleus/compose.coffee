@@ -41,13 +41,15 @@ util = require "util"
 # Call this method with current class and the method name arguments
 Object.defineProperty Object::, "upstack",
     enumerable: no, value: (exclude, name) ->
-        hierarchy = exclude.hierarchy()
         current = this[name] or undefined
+        hierarchy = @constructor.hierarchy()
+        excluder = (cls) -> cls isnt exclude
+        hierarchy = _.drop hierarchy, excluder
         isFunction = (c) -> _.isFunction get(c)
         notCurrent = (c) -> get(c) isnt current
-        get = (c) -> c.prototype?[name] or undefined
+        get = (c) -> c?.prototype?[name]
         p = (c) -> isFunction(c) and notCurrent(c)
-        _.find(hierarchy, p)?.prototype?[name]
+        get _.find(_.tail(hierarchy), p)
 
 # A complicated piece of functionality for merging arbitrary classes
 # into the linear hierarchical inheritance chain of existing class.
