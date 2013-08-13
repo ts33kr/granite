@@ -59,7 +59,8 @@ module.exports.SecureStub = class SecureStub extends stubs.Restful
     # truthful boolean, the service will NOT call implementation.
     # Please be sure invoke the super implementation, if override!
     preprocess: (request, response, resource, domain) ->
-        return yes if super is yes
+        preprocess = @upstack SecureStub, "preprocess"
+        return yes if preprocess?.apply @, arguments
         connection = request?.connection
         encrypted = connection?.encrypted
         return if _.isObject encrypted

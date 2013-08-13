@@ -34,13 +34,28 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+# A method for the dynamic lookup of the super methods. This method
+# exists because CoffeeScript resolves super methods by using static
+# hardcoded class names and __super__ attributes. But in order for
+# composition to work - system needs dynamic super method resolution.
+# Call this method with current class and the method name arguments
+Object.defineProperty Object::, "upstack",
+    enumerable: no, value: (exclude, name) ->
+        hierarchy = exclude.hierarchy()
+        current = this[name] or undefined
+        isFunction = (c) -> _.isFunction get(c)
+        notCurrent = (c) -> get(c) isnt current
+        get = (c) -> c.prototype?[name] or undefined
+        p = (c) -> isFunction(c) and notCurrent(c)
+        _.find(hierarchy, p)?.prototype?[name]
+
 # A complicated piece of functionality for merging arbitrary classes
 # into the linear hierarchical inheritance chain of existing class.
 # This method integrated the supplied compound class in the tear in
 # between the foreign and common peers in the inheritance chain. Do
 # refer to the implementation for the understanding of what happens.
 Object.defineProperty Object::, "compose",
-    enumerable: no, value: (compound, shader) ->
+    enumerable: no, value: (compound, shader=_.identity) ->
         current = this.hierarchy()
         foreign = compound.hierarchy()
         identity = compound.name or compound.nick
@@ -50,10 +65,8 @@ Object.defineProperty Object::, "compose",
         commons = _.intersection current, foreign
         orphans = "No common base classes in hierarchy"
         throw new Error orphans if _.isEmpty commons
-        duplicate = (parent) -> class extends parent
         differentiated = _.take current, orphan
-        duplicate = _.identity unless shader
-        alternative = _.map differentiated, duplicate
+        alternative = _.map differentiated, shader
         return @rebased compound if _.isEmpty alternative
         tails = alternative.pop().rebased compound
         rebased = (acc, cls) -> cls.rebased acc; cls
