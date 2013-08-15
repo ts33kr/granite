@@ -34,6 +34,38 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+# This method exists as a complementary part of the composition
+# system. The cloner is an implementation of the shader that is
+# mapped over each node of the linear hierarchy of the class that
+# invokes the composition functionality to obtain a shadow of the
+# original class that can be later modified to modify hierarchy.
+cloner = module.exports.cloner = (subject) ->
+    isClass = _.isObject subject?.__super__
+    noClass = "The #{subject} is not a class"
+    throw new Error noClass unless isClass
+    return subject if _.isObject subject.watermark
+    snapshot = _.cloneDeep subject, d = (value) ->
+        return unless _.isFunction value
+        func = _.head eval "[#{value.toString()}]"
+        _.extend func.prototype, value.prototype
+        func.constructor = value.constructor; func
+    snapshot.watermark = subject; snapshot
+
+# A method for comparing different classes for equality. Be careful
+# as this method is very loose in terms of comparison and its main
+# purpose is aiding in implementation of the composition mechanism
+# rather than any else. Comparison algorithms is likely to change.
+Object.defineProperty Object::, "similarWith",
+    enumerable: no, value: (archetype, loose) ->
+        isClass = _.isObject this.prototype
+        noClass = "The subject is not a class"
+        throw new Error noClass unless isClass
+        return yes if this is archetype
+        return yes if @watermark is archetype
+        return undefined unless loose is yes
+        return yes if @name is archetype.name
+        return yes if @nick is archetype.nick
+
 # A method for the dynamic lookup of the super methods. This method
 # exists because CoffeeScript resolves super methods by using static
 # hardcoded class names and __super__ attributes. But in order for
@@ -43,7 +75,8 @@ Object.defineProperty Object::, "upstack",
     enumerable: no, value: (exclude, name) ->
         current = this[name] or undefined
         hierarchy = @constructor.hierarchy()
-        excluder = (cls) -> cls isnt exclude
+        cmp = (e) -> (c) -> c.similarWith e, yes
+        excluder = (cls) -> not cmp(exclude)(cls)
         hierarchy = _.drop hierarchy, excluder
         isFunction = (c) -> _.isFunction get(c)
         notCurrent = (c) -> get(c) isnt current
@@ -57,17 +90,18 @@ Object.defineProperty Object::, "upstack",
 # between the foreign and common peers in the inheritance chain. Do
 # refer to the implementation for the understanding of what happens.
 Object.defineProperty Object::, "compose",
-    enumerable: no, value: (compound, shader=_.identity) ->
+    enumerable: no, value: (compound, shader=cloner) ->
         current = this.hierarchy()
         foreign = compound.hierarchy()
         identity = compound.name or compound.nick
         duplicate = "Duplicate #{identity} compound"
         throw new Error duplicate if compound in current
-        orphan = (shape) -> shape not in commons
-        commons = _.intersection current, foreign
+        cmp = (ersatz) -> (c) -> c.similarWith ersatz
+        culrpit = (shape) -> not _.any commons, cmp shape
+        commons = _.filter current, (x) -> _.any foreign, cmp x
         orphans = "No common base classes in hierarchy"
         throw new Error orphans if _.isEmpty commons
-        differentiated = _.take current, orphan
+        differentiated = _.take current, culrpit
         alternative = _.map differentiated, shader
         return @rebased compound if _.isEmpty alternative
         tails = alternative.pop().rebased compound
