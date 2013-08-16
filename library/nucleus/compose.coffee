@@ -75,14 +75,11 @@ Object.defineProperty Object::, "upstack",
     enumerable: no, value: (exclude, name) ->
         current = this[name] or undefined
         hierarchy = @constructor.hierarchy()
-        cmp = (e) -> (c) -> c.similarWith e, yes
-        excluder = (cls) -> not cmp(exclude)(cls)
-        hierarchy = _.drop hierarchy, excluder
-        isFunction = (c) -> _.isFunction get(c)
-        notCurrent = (c) -> get(c) isnt current
-        get = (c) -> c?.prototype?[name]
-        p = (c) -> isFunction(c) and notCurrent(c)
-        get _.find(_.tail(hierarchy), p)
+        predicate = (c) -> c.similarWith exclude
+        pivotal = _.findIndex hierarchy, predicate
+        hierarchy = _.drop hierarchy, pivotal + 1
+        func = _.head(hierarchy).prototype?[name]
+        return func unless func is current
 
 # A complicated piece of functionality for merging arbitrary classes
 # into the linear hierarchical inheritance chain of existing class.
@@ -134,13 +131,14 @@ Object.defineProperty Object::, "hierarchy",
 # class must conform to the basic class requirements, such as have
 # a valid __super__ descriptor, among some other prototypal things.
 Object.defineProperty Object::, "rebased",
-    enumerable: no, value: (baseclass) ->
+    enumerable: no, value: (baseclass, force) ->
         isClass = _.isObject baseclass?.__super__
         noClass = "The #{baseclass} is not a class"
         throw new Error noClass unless isClass
-        _.extend r = receiver = this, baseclass
+        p = (k) => force is yes or not this[k]?
+        this[k] = v for own k, v of baseclass when p(k)
+        original = this.prototype or {}; r = this
         `function ctor() {this.constructor = r}`
-        original = this.prototype or {}
         ctor.prototype = baseclass.prototype
         this.__super__ = baseclass.prototype
         this.prototype = new ctor() or original
