@@ -80,6 +80,7 @@ Object.defineProperty Object::, "upstack",
         hierarchy = _.drop hierarchy, pivotal + 1
         func = _.head(hierarchy).prototype?[name]
         return func unless func is current
+        @upstack _.head(hierarchy), name
 
 # A complicated piece of functionality for merging arbitrary classes
 # into the linear hierarchical inheritance chain of existing class.
