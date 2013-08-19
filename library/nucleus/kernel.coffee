@@ -102,7 +102,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     # that are necessary, do the configuration on the kernel, then
     # boot it up, using the hostname and port parameters from config.
     # Please use this static method instead of manually launching up.
-    @bootstrap: -> new Kernel ->
+    @bootstrap: -> new this ->
         @setupRoutableServices()
         @setupConnectPipeline()
         @setupListeningServers()
