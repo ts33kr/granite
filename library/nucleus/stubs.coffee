@@ -58,7 +58,7 @@ module.exports.Restful = class Restful extends api.Api
     # usually means partial replacing contents with the new contents.
     # This HTTP method nicely maps to UPDATE method of the storages.
     # Use this method to partially replace the contents of resources.
-    @PATCH: @prototype.unsupported
+    PATCH: @prototype.unsupported
 
     # Delete the contents of the resources at the establushed path. It
     # generally should destroy the contents of the resource for good.
