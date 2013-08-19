@@ -48,7 +48,7 @@ extendz = require "./../nucleus/extends"
 # the services using the built it documentation mechanisn. This class
 # provide not only function for definition but also for retrieval of
 # the documentation on either the per-service or all-at-once basis.
-module.exports.Specification = class Specification extends stubs.Restful
+module.exports.Specification = class Specification extends stubs.WithHooks
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
