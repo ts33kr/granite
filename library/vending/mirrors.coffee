@@ -38,7 +38,7 @@ api = require "../nucleus/api"
 stubs = require "../nucleus/stubs"
 tools = require "../nucleus/tools"
 service = require "../nucleus/service"
-document = require "../nucleus/document"
+document = require "./document"
 skeleton = require "./skeleton"
 
 # This service exposes the entiry hierarchical structure of the

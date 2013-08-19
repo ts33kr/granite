@@ -35,7 +35,6 @@ tools = require "./tools"
 extendz = require "./extends"
 routing = require "./routing"
 service = require "./service"
-document = require "./document"
 
 # This is an abstract base class for every service in the system
 # and in the end user application that provides a REST interface
