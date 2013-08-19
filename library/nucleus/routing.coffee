@@ -47,23 +47,18 @@ module.exports.Router = class Router extends events.EventEmitter
     # routable. If no corresponding routable is found, the method
     # transfers the control to the pre-installed, default routable.
     # A set of tests are performed to ensure the logical integrity.
-    lookupMiddleware: (request, response, next) ->
+    middleware: (request, response, next) ->
         incoming = "#{request.url.underline}"
         parameters = [request, response, next]
         predicate = (routable) -> routable.matches parameters...
-        recognized = _.find(@registry or [],  predicate) or null
-        if recognized then constructor = recognized.constructor
-        inspected = (constructor?.nick or constructor?.name)
-        identify = inspected?.toString()?.underline
+        recognized = _.find(@registry or [],  predicate)
+        if recognized? then constructor = recognized.constructor
+        identify = constructor?.identify()?.underline
         @emit "recognized", recognized, parameters... if recognized?
         matching = "Request #{incoming} matches #{identify} service"
         logger.debug matching.grey if recognized?
         return recognized.process parameters... if recognized?
         logger.warn "No routable for #{incoming} request".yellow
-        matches = @fallback?.matches request, response, next
-        @emit "fallback", @fallback, matches, parameters...
-        return @fallback.process parameters... if matches?
-        logger.warn "No fallback for #{incoming} request".yellow
         next() unless response.headersSent
 
     # Try registering a new routable object. The method checks for
@@ -71,41 +66,18 @@ module.exports.Router = class Router extends events.EventEmitter
     # that it is capable of doing the routing functionality code.
     # If something is wrong, this method will throw an exception.
     # The method is idempotent, ergo no duplication of routables.
-    registerRoutable: (routable) ->
-        nick = routable?.constructor?.nick
-        name = routable?.constructor?.name
-        inspected = nick or name or typeof routable
-        identify = inspected.toString().underline
+    register: (routable) ->
+        identify = routable?.constructor?.identify()
+        inspected = identify.toString().underline
         duplicate = routable in (@registry or [])
         [matches, process] = [routable.matches, routable.process]
-        goneMatches = "The #{inspected} has no valid matches method"
-        goneProcess = "The #{inspected} has no valid process method"
+        goneMatches = "The #{identify} has no valid matches method"
+        goneProcess = "The #{identify} has no valid process method"
         passMatches = _.isFunction(matches) and matches?.length is 3
         passProcess = _.isFunction(process) and process?.length is 3
         throw new Error goneMatches unless passMatches
         throw new Error goneProcess unless passProcess
-        logger.info "Attaching #{identify} service instance".blue
+        logger.info "Attaching #{inspected} service instance".blue
         (@registry ?= []).push routable unless duplicate
         @emit "registered", routable unless duplicate
         routable.register?(); this
-
-    # Install the routable that should handle the requests that are
-    # not handled via the registered routables. The routable has to
-    # implement the same interface as the usual routable. This method
-    # ensures this by performing the same tests as register method.
-    # Remember that it should implement the widescope matching logic.
-    installFallback: (routable) ->
-        nick = routable?.constructor?.nick
-        name = routable?.constructor?.name
-        inspected = nick or name or typeof routable
-        identify = inspected.toString().underline
-        [matches, process] = [routable.matches, routable.process]
-        goneMatches = "The #{inspected} has no valid matches method"
-        goneProcess = "The #{inspected} has no valid process method"
-        passMatches = _.isFunction(matches) and matches?.length is 3
-        passProcess = _.isFunction(process) and process?.length is 3
-        throw new Error goneMatches unless passMatches
-        throw new Error goneProcess unless passProcess
-        logger.info "Fallback to #{identify} service".blue
-        @fallback = routable; @emit "fallback", routable
-        @fallback.install?(); this

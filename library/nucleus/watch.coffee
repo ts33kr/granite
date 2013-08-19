@@ -132,7 +132,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         previous = _.filter registry, predicate
         prev.unregister() for prev in previous
         srv.origin = cached for srv in services
-        register = @kernel.router.registerRoutable
+        register = @kernel.router.register
         register = register.bind @kernel.router
         spawn = (s) => register new s @kernel
         spawn s for s in services

@@ -165,12 +165,12 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     setupRoutableServices: (services...) ->
         tag = nconf.get "NODE_ENV"
         missing = "No NODE_ENV variable found"
-        c = (s) => @router.registerRoutable new s @
+        c = (s) => @router.register new s @
         throw new Error missing unless _.isString tag
         @scope = scoping.Scope.lookupOrFail tag
         @scope.incorporate this
         @router = new routing.Router this
-        @middleware = @router.lookupMiddleware
+        @middleware = @router.middleware
         @middleware = @middleware.bind @router
         c(s) for s in (services or [])
 
