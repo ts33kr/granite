@@ -24,6 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 _ = require "lodash"
+async = require "async"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
@@ -50,6 +51,22 @@ cloner = module.exports.cloner = (subject) ->
         _.extend func.prototype, value.prototype
         func.constructor = value.constructor; func
     snapshot.watermark = subject; snapshot
+
+# A unique functionality built around the composition system. It
+# allows for an asynchronous way of calling a stream of methods,
+# each defined in the peer of the inheritance tree. Basically this
+# is a way to asynchronously and dynamically call super methods.
+# Each method must call its last parameter `next` for proceeding.
+Object.defineProperty Object::, "upstreamAsync",
+    enumerable: no, value: (method, callback) -> (args...) =>
+        hierarchy = @constructor.hierarchy()
+        resolve = (c) -> c.prototype?[method]
+        threads = _.map hierarchy, resolve
+        methods = _.filter threads, _.isFunction
+        prepped = _.unique methods.reverse()
+        applicator = (f) -> async.apply f, args...
+        applied = _.map prepped, applicator
+        async.series applied, callback
 
 # A method for comparing different classes for equality. Be careful
 # as this method is very loose in terms of comparison and its main

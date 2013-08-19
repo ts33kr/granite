@@ -61,15 +61,15 @@ module.exports.Api = class Api extends service.Service
     # system of service hooks. Refer to the original sender for
     # more information on how the content is encoded and passed.
     push: (response, content) ->
-        areSent = -> response.headersSent
         isContent = content isnt undefined
         noContent = "No valid content supplied"
         throw new Error noContent unless isContent
         @emit "push", this, response, content
-        flags = @prepushing? response, content
-        return if areSent() or flags is yes
-        @postpushing? response.send(content),
-            response, content
+        uploader = -> response.send content
+        prestreamer = @upstreamAsync "prepushing", =>
+            poststreamer = @upstreamAsync "postpushing"
+            uploader(); poststreamer response, content
+        prestreamer response, content
 
     # This method is intended for indicating to a client that the
     # method that has been used to make the request is not supported
@@ -98,7 +98,8 @@ module.exports.Api = class Api extends service.Service
         missing = "Missing implementation for #{method} method"
         throw new Error missing unless method of this
         variables = [tokens.resource, tokens.domain]
-        flags = @preprocess request, response, variables...
-        return if response.headersSent or flags is yes
-        results = @[method](request, response, variables...)
-        @postprocess results, request, response, variables
+        prestreamer = @upstreamAsync "preprocess", =>
+            this[method](request, response, variables...)
+            poststreamer = @upstreamAsync "postprocess"
+            poststreamer request, response, variables...
+        prestreamer request, response, variables...

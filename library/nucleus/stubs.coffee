@@ -97,30 +97,30 @@ module.exports.WithHooks = class WithHooks extends Restful
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
-    # A hook that will be called prior to sending the content over
-    # to the requester. Please refer to this prototype signature for
-    # information on the parameters it accepts. If this returns a
-    # truthful boolean, the content will NOT be sent to the response.
-    # Please be sure invoke the super implementation, if override!
-    prepushing: (response, content) ->
-
-    # A hook that will be called after the sending the content over
-    # to the requester. Please refer to this prototype signature for
-    # information on the parameters it accepts. This method accepts
-    # a value that was returned by the implementation as extra param.
-    # Please be sure invoke the super implementation, if override!
-    postpushing: (results, response, content) ->
-
     # A hook that will be called prior to invoking the API method
     # implementation. Please refer to this prototype signature for
-    # information on the parameters it accepts. If this returns a
-    # truthful boolean, the service will NOT call implementation.
-    # Please be sure invoke the super implementation, if override!
-    preprocess: (request, response, resource, domain) ->
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    preprocess: (request, response, resource, domain, next) -> next()
 
     # A hook that will be called after invoking the API method
     # implementation. Please refer to this prototype signature for
-    # information on the parameters it accepts. This method accepts
-    # a value that was returned by the implementation as extra param.
-    # Please be sure invoke the super implementation, if override!
-    postprocess: (results, request, response, resource, domain) ->
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    postprocess: (request, response, resource, domain, next) -> next()
+
+    # A hook that will be called prior to sending the content over
+    # to the requester. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    prepushing: (response, content, next) -> next()
+
+    # A hook that will be called after the sending the content over
+    # to the requester. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    postpushing: (response, content, next) -> next()
