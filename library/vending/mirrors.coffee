@@ -37,15 +37,15 @@ _ = require "lodash"
 api = require "../nucleus/api"
 stubs = require "../nucleus/stubs"
 tools = require "../nucleus/tools"
-boiler = require "../nucleus/boiler"
 service = require "../nucleus/service"
 document = require "../nucleus/document"
+skeleton = require "./skeleton"
 
 # This service exposes the entiry hierarchical structure of the
 # service documentation, as they scanned and found in the current
 # kernel instance. It exposes the data in a structured hierarchy
 # encoded with JSON. Please refer to the implementation for info.
-module.exports.ApiDoc = class ApiDoc extends boiler.Standard
+module.exports.ApiDoc = class ApiDoc extends skeleton.Standard
 
     # These invocations establish the parameters which are going
     # to be used for matching HTTP requests against this service.

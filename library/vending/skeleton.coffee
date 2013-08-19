@@ -23,6 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+_ = require "lodash"
 url = require "url"
 http = require "http"
 util = require "util"
@@ -30,16 +31,11 @@ events = require "events"
 colors = require "colors"
 logger = require "winston"
 
-_ = require "lodash"
-tools = require "./tools"
-extendz = require "./extends"
-routing = require "./routing"
-service = require "./service"
-document = require "./document"
-compose = require "./compose"
-
-{WithHooks} = require "./stubs"
-{Specification} = require "../vending/specify"
+tools = require "./../nucleus/tools"
+extendz = require "./../nucleus/extends"
+compose = require "./../nucleus/compose"
+{WithHooks} = require "./../nucleus/stubs"
+{Specification} = require "./specify"
 
 # This is an abstract base class for every service in the system
 # and in the end user application that provides a REST interface
