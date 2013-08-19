@@ -56,19 +56,16 @@ module.exports.SecureStub = class SecureStub extends skeleton.Standard
 
     # A hook that will be called prior to invoking the API method
     # implementation. Please refer to this prototype signature for
-    # information on the parameters it accepts. If this returns a
-    # truthful boolean, the service will NOT call implementation.
-    # Please be sure invoke the super implementation, if override!
-    preprocess: (request, response, resource, domain) ->
-        preprocess = @upstack SecureStub, "preprocess"
-        return yes if preprocess?.apply @, arguments
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    preprocess: (request, response, resource, domain, next) ->
         connection = request?.connection
         encrypted = connection?.encrypted
-        return if _.isObject encrypted
+        next() if _.isObject encrypted
         protectedUrl = tools.urlWithHost yes
         current = url.parse protectedUrl
         current.pathname = request.url
         current.query = request.params
         compiled = url.format current
         response.redirect compiled
-        response.headersSent
