@@ -34,40 +34,6 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-# Describe the supplied method of arbitrary service, in a structured
-# and expected way, so that it can later be used to programmatically
-# process such documentation and do with it whatever is necessary.
-# This approach gives unique ability to build self documented APIs.
-module.exports.describe = (method, descriptor) ->
-    validated = _.isFunction descriptor
-    missing = "The #{descriptor} is not a descriptor"
-    throw new Error missing unless validated
-    method.document ?= new Document
-    previous = method.document.descriptor
-    method.document.descriptor = ->
-        ok = _.isFunction previous
-        previous.apply @, arguments if ok
-        descriptor.apply @, arguments
-
-# Traverse all of the services that are registered with the router
-# and collect the documentation for each method, then given this
-# information, build a hierarhical tree object of all the methods
-# and the services that implement them and return to the invoker.
-module.exports.collect = (kernel) ->
-    services = kernel.router.registry
-    logger.debug "Collecting API documentation"
-    _.map services, (service) -> do (service) ->
-        constructor = service.constructor
-        supported = constructor.SUPPORTED
-        unsupported = service.unsupported
-        implemented = (m) -> service[m] isnt unsupported
-        doc = (m) -> service[m].document or new Document
-        filtered = _.filter supported, implemented
-        methods = _.object filtered, _.map(filtered, doc)
-        args = (method) -> [method, service, kernel]
-        doc.descriptor args(m)... for m, doc of methods
-        service: service, methods: methods
-
 # Descriptor of some method of arbitrary service, in a structured
 # and expected way, so that it can later be used to programmatically
 # process such documentation and do with it whatever is necessary.

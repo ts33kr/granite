@@ -39,6 +39,7 @@ stubs = require "../nucleus/stubs"
 tools = require "../nucleus/tools"
 service = require "../nucleus/service"
 document = require "../nucleus/document"
+{Specification} = require "./specify"
 
 # This service exposes the entiry hierarchical structure of the
 # service documentation, as they scanned and found in the current
@@ -50,6 +51,8 @@ module.exports.ApiDoc = class ApiDoc extends stubs.Restful
     # to be used for matching HTTP requests against this service.
     # Typically an HTTP pathname pattern and a domain name pattern.
     # Try not to put constraints on the domain, unless necessary.
+    # Also, the compounds for the composition system belong here.
+    @compose Specification
     @resource "/api/doc"
     @domain @ANY
 
@@ -58,7 +61,7 @@ module.exports.ApiDoc = class ApiDoc extends stubs.Restful
     # rule, this method does not have to alter any contents or data
     # of the resource. Use for unobtrusive retrieval of resources.
     GET: (request, response) ->
-        collected = document.collect @kernel
+        collected = @collectSpecifications()
         @push response, _.map collected, (record) ->
             constructor = record.service.constructor
             location: record.service.location()
@@ -78,7 +81,7 @@ module.exports.ApiDoc = class ApiDoc extends stubs.Restful
     # exact process of how it is being documented depends on how the
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
-    document.describe @prototype.GET, (method, service) ->
+    @specification @prototype.GET, (method, service) ->
         @leads tools.urlWithHost no, service.location()
         @notes "See the Document class for more information"
         @synopsis "Get all of the APIs available in the system"
