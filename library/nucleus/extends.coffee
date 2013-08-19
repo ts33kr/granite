@@ -39,6 +39,19 @@ http = require "http"
 util = require "util"
 fs = require "fs"
 
+# This extension provides a convenient interface for looking up and
+# setting up the object identifification tag. This tag is usually a
+# class or function name, nick or an arbitraty name set with this
+# method. If nothing found, the methods falls back to some default.
+Object.defineProperty Object::, "identify",
+    enumerable: no, value: (identificator) ->
+        set = => @$identify = identificator
+        return set() if _.isString identificator
+        return @$identify if _.isString @$identify
+        return @nick if _.isString @nick
+        return @name if _.isString @name
+        return @identify typeof this
+
 # This method is a stub that must be called in the abstract methods
 # who do not have any implementation. When called, this method will
 # spit out the relevant error about the caller method. It would say
