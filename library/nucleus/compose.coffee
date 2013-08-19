@@ -78,8 +78,10 @@ Object.defineProperty Object::, "upstack",
         predicate = (c) -> c.similarWith exclude
         pivotal = _.findIndex hierarchy, predicate
         hierarchy = _.drop hierarchy, pivotal + 1
-        func = _.head(hierarchy).prototype?[name]
-        return func unless func is current
+        exists = (x) -> x.prototype?[name]?
+        heading = _.find hierarchy, exists
+        value = heading?.prototype?[name]
+        return value unless value is current
         @upstack _.head(hierarchy), name
 
 # A complicated piece of functionality for merging arbitrary classes
