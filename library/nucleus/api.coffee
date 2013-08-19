@@ -55,22 +55,6 @@ module.exports.Api = class Api extends service.Service
     # override it and provie support for more methods, up to you.
     @SUPPORTED = ["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"]
 
-    # Push the supplied content to the requester by utilizing the
-    # response object. This is effectively the same as calling the
-    # `response.send` directly, but this method is wired into the
-    # system of service hooks. Refer to the original sender for
-    # more information on how the content is encoded and passed.
-    push: (response, content) ->
-        isContent = content isnt undefined
-        noContent = "No valid content supplied"
-        throw new Error noContent unless isContent
-        @emit "push", this, response, content
-        uploader = -> response.send content
-        prestreamer = @upstreamAsync "prepushing", =>
-            poststreamer = @upstreamAsync "postpushing"
-            uploader(); poststreamer response, content
-        prestreamer response, content
-
     # This method is intended for indicating to a client that the
     # method that has been used to make the request is not supported
     # by this service of the internals that are comprising service.
@@ -103,3 +87,19 @@ module.exports.Api = class Api extends service.Service
             poststreamer = @upstreamAsync "postprocess"
             poststreamer request, response, variables...
         prestreamer request, response, variables...
+
+    # Push the supplied content to the requester by utilizing the
+    # response object. This is effectively the same as calling the
+    # `response.send` directly, but this method is wired into the
+    # system of service hooks. Refer to the original sender for
+    # more information on how the content is encoded and passed.
+    push: (response, content) ->
+        isContent = content isnt undefined
+        noContent = "No valid content supplied"
+        throw new Error noContent unless isContent
+        @emit "push", this, response, content
+        uploader = -> response.send content
+        prestreamer = @upstreamAsync "prepushing", =>
+            poststreamer = @upstreamAsync "postpushing"
+            uploader(); poststreamer response, content
+        prestreamer response, content
