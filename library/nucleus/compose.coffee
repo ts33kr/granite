@@ -110,8 +110,8 @@ Object.defineProperty Object::, "compose",
     enumerable: no, value: (compound, shader=cloner) ->
         current = this.hierarchy()
         foreign = compound.hierarchy()
-        identity = compound.name or compound.nick
-        duplicate = "Duplicate #{identity} compound"
+        identify = compound.identify()
+        duplicate = "Duplicate #{identify} compound"
         throw new Error duplicate if compound in current
         cmp = (ersatz) -> (c) -> c.similarWith ersatz
         culrpit = (shape) -> not _.any commons, cmp shape

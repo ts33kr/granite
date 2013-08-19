@@ -119,9 +119,8 @@ module.exports.Service = class Service extends events.EventEmitter
     # previously registered with the kernel router. This method does
     # modify the router register, ergo does write access to kernel.
     unregister: ->
-        nick = @constructor?.nick
-        name = @constructor?.name
-        inspected = (nick or name).underline
+        identify = @constructor.identify()
+        inspected = identify.toString().underline
         noKernel = "No kernel reference found"
         noRouter = "Could not access the router"
         unregister = "Removing %s service instance"
