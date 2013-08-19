@@ -103,6 +103,7 @@ Object.defineProperty Object::, "compose",
         throw new Error orphans if _.isEmpty commons
         differentiated = _.take current, culrpit
         alternative = _.map differentiated, shader
+        compound.composition? this, current, foreign
         return @rebased compound if _.isEmpty alternative
         tails = alternative.pop().rebased compound
         rebased = (acc, cls) -> cls.rebased acc; cls
@@ -138,6 +139,7 @@ Object.defineProperty Object::, "rebased",
         isClass = _.isObject baseclass?.__super__
         noClass = "The #{baseclass} is not a class"
         throw new Error noClass unless isClass
+        baseclass.rebasement? this, force
         p = (k) => force is yes or not this[k]?
         this[k] = v for own k, v of baseclass when p(k)
         original = this.prototype or {}; r = this
