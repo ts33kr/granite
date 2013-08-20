@@ -86,16 +86,15 @@ module.exports.Service = class Service extends events.EventEmitter
     # Supports implicit extraction of captured groups in the match.
     # Use this to configure what resources should match with service.
     @resource: (pattern) ->
-        identify = (@nick or @name).underline
-        duplicate = pattern in (@resources or [])
+        identify = @identify().underline
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
-        pattern = regexify pattern  if _.isString pattern
-        inspected = pattern.unescape()?.underline or pattern.source
+        pattern = regexify pattern if _.isString pattern
+        inspected = pattern.unescape()?.underline or pattern
         associate = "Associating #{inspected} resource with #{identify}"
         notRegexp = "The #{inspected} is not a valid regular expression"
-        throw new Error notRegexp unless _.isRegExp pattern
-        (@resources ?= []).push pattern unless duplicate
-        (logger.debug associate.grey unless duplicate); this
+        assert _.isRegExp(pattern), notRegexp
+        (@resources ?= []).push pattern
+        logger.debug associate.grey; @
 
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted domain patterns.
@@ -103,16 +102,15 @@ module.exports.Service = class Service extends events.EventEmitter
     # Supports implicit extraction of captured groups in the match.
     # Use this to configure what domains should match with service.
     @domain: (pattern) ->
-        identify = (@nick or @name).underline
-        duplicate = pattern in (@domains or [])
-        regexify = (s) -> new RegExp RegExp.escape(s)
-        pattern = regexify(pattern)  if _.isString(pattern)
-        inspected = pattern.unescape()?.underline or pattern.source
-        associate = "Associating #{inspected} domain with #{identify}"
+        identify = @identify().underline
+        regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
+        pattern = regexify pattern if _.isString pattern
+        inspected = pattern.unescape()?.underline or pattern
+        associate = "Associating #{inspected} resource with #{identify}"
         notRegexp = "The #{inspected} is not a valid regular expression"
-        throw new Error notRegexp unless _.isRegExp pattern
-        (@domains ?= []).push pattern unless duplicate
-        (logger.debug associate.grey unless duplicate); this
+        assert _.isRegExp(pattern), notRegexp
+        (@domains ?= []).push pattern
+        logger.debug associate.grey; @
 
     # Unregister the current service instance from the kernel router.
     # You should call this method only after the service has been
@@ -148,9 +146,8 @@ module.exports.Service = class Service extends events.EventEmitter
         presource = (pattern) -> pattern.test pathname
         domainOk = _.some domains, pdomain
         resourceOk = _.some resources, presource
-        parameters = [request, response, next]
         matches = domainOk and resourceOk
-        @emit "matches", matches, parameters...
+        @emit "matches", matches, arguments...
         return domainOk and resourceOk
 
     # This method should process the already matched HTTP request.
@@ -170,6 +167,5 @@ module.exports.Service = class Service extends events.EventEmitter
         presource = _.find resources, presource
         assert gdomain isnt null, "missing domain"
         assert gresource isnt null, "missing resource"
-        parameters = [request, response, next]
-        @emit "process", gdomain, gresource, parameters...
+        @emit "process", gdomain, gresource, arguments...
         return domain: gdomain, resource: gresource
