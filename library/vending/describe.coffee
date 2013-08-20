@@ -61,9 +61,10 @@ module.exports.Specification = class Specification extends stubs.WithHooks
     # process such documentation and do with it whatever is necessary.
     # This approach gives unique ability to build self documented APIs.
     @specification: (method, descriptor) ->
-        validated = _.isFunction descriptor
-        missing = "The #{descriptor} is not a descriptor"
-        throw new Error missing unless validated
+        noMethod = "The #{method} is not a valid method"
+        noDescriptor = "The #{descriptor} is not a descriptor"
+        assert _.isFunction(method), noMethod
+        assert _.isFunction(descriptor), noDescriptor
         method.document ?= new Document
         previous = method.document.descriptor
         method.document.descriptor = ->
@@ -78,12 +79,11 @@ module.exports.Specification = class Specification extends stubs.WithHooks
     collectSpecifications: (substitution) ->
         services = @kernel?.router?.registry
         services = substitution if substitution?
-        assert _.isArray(services), "no services"
+        assert _.isArray(services), "invalid services"
         logger.debug "Collecting API documentation"
         _.map services, (service) -> do (service) ->
-            constructor = service.constructor
-            supported = constructor.SUPPORTED
             unsupported = service.unsupported
+            supported = service.constructor.SUPPORTED
             implemented = (m) -> service[m] isnt unsupported
             doc = (m) -> service[m].document or new Document
             filtered = _.filter supported, implemented
