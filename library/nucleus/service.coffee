@@ -72,7 +72,7 @@ module.exports.Service = class Service extends events.EventEmitter
     # the deduced default is returned. Default location is the first
     # resource regular expression pattern being unescaped to string.
     @location: (location) ->
-        current = => @$location? or automatic
+        current = => @$location or automatic
         automatic = _.head(@resources)?.unescape()
         return current() if arguments.length is 0
         isLocation = _.isString location
