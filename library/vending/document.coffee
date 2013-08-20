@@ -46,9 +46,8 @@ module.exports.Document = class Document extends events.EventEmitter
     # Notes are warning/beware messages about the implementation.
     notes: (notes) ->
         return @$notes if arguments.length is 0
-        isNotes = _.isString notes
         noNotes = "The notes is not a string"
-        throw new Error noNotes unless isNotes
+        assert _.isString(notes), noNotes
         @emit "notes", arguments...
         @$notes = notes.toString()
 
@@ -58,9 +57,8 @@ module.exports.Document = class Document extends events.EventEmitter
     # Example is a URL with query that shows example invocation.
     leads: (leads) ->
         return @$leads if arguments.length is 0
-        isLeads = _.isString leads
         noLeads = "The leads is not a string"
-        throw new Error noLeads unless isLeads
+        assert _.isString(leads), noLeads
         @emit "leads", arguments...
         @$leads = leads.toString()
 
@@ -70,9 +68,8 @@ module.exports.Document = class Document extends events.EventEmitter
     # Inputs is a description of the body that method expects.
     inputs: (inputs) ->
         return @$inputs if arguments.length is 0
-        isInputs = _.isString inputs
         noInputs = "The inputs is not a string"
-        throw new Error noInputs unless isInputs
+        assert _.isString inputs, noInputs
         @emit "inputs", arguments...
         @$inputs = inputs.toString()
 
@@ -82,9 +79,8 @@ module.exports.Document = class Document extends events.EventEmitter
     # Outputs is a description of data returned by the method.
     outputs: (outputs) ->
         return @$outputs if arguments.length is 0
-        isOutputs = _.isString outputs
         noOutputs = "The outputs is not a string"
-        throw new Error noOutputs unless isOutputs
+        assert _.isString(outputs), noOutputs
         @emit "outputs", arguments...
         @$outputs = outputs.toString()
 
@@ -94,9 +90,8 @@ module.exports.Document = class Document extends events.EventEmitter
     # Synopsis is a brief story of what this service method does.
     synopsis: (synopsis) ->
         return @$synopsis if arguments.length is 0
-        isSynopsis = _.isString synopsis
         noSynopsis = "The synopsis is not a string"
-        throw new Error noSynopsis unless isSynopsis
+        assert _.isString(synopsis), noSynopsis
         @emit "synopsis", arguments...
         @$synopsis = synopsis.toString()
 
@@ -106,15 +101,12 @@ module.exports.Document = class Document extends events.EventEmitter
     # Argument consists of name, approximate type and description.
     argument: (identify, typeable, description) ->
         return @$argument if arguments.length is 0
-        isIdentify = _.isString identify
-        isTypeable = _.isString typeable
-        isDescription = _.isString description
         noIdentify = "The identify is not a string"
         noTypeable = "The typeable is not a string"
         noDescription = "The description is not a string"
-        throw new Error noIdentify unless isIdentify
-        throw new Error noTypeable unless isTypeable
-        throw new Error noDescription unless isDescription
+        assert _.isString(description), noDescription
+        assert _.isString(identify), noIdentify
+        assert _.isString(typeable), noTypeable
         @emit "argument", arguments...
         (@$argument ?= []).push
             description: description
@@ -127,12 +119,10 @@ module.exports.Document = class Document extends events.EventEmitter
     # Each failure consists of the expected code and reason for fail
     failure: (code, reasoning) ->
         return @$failure if arguments.length is 0
-        isCode = _.isNumber code
-        isReasoning = _.isString reasoning
         noCode = "The code is not a number"
         noReasoning = "The reasoning is not a string"
-        throw new Error noCode unless isCode
-        throw new Error noReasoning unless isReasoning
+        assert _.isString(reasoning), noReasoning
+        assert _.isNumber(code), noCode
         @emit "failure", arguments...
         (@$failure ?= []).push
             reasoning: reasoning
