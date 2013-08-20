@@ -52,7 +52,7 @@ module.exports.Service = class Service extends events.EventEmitter
     # suspects in establishing the matching patterns. Basically,
     # a number of convenient shorthands for wildcard patterns.
     # Use them when you need to wildcard or do a wide match.
-    @INDEX = /^\/$/; @ANY = /^.+$/
+    @INDEX = /^\/$/; @WILDCARD = /^.+$/
 
     # Every service has to have a public constructor that accepts
     # the kernel instance as a parameter. You can override it as
