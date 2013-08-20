@@ -56,6 +56,27 @@ module.exports.Specification = class Specification extends stubs.WithHooks
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
+    # Traverse all of the services that are registered with the router
+    # and collect the documentation for each method, then given this
+    # information, build a hierarhical tree object of all the methods
+    # and the services that implement them and return to the invoker.
+    collectSpecifications: (substitution) ->
+        services = @kernel?.router?.registry
+        services = substitution if substitution?
+        assert _.isArray(services), "invalid services"
+        logger.debug "Collecting API documentation"
+        _.map services, (service) => do (service) =>
+            unsupported = service.unsupported
+            supported = service.constructor.SUPPORTED
+            implemented = (m) -> service[m] isnt unsupported
+            fix = (m) => @constructor.specification service[m], ->
+            doc = (m) => (service[m].document or fix(m)).blankSlate()
+            filtered = _.filter supported, implemented
+            methods = _.object filtered, _.map(filtered, doc)
+            args = (method) => [method, service, @kernel]
+            doc.descriptor? args(m)... for m, doc of methods
+        return service: service, methods: methods
+
     # Describe the supplied method of arbitrary service, in a structured
     # and expected way, so that it can later be used to programmatically
     # process such documentation and do with it whatever is necessary.
@@ -66,28 +87,10 @@ module.exports.Specification = class Specification extends stubs.WithHooks
         assert _.isFunction(method), noMethod
         assert _.isFunction(descriptor), noDescriptor
         method.document ?= new Document
-        previous = method.document.descriptor
-        method.document.descriptor = ->
-            ok = _.isFunction previous
-            previous.apply @, arguments if ok
-            descriptor.apply @, arguments
-
-    # Traverse all of the services that are registered with the router
-    # and collect the documentation for each method, then given this
-    # information, build a hierarhical tree object of all the methods
-    # and the services that implement them and return to the invoker.
-    collectSpecifications: (substitution) ->
-        services = @kernel?.router?.registry
-        services = substitution if substitution?
-        assert _.isArray(services), "invalid services"
-        logger.debug "Collecting API documentation"
-        _.map services, (service) -> do (service) ->
-            unsupported = service.unsupported
-            supported = service.constructor.SUPPORTED
-            implemented = (m) -> service[m] isnt unsupported
-            doc = (m) -> service[m].document or new Document
-            filtered = _.filter supported, implemented
-            methods = _.object filtered, _.map(filtered, doc)
-            args = (method) -> [method, service, @kernel]
-            doc.descriptor? args(m)... for m, doc of methods
-            service: service, methods: methods
+        method.document.descriptor = descriptor
+        method.document.blankSlate = ->
+            document = new Document
+            document.descriptor = @descriptor
+            document.blankSlate = @blankSlate
+            return document
+        return method.document
