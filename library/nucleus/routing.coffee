@@ -42,27 +42,6 @@ module.exports.Router = class Router extends events.EventEmitter
     # it is highly advised to store the kernel instance in object.
     constructor: (@kernel) ->
 
-    # The method implements a middleware (for Connect) that looks
-    # up the relevant routable and dispatches the request to the
-    # routable. If no corresponding routable is found, the method
-    # transfers the control to the pre-installed, default routable.
-    # A set of tests are performed to ensure the logical integrity.
-    middleware: (request, response, next) ->
-        incoming = "#{request.url.underline}"
-        args = a if _.isArguments a = arguments
-        predicate = (routable) -> routable.matches args...
-        recognized = _.find @registry or [],  predicate
-        missing = "Request %s does not match any service"
-        logger.debug missing.grey, incoming unless recognized?
-        return next() unless _.isObject recognized
-        constructor = recognized.constructor
-        identify = constructor?.identify()?.underline
-        @emit "recognized", recognized, arguments...
-        matching = "Request %s matches %s service"
-        logger.debug matching.grey, incoming, identify
-        results =  recognized.process arguments...
-        return next() unless response.headerSent
-
     # Try registering a new routable object. The method checks for
     # the object to be of the correct type, basically making sure
     # that it is capable of doing the routing functionality code.
@@ -83,3 +62,24 @@ module.exports.Router = class Router extends events.EventEmitter
         (@registry ?= []).push routable unless duplicate
         @emit "registered", routable unless duplicate
         routable.register?(); return this
+
+    # The method implements a middleware (for Connect) that looks
+    # up the relevant routable and dispatches the request to the
+    # routable. If no corresponding routable is found, the method
+    # transfers the control to the pre-installed, default routable.
+    # A set of tests are performed to ensure the logical integrity.
+    middleware: (request, response, next) ->
+        incoming = "#{request.url.underline}"
+        args = a if _.isArguments a = arguments
+        predicate = (routable) -> routable.matches args...
+        recognized = _.find @registry or [],  predicate
+        missing = "Request %s does not match any service"
+        logger.debug missing.grey, incoming unless recognized?
+        return next() unless _.isObject recognized
+        constructor = recognized.constructor
+        identify = constructor?.identify()?.underline
+        @emit "recognized", recognized, arguments...
+        matching = "Request %s matches %s service"
+        logger.debug matching.grey, incoming, identify
+        results =  recognized.process arguments...
+        return next() unless response.headerSent
