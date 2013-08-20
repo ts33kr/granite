@@ -75,7 +75,7 @@ module.exports.Specification = class Specification extends stubs.WithHooks
             methods = _.object filtered, _.map(filtered, doc)
             args = (method) => [method, service, @kernel]
             doc.descriptor? args(m)... for m, doc of methods
-        return service: service, methods: methods
+            return service: service, methods: methods
 
     # Describe the supplied method of arbitrary service, in a structured
     # and expected way, so that it can later be used to programmatically
