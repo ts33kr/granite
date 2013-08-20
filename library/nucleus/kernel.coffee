@@ -162,23 +162,21 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     # the determined scope and the router, which is then are wired
     # in with the located and instantiated services. Please refer
     # to the implementation on how and what is being done exactly.
-    setupRoutableServices: (services...) ->
+    setupRoutableServices: ->
         tag = nconf.get "NODE_ENV"
         missing = "No NODE_ENV variable found"
-        c = (s) => @router.register new s @
-        throw new Error missing unless _.isString tag
+        assert _.isString(tag), missing
         @scope = scoping.Scope.lookupOrFail tag
         @scope.incorporate this
         @router = new routing.Router this
         @middleware = @router.middleware
         @middleware = @middleware.bind @router
-        c(s) for s in (services or [])
 
     # Setup the Connect middleware framework along with the default
     # pipeline of middlewares necessary for the Flames framework to
     # operate correctly. You are encouraged to override this method
     # to provide a Connect setup procedure to your own liking, etc.
-    setupConnectPipeline: (middlewares...) ->
+    setupConnectPipeline: ->
         @connect = connect()
         @connect.use connect.query()
         @connect.use connect.favicon()
@@ -190,5 +188,4 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         @connect.use plumbs.accepts this
         @connect.use plumbs.sender this
         @connect.use plumbs.logger this
-        @connect.use m for m in middlewares
         @connect.use @middleware
