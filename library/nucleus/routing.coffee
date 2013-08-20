@@ -49,17 +49,19 @@ module.exports.Router = class Router extends events.EventEmitter
     # A set of tests are performed to ensure the logical integrity.
     middleware: (request, response, next) ->
         incoming = "#{request.url.underline}"
-        parameters = [request, response, next]
-        predicate = (routable) -> routable.matches parameters...
-        recognized = _.find(@registry or [],  predicate)
-        if recognized? then constructor = recognized.constructor
+        args = a if _.isArguments a = arguments
+        predicate = (routable) -> routable.matches args...
+        recognized = _.find @registry or [],  predicate
+        missing = "Request %s does not match any service"
+        logger.debug missing.grey, incoming unless recognized?
+        return next() unless _.isObject recognized
+        constructor = recognized.constructor
         identify = constructor?.identify()?.underline
-        @emit "recognized", recognized, parameters... if recognized?
-        matching = "Request #{incoming} matches #{identify} service"
-        logger.debug matching.grey if recognized?
-        return recognized.process parameters... if recognized?
-        logger.warn "No routable for #{incoming} request".yellow
-        next() unless response.headersSent
+        @emit "recognized", recognized, arguments...
+        matching = "Request %s matches %s service"
+        logger.debug matching.grey, incoming, identify
+        results =  recognized.process arguments...
+        return next() unless response.headerSent
 
     # Try registering a new routable object. The method checks for
     # the object to be of the correct type, basically making sure
@@ -80,4 +82,4 @@ module.exports.Router = class Router extends events.EventEmitter
         logger.info "Attaching #{inspected} service instance".blue
         (@registry ?= []).push routable unless duplicate
         @emit "registered", routable unless duplicate
-        routable.register?(); this
+        routable.register?(); return this
