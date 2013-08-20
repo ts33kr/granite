@@ -59,7 +59,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     # changed, such as the kernel self identification tokens.
     constructor: (initializer) ->
         nconf.env().argv()
-        specification = "../../package"
+        specification = "#{__dirname}/../../package"
         @package = require specification
         branding = [@package.name, "larry3d"]
         types = [@package.version, @package.codename]
