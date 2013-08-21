@@ -54,7 +54,7 @@ collectModules = (directory, shallow) ->
 # It scans the supplied directory, find all the packages there and
 # return an object, where keys are names of modules minus the ext.
 # This is used to build up entire module hierarchy of the framework.
-collectPackages = (directory, closure) ->
+collectPackages = (closure, directory="library") ->
     stat = (p) -> fs.statSync fix p
     isDir = (p) -> stat(p).isDirectory()
     fix = (p) -> paths.join directory, p
@@ -62,7 +62,7 @@ collectPackages = (directory, closure) ->
     directory = resolve() if _.isString closure
     nodes = fs.readdirSync directory.toString()
     directories = _.filter nodes, isDir
-    scanner = (d) -> collectPackages fix(d), closure
+    scanner = (d) -> collectPackages closure, fix d
     symbols = _.map directories, paths.basename
     packages = _.map directories, scanner
     packages = _.object symbols, packages
@@ -89,6 +89,6 @@ lookupCachedKernel = ->
 # refer to the `collectModules` method implementation for more
 # information on how this is being done. See the modules in the
 # framework library to see the structure of the built hieararchy.
-module.exports = collectPackages "library", __dirname
+module.exports = collectPackages __dirname
 module.exports.collectModules = collectModules
 module.exports.collectPackages = collectPackages
