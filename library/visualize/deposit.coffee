@@ -53,7 +53,7 @@ module.exports.Deposit = class Deposit extends events.EventEmitter
     # deposists can be created on the same kernel without making
     # any interference to other possible instances of the deposit.
     constructor: (@kernel, @tag = uuid.v1()) ->
-        isKernel = @kernel instanceof kernel.Kernel
+        isKernel = @kernel instanceof kernel.Generic
         noKernel = "The instance of kernel is invalid"
         noTagging = "The supplied tagging is not valid"
         throw new Error noTagging unless _.isSring tag

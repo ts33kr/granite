@@ -55,7 +55,7 @@ module.exports.Keeper = class Keeper extends events.EventEmitter
     # object is the responsibility of the internal services that are
     # dedicated for this purpose. Each monitor has an UUID tag to it.
     constructor: (@kernel, @tag = uuid.v1()) ->
-        isKernel = @kernel instanceof kernel.Kernel
+        isKernel = @kernel instanceof kernel.Generic
         noKernel = "The instance of kernel is invalid"
         noTagging = "The supplied tagging is not valid"
         throw new Error noTagging unless _.isSring tag

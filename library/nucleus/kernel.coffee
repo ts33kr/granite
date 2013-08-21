@@ -53,7 +53,7 @@ watch = require "./watch"
 # and the end user application constructed within the framework. It
 # is both an abstract base class as well as a ready to use bootstrap.
 # Please refer to the documentation of the methods for more info.
-module.exports.Kernel = class Kernel extends events.EventEmitter
+module.exports.Generic = class Generic extends events.EventEmitter
 
     # Create a new instance of the kernel, run all the prerequisites
     # that are necessary, do the configuration on the kernel, then
@@ -86,7 +86,9 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
             identify = "Running kernel %s, codename: %s"
+            using = "Using %s class as the kernel type"
             logger.info identify.underline, types...
+            logger.info using, @constructor.name.bold
             initializer?.apply this
 
     # Shutdown the kernel instance. This includes shutting down both

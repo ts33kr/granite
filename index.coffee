@@ -74,7 +74,7 @@ collectPackages = (closure, directory="library") ->
 # most derived from the original one. If no such kernel can be found
 # then revert to returning the original kernel embedded in framework.
 cachedKernel = ->
-    origin = module.exports.nucleus.kernel.Kernel
+    origin = module.exports.nucleus.kernel.Generic
     assert _.isObject(origin), "no kernel origin"
     spaces = _.map require.cache, (x) -> x.exports
     hierarchy = (c) -> c.hierarchy().length
