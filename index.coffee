@@ -92,3 +92,4 @@ lookupCachedKernel = ->
 module.exports = collectPackages __dirname
 module.exports.collectModules = collectModules
 module.exports.collectPackages = collectPackages
+module.exports.lookupCachedKernel = lookupCachedKernel
