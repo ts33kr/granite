@@ -24,6 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 _ = require "lodash"
+assert = require "assert"
 wrench = require "wrench"
 colors = require "colors"
 logger = require "winston"
@@ -67,6 +68,22 @@ collectPackages = (directory, closure) ->
     packages = _.object symbols, packages
     modules = collectModules directory, yes
     _.merge modules, packages
+
+# Traverse the hierarchy of all cached modules and try find kernel
+# class that the most deep hiererachy. That is the kernel that is a
+# most derived from the original one. If no such kernel can be found
+# then revert to returning the original kernel embedded in framework.
+lookupCachedKernel = ->
+    origin = module.exports.nucleus.kernel.Kernel
+    assert _.isObject(origin), "no kernel origin"
+    spaces = _.map require.cache, (x) -> x.exports
+    hierarchy = (c) -> c.hierarchy().length
+    isKernel = (x) -> try x.inherits? origin
+    values = _.flatten _.map(spaces, _.values)
+    objects = _.filter values, _.isObject
+    kernels = _.filter objects, isKernel
+    sorted = _.sortBy kernels, hierarchy
+    return _.last(sorted) or origin
 
 # Build up the entire module hierarchy of the framework. Please do
 # refer to the `collectModules` method implementation for more

@@ -85,6 +85,7 @@ Object.defineProperty Object::, "inherits",
         assert _.isObject archetype, notObject
         predicate = (x) -> x is archetype
         assert @__super__, "not a class"
+        return yes if this is archetype
         _.any @hierarchy(), predicate
 
 # Determine if the object that is bound to this invocation is an
