@@ -46,11 +46,11 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @defaults.env = dirs: ["temp", "run", "var"], mode: 0o666
     @defaults.secure = port: 443, key: "key.pem", cert: "cert.pem"
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
-    @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @defaults.layout = library: "library", config: "config"
+    @defaults.watch = dirs: [], force: no
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -62,11 +62,11 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @defaults.env = dirs: ["temp", "run", "var"], mode: 0o666
     @defaults.secure = port: 443, key: "key.pem", cert: "cert.pem"
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
-    @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @defaults.layout = library: "library", config: "config"
+    @defaults.watch = dirs: [], force: no
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -78,11 +78,11 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.env = dirs: ["temp", "run", "var"], mode: 0o666
     @defaults.secure = port: 1443, key: "key.pem", cert: "cert.pem"
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
-    @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @defaults.layout = library: "library", config: "config"
+    @defaults.watch = dirs: [], force: no
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -94,8 +94,8 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.env = dirs: ["temp", "run", "var"], mode: 0o666
     @defaults.secure = port: 1443, key: "key.pem", cert: "cert.pem"
     @defaults.session = secret: "abcdefgh", cookie: maxAge: 60000
-    @defaults.watch = dirs: ["library", "modules"], force: no
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @defaults.layout = library: "library", config: "config"
+    @defaults.watch = dirs: [], force: no

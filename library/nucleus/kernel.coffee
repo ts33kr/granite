@@ -102,7 +102,7 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         try @server.close(); try @secure.close()
         shutdown = "Shutting the kernel instance down".red
         logger.warn shutdown; @emit "shutdown"
-        @scope.disperse(); process.exit -1; this
+        @scope.disperse(); process.exit -1
 
     # Instantiate a hot swapping watcher for this kernel and setup
     # the watcher per the scoping configuration to watch for certain
@@ -111,12 +111,14 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
     setupHotloadWatcher: ->
         @watcher = new watch.Watcher this
         subjects = nconf.get "watch:dirs"
-        isArray = _.isArray subjects
-        noArray = "No watching configuration"
-        throw new Error noArray unless isArray
+        library = nconf.get "layout:library"
+        noDirs = "no watching configuration"
+        noLibrary = "no library layout is set"
+        assert _.isArray(subjects), noDirs
+        assert _.isString(library), noLibrary
         watch = @watcher.watchDirectory.bind @watcher
-        watch directory for directory in subjects; @
-        watch paths.resolve __dirname, "../vending"
+        watch directory for directory in subjects
+        watch library.toString(); this
 
     # The utilitary method that is being called by either the kernel
     # or scope implementation to establish the desirable facade for
