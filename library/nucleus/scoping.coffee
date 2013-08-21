@@ -113,9 +113,9 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # setting up whatever this scope needs to set. The default
     # implementation takes care only of loading the proper config.
     incorporate: (kernel) ->
-        fpath = "#{@directory}/#{@tag}.json"
         nconf.defaults(@defaults or @constructor.DEFAULTS or {})
         nconf.overrides(@overrides or @constructor.OVERRIDES or {})
+        fpath = "#{nconf.get "layout:config"}/#{@tag}.json"
         logger.info "Incorporating up the #{@tag.bold} scope".cyan
         logger.info "Reading the #{fpath.underline} config".cyan
         exists = fs.existsSync fpath; nconf.file fpath if exists
@@ -131,7 +131,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # resources that are mandated by this this scope object. Default
     # implementation does not do almost anything, so it is up to you.
     disperse: (kernel) ->
-        fpath = "#{@directory}/#{@tag}.json"
+        fpath = "#{nconf.get "layout:config"}/#{@tag}.json"
         logger.info "Dissipating the #{@tag.bold} scope".grey
         logger.info "Used #{fpath.underline} as config".grey
         for directory in nconf.get("env:dirs") or []

@@ -50,7 +50,7 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
-    @directory = "config"
+    @defaults.layout = library: "library", config: "config"
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -66,7 +66,7 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
-    @directory = "config"
+    @defaults.layout = library: "library", config: "config"
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -82,7 +82,7 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
-    @directory = "config"
+    @defaults.layout = library: "library", config: "config"
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -98,4 +98,4 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
-    @directory = "config"
+    @defaults.layout = library: "library", config: "config"
