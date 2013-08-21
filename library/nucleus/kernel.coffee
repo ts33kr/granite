@@ -97,7 +97,8 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         util.puts require("os").EOL
         logger.warn reason.toString().red
         try @router.shutdownRouter()
-        s.unregister() for s in @router.registry
+        registry = @router.registry or []
+        s.unregister() for s in registry
         try @server.close(); try @secure.close()
         shutdown = "Shutting the kernel instance down".red
         logger.warn shutdown; @emit "shutdown"
