@@ -31,11 +31,15 @@ logger = require "winston"
 paths = require "path"
 fs = require "fs"
 
+# This construction loads up the framework loader module and extends
+# the current `this` object with the methods found in the loader for
+# convenient access by the implementation further below. Refer to it.
+_.merge this, require "./library/nucleus/loader"
+
 # Build up the entire module hierarchy of the framework. Please do
 # refer to the `collectModules` method implementation for more
 # information on how this is being done. See the modules in the
 # framework library to see the structure of the built hieararchy.
-_.merge @, require "./library/nucleus/loader"
 module.exports = @collectPackages __dirname
 module.exports.cachedKernel = @cachedKernel
 module.exports.collectModules = @collectModules
