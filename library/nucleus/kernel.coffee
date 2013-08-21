@@ -54,17 +54,34 @@ watch = require "./watch"
 # Please refer to the documentation of the methods for more info.
 module.exports.Kernel = class Kernel extends events.EventEmitter
 
+    # Create a new instance of the kernel, run all the prerequisites
+    # that are necessary, do the configuration on the kernel, then
+    # boot it up, using the hostname and port parameters from config.
+    # Please use this static method instead of manually launching up.
+    @bootstrap: -> new this ->
+        @setupRoutableServices()
+        @setupConnectPipeline()
+        @setupListeningServers()
+        @setupHotloadWatcher()
+        @broker = new content.Broker
+        message = "Booted up the kernel instance"
+        sigint = "Received the SIGINT (interrupt signal)"
+        sigterm = "Received the SIGTERM (terminate signal)"
+        process.on "SIGINT", => @shutdownKernel sigint
+        process.on "SIGTERM", => @shutdownKernel sigterm
+        logger.info message.red; this
+
     # The public constructor of the kernel instrances. Generally
     # you should neither use it directly, not override. It serves
     # the purpose of setting up the configurations will never be
     # changed, such as the kernel self identification tokens.
     constructor: (initializer) ->
         nconf.env().argv()
+        @setupLoggingFacade()
         specification = "#{__dirname}/../../package"
         @package = require specification
         branding = [@package.name, "larry3d"]
         types = [@package.version, @package.codename]
-        scoping.Scope.setupLoggingFacade this
         asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
             identify = "Running kernel %s, codename: %s"
@@ -99,22 +116,19 @@ module.exports.Kernel = class Kernel extends events.EventEmitter
         watch directory for directory in subjects; @
         watch paths.resolve __dirname, "../vending"
 
-    # Create a new instance of the kernel, run all the prerequisites
-    # that are necessary, do the configuration on the kernel, then
-    # boot it up, using the hostname and port parameters from config.
-    # Please use this static method instead of manually launching up.
-    @bootstrap: -> new this ->
-        @setupRoutableServices()
-        @setupConnectPipeline()
-        @setupListeningServers()
-        @setupHotloadWatcher()
-        @broker = new content.Broker
-        message = "Booted up the kernel instance"
-        sigint = "Received the SIGINT (interrupt signal)"
-        sigterm = "Received the SIGTERM (terminate signal)"
-        process.on "SIGINT", => @shutdownKernel sigint
-        process.on "SIGTERM", => @shutdownKernel sigterm
-        logger.info message.red; this
+    # The utilitary method that is being called by either the kernel
+    # or scope implementation to establish the desirable facade for
+    # logging. The options from the config may be used to configure
+    # various options of the logger, such as output format, etc.
+    setupLoggingFacade: ->
+        format = "DD/MM/YYYY @ hh:mm:ss"
+        stamp = -> moment().format format
+        options = timestamp: stamp, colorize: yes
+        options.level = nconf.get "log:level"
+        noLevel = "No logging level specified"
+        throw new Error noLevel unless options.level
+        logger.remove logger.transports.Console
+        logger.add logger.transports.Console, options
 
     # Create and configure the HTTP and HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
