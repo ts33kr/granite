@@ -35,10 +35,10 @@ fs = require "fs"
 # return an object, where keys are names of modules minus the ext.
 # This is used to build up entire module hierarchy of the framework.
 collectModules = (directory) ->
-    c = ".coffee".toLowerCase()
+    supported = [".coffee", ".js"]
     ext = (name) -> paths.extname name
-    sym = (name) -> paths.basename name, c
-    isSupported = (name) -> ext(name) is c
+    sym = (name) -> paths.basename name, ext name
+    isSupported = (name) -> ext(name) in supported
     directory = "#{__dirname}/#{directory}"
     ingest = (x) -> require "#{directory}/#{x}"
     return {} unless fs.existsSync directory
