@@ -45,7 +45,7 @@ DEFAULT_LOGGING = "info"
 # application created within the framework. This very same template
 # is also used by the framework itself for the Cakefile of its own.
 # This method should satisfy the basic boilerplating needs of apps.
-module.exports.deployGenericCakefile = ->
+module.exports = ->
 
     # Here follows the definition of the options required for some of
     # the tasks defined in this Cakefile. Remember that the scope of

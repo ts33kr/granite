@@ -93,3 +93,10 @@ module.exports = collectPackages __dirname
 module.exports.cachedKernel = cachedKernel
 module.exports.collectModules = collectModules
 module.exports.collectPackages = collectPackages
+
+# Do some aliasing after asserting that the basic components of the
+# framework is indeed loaded and are not missing. This is precaution
+# to make sure that the framework is in usable state, once is loaded.
+assert nucleus = module.exports.nucleus
+assert vending = module.exports.vending
+module.exports.cakefile = nucleus.cakefile
