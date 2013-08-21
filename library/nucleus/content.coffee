@@ -47,11 +47,10 @@ module.exports.Broker = class Broker extends events.EventEmitter
     negotiate: (request, response, content) ->
         registry = @constructor.registry ?= []
         for own index, negotiator of registry
-            args = [request, response, content]
             bounded = negotiator.bind this
             flusher = bounded arguments...
             handles = _.isFunction flusher
-            return flusher args... if handles
+            return flusher arguments... if handles
         @push response, content.toString()
 
     # Push the encoded content to the response write stream. This is
