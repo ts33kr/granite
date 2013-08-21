@@ -39,8 +39,7 @@ collectModules = (directory, shallow) ->
     ext = (name) -> paths.extname name
     sym = (name) -> paths.basename name, ext name
     isSupported = (name) -> ext(name) in supported
-    directory = "#{__dirname}/#{directory}"
-    ingest = (x) -> require "#{directory}/#{x}"
+    ingest = (x) -> require paths.resolve directory, x
     return {} unless fs.existsSync directory
     scanSync = wrench.readdirSyncRecursive
     scanSync = fs.readdirSync if shallow
@@ -55,9 +54,9 @@ collectModules = (directory, shallow) ->
 # return an object, where keys are names of modules minus the ext.
 # This is used to build up entire module hierarchy of the framework.
 collectPackages = (directory) ->
-    fix = (p) -> "#{directory}/#{p}"
     stat = (p) -> fs.statSync fix p
     isDir = (p) -> stat(p).isDirectory()
+    fix = (p) -> paths.join directory, p
     nodes = fs.readdirSync directory.toString()
     directories = _.filter nodes, isDir
     scanner = (d) -> collectPackages fix d
