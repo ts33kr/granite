@@ -70,9 +70,9 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         return unless extension in modules
         resolved = require.resolve absolute
         entrypoint = require.main.filename
-        return if resolved is entrypoint
-        return if resolved of require.cache
         go = => @reviewServices resolved
+        return if resolved is entrypoint
+        return go() if resolved of require.cache
         relative = paths.relative process.cwd(), path
         logger.info "Addition at %s".cyan, relative.underline
         try require resolved; go() catch error
@@ -166,7 +166,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         globals = _.values(required or {})
         exports = _.values(required.exports or {})
         hasProto = (s) -> _.isObject(s) and s.prototype
-        isService = (s) -> s.inherits service.Service
+        isService = (s) -> try s.inherits service.Service
         isFinal = (s) -> not s.abstract()
         isTyped = (s) -> hasProto(s) and isService(s)
         unscoped = _.filter globals, isTyped
