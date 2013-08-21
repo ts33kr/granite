@@ -51,12 +51,12 @@ module.exports.Scope = class Scope extends events.EventEmitter
     # and a synopsis (short description of the scope) parameters.
     # The constructor of the scope should only associate the data.
     # The scope startup logic should be implemented in the method.
-    constructor: (@tag, @synopsis) ->
-        assert _.isString(@tag), "invalid tag supplied"
-        assert _.isString(@synopsis), "invalid synopsis"
+    constructor: (@tag, synopsis) ->
+        assert _.isString(@tag), "invalid tag"
+        @synopsis = synopsis if _.isString synopsis
         @directory = @constructor.DIRECTORY or __dirname
         initializer = _.find arguments, _.isFunction
-        initializer?.call this, @tag, @synopsis
+        initializer?.call this, @tag, synopsis
 
     # Push the current scope instance into the global registry
     # of scopes, unless this instance already exists there. This
