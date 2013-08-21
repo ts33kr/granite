@@ -34,7 +34,7 @@ fs = require "fs"
 # It scans the supplied directory, find all the modules there and
 # return an object, where keys are names of modules minus the ext.
 # This is used to build up entire module hierarchy of the framework.
-collectModules = (directory) ->
+collectModules = (directory, shallow) ->
     supported = [".coffee", ".js"]
     ext = (name) -> paths.extname name
     sym = (name) -> paths.basename name, ext name
@@ -43,6 +43,7 @@ collectModules = (directory) ->
     ingest = (x) -> require "#{directory}/#{x}"
     return {} unless fs.existsSync directory
     scanSync = wrench.readdirSyncRecursive
+    scanSync = fs.readdirSync if shallow
     scanned = scanSync directory.toString()
     supported = _.filter scanned, isSupported
     modules = _.map supported, ingest
