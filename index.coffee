@@ -50,10 +50,27 @@ collectModules = (directory, shallow) ->
     symbols = _.map supported, sym
     _.object symbols, modules
 
+# This method is the base method for very important functionality.
+# It scans the supplied directory, find all the packages there and
+# return an object, where keys are names of modules minus the ext.
+# This is used to build up entire module hierarchy of the framework.
+collectPackages = (directory) ->
+    fix = (p) -> "#{directory}/#{p}"
+    stat = (p) -> fs.statSync fix p
+    isDir = (p) -> stat(p).isDirectory()
+    nodes = fs.readdirSync directory.toString()
+    directories = _.filter nodes, isDir
+    scanner = (d) -> collectPackages fix d
+    symbols = _.map directories, paths.basename
+    packages = _.map directories, scanner
+    packages = _.object symbols, packages
+    modules = collectModules directory, yes
+    _.merge modules, packages
+
 # Build up the entire module hierarchy of the framework. Please do
 # refer to the `collectModules` method implementation for more
 # information on how this is being done. See the modules in the
 # framework library to see the structure of the built hieararchy.
-module.exports.nucleus = collectModules "library/nucleus"
-module.exports.visualize = collectModules "library/visualize"
-module.exports.widgets = collectModules "library/widgets"
+module.exports = collectPackages "library"
+module.exports.collectModules = collectModules
+module.exports.collectPackages = collectPackages
