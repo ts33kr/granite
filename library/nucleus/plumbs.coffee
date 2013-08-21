@@ -68,7 +68,7 @@ module.exports.redirect = (kernel) ->
 # rather than writing and ending the request in a direct way.
 module.exports.sender = (kernel) ->
     (request, response, next) ->
-        response.send = (content, typed, keepalive) ->
+        response.send = (content, keepalive, typed) ->
             @emit "sending", content, typed, keepalive
             @setHeader "Content-Type", typed if typed?
             return @write content.toString() if typed?
