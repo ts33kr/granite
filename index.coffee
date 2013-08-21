@@ -31,68 +31,15 @@ logger = require "winston"
 paths = require "path"
 fs = require "fs"
 
-# This method is the base method for very important functionality.
-# It scans the supplied directory, find all the modules there and
-# return an object, where keys are names of modules minus the ext.
-# This is used to build up entire module hierarchy of the framework.
-collectModules = (directory, shallow) ->
-    supported = [".coffee", ".js"]
-    ext = (name) -> paths.extname name
-    sym = (name) -> paths.basename name, ext name
-    isSupported = (name) -> ext(name) in supported
-    ingest = (x) -> require paths.resolve directory, x
-    return {} unless fs.existsSync directory
-    scanSync = wrench.readdirSyncRecursive
-    scanSync = fs.readdirSync if shallow
-    scanned = scanSync directory.toString()
-    supported = _.filter scanned, isSupported
-    modules = _.map supported, ingest
-    symbols = _.map supported, sym
-    _.object symbols, modules
-
-# This method is the base method for very important functionality.
-# It scans the supplied directory, find all the packages there and
-# return an object, where keys are names of modules minus the ext.
-# This is used to build up entire module hierarchy of the framework.
-collectPackages = (closure, directory="library") ->
-    stat = (p) -> fs.statSync fix p
-    isDir = (p) -> stat(p).isDirectory()
-    fix = (p) -> paths.join directory, p
-    resolve = -> paths.resolve closure, directory
-    directory = resolve() if _.isString closure
-    nodes = fs.readdirSync directory.toString()
-    directories = _.filter nodes, isDir
-    scanner = (d) -> collectPackages closure, fix d
-    symbols = _.map directories, paths.basename
-    packages = _.map directories, scanner
-    packages = _.object symbols, packages
-    modules = collectModules directory, yes
-    _.merge modules, packages
-
-# Traverse the hierarchy of all cached modules and try find kernel
-# class that the most deep hiererachy. That is the kernel that is a
-# most derived from the original one. If no such kernel can be found
-# then revert to returning the original kernel embedded in framework.
-cachedKernel = ->
-    origin = module.exports.nucleus.kernel.Generic
-    assert _.isObject(origin), "no kernel origin"
-    spaces = _.map require.cache, (x) -> x.exports
-    hierarchy = (c) -> c.hierarchy().length
-    isKernel = (x) -> try x.inherits? origin
-    values = _.flatten _.map(spaces, _.values)
-    objects = _.filter values, _.isObject
-    kernels = _.filter objects, isKernel
-    sorted = _.sortBy kernels, hierarchy
-    return _.last(sorted) or origin
-
 # Build up the entire module hierarchy of the framework. Please do
 # refer to the `collectModules` method implementation for more
 # information on how this is being done. See the modules in the
 # framework library to see the structure of the built hieararchy.
-module.exports = collectPackages __dirname
-module.exports.cachedKernel = cachedKernel
-module.exports.collectModules = collectModules
-module.exports.collectPackages = collectPackages
+_.merge @, require "./library/nucleus/loader"
+module.exports = @collectPackages __dirname
+module.exports.cachedKernel = @cachedKernel
+module.exports.collectModules = @collectModules
+module.exports.collectPackages = @collectPackages
 
 # Do some aliasing after asserting that the basic components of the
 # framework is indeed loaded and are not missing. This is precaution
