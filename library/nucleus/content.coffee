@@ -51,13 +51,13 @@ module.exports.Broker = class Broker extends events.EventEmitter
             flusher = bounded arguments...
             handles = _.isFunction flusher
             return flusher arguments... if handles
-        @push response, content.toString()
+        @output response, content.toString()
 
-    # Push the encoded content to the response write stream. This is
+    # Output the encoded content to the response write stream. This is
     # an utility method whose implementation is tweaked to the way it
     # is being used by this class. It has to do with the way this method
     # writes out the `Content-Length` header deduced from encoded size.
-    push: (response, encoded) ->
+    output: (response, encoded) ->
         valid = _.isString encoded
         areSent = response.headersSent
         invalid = "Invalid encoded content"
@@ -90,4 +90,4 @@ module.exports.Broker = class Broker extends events.EventEmitter
             spaces = if doesHtml then 4 else null
             response.setHeader "Content-Type", jsonType
             jsoned = (x) -> JSON.stringify x, null, spaces
-            @push response, jsoned content
+            @output response, jsoned content
