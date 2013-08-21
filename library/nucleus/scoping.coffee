@@ -57,6 +57,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
         @directory = @constructor.DIRECTORY or __dirname
         initializer = _.find arguments, _.isFunction
         initializer?.call this, @tag, synopsis
+        @pushToRegistry yes, @tag.toUpperCase()
 
     # Push the current scope instance into the global registry
     # of scopes, unless this instance already exists there. This

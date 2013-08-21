@@ -50,7 +50,6 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
-    @pushToRegistry yes, @tag.toUpperCase()
     @directory = "config"
 
 # One of the predefined scopes, baked into the framework. Scopes
@@ -67,7 +66,6 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
-    @pushToRegistry yes, @tag.toUpperCase()
     @directory = "config"
 
 # One of the predefined scopes, baked into the framework. Scopes
@@ -84,7 +82,6 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
-    @pushToRegistry yes, @tag.toUpperCase()
     @directory = "config"
 
 # One of the predefined scopes, baked into the framework. Scopes
@@ -101,5 +98,4 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
-    @pushToRegistry yes, @tag.toUpperCase()
     @directory = "config"
