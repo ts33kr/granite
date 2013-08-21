@@ -73,7 +73,7 @@ collectPackages = (closure, directory="library") ->
 # class that the most deep hiererachy. That is the kernel that is a
 # most derived from the original one. If no such kernel can be found
 # then revert to returning the original kernel embedded in framework.
-lookupCachedKernel = ->
+cachedKernel = ->
     origin = module.exports.nucleus.kernel.Kernel
     assert _.isObject(origin), "no kernel origin"
     spaces = _.map require.cache, (x) -> x.exports
@@ -90,6 +90,6 @@ lookupCachedKernel = ->
 # information on how this is being done. See the modules in the
 # framework library to see the structure of the built hieararchy.
 module.exports = collectPackages __dirname
+module.exports.cachedKernel = cachedKernel
 module.exports.collectModules = collectModules
 module.exports.collectPackages = collectPackages
-module.exports.lookupCachedKernel = lookupCachedKernel
