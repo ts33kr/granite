@@ -69,6 +69,7 @@ module.exports.Generic = class Generic extends events.EventEmitter
     # This is a convenient way of running additions config routines.
     @configure: (explain, routine) ->
         if arguments.length is 0
+            return unless _.isArray @$configure
             level = (e) -> logger.info "Configuring: %s", e
             fix = (o) -> (a...) -> level o.explain; o.routine a...
             return async.series _.map(@$configure, fix)
