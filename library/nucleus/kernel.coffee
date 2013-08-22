@@ -62,10 +62,10 @@ module.exports.Generic = class Generic extends events.EventEmitter
     # the kernel boots up. With no arguments it launches the stack.
     # This is a convenient way of running additions config routines.
     @configure: (explain, routine) ->
-        if arguments.length is 0
+        if arguments.length is 0 and _.isArray @$configure
             level = (e) -> logger.info "Configuring: %s", e
             fix = (o) -> (a...) -> level o.explain; o.routine a...
-        return async.series _.map(@$configure or [], fix)
+            return async.series _.map(@$configure, fix)
         assert _.isFunction(routine), "invalid config routine"
         assert _.isString(explain), "no explanation given"
         (@$configure ?= []).push
