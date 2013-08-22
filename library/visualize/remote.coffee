@@ -97,7 +97,7 @@ module.exports.Remotable = class Remotable extends events.EventEmitter
     # piece. That is, either a normal class or a function, so on.
     # If the sourcing argument is not supplied, fetch the current.
     sourcing: (sourcing) ->
-        correct = sourcing isnt null
+        correct = not _.isEmpty sourcing
         return @$sourcing unless sourcing?
         invalid = "Sourcing is not correct"
         throw new Error invalid unless correct
