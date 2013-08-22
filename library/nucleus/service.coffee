@@ -67,6 +67,20 @@ module.exports.Service = class Service extends events.EventEmitter
     # refer to the original constructor method for more information.
     location: -> @constructor.location arguments...
 
+    # A hook that will be called prior to registering the service
+    # implementation. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    register: (kernel, router, next) -> next()
+
+    # A hook that will be called prior to unregistering the service
+    # implementation. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    unregister: (kernel, router, next) -> next()
+
     # Either obtain or set the HTTP location of the current service.
     # If not location has been set, but the one is requested then
     # the deduced default is returned. Default location is the first

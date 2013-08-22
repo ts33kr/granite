@@ -97,20 +97,6 @@ module.exports.WithHooks = class WithHooks extends Restful
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
-    # A hook that will be called prior to registering the service
-    # implementation. Please refer to this prototype signature for
-    # information on the parameters it accepts. Beware, this hook
-    # is asynchronously wired in, so consult with `async` package.
-    # Please be sure invoke the `next` arg to proceed, if relevant.
-    register: (kernel, router, next) -> next()
-
-    # A hook that will be called prior to unregistering the service
-    # implementation. Please refer to this prototype signature for
-    # information on the parameters it accepts. Beware, this hook
-    # is asynchronously wired in, so consult with `async` package.
-    # Please be sure invoke the `next` arg to proceed, if relevant.
-    unregister: (kernel, router, next) -> next()
-
     # A hook that will be called prior to invoking the API method
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
