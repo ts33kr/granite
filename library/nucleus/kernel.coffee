@@ -144,7 +144,7 @@ module.exports.Generic = class Generic extends events.EventEmitter
         assert _.isString(library), noLibrary
         watch = @watcher.watchDirectory.bind @watcher
         watch directory for directory in subjects
-        watch paths.resolve __dirname, "../vending"
+        watch paths.resolve __dirname, "../membrane"
         watch library.toString(); this
 
     # The utilitary method that is being called by either the kernel

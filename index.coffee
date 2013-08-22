@@ -49,5 +49,5 @@ module.exports.collectPackages = @collectPackages
 # framework is indeed loaded and are not missing. This is precaution
 # to make sure that the framework is in usable state, once is loaded.
 assert nucleus = module.exports.nucleus
-assert vending = module.exports.vending
+assert membrane = module.exports.membrane
 module.exports.cakefile = nucleus.cakefile
