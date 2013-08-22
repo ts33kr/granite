@@ -113,11 +113,11 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         return unless extension in modules
         relative = paths.relative process.cwd(), path
         logger.info "Unlinking at %s".cyan, relative.underline
-        registry = @kernel.router?.registry or []
+        registry = (router = @kernel.router)?.registry or []
         originate = (s) -> s.constructor.origin?.filename
         predicate = (s) -> originate(s) is absolute
         previous = _.filter registry, predicate
-        prev.unregister() for prev in previous
+        router.unregister prev for prev in previous
 
     # Given the freshly resolved module, require it and then run the
     # collector on it to find all services it may be defining. Then
@@ -126,11 +126,11 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
     reviewServices: (resolved) ->
         cached = require.cache[resolved]
         services = @collectServices cached
-        registry = @kernel.router?.registry or []
+        registry = (router = @kernel.router)?.registry or []
         originate = (s) -> s.constructor.origin?.id
         predicate = (s) -> originate(s) is resolved
         previous = _.filter registry, predicate
-        prev.unregister() for prev in previous
+        router.unregister prev for prev in previous
         srv.origin = cached for srv in services
         register = @kernel.router.register
         register = register.bind @kernel.router

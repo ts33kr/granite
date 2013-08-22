@@ -112,25 +112,6 @@ module.exports.Service = class Service extends events.EventEmitter
         (@domains ?= []).push pattern
         logger.debug associate.grey; @
 
-    # Unregister the current service instance from the kernel router.
-    # You should call this method only after the service has been
-    # previously registered with the kernel router. This method does
-    # modify the router register, ergo does write access to kernel.
-    unregister: ->
-        identify = @constructor.identify()
-        inspected = identify.toString().underline
-        noKernel = "No kernel reference found"
-        noRouter = "Could not access the router"
-        unregister = "Removing %s service instance"
-        throw new Error noKernel unless @kernel?
-        registry = @kernel.router?.registry
-        throw new Error noRouter unless registry?
-        @emit "unregister", @kernel, @router
-        logger.info unregister.yellow, inspected
-        index = _.indexOf registry, this
-        assert index >= 0, "never registered"
-        registry.splice index, 1; this
-
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the
     # domain/host and the path, in accordance with the patterns

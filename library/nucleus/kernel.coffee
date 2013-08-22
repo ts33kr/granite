@@ -118,7 +118,7 @@ module.exports.Generic = class Generic extends events.EventEmitter
         logger.warn reason.toString().red
         try @router.shutdownRouter()
         registry = @router.registry or []
-        s.unregister() for s in registry
+        @router.unregister s for s in registry
         try @server.close(); try @secure.close()
         shutdown = "Shutting the kernel instance down".red
         logger.warn shutdown; @emit "shutdown"

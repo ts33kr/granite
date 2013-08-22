@@ -27,6 +27,7 @@ _ = require "lodash"
 logger = require "winston"
 events = require "events"
 colors = require "colors"
+assert = require "assert"
 util = require "util"
 
 # A simple yet solid HTTP request router. This is designed to map
@@ -50,18 +51,37 @@ module.exports.Router = class Router extends events.EventEmitter
     register: (routable) ->
         identify = routable?.constructor?.identify()
         inspected = identify.toString().underline
-        duplicate = routable in (@registry or [])
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{identify} has no valid matches method"
         goneProcess = "The #{identify} has no valid process method"
-        passMatches = _.isFunction(matches) and matches?.length is 3
-        passProcess = _.isFunction(process) and process?.length is 3
+        passMatches = _.isFunction(matches) and matches.length is 3
+        passProcess = _.isFunction(process) and process.length is 3
         throw new Error goneMatches unless passMatches
         throw new Error goneProcess unless passProcess
-        logger.info "Attaching #{inspected} service instance".blue
-        (@registry ?= []).push routable unless duplicate
-        @emit "registered", routable unless duplicate
-        routable.register?(); return this
+        return this if routable in (@registry or [])
+        attaching = "Attaching %s service instance"
+        logger.info attaching.blue, inspected
+        @emit "register", routable, @kernel
+        (@registry ?= []).push routable
+        routable.register?(); this
+
+    # Unregister the supplied service instance from the kernel router.
+    # You should call this method only after the service has been
+    # previously registered with the kernel router. This method does
+    # modify the router register, ergo does write access to kernel.
+    # It will also call hooks on the service, notifying unregister.
+    unregister: (routable) ->
+        identify = routable.identify()
+        inspected = identify.toString().underline
+        noRegistry = "Could not access the registry"
+        unregister = "Removing %s service instance"
+        assert _.isArray @registry, noRegistry
+        @emit "unregister", @routable, @kernel
+        logger.info unregister.yellow, inspected
+        index = _.indexOf @registry, routable
+        assert index >= 0, "never registered"
+        @registry.splice index, 1
+        routable.unregister?(); @
 
     # The method implements a middleware (for Connect) that looks
     # up the relevant routable and dispatches the request to the
