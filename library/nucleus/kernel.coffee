@@ -30,6 +30,7 @@ moment = require "moment"
 events = require "events"
 colors = require "colors"
 assert = require "assert"
+async = require "async"
 nconf = require "nconf"
 https = require "https"
 paths = require "path"
@@ -70,7 +71,8 @@ module.exports.Generic = class Generic extends events.EventEmitter
         sigterm = "Received the SIGTERM (terminate signal)"
         process.on "SIGINT", => @shutdownKernel sigint
         process.on "SIGTERM", => @shutdownKernel sigterm
-        logger.info message.red; this
+        @constructor.configure()
+        logger.info message.red
 
     # The public constructor of the kernel instrances. Generally
     # you should neither use it directly, not override. It serves
@@ -90,6 +92,22 @@ module.exports.Generic = class Generic extends events.EventEmitter
             logger.info identify.underline, types...
             logger.info using, @constructor.name.bold
             initializer?.apply this
+
+    # An embedded system for adding ad-hoc configuration routines.
+    # Supply the reasoning and the routine and this method will add
+    # that routine to the configuration stack, to be launched once
+    # the kernel boots up. With no arguments it launches the stack.
+    # This is a convenient way of running additions config routines.
+    @configure: (explain, routine) ->
+        if arguments.length is 0
+            level = (e) -> logger.info "Configuring: %s", e
+            fix = (o) -> (a...) -> level o.explain; o.routine a...
+            return async.series _.map(@$configure or [], fix)
+        assert _.isFunction(routine), "invalid config routine"
+        assert _.isString(explain), "no explanation given"
+        (@$configure ?= []).push
+            explain: explain
+            routine: routine
 
     # Shutdown the kernel instance. This includes shutting down both
     # HTTP and HTTPS server that may be running, stopping the router
