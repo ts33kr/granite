@@ -121,9 +121,9 @@ module.exports.Generic = class Generic extends events.EventEmitter
     shutdownKernel: (reason) ->
         util.puts require("os").EOL
         logger.warn reason.toString().red
-        try @router.shutdownRouter()
-        registry = @router.registry or []
-        @router.unregister s for s in registry
+        try @router.shutdownRouter?()
+        snapshot = _.clone(@router.registry or [])
+        @router.unregister srv for srv in snapshot
         try @server.close(); try @secure.close()
         shutdown = "Shutting the kernel instance down".red
         logger.warn shutdown; @emit "shutdown"
