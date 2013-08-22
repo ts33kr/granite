@@ -72,7 +72,7 @@ module.exports.Service = class Service extends events.EventEmitter
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
-    instance: (kernel, next) -> next()
+    instance: (kernel, service, next) -> next()
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
@@ -100,7 +100,7 @@ module.exports.Service = class Service extends events.EventEmitter
         upstream = upstream.bind service
         instance = upstream "instance", ->
             callback? service, kernel
-        instance kernel; service
+        instance kernel, service; service
 
     # Either obtain or set the HTTP location of the current service.
     # If not location has been set, but the one is requested then
