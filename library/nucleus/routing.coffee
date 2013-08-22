@@ -59,11 +59,12 @@ module.exports.Router = class Router extends events.EventEmitter
         throw new Error goneMatches unless passMatches
         throw new Error goneProcess unless passProcess
         return this if routable in (@registry or [])
-        attaching = "Attaching %s service instance"
-        logger.info attaching.blue, inspected
-        @emit "register", routable, @kernel
-        (@registry ?= []).push routable
-        routable.register?(); this
+        register = routable.upstreamAsync "register", =>
+            attaching = "Attaching %s service instance"
+            logger.info attaching.blue, inspected
+            @emit "register", routable, @kernel
+            (@registry ?= []).push routable
+        register @kernel, this; @
 
     # Unregister the supplied service instance from the kernel router.
     # You should call this method only after the service has been
@@ -71,17 +72,18 @@ module.exports.Router = class Router extends events.EventEmitter
     # modify the router register, ergo does write access to kernel.
     # It will also call hooks on the service, notifying unregister.
     unregister: (routable) ->
-        identify = routable.identify()
+        identify = routable.constructor.identify()
         inspected = identify.toString().underline
         noRegistry = "Could not access the registry"
-        unregister = "Removing %s service instance"
+        removing = "Removing %s service instance"
         assert _.isArray @registry, noRegistry
-        @emit "unregister", @routable, @kernel
-        logger.info unregister.yellow, inspected
         index = _.indexOf @registry, routable
-        assert index >= 0, "never registered"
-        @registry.splice index, 1
-        routable.unregister?(); @
+        assert index >= 0, "service never registered"
+        unregister = routable.upstreamAsync "unregister", =>
+            @emit "unregister", @routable, @kernel
+            logger.info removing.yellow, inspected
+            @registry.splice index, 1
+        unregister @kernel, this; @
 
     # The method implements a middleware (for Connect) that looks
     # up the relevant routable and dispatches the request to the
