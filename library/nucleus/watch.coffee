@@ -143,7 +143,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
     # loaded by the watcher. This is useful to reload modules and
     # services when other modules (possible dependencies) change.
     attemptForceHotswap: (cached) ->
-        return unless nconf.get("watch:force")
+        return unless nconf.get "watch:force"
         return if @forcedHotSwappingInProgress
         registry = @kernel.router?.registry or []
         originate = (s) -> s.constructor.origin?.id
