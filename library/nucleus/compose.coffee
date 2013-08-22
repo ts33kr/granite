@@ -30,6 +30,7 @@ connect = require "connect"
 logger = require "winston"
 events = require "events"
 colors = require "colors"
+assert = require "assert"
 nconf = require "nconf"
 https = require "https"
 http = require "http"
@@ -112,7 +113,9 @@ Object.defineProperty Object::, "compose",
         foreign = compound.hierarchy()
         identify = compound.identify()
         duplicate = "Duplicate #{identify} compound"
-        throw new Error duplicate if compound in current
+        notAbstract = "The #{identify} is not abstract"
+        assert compound not in current, duplicate
+        assert compound.abstract?(), notAbstract
         cmp = (ersatz) -> (c) -> c.similarWith ersatz
         culrpit = (shape) -> not _.any commons, cmp shape
         commons = _.filter current, (x) -> _.any foreign, cmp x
