@@ -56,6 +56,12 @@ watch = require "./watch"
 # Please refer to the documentation of the methods for more info.
 module.exports.Generic = class Generic extends events.EventEmitter
 
+    # This static property should contain the loaded NPM package
+    # module which is used by the kernel to draw different kinds
+    # of the information and data. This could be overridden by the
+    # modified kernels that are custom to arbitrary applications.
+    @PACKAGE = require "#{__dirname}/../../package"
+
     # An embedded system for adding ad-hoc configuration routines.
     # Supply the reasoning and the routine and this method will add
     # that routine to the configuration stack, to be launched once
@@ -97,8 +103,7 @@ module.exports.Generic = class Generic extends events.EventEmitter
     constructor: (initializer) ->
         nconf.env().argv()
         @setupLoggingFacade()
-        specification = "#{__dirname}/../../package"
-        @package = require specification
+        @package = @constructor.PACKAGE
         branding = [@package.name, "larry3d"]
         types = [@package.version, @package.codename]
         asciify branding..., (error, banner) =>
