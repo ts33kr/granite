@@ -63,7 +63,7 @@ module.exports.Router = class Router extends events.EventEmitter
             attaching = "Attaching %s service instance"
             logger.info attaching.blue, inspected
             @emit "register", routable, @kernel
-            (@registry ?= []).push routable
+            (@registry ?= []).unshift routable
         register @kernel, this; @
 
     # Unregister the supplied service instance from the kernel router.
