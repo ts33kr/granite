@@ -75,10 +75,14 @@ module.exports.collectPackages = (closure, directory="library") ->
 # class that the most deep hiererachy. That is the kernel that is a
 # most derived from the original one. If no such kernel can be found
 # then revert to returning the original kernel embedded in framework.
-module.exports.cachedKernel = ->
+module.exports.cachedKernel = (limits) ->
     origin = require("./kernel").Generic
+    assert _.isString limits, "no limits"
+    limits = paths.resolve limits.toString()
     assert _.isObject(origin), "no kernel origin"
-    spaces = _.map require.cache, (x) -> x.exports
+    limiter = (m) -> m.filename.indexOf(limits) is 0
+    limited = _.filter require.cache, limiter
+    spaces = _.map limited, (x) -> x.exports
     hierarchy = (c) -> c.hierarchy().length
     isKernel = (x) -> try x.inherits? origin
     values = _.flatten _.map(spaces, _.values)
