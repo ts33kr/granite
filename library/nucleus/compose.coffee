@@ -60,12 +60,12 @@ cloner = module.exports.cloner = (subject) ->
 # Each method must call its last parameter `next` for proceeding.
 Object.defineProperty Object::, "upstreamAsync",
     enumerable: no, value: (method, callback) -> (args...) =>
+        applicator = (f) => (a...) => f.apply @, args.concat a
         hierarchy = @constructor.hierarchy()
         resolve = (c) -> c.prototype?[method]
         threads = _.map hierarchy, resolve
         methods = _.filter threads, _.isFunction
         prepped = _.unique methods.reverse()
-        applicator = (f) -> async.apply f, args...
         applied = _.map prepped, applicator
         async.series applied, callback
 
