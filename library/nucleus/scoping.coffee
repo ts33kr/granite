@@ -103,7 +103,7 @@ module.exports.Scope = class Scope extends events.EventEmitter
         nconf.overrides(@overrides or @constructor.OVERRIDES or {})
         fpath = "#{nconf.get "layout:config"}/#{@tag}.json"
         logger.info "Incorporating up the #{@tag.bold} scope".cyan
-        logger.info "Reading the #{fpath.underline} config".cyan
+        logger.info "Assuming the #{fpath.underline} config".cyan
         exists = fs.existsSync fpath; nconf.file fpath if exists
         for directory in nconf.get("env:dirs") or []
             mode = nconf.get("env:mode")
