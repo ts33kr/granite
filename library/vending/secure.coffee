@@ -62,7 +62,7 @@ module.exports.OnlySsl = class OnlySsl extends skeleton.Standard
     preprocess: (request, response, resource, domain, next) ->
         connection = request?.connection
         encrypted = connection?.encrypted
-        next() if _.isObject encrypted
+        return next() if _.isObject encrypted
         protectedUrl = tools.urlWithHost yes
         current = url.parse protectedUrl
         current.pathname = request.url

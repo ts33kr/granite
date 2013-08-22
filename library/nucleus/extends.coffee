@@ -80,12 +80,12 @@ Object.defineProperty Object::, "abstract",
 # it is assumed that you should be invoking this method only on the
 # objects that are valid CoffeeSscript classes with necessary attrs.
 Object.defineProperty Object::, "inherits",
-    enumerable: no, value: (archetype) ->
+    enumerable: no, value: (archetype, loose) ->
         notObject = "acrhetype is not object"
         assert _.isObject archetype, notObject
-        predicate = (x) -> x is archetype
+        predicate = (x) -> x.similarWith archetype, loose
         assert @__super__, "not a class"
-        return yes if this is archetype
+        return yes if predicate this
         _.any @hierarchy(), predicate
 
 # Determine if the object that is bound to this invocation is an
@@ -94,11 +94,12 @@ Object.defineProperty Object::, "inherits",
 # of some class in order to yield positive results. Please refer
 # to the `compose` module for more information on how this works.
 Object.defineProperty Object::, "objectOf",
-    enumerable: no, value: (archetype) ->
+    enumerable: no, value: (archetype, loose) ->
         notObject = "acrhetype is not object"
         assert _.isObject archetype, notObject
-        predicate = (x) -> x is archetype
+        predicate = (x) -> x.similarWith archetype, loose
         hierarchy = @constructor?.hierarchy()
+        return yes if predicate @constructor
         _.any hierarchy or [], predicate
 
 # Extend the native RegExp object to implement method for escaping
