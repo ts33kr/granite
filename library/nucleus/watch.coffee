@@ -134,8 +134,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
         srv.origin = cached for srv in services
         register = @kernel.router.register
         register = register.bind @kernel.router
-        spawn = (s) => register new s @kernel
-        spawn s for s in services
+        s.spawn @kernel, register for s in services
         @attemptForceHotswap cached
 
     # If enabled by the scoping configuration, this method will try

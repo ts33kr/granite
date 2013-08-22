@@ -67,6 +67,13 @@ module.exports.Service = class Service extends events.EventEmitter
     # refer to the original constructor method for more information.
     location: -> @constructor.location arguments...
 
+    # A hook that will be called prior to instantiating the service
+    # implementation. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    instance: (kernel, next) -> next()
+
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
@@ -80,6 +87,20 @@ module.exports.Service = class Service extends events.EventEmitter
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     unregister: (kernel, router, next) -> next()
+
+    # An important method whose responsibility is to create a new
+    # instance of the service, which is later will be registered in
+    # the router. This is invoked by the watcher when it discovers
+    # new suitable services to register. This works asynchronously!
+    @spawn: (kernel, callback) ->
+        noKernel = "got no valid kernel"
+        assert _.isObject kernel, noKernel
+        service = new this arguments...
+        assert upstream = service.upstreamAsync
+        upstream = upstream.bind service
+        instance = upstream "instance", ->
+            callback? service, kernel
+        instance kernel; service
 
     # Either obtain or set the HTTP location of the current service.
     # If not location has been set, but the one is requested then
