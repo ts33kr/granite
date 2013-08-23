@@ -35,7 +35,7 @@ tools = require "./../nucleus/tools"
 extendz = require "./../nucleus/extends"
 compose = require "./../nucleus/compose"
 {WithHooks} = require "./../nucleus/stubs"
-{Specification} = require "./describe"
+{Descriptor} = require "./describe"
 
 # This is an abstract base class for every service in the system
 # and in the end user application that provides a REST interface
@@ -55,7 +55,7 @@ module.exports.Standard = class Standard extends WithHooks
     # Typically an HTTP pathname pattern and a domain name pattern.
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
-    @compose Specification
+    @compose Descriptor
 
     # This method should generally be used to obtain HTTP methods that
     # are allowed on this resources. This is not the only possible way
