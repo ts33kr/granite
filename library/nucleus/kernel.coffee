@@ -105,7 +105,7 @@ module.exports.Generic = class Generic extends events.EventEmitter
         nconf.env().argv()
         @setupLoggingFacade()
         @package = @constructor.PACKAGE
-        branding = [@package.name, "larry3d"]
+        branding = [@package.name, "smisome1"]
         types = [@package.version, @package.codename]
         asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
