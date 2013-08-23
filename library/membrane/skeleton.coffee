@@ -77,7 +77,6 @@ module.exports.Standard = class Standard extends WithHooks
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
     @describe @prototype.OPTIONS, (method, service) ->
-        @leads tools.urlWithHost no, service.location()
         @notes "This method is default implemented for each service"
         @synopsis "Get a set of HTTP methods supported by service"
         @outputs "An array of supported methods, JSON or string"

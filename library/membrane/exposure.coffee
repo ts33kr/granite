@@ -81,7 +81,6 @@ module.exports.ApiDoc = class ApiDoc extends skeleton.Standard
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
     @describe @prototype.GET, (method, service) ->
-        @leads tools.urlWithHost no, service.location()
         @notes "See the Document class for more information"
         @synopsis "Get all of the APIs available in the system"
         @outputs "An array of objects, each describes a service"
