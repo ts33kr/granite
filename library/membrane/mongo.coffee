@@ -57,6 +57,18 @@ module.exports.MongoClient = class MongoClient extends Standard
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
+    # A hook that will be called prior to unregistering the service
+    # implementation. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    unregister: (kernel, router, next) ->
+        return next() unless _.isObject kernel.mongo
+        {host, port, options} = kernel.mongo._db.serverConfig
+        message = "Disconnecting from Mongo at %s:%s"
+        logger.info message.cyan.underline, host, port
+        kernel.mongo.close(); delete kernel.mongo; next()
+
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
