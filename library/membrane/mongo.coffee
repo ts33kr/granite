@@ -64,7 +64,8 @@ module.exports.MongoClient = class MongoClient extends Standard
     # Please be sure invoke the `next` arg to proceed, if relevant.
     unregister: (kernel, router, next) ->
         return next() unless _.isObject kernel.mongo
-        {host, port, options} = kernel.mongo._db.serverConfig
+        database = kernel.mongo._db or kernel.mongo
+        {host, port, options} = database.serverConfig
         message = "Disconnecting from Mongo at %s:%s"
         logger.info message.cyan.underline, host, port
         kernel.mongo.close(); delete kernel.mongo; next()
@@ -89,6 +90,10 @@ module.exports.MongoClient = class MongoClient extends Standard
         kernel.mongo.open (error, client) ->
             assert.ifError error, "failed to connect: #{error}"
             assert.ok _.isObject kernel.mongo = client
+            scope = _.isString database = config.database
+            message = "Setting the MongoDB database: %s"
+            kernel.mongo = client.db database if scope
+            logger.info message.magenta, database if scope
             return next()
 
     # A hook that will be called prior to instantiating the service
