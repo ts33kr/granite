@@ -1,0 +1,95 @@
+<!DOCTYPE html><html lang="en"><head><title>membrane/mongo</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/mongo"><meta name="groc-project-path" content="library/membrane/mongo.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/mongo.coffee">library/membrane/mongo.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">mongodb = </span><span class="nx">require</span> <span class="s">&quot;mongodb&quot;</span>
+<span class="nv">api = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/api&quot;</span>
+<span class="nv">stubs = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/stubs&quot;</span>
+<span class="nv">tools = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/tools&quot;</span>
+<span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/service&quot;</span>
+<span class="nv">extendz = </span><span class="nx">require</span> <span class="s">&quot;./../nucleus/extends&quot;</span>
+<span class="p">{</span><span class="nx">Standard</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an ABC service intended to be used only as a compund. It
+provides the ready to use Mongo client to any service that composits
+this service in. The initialization is performed only once. If the
+configuration environment does not contains the necessary information
+then this service will not attempt to setup a Mongo client at all.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.MongoClient = </span><span class="k">class</span> <span class="nx">MongoClient</span> <span class="k">extends</span> <span class="nx">Standard</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to unregistering the service
+implementation. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">unregister: </span><span class="nf">(kernel, router, next) -&gt;</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">mongo</span>
+        <span class="nv">database = </span><span class="nx">kernel</span><span class="p">.</span><span class="nx">mongo</span><span class="p">.</span><span class="nx">_db</span> <span class="o">or</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">mongo</span>
+        <span class="p">{</span><span class="nx">host</span><span class="p">,</span> <span class="nx">port</span><span class="p">,</span> <span class="nx">options</span><span class="p">}</span> <span class="o">=</span> <span class="nx">database</span><span class="p">.</span><span class="nx">serverConfig</span>
+        <span class="nv">message = </span><span class="s">&quot;Disconnecting from Mongo at %s:%s&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">message</span><span class="p">.</span><span class="nx">cyan</span><span class="p">.</span><span class="nx">underline</span><span class="p">,</span> <span class="nx">host</span><span class="p">,</span> <span class="nx">port</span>
+        <span class="nx">kernel</span><span class="p">.</span><span class="nx">mongo</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span> <span class="k">delete</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">mongo</span><span class="p">;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to registering the service
+implementation. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">register: </span><span class="nf">(kernel, router, next) -&gt;</span>
+        <span class="nv">config = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;mongo&quot;</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">config</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">mongo</span>
+        <span class="p">{</span><span class="nx">host</span><span class="p">,</span> <span class="nx">port</span><span class="p">,</span> <span class="nx">options</span><span class="p">}</span> <span class="o">=</span> <span class="nx">config</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">host</span><span class="p">),</span> <span class="s">&quot;invalid Mongo host&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">port</span><span class="p">),</span> <span class="s">&quot;invalid Mongo port&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">options</span><span class="p">),</span> <span class="s">&quot;invalid Mongo options&quot;</span>
+        <span class="nv">message = </span><span class="s">&quot;Connecting to MongoDB at %s:%s&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">message</span><span class="p">.</span><span class="nx">cyan</span><span class="p">.</span><span class="nx">underline</span><span class="p">,</span> <span class="nx">host</span><span class="p">,</span> <span class="nx">port</span>
+        <span class="nv">server = </span><span class="k">new</span> <span class="nx">mongodb</span><span class="p">.</span><span class="nx">Server</span> <span class="nx">host</span><span class="p">,</span> <span class="nx">port</span><span class="p">,</span> <span class="nx">options</span>
+        <span class="nv">kernel.mongo = </span><span class="k">new</span> <span class="nx">mongodb</span><span class="p">.</span><span class="nx">MongoClient</span> <span class="nx">server</span>
+        <span class="nx">kernel</span><span class="p">.</span><span class="nx">mongo</span><span class="p">.</span><span class="nx">open</span> <span class="nf">(error, client) -&gt;</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">ifError</span> <span class="nx">error</span><span class="p">,</span> <span class="s">&quot;failed to connect: </span><span class="si">#{</span><span class="nx">error</span><span class="si">}</span><span class="s">&quot;</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">ok</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">kernel.mongo = </span><span class="nx">client</span>
+            <span class="nv">scope = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">database = </span><span class="nx">config</span><span class="p">.</span><span class="nx">database</span>
+            <span class="nv">message = </span><span class="s">&quot;Setting the MongoDB database: %s&quot;</span>
+            <span class="nv">kernel.mongo = </span><span class="nx">client</span><span class="p">.</span><span class="nx">db</span> <span class="nx">database</span> <span class="k">if</span> <span class="nx">scope</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">message</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">database</span> <span class="k">if</span> <span class="nx">scope</span>
+            <span class="k">return</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to instantiating the service
+implementation. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">instance: </span><span class="nf">(kernel, service, next) -&gt;</span>
+        <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nx">service</span><span class="p">,</span> <span class="s">&quot;mongo&quot;</span><span class="p">,</span> <span class="nv">get: </span><span class="nf">-&gt;</span>
+            <span class="nv">mongo = </span><span class="nx">@kernel</span><span class="p">.</span><span class="nx">mongo</span> <span class="o">or</span> <span class="kc">undefined</span>
+            <span class="nv">noMongo = </span><span class="s">&quot;kernel has no Mongo client&quot;</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">mongo</span><span class="p">),</span> <span class="nx">noMongo</span>
+            <span class="k">return</span> <span class="nx">mongo</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span></div></div></div></div></body></html>

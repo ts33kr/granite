@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="en"><head><title>nucleus/scoping</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/scoping"><meta name="groc-project-path" content="library/nucleus/scoping.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/scoping.coffee">library/nucleus/scoping.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">uuid = </span><span class="nx">require</span> <span class="s">&quot;node-uuid&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">moment = </span><span class="nx">require</span> <span class="s">&quot;moment&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">paths = </span><span class="nx">require</span> <span class="s">&quot;path&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="nv">fs = </span><span class="nx">require</span> <span class="s">&quot;fs&quot;</span>
+
+<span class="p">{</span><span class="nx">spawn</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;child_process&quot;</span>
+<span class="p">{</span><span class="nx">rmdirSyncRecursive</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;wrench&quot;</span>
+<span class="p">{</span><span class="nx">mkdirSyncRecursive</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;wrench&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a primary gateway interface for the framework. This class
+provides methods and routines necessary to bootstrap the framework
+and the end user application constructed within the framework. It
+is both an abstract base class as well as a ready to use bootstrap.
+Please refer to the documentation of the methods for more info.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Scope = </span><span class="k">class</span> <span class="nx">Scope</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Construct a new scope, using the supplied tag (a short name)
+and a synopsis (short description of the scope) parameters.
+The constructor of the scope should only associate the data.
+The scope startup logic should be implemented in the method.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@tag, synopsis) -&gt;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">@tag</span><span class="p">),</span> <span class="s">&quot;invalid tag&quot;</span>
+        <span class="vi">@synopsis = </span><span class="nx">synopsis</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">synopsis</span>
+        <span class="vi">@directory = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">DIRECTORY</span> <span class="o">or</span> <span class="nx">__dirname</span>
+        <span class="nv">initializer = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span>
+        <span class="nx">initializer</span><span class="o">?</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">@tag</span><span class="p">,</span> <span class="nx">synopsis</span>
+        <span class="nx">@pushToRegistry</span> <span class="kc">yes</span><span class="p">,</span> <span class="nx">@tag</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Push the current scope instance into the global registry
+of scopes, unless this instance already exists there. This
+registry exists for easing looking up the scope by its tag.
+You may provide a number of aliaes for this scope instance.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">pushToRegistry: </span><span class="nf">(override, aliases...) -&gt;</span>
+        <span class="nv">registry = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">REGISTRY</span> <span class="o">?=</span> <span class="p">{}</span>
+        <span class="nv">existent = </span><span class="nf">(tag) -&gt;</span> <span class="nx">tag</span> <span class="k">of</span> <span class="nx">registry</span> <span class="o">and</span> <span class="o">not</span> <span class="nx">override</span>
+        <span class="nv">valids = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">aliases</span><span class="p">,</span> <span class="nf">(a) -&gt;</span> <span class="o">not</span> <span class="nx">existent</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+        <span class="nx">registry</span><span class="p">[</span><span class="nx">@tag</span><span class="p">]</span> <span class="o">=</span> <span class="k">this</span> <span class="k">unless</span> <span class="nx">existent</span> <span class="nx">@tag</span>
+        <span class="nx">registry</span><span class="p">[</span><span class="nx">alias</span><span class="p">]</span> <span class="o">=</span> <span class="k">this</span> <span class="k">for</span> <span class="nx">alias</span> <span class="k">in</span> <span class="nx">valids</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Lookup the possibly existent scope with one of the following
+alises as a tag. If no matching candidates exist, the method
+will fail with en error, since this is considered a critical
+error. You should always use this method instead of manual.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@lookupOrFail: </span><span class="nf">(aliases...) -&gt;</span>
+        <span class="nv">registry = </span><span class="nx">@REGISTRY</span> <span class="o">?=</span> <span class="p">{};</span> <span class="nv">joined = </span><span class="nx">aliases</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">)</span>
+        <span class="nv">notFound = </span><span class="s">&quot;Could not found any of </span><span class="si">#{</span><span class="nx">joined</span><span class="si">}</span><span class="s"> scoped&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Looking up any of this scopes: %s&quot;</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">joined</span>
+        <span class="nv">found = </span><span class="p">(</span><span class="nx">v</span> <span class="k">for</span> <span class="k">own</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="k">of</span> <span class="nx">registry</span> <span class="k">when</span> <span class="nx">k</span> <span class="k">in</span> <span class="nx">aliases</span><span class="p">)</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">notFound</span> <span class="k">unless</span> <span class="nx">found</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="nx">assert</span><span class="p">.</span><span class="nx">ok</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">scope = </span><span class="nx">_</span><span class="p">.</span><span class="nx">head</span><span class="p">(</span><span class="nx">found</span><span class="p">);</span> <span class="nx">scope</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Get a concatenated path to the unique file designed by the
+combination of prefix and a unique identificator generated by
+employing the UUID v4 format. If unique param is set to false
+than the path will be set to prefix without the unique part.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">envPath: </span><span class="p">(</span><span class="nx">basis</span><span class="p">,</span> <span class="nx">prefix</span><span class="p">,</span> <span class="nx">unique</span><span class="o">=</span><span class="nx">uuid</span><span class="p">.</span><span class="nx">v4</span><span class="p">())</span> <span class="nf">-&gt;</span>
+        <span class="nv">dirs = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;env:dirs&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">unknown = </span><span class="s">&quot;Env dir </span><span class="si">#{</span><span class="nx">basis</span><span class="si">}</span><span class="s"> is not managed&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">prefix</span><span class="p">),</span> <span class="s">&quot;invalid prefix&quot;</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">unknown</span> <span class="k">unless</span> <span class="nx">basis</span> <span class="k">in</span> <span class="nx">dirs</span>
+        <span class="nv">prefix = </span><span class="nx">prefix</span> <span class="o">+</span> <span class="s">&quot;-&quot;</span> <span class="o">+</span> <span class="nx">unique</span> <span class="k">if</span> <span class="nx">unique</span>
+        <span class="k">return</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">join</span> <span class="nx">basis</span><span class="p">,</span> <span class="nx">prefix</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method is responsible for starting up the scope object.
+This means initialization of all its necessary routines and
+setting up whatever this scope needs to set. The default
+implementation takes care only of loading the proper config.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">incorporate: </span><span class="nf">(kernel) -&gt;</span>
+        <span class="nx">nconf</span><span class="p">.</span><span class="nx">defaults</span><span class="p">(</span><span class="nx">@defaults</span> <span class="o">or</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">DEFAULTS</span> <span class="o">or</span> <span class="p">{})</span>
+        <span class="nx">nconf</span><span class="p">.</span><span class="nx">overrides</span><span class="p">(</span><span class="nx">@overrides</span> <span class="o">or</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">OVERRIDES</span> <span class="o">or</span> <span class="p">{})</span>
+        <span class="nv">fpath = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;layout:config&quot;</span><span class="si">}</span><span class="s">/</span><span class="si">#{</span><span class="nx">@tag</span><span class="si">}</span><span class="s">.json&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Incorporating up the </span><span class="si">#{</span><span class="nx">@tag</span><span class="p">.</span><span class="nx">bold</span><span class="si">}</span><span class="s"> scope&quot;</span><span class="p">.</span><span class="nx">cyan</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Assuming the </span><span class="si">#{</span><span class="nx">fpath</span><span class="p">.</span><span class="nx">underline</span><span class="si">}</span><span class="s"> config&quot;</span><span class="p">.</span><span class="nx">cyan</span>
+        <span class="nv">exists = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span> <span class="nx">fpath</span><span class="p">;</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">file</span> <span class="nx">fpath</span> <span class="k">if</span> <span class="nx">exists</span>
+        <span class="k">for</span> <span class="nx">directory</span> <span class="k">in</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;env:dirs&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="p">[]</span>
+            <span class="nv">mode = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;env:mode&quot;</span><span class="p">)</span>
+            <span class="nv">msg = </span><span class="s">&quot;Environment mkdir at %s with 0%s mode&quot;</span><span class="p">.</span><span class="nx">yellow</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">msg</span><span class="p">,</span> <span class="nx">directory</span><span class="p">.</span><span class="nx">underline</span><span class="p">,</span> <span class="nx">mode</span><span class="p">.</span><span class="nx">toString</span> <span class="mi">8</span>
+            <span class="nx">mkdirSyncRecursive</span> <span class="nx">directory</span><span class="p">,</span> <span class="nx">mode</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method is responsible for shutting down the scope object.
+This means stripping down all the necessary routines and other
+resources that are mandated by this this scope object. Default
+implementation does not do almost anything, so it is up to you.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">disperse: </span><span class="nf">(kernel) -&gt;</span>
+        <span class="nv">fpath = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;layout:config&quot;</span><span class="si">}</span><span class="s">/</span><span class="si">#{</span><span class="nx">@tag</span><span class="si">}</span><span class="s">.json&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Dissipating the </span><span class="si">#{</span><span class="nx">@tag</span><span class="p">.</span><span class="nx">bold</span><span class="si">}</span><span class="s"> scope&quot;</span><span class="p">.</span><span class="nx">grey</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Used </span><span class="si">#{</span><span class="nx">fpath</span><span class="p">.</span><span class="nx">underline</span><span class="si">}</span><span class="s"> as config&quot;</span><span class="p">.</span><span class="nx">grey</span>
+        <span class="k">for</span> <span class="nx">directory</span> <span class="k">in</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;env:dirs&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="p">[]</span>
+            <span class="nv">msg = </span><span class="s">&quot;Wiping out the env directory at %s&quot;</span><span class="p">.</span><span class="nx">yellow</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">msg</span><span class="p">,</span> <span class="nx">directory</span><span class="p">.</span><span class="nx">underline</span>
+            <span class="nx">rmdirSyncRecursive</span> <span class="nx">directory</span><span class="p">,</span> <span class="kc">yes</span></div></div></div></div></body></html>

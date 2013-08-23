@@ -1,0 +1,145 @@
+<!DOCTYPE html><html lang="en"><head><title>nucleus/service</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/service"><meta name="groc-project-path" content="library/nucleus/service.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/service.coffee">library/nucleus/service.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">extendz = </span><span class="nx">require</span> <span class="s">&quot;./extends&quot;</span>
+<span class="nv">routing = </span><span class="nx">require</span> <span class="s">&quot;./routing&quot;</span>
+<span class="nv">scoping = </span><span class="nx">require</span> <span class="s">&quot;./scoping&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class for every kind of service in this
+framework and the end user application. It provides the matching
+and processing logic based on domain matches and RE match/extract
+logics, to deal with paths. Remember that this service is just a
+an internal base class, you generally should not use it directly.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Service = </span><span class="k">class</span> <span class="nx">Service</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Here follows a set of definitions that predefine the usual
+suspects in establishing the matching patterns. Basically,
+a number of convenient shorthands for wildcard patterns.
+Use them when you need to wildcard or do a wide match.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@INDEX = </span><span class="sr">/^\/$/</span><span class="p">;</span> <span class="vi">@WILDCARD = </span><span class="sr">/^.+$/</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Every service has to have a public constructor that accepts
+the kernel instance as a parameter. You can override it as
+you see fit, but be sure to invoke the super constructor and
+it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span> <span class="k">super</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either obtain or set the HTTP location of the current service.
+This method is a proxy that forwards the invocation to the
+service constructor, for the purpose of easy access to service
+location when programmatically operating on the instances. Do
+refer to the original constructor method for more information.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">location: </span><span class="nf">-&gt;</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">location</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to instantiating the service
+implementation. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">instance: </span><span class="nf">(kernel, service, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to registering the service
+implementation. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">register: </span><span class="nf">(kernel, router, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to unregistering the service
+implementation. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">unregister: </span><span class="nf">(kernel, router, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An important method whose responsibility is to create a new
+instance of the service, which is later will be registered in
+the router. This is invoked by the watcher when it discovers
+new suitable services to register. This works asynchronously!</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@spawn: </span><span class="nf">(kernel, callback) -&gt;</span>
+        <span class="nv">noKernel = </span><span class="s">&quot;got no valid kernel&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">noKernel</span>
+        <span class="nv">service = </span><span class="k">new</span> <span class="k">this</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="nx">assert</span> <span class="nv">upstream = </span><span class="nx">service</span><span class="p">.</span><span class="nx">upstreamAsync</span>
+        <span class="nv">upstream = </span><span class="nx">upstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">service</span>
+        <span class="nv">instance = </span><span class="nx">upstream</span> <span class="s">&quot;instance&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+            <span class="nx">callback</span><span class="o">?</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">kernel</span>
+        <span class="nx">instance</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">service</span><span class="p">;</span> <span class="nx">service</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either obtain or set the HTTP location of the current service.
+If not location has been set, but the one is requested then
+the deduced default is returned. Default location is the first
+resource regular expression pattern being unescaped to string.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@location: </span><span class="nf">(location) -&gt;</span>
+        <span class="nv">current = </span><span class="o">=&gt;</span> <span class="nx">@$location</span> <span class="o">or</span> <span class="nx">automatic</span>
+        <span class="nv">automatic = </span><span class="nx">_</span><span class="p">.</span><span class="nx">head</span><span class="p">(</span><span class="nx">@resources</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">unescape</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nx">current</span><span class="p">()</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">isLocation = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">location</span>
+        <span class="nv">noLocation = </span><span class="s">&quot;The location is not a string&quot;</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">noLocation</span> <span class="k">unless</span> <span class="nx">isLocation</span>
+        <span class="vi">@$location = </span><span class="nx">location</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a very basic method that adds the specified regular
+expression pattern to the list of permitted resource patterns.
+The patterns are associated with a service class, not object.
+Supports implicit extraction of captured groups in the match.
+Use this to configure what resources should match with service.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@resource: </span><span class="nf">(pattern) -&gt;</span>
+        <span class="nv">identify = </span><span class="nx">@identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nv">regexify = </span><span class="nf">(s) -&gt;</span> <span class="k">new</span> <span class="nb">RegExp</span> <span class="s">&quot;^</span><span class="si">#{</span><span class="nb">RegExp</span><span class="p">.</span><span class="nx">escape</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="si">}</span><span class="s">$&quot;</span>
+        <span class="nv">pattern = </span><span class="nx">regexify</span> <span class="nx">pattern</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">pattern</span>
+        <span class="nv">inspected = </span><span class="nx">pattern</span><span class="p">.</span><span class="nx">unescape</span><span class="p">()</span><span class="o">?</span><span class="p">.</span><span class="nx">underline</span> <span class="o">or</span> <span class="nx">pattern</span>
+        <span class="nv">associate = </span><span class="s">&quot;Associating </span><span class="si">#{</span><span class="nx">inspected</span><span class="si">}</span><span class="s"> resource with </span><span class="si">#{</span><span class="nx">identify</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">notRegexp = </span><span class="s">&quot;The </span><span class="si">#{</span><span class="nx">inspected</span><span class="si">}</span><span class="s"> is not a valid regular expression&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isRegExp</span><span class="p">(</span><span class="nx">pattern</span><span class="p">),</span> <span class="nx">notRegexp</span>
+        <span class="p">(</span><span class="nx">@resources</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">pattern</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">associate</span><span class="p">.</span><span class="nx">grey</span><span class="p">;</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a very basic method that adds the specified regular
+expression pattern to the list of permitted domain patterns.
+The patterns are associated with a service class, not object.
+Supports implicit extraction of captured groups in the match.
+Use this to configure what domains should match with service.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@domain: </span><span class="nf">(pattern) -&gt;</span>
+        <span class="nv">identify = </span><span class="nx">@identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nv">regexify = </span><span class="nf">(s) -&gt;</span> <span class="k">new</span> <span class="nb">RegExp</span> <span class="s">&quot;^</span><span class="si">#{</span><span class="nb">RegExp</span><span class="p">.</span><span class="nx">escape</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="si">}</span><span class="s">$&quot;</span>
+        <span class="nv">pattern = </span><span class="nx">regexify</span> <span class="nx">pattern</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">pattern</span>
+        <span class="nv">inspected = </span><span class="nx">pattern</span><span class="p">.</span><span class="nx">unescape</span><span class="p">()</span><span class="o">?</span><span class="p">.</span><span class="nx">underline</span> <span class="o">or</span> <span class="nx">pattern</span>
+        <span class="nv">associate = </span><span class="s">&quot;Associating </span><span class="si">#{</span><span class="nx">inspected</span><span class="si">}</span><span class="s"> resource with </span><span class="si">#{</span><span class="nx">identify</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">notRegexp = </span><span class="s">&quot;The </span><span class="si">#{</span><span class="nx">inspected</span><span class="si">}</span><span class="s"> is not a valid regular expression&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isRegExp</span><span class="p">(</span><span class="nx">pattern</span><span class="p">),</span> <span class="nx">notRegexp</span>
+        <span class="p">(</span><span class="nx">@domains</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">pattern</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">associate</span><span class="p">.</span><span class="nx">grey</span><span class="p">;</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method determines whether the supplied HTTP request
+matches this service. This is determined by examining the
+domain/host and the path, in accordance with the patterns
+that were used for configuring the class of this service.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">matches: </span><span class="nf">(request, response, next) -&gt;</span>
+        <span class="k">return</span> <span class="kc">no</span> <span class="k">unless</span> <span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="o">?</span>
+        <span class="k">return</span> <span class="kc">no</span> <span class="k">unless</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span><span class="o">?</span>
+        <span class="nv">domains = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">domains</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">resources = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">resources</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">pathname = </span><span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">pathname</span>
+        <span class="nv">hostname = </span><span class="nx">_</span><span class="p">.</span><span class="nx">first</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span><span class="p">.</span><span class="nx">split</span> <span class="s">&quot;:&quot;</span>
+        <span class="nv">pdomain = </span><span class="nf">(pattern) -&gt;</span> <span class="nx">pattern</span><span class="p">.</span><span class="nx">test</span> <span class="nx">hostname</span>
+        <span class="nv">presource = </span><span class="nf">(pattern) -&gt;</span> <span class="nx">pattern</span><span class="p">.</span><span class="nx">test</span> <span class="nx">pathname</span>
+        <span class="nv">domainOk = </span><span class="nx">_</span><span class="p">.</span><span class="nx">some</span> <span class="nx">domains</span><span class="p">,</span> <span class="nx">pdomain</span>
+        <span class="nv">resourceOk = </span><span class="nx">_</span><span class="p">.</span><span class="nx">some</span> <span class="nx">resources</span><span class="p">,</span> <span class="nx">presource</span>
+        <span class="nv">matches = </span><span class="nx">domainOk</span> <span class="o">and</span> <span class="nx">resourceOk</span>
+        <span class="nx">@emit</span> <span class="s">&quot;matches&quot;</span><span class="p">,</span> <span class="nx">matches</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="k">return</span> <span class="nx">domainOk</span> <span class="o">and</span> <span class="nx">resourceOk</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should process the already matched HTTP request.
+But since this is an abstract base class, this implementation
+only extracts the domain and pathname captured groups, and
+returns them to the caller. Override it to do some real job.
+The captured groups may be used by the overrider or ditched.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">process: </span><span class="nf">(request, response, next) -&gt;</span>
+        <span class="nv">gdomain = </span><span class="kc">null</span><span class="p">;</span> <span class="nv">gresource = </span><span class="kc">null</span>
+        <span class="nv">pathname = </span><span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">pathname</span>
+        <span class="nv">hostname = </span><span class="nx">_</span><span class="p">.</span><span class="nx">first</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span><span class="p">.</span><span class="nx">split</span> <span class="s">&quot;:&quot;</span>
+        <span class="nv">domains = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">domains</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">resources = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">resources</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">pdomain = </span><span class="nf">(p) -&gt;</span> <span class="nv">gdomain = </span><span class="nx">hostname</span><span class="p">.</span><span class="nx">match</span> <span class="nx">p</span>
+        <span class="nv">presource = </span><span class="nf">(p) -&gt;</span> <span class="nv">gresource = </span><span class="nx">pathname</span><span class="p">.</span><span class="nx">match</span> <span class="nx">p</span>
+        <span class="nv">pdomain = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">domains</span><span class="p">,</span> <span class="nx">pdomain</span>
+        <span class="nv">presource = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">resources</span><span class="p">,</span> <span class="nx">presource</span>
+        <span class="nx">assert</span> <span class="nx">gdomain</span> <span class="o">isnt</span> <span class="kc">null</span><span class="p">,</span> <span class="s">&quot;missing domain&quot;</span>
+        <span class="nx">assert</span> <span class="nx">gresource</span> <span class="o">isnt</span> <span class="kc">null</span><span class="p">,</span> <span class="s">&quot;missing resource&quot;</span>
+        <span class="nx">@emit</span> <span class="s">&quot;process&quot;</span><span class="p">,</span> <span class="nx">gdomain</span><span class="p">,</span> <span class="nx">gresource</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="k">return</span> <span class="nv">domain: </span><span class="nx">gdomain</span><span class="p">,</span> <span class="nv">resource: </span><span class="nx">gresource</span></div></div></div></div></body></html>

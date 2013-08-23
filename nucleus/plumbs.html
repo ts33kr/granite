@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="en"><head><title>nucleus/plumbs</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/plumbs"><meta name="groc-project-path" content="library/nucleus/plumbs.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/plumbs.coffee">library/nucleus/plumbs.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware is a little handy utility that merges the set
+of parameters, specifically the ones transferred via query or
+via body mechanism into one object that can be used to easily
+access the parameters without thinking about transfer mechanism.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.params = </span><span class="nf">(kernel) -&gt;</span>
+    <span class="nf">(request, response, next) -&gt;</span>
+        <span class="nv">body = </span><span class="nx">request</span><span class="p">.</span><span class="nx">body</span> <span class="o">or</span> <span class="p">{}</span>
+        <span class="nv">query = </span><span class="nx">request</span><span class="p">.</span><span class="nx">query</span> <span class="o">or</span> <span class="p">{}</span>
+        <span class="nv">params = </span><span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">query</span><span class="p">,</span> <span class="nx">body</span>
+        <span class="nv">response.params = </span><span class="nx">params</span>
+        <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headersSent</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A middleware that adds a <code>redirect</code> method to the response object.
+This redirects to the supplied URL with the 302 status code and
+the corresponding reason phrase. This method also sets some of the
+necessary headers, such as nullary <code>Content-Length</code> and some other.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.redirect = </span><span class="nf">(kernel) -&gt;</span>
+    <span class="nf">(request, response, next) -&gt;</span>
+        <span class="nv">response.redirect = </span><span class="nf">(url, status) -&gt;</span>
+            <span class="nv">relocated = </span><span class="nx">status</span> <span class="o">or</span> <span class="mi">302</span>
+            <span class="nv">codes = </span><span class="nx">http</span><span class="p">.</span><span class="nx">STATUS_CODES</span>
+            <span class="nv">message = </span><span class="nx">codes</span><span class="p">[</span><span class="nx">relocated</span><span class="p">]</span>
+            <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s">&quot;Location&quot;</span><span class="p">,</span> <span class="nx">url</span>
+            <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s">&quot;Content-Length&quot;</span><span class="p">,</span> <span class="mi">0</span>
+            <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="nx">relocated</span><span class="p">,</span> <span class="nx">message</span>
+            <span class="nx">response</span><span class="p">.</span><span class="nx">end</span> <span class="kc">undefined</span>
+        <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headersSent</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A middleware that adds a <code>send</code> method to the response object.
+This allows for automatic setting of <code>Content-Type</code> headers
+based on the content that is being sent away. Use this method
+rather than writing and ending the request in a direct way.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.sender = </span><span class="nf">(kernel) -&gt;</span>
+    <span class="nf">(request, response, next) -&gt;</span>
+        <span class="nv">response.send = </span><span class="nf">(content, keepalive, typed) -&gt;</span>
+            <span class="nx">@emit</span> <span class="s">&quot;sending&quot;</span><span class="p">,</span> <span class="nx">content</span><span class="p">,</span> <span class="nx">typed</span><span class="p">,</span> <span class="nx">keepalive</span>
+            <span class="nv">heading = </span><span class="nx">typed</span> <span class="o">and</span> <span class="o">not</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headerSent</span>
+            <span class="nx">@setHeader</span> <span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="nx">typed</span> <span class="k">if</span> <span class="nx">heading</span>
+            <span class="k">return</span> <span class="nx">@write</span> <span class="nx">content</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="k">if</span> <span class="nx">typed</span><span class="o">?</span>
+            <span class="nv">negotiator = </span><span class="nx">kernel</span><span class="p">.</span><span class="nx">broker</span><span class="p">.</span><span class="nx">negotiate</span>
+            <span class="nv">negotiator = </span><span class="nx">negotiator</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">broker</span>
+            <span class="nx">negotiator</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">content</span>
+            <span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">keepalive</span>
+        <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headersSent</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This plumbing add an <code>accepts</code> method onto the HTTP resonse object
+which check if the request/response pair has an HTTP accept header
+set to any of the values supplied when invoking this method. It is
+very useful to use this method to negiotate the content type field.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.accepts = </span><span class="nf">(kernel) -&gt;</span>
+    <span class="nf">(request, response, next) -&gt;</span>
+        <span class="nv">response.accepts = </span><span class="nf">(mimes...) -&gt;</span>
+            <span class="nv">accept = </span><span class="nx">request</span><span class="o">?</span><span class="p">.</span><span class="nx">headers</span><span class="o">?</span><span class="p">.</span><span class="nx">accept</span> <span class="o">or</span> <span class="s">&quot;&quot;</span>
+            <span class="nv">handles = </span><span class="nf">(pattern) -&gt;</span> <span class="nx">pattern</span><span class="p">.</span><span class="nx">test</span> <span class="nx">accept</span>
+            <span class="nv">patternize = </span><span class="nf">(s) -&gt;</span> <span class="k">new</span> <span class="nb">RegExp</span> <span class="nb">RegExp</span><span class="p">.</span><span class="nx">escape</span> <span class="nx">s</span>
+            <span class="nv">regexps = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">mimes</span><span class="p">,</span> <span class="nf">(x) -&gt;</span><span class="nx">_</span><span class="p">.</span><span class="nx">isRegExp</span> <span class="nx">x</span>
+            <span class="nv">strings = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">mimes</span><span class="p">,</span> <span class="nf">(x) -&gt;</span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">x</span>
+            <span class="nv">strings = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">strings</span><span class="p">,</span> <span class="nx">patternize</span>
+            <span class="nv">merged = </span><span class="nx">_</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">regexps</span><span class="p">,</span> <span class="nx">strings</span>
+            <span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">merged</span><span class="p">,</span> <span class="nx">handles</span>
+        <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headersSent</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware is really a wrapper around the <code>Connect</code> logger
+that pipes all the request logs to the <code>Winston</code> instances that
+is used throughout the framework to provide logging capabilities.
+The format is takes from the <code>NConf</code> config or the default <code>dev</code>.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.logger = </span><span class="nf">(kernel) -&gt;</span>
+    <span class="nv">levelKey = </span><span class="s">&quot;log:request:level&quot;</span>
+    <span class="nv">formatKey = </span><span class="s">&quot;log:request:format&quot;</span>
+    <span class="nv">format = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">formatKey</span><span class="p">)</span> <span class="o">or</span> <span class="s">&quot;dev&quot;</span>
+    <span class="nv">level = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">levelKey</span><span class="p">)</span> <span class="o">or</span> <span class="s">&quot;debug&quot;</span>
+    <span class="nv">filter = </span><span class="nf">(string) -&gt;</span> <span class="nx">string</span><span class="p">.</span><span class="nx">replace</span> <span class="s">&quot;\n&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span>
+    <span class="nv">writer = </span><span class="nf">(data) -&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">log</span> <span class="nx">level</span><span class="p">,</span> <span class="nx">filter</span> <span class="nx">data</span>
+    <span class="nv">options = stream: write: </span><span class="nx">writer</span>
+    <span class="nv">options.format = </span><span class="nx">format</span>
+    <span class="nx">connect</span><span class="p">.</span><span class="nx">logger</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware is really a wrapper around the <code>Connect</code> session
+middleware. The reason it wraps it is to automatically configure
+the session storage using the kernel and scoping configuration
+data. It is automatically connected by the kernel instance.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.session = </span><span class="nf">(kernel) -&gt;</span>
+    <span class="nv">options = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;session&quot;</span><span class="p">)</span>
+    <span class="nv">defined = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">options</span>
+    <span class="nv">noSession = </span><span class="s">&quot;No session settings in scope&quot;</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">noSession</span><span class="p">)</span> <span class="k">unless</span> <span class="nx">defined</span>
+    <span class="nx">connect</span><span class="p">.</span><span class="nx">session</span> <span class="nx">options</span></div></div></div></div></body></html>

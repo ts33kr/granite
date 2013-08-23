@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="en"><head><title>nucleus/loader</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/loader"><meta name="groc-project-path" content="library/nucleus/loader.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/loader.coffee">library/nucleus/loader.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">wrench = </span><span class="nx">require</span> <span class="s">&quot;wrench&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">paths = </span><span class="nx">require</span> <span class="s">&quot;path&quot;</span>
+<span class="nv">fs = </span><span class="nx">require</span> <span class="s">&quot;fs&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method is the base method for very important functionality.
+It scans the supplied directory, find all the modules there and
+return an object, where keys are names of modules minus the ext.
+This is used to build up entire module hierarchy of the framework.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.collectModules = </span><span class="nf">(directory, shallow) -&gt;</span>
+    <span class="nv">supported = </span><span class="p">[</span><span class="s">&quot;.coffee&quot;</span><span class="p">,</span> <span class="s">&quot;.js&quot;</span><span class="p">]</span>
+    <span class="nv">ext = </span><span class="nf">(name) -&gt;</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">extname</span> <span class="nx">name</span>
+    <span class="nv">sym = </span><span class="nf">(name) -&gt;</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">basename</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">ext</span> <span class="nx">name</span>
+    <span class="nv">isSupported = </span><span class="nf">(name) -&gt;</span> <span class="nx">ext</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="k">in</span> <span class="nx">supported</span>
+    <span class="nv">ingest = </span><span class="nf">(x) -&gt;</span> <span class="nx">require</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">directory</span><span class="p">,</span> <span class="nx">x</span>
+    <span class="k">return</span> <span class="p">{}</span> <span class="k">unless</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span> <span class="nx">directory</span>
+    <span class="nv">scanSync = </span><span class="nx">wrench</span><span class="p">.</span><span class="nx">readdirSyncRecursive</span>
+    <span class="nv">scanSync = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readdirSync</span> <span class="k">if</span> <span class="nx">shallow</span>
+    <span class="nv">scanned = </span><span class="nx">scanSync</span> <span class="nx">directory</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+    <span class="nv">supported = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">scanned</span><span class="p">,</span> <span class="nx">isSupported</span>
+    <span class="nv">modules = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">supported</span><span class="p">,</span> <span class="nx">ingest</span>
+    <span class="nv">symbols = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">supported</span><span class="p">,</span> <span class="nx">sym</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">object</span> <span class="nx">symbols</span><span class="p">,</span> <span class="nx">modules</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method is the base method for very important functionality.
+It scans the supplied directory, find all the packages there and
+return an object, where keys are names of modules minus the ext.
+This is used to build up entire module hierarchy of the framework.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.collectPackages = </span><span class="nf">(closure, directory=&quot;library&quot;) -&gt;</span>
+    <span class="nv">stat = </span><span class="nf">(p) -&gt;</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">statSync</span> <span class="nx">fix</span> <span class="nx">p</span>
+    <span class="nv">isDir = </span><span class="nf">(p) -&gt;</span> <span class="nx">stat</span><span class="p">(</span><span class="nx">p</span><span class="p">).</span><span class="nx">isDirectory</span><span class="p">()</span>
+    <span class="nv">fix = </span><span class="nf">(p) -&gt;</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">join</span> <span class="nx">directory</span><span class="p">,</span> <span class="nx">p</span>
+    <span class="nv">resolve = </span><span class="nf">-&gt;</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">closure</span><span class="p">,</span> <span class="nx">directory</span>
+    <span class="nv">directory = </span><span class="nx">resolve</span><span class="p">()</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">closure</span>
+    <span class="nv">nodes = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readdirSync</span> <span class="nx">directory</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+    <span class="nv">directories = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">nodes</span><span class="p">,</span> <span class="nx">isDir</span>
+    <span class="nv">collectModules = </span><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">.</span><span class="nx">collectModules</span>
+    <span class="nv">collectPackages = </span><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">.</span><span class="nx">collectPackages</span>
+    <span class="nv">scanner = </span><span class="nf">(d) -&gt;</span> <span class="nx">collectPackages</span> <span class="nx">closure</span><span class="p">,</span> <span class="nx">fix</span> <span class="nx">d</span>
+    <span class="nv">symbols = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">directories</span><span class="p">,</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">basename</span>
+    <span class="nv">packages = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">directories</span><span class="p">,</span> <span class="nx">scanner</span>
+    <span class="nv">packages = </span><span class="nx">_</span><span class="p">.</span><span class="nx">object</span> <span class="nx">symbols</span><span class="p">,</span> <span class="nx">packages</span>
+    <span class="nv">modules = </span><span class="nx">collectModules</span> <span class="nx">directory</span><span class="p">,</span> <span class="kc">yes</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">modules</span><span class="p">,</span> <span class="nx">packages</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Traverse the hierarchy of all cached modules and try find kernel
+class that the most deep hiererachy. That is the kernel that is a
+most derived from the original one. If no such kernel can be found
+then revert to returning the original kernel embedded in framework.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.cachedKernel = </span><span class="nf">(limits) -&gt;</span>
+    <span class="nv">origin = </span><span class="nx">require</span><span class="p">(</span><span class="s">&quot;./kernel&quot;</span><span class="p">).</span><span class="nx">Generic</span>
+    <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">limits</span><span class="p">,</span> <span class="s">&quot;no limits&quot;</span>
+    <span class="nv">limits = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">limits</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+    <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">origin</span><span class="p">),</span> <span class="s">&quot;no kernel origin&quot;</span>
+    <span class="nv">limiter = </span><span class="nf">(m) -&gt;</span> <span class="nx">m</span><span class="p">.</span><span class="nx">filename</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">limits</span><span class="p">)</span> <span class="o">is</span> <span class="mi">0</span>
+    <span class="nv">limited = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">require</span><span class="p">.</span><span class="nx">cache</span><span class="p">,</span> <span class="nx">limiter</span>
+    <span class="nv">spaces = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">limited</span><span class="p">,</span> <span class="nf">(x) -&gt;</span> <span class="nx">x</span><span class="p">.</span><span class="nx">exports</span>
+    <span class="nv">hierarchy = </span><span class="nf">(c) -&gt;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">hierarchy</span><span class="p">().</span><span class="nx">length</span>
+    <span class="nv">isKernel = </span><span class="nf">(x) -&gt;</span> <span class="k">try</span> <span class="nx">x</span><span class="p">.</span><span class="nx">inherits</span><span class="o">?</span> <span class="nx">origin</span>
+    <span class="nv">values = </span><span class="nx">_</span><span class="p">.</span><span class="nx">flatten</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">spaces</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">values</span><span class="p">)</span>
+    <span class="nv">objects = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span>
+    <span class="nv">kernels = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">objects</span><span class="p">,</span> <span class="nx">isKernel</span>
+    <span class="nv">sorted = </span><span class="nx">_</span><span class="p">.</span><span class="nx">sortBy</span> <span class="nx">kernels</span><span class="p">,</span> <span class="nx">hierarchy</span>
+    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">last</span><span class="p">(</span><span class="nx">sorted</span><span class="p">)</span> <span class="o">or</span> <span class="nx">origin</span></div></div></div></div></body></html>

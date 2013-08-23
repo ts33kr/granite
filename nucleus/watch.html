@@ -1,0 +1,165 @@
+<!DOCTYPE html><html lang="en"><head><title>nucleus/watch</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/watch"><meta name="groc-project-path" content="library/nucleus/watch.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/watch.coffee">library/nucleus/watch.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">chokidar = </span><span class="nx">require</span> <span class="s">&quot;chokidar&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">paths = </span><span class="nx">require</span> <span class="s">&quot;path&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="nv">fs = </span><span class="nx">require</span> <span class="s">&quot;fs&quot;</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">extendz = </span><span class="nx">require</span> <span class="s">&quot;./extends&quot;</span>
+<span class="nv">routing = </span><span class="nx">require</span> <span class="s">&quot;./routing&quot;</span>
+<span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;./service&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Watcher is responsible for automatic discovery and hot loading of
+the modules that contain services. It can be configured to watch
+only specific directories. It also features automatic reloading
+that takes care of unregistering and registering the services.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Watcher = </span><span class="k">class</span> <span class="nx">Watcher</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This defines the set of filename extensions that will be
+interpreted by the watcher as valid modules and therefore
+process by the watching. Meaning adding it to the watch
+list and enabling the hot swapping of modules and services.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@EXTENSIONS = </span><span class="p">[</span><span class="s">&quot;.js&quot;</span><span class="p">,</span> <span class="s">&quot;.coffee&quot;</span><span class="p">]</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The public constructor for the watcher. It should never be
+used directly. The watcher is entirely operated by kernel
+and therefore its the responsibility of the kernel to do
+the management of the lifecyle of the watcher and others.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method will be invoked by the file system watcher on
+the event when modules are either being added to the dir.
+It takes care of either initial loading and registering of
+services or the hot swapping of the services that changed.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">hotSwappingAdd: </span><span class="nf">(path) -&gt;</span>
+        <span class="nv">absolute = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">realpathSync</span> <span class="nx">path</span>
+        <span class="nv">modules = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">EXTENSIONS</span>
+        <span class="nv">extension = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">extname</span> <span class="nx">absolute</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">extension</span> <span class="k">in</span> <span class="nx">modules</span>
+        <span class="nv">resolved = </span><span class="nx">require</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">absolute</span>
+        <span class="nv">entrypoint = </span><span class="nx">require</span><span class="p">.</span><span class="nx">main</span><span class="p">.</span><span class="nx">filename</span>
+        <span class="nv">go = </span><span class="o">=&gt;</span> <span class="nx">@reviewServices</span> <span class="nx">resolved</span>
+        <span class="k">return</span> <span class="k">if</span> <span class="nx">resolved</span> <span class="o">is</span> <span class="nx">entrypoint</span>
+        <span class="k">return</span> <span class="nx">go</span><span class="p">()</span> <span class="k">if</span> <span class="nx">resolved</span> <span class="k">of</span> <span class="nx">require</span><span class="p">.</span><span class="nx">cache</span>
+        <span class="nv">relative = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">relative</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="nx">path</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Addition at %s&quot;</span><span class="p">.</span><span class="nx">cyan</span><span class="p">,</span> <span class="nx">relative</span><span class="p">.</span><span class="nx">underline</span>
+        <span class="k">try</span> <span class="nx">require</span> <span class="nx">resolved</span><span class="p">;</span> <span class="nx">go</span><span class="p">()</span> <span class="k">catch</span> <span class="nx">error</span>
+            <span class="nv">message = </span><span class="s">&quot;Exception in module at </span><span class="si">#{</span><span class="nx">path</span><span class="si">}</span><span class="s">:\r\n%s&quot;</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span><span class="p">,</span> <span class="nx">error</span><span class="p">.</span><span class="nx">stack</span>
+            <span class="nx">@hotSwappingUnlink</span> <span class="nx">path</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method will be invoked by the file system watcher on
+the event when modules are either being changed in the dir.
+It takes care of either initial loading and registering of
+services or the hot swapping of the services that changed.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">hotSwappingChange: </span><span class="nf">(path) -&gt;</span>
+        <span class="nv">absolute = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">realpathSync</span> <span class="nx">path</span>
+        <span class="nv">modules = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">EXTENSIONS</span>
+        <span class="nv">extension = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">extname</span> <span class="nx">absolute</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">extension</span> <span class="k">in</span> <span class="nx">modules</span>
+        <span class="nv">resolved = </span><span class="nx">require</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">absolute</span>
+        <span class="nv">cached = </span><span class="nx">resolved</span> <span class="k">of</span> <span class="nx">require</span><span class="p">.</span><span class="nx">cache</span>
+        <span class="nv">entrypoint = </span><span class="nx">require</span><span class="p">.</span><span class="nx">main</span><span class="p">.</span><span class="nx">filename</span>
+        <span class="k">return</span> <span class="k">if</span> <span class="nx">resolved</span> <span class="o">is</span> <span class="nx">entrypoint</span>
+        <span class="k">delete</span> <span class="nx">require</span><span class="p">.</span><span class="nx">cache</span><span class="p">[</span><span class="nx">resolved</span><span class="p">]</span> <span class="k">if</span> <span class="nx">cached</span>
+        <span class="nv">go = </span><span class="o">=&gt;</span> <span class="nx">@reviewServices</span> <span class="nx">resolved</span>
+        <span class="nv">relative = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">relative</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="nx">path</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Changing at %s&quot;</span><span class="p">.</span><span class="nx">cyan</span><span class="p">,</span> <span class="nx">relative</span><span class="p">.</span><span class="nx">underline</span>
+        <span class="k">try</span> <span class="nx">require</span> <span class="nx">resolved</span><span class="p">;</span> <span class="nx">go</span><span class="p">()</span> <span class="k">catch</span> <span class="nx">error</span>
+            <span class="nv">message = </span><span class="s">&quot;Exception in module at </span><span class="si">#{</span><span class="nx">path</span><span class="si">}</span><span class="s">:\r\n%s&quot;</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span><span class="p">,</span> <span class="nx">error</span><span class="p">.</span><span class="nx">stack</span>
+            <span class="nx">@hotSwappingUnlink</span> <span class="nx">path</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method will be invoked by the file system watcher on
+the event when modules are either being removed from dir.
+It takes care of either initial loading and registering of
+services or the hot swapping of the services that changed.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">hotSwappingUnlink: </span><span class="nf">(path) -&gt;</span>
+        <span class="nv">absolute = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">path</span>
+        <span class="nv">modules = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">EXTENSIONS</span>
+        <span class="nv">extension = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">extname</span> <span class="nx">absolute</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">extension</span> <span class="k">in</span> <span class="nx">modules</span>
+        <span class="nv">relative = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">relative</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="nx">path</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Unlinking at %s&quot;</span><span class="p">.</span><span class="nx">cyan</span><span class="p">,</span> <span class="nx">relative</span><span class="p">.</span><span class="nx">underline</span>
+        <span class="nv">registry = </span><span class="p">(</span><span class="nv">router = </span><span class="nx">@kernel</span><span class="p">.</span><span class="nx">router</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">registry</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">originate = </span><span class="nf">(s) -&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">origin</span><span class="o">?</span><span class="p">.</span><span class="nx">filename</span>
+        <span class="nv">predicate = </span><span class="nf">(s) -&gt;</span> <span class="nx">originate</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="o">is</span> <span class="nx">absolute</span>
+        <span class="nv">previous = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">registry</span><span class="p">,</span> <span class="nx">predicate</span>
+        <span class="nx">router</span><span class="p">.</span><span class="nx">unregister</span> <span class="nx">prev</span> <span class="k">for</span> <span class="nx">prev</span> <span class="k">in</span> <span class="nx">previous</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Given the freshly resolved module, require it and then run the
+collector on it to find all services it may be defining. Then
+traverse all of the services, and register those with router.
+If a service is previously registered, it will be unregistered.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">reviewServices: </span><span class="nf">(resolved) -&gt;</span>
+        <span class="nv">cached = </span><span class="nx">require</span><span class="p">.</span><span class="nx">cache</span><span class="p">[</span><span class="nx">resolved</span><span class="p">]</span>
+        <span class="nv">services = </span><span class="nx">@collectServices</span> <span class="nx">cached</span>
+        <span class="nv">registry = </span><span class="p">(</span><span class="nv">router = </span><span class="nx">@kernel</span><span class="p">.</span><span class="nx">router</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">registry</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">originate = </span><span class="nf">(s) -&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">origin</span><span class="o">?</span><span class="p">.</span><span class="nx">id</span>
+        <span class="nv">predicate = </span><span class="nf">(s) -&gt;</span> <span class="nx">originate</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="o">is</span> <span class="nx">resolved</span>
+        <span class="nv">previous = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">registry</span><span class="p">,</span> <span class="nx">predicate</span>
+        <span class="nx">router</span><span class="p">.</span><span class="nx">unregister</span> <span class="nx">prev</span> <span class="k">for</span> <span class="nx">prev</span> <span class="k">in</span> <span class="nx">previous</span>
+        <span class="nv">srv.origin = </span><span class="nx">cached</span> <span class="k">for</span> <span class="nx">srv</span> <span class="k">in</span> <span class="nx">services</span>
+        <span class="nv">register = </span><span class="nx">@kernel</span><span class="p">.</span><span class="nx">router</span><span class="p">.</span><span class="nx">register</span>
+        <span class="nv">register = </span><span class="nx">register</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@kernel</span><span class="p">.</span><span class="nx">router</span>
+        <span class="nx">s</span><span class="p">.</span><span class="nx">spawn</span> <span class="nx">@kernel</span><span class="p">,</span> <span class="nx">register</span> <span class="k">for</span> <span class="nx">s</span> <span class="k">in</span> <span class="nx">services</span>
+        <span class="nx">@attemptForceHotswap</span> <span class="nx">cached</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>If enabled by the scoping configuration, this method will try
+to hotswap and reload all modules and services that have been
+loaded by the watcher. This is useful to reload modules and
+services when other modules (possible dependencies) change.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">attemptForceHotswap: </span><span class="nf">(cached) -&gt;</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;watch:force&quot;</span>
+        <span class="k">return</span> <span class="k">if</span> <span class="nx">@forcedHotSwappingInProgress</span>
+        <span class="nv">registry = </span><span class="nx">@kernel</span><span class="p">.</span><span class="nx">router</span><span class="o">?</span><span class="p">.</span><span class="nx">registry</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">originate = </span><span class="nf">(s) -&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">origin</span><span class="o">?</span><span class="p">.</span><span class="nx">id</span>
+        <span class="nv">predicate = </span><span class="nf">(s) -&gt;</span> <span class="nx">originate</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="o">isnt</span> <span class="nx">cached</span><span class="p">.</span><span class="nx">id</span>
+        <span class="nv">dependents = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">registry</span><span class="p">,</span> <span class="nx">predicate</span>
+        <span class="nv">dependents = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">dependents</span><span class="p">,</span> <span class="nx">originate</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">dependents</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="nv">message = </span><span class="s">&quot;Forced watch enabled, swapping services: %s&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">message</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">dependents</span><span class="p">.</span><span class="nx">length</span>
+        <span class="nv">change = </span><span class="nx">@hotSwappingChange</span><span class="p">.</span><span class="nx">bind</span> <span class="k">this</span>
+        <span class="vi">@forcedHotSwappingInProgress = </span><span class="kc">yes</span>
+        <span class="nx">change</span> <span class="nx">originate</span> <span class="nx">dep</span> <span class="k">for</span> <span class="nx">dep</span> <span class="k">in</span> <span class="nx">dependents</span>
+        <span class="k">delete</span> <span class="nx">@forcedHotSwappingInProgress</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Given the required module, scan the <code>exports</code> object that it
+publishes and find all the possible services that it defines.
+This find regular services as well as augmented services. It
+should be used only by the watcher internals, not directly.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">collectServices: </span><span class="nf">(required) -&gt;</span>
+        <span class="nv">globals = </span><span class="nx">_</span><span class="p">.</span><span class="nx">values</span><span class="p">(</span><span class="nx">required</span> <span class="o">or</span> <span class="p">{})</span>
+        <span class="nv">exports = </span><span class="nx">_</span><span class="p">.</span><span class="nx">values</span><span class="p">(</span><span class="nx">required</span><span class="p">.</span><span class="nx">exports</span> <span class="o">or</span> <span class="p">{})</span>
+        <span class="nv">hasProto = </span><span class="nf">(s) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="o">and</span> <span class="nx">s</span><span class="p">.</span><span class="nx">prototype</span>
+        <span class="nv">isService = </span><span class="nf">(s) -&gt;</span> <span class="k">try</span> <span class="nx">s</span><span class="p">.</span><span class="nx">inherits</span> <span class="nx">service</span><span class="p">.</span><span class="nx">Service</span>
+        <span class="nv">isFinal = </span><span class="nf">(s) -&gt;</span> <span class="o">not</span> <span class="nx">s</span><span class="p">.</span><span class="nx">abstract</span><span class="p">()</span>
+        <span class="nv">isTyped = </span><span class="nf">(s) -&gt;</span> <span class="nx">hasProto</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="o">and</span> <span class="nx">isService</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+        <span class="nv">unscoped = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">globals</span><span class="p">,</span> <span class="nx">isTyped</span>
+        <span class="nv">services = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">exports</span><span class="p">,</span> <span class="nx">isTyped</span>
+        <span class="nv">services = </span><span class="nx">_</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">services</span><span class="p">,</span> <span class="nx">unscoped</span>
+        <span class="nv">services = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">services</span><span class="p">,</span> <span class="nx">isFinal</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">services</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Watch the specified directory for addition and changing of
+the files, looking for modules with services there and then
+loading them and reloading and doing all other routines for
+managing the hot swapping of the services inside modules.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">watchDirectory: </span><span class="nf">(directory) -&gt;</span>
+        <span class="nv">notString = </span><span class="s">&quot;The directory is not a string&quot;</span>
+        <span class="nv">notExists = </span><span class="s">&quot;Dir %s does not exist, not watching&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">directory</span><span class="p">),</span> <span class="nx">notString</span>
+        <span class="nv">exists = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span> <span class="nx">directory</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nv">relative = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">relative</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="nx">directory</span>
+        <span class="nv">formats = </span><span class="p">[</span><span class="nx">notExists</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">relative</span><span class="p">.</span><span class="nx">underline</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">formats</span><span class="p">...</span> <span class="k">unless</span> <span class="nx">exists</span>
+        <span class="nv">watching = </span><span class="s">&quot;Watching %s directory for modules&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">watching</span><span class="p">.</span><span class="nx">blue</span><span class="p">,</span> <span class="nx">relative</span><span class="p">.</span><span class="nx">underline</span>
+        <span class="nv">watcher = </span><span class="nx">chokidar</span><span class="p">.</span><span class="nx">watch</span> <span class="nx">directory</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nx">watcher</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;unlink&quot;</span><span class="p">,</span> <span class="nx">@hotSwappingUnlink</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@</span>
+        <span class="nx">watcher</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;change&quot;</span><span class="p">,</span> <span class="nx">@hotSwappingChange</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@</span>
+        <span class="nx">watcher</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;add&quot;</span><span class="p">,</span> <span class="nx">@hotSwappingAdd</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@</span></div></div></div></div></body></html>

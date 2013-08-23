@@ -1,0 +1,89 @@
+<!DOCTYPE html><html lang="en"><head><title>nucleus/bundles</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/bundles"><meta name="groc-project-path" content="library/nucleus/bundles.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/bundles.coffee">library/nucleus/bundles.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="nv">fs = </span><span class="nx">require</span> <span class="s">&quot;fs&quot;</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">routing = </span><span class="nx">require</span> <span class="s">&quot;./routing&quot;</span>
+<span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;./service&quot;</span>
+<span class="nv">scoping = </span><span class="nx">require</span> <span class="s">&quot;./scoping&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>One of the predefined scopes, baked into the framework. Scopes
+that are bundled with the framework are pretty standard and
+should generally cover 95% percent of the typical web needs.
+Of course you are free to define as much scopes as you need.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.PRODUCTION = </span><span class="k">new</span> <span class="nx">scoping</span><span class="p">.</span><span class="nx">Scope</span> <span class="s">&quot;production&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+    <span class="vi">@synopsis = </span><span class="s">&quot;Final production environment for end users&quot;</span>
+    <span class="vi">@defaults = </span><span class="nv">server: </span><span class="p">{</span><span class="nv">hostname: </span><span class="s">&quot;localhost&quot;</span><span class="p">,</span> <span class="nv">port: </span><span class="mi">80</span><span class="p">}</span>
+    <span class="vi">@defaults.env = </span><span class="nv">dirs: </span><span class="p">[</span><span class="s">&quot;temp&quot;</span><span class="p">,</span> <span class="s">&quot;run&quot;</span><span class="p">,</span> <span class="s">&quot;var&quot;</span><span class="p">],</span> <span class="nv">mode: </span><span class="mi">0</span><span class="nx">o666</span>
+    <span class="vi">@defaults.secure = </span><span class="nv">port: </span><span class="mi">443</span><span class="p">,</span> <span class="nv">key: </span><span class="s">&quot;key.pem&quot;</span><span class="p">,</span> <span class="nv">cert: </span><span class="s">&quot;cert.pem&quot;</span>
+    <span class="vi">@defaults.session = </span><span class="nv">secret: </span><span class="s">&quot;abcdefgh&quot;</span><span class="p">,</span> <span class="nv">cookie: maxAge: </span><span class="mi">60000</span>
+    <span class="vi">@defaults.log = </span><span class="nv">request: </span><span class="p">{</span><span class="nv">format: </span><span class="s">&quot;dev&quot;</span><span class="p">,</span> <span class="nv">level: </span><span class="s">&quot;debug&quot;</span><span class="p">}</span>
+    <span class="vi">@defaults.secure.key = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../keys/key.pem&quot;</span>
+    <span class="vi">@defaults.secure.cert = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../keys/cert.pem&quot;</span>
+    <span class="vi">@defaults.layout = </span><span class="nv">library: </span><span class="s">&quot;library&quot;</span><span class="p">,</span> <span class="nv">config: </span><span class="s">&quot;config&quot;</span>
+    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">no</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>One of the predefined scopes, baked into the framework. Scopes
+that are bundled with the framework are pretty standard and
+should generally cover 95% percent of the typical web needs.
+Of course you are free to define as much scopes as you need.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.STAGING = </span><span class="k">new</span> <span class="nx">scoping</span><span class="p">.</span><span class="nx">Scope</span> <span class="s">&quot;staging&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+    <span class="vi">@synopsis = </span><span class="s">&quot;An environment between staging and production&quot;</span>
+    <span class="vi">@defaults = </span><span class="nv">server: </span><span class="p">{</span><span class="nv">hostname: </span><span class="s">&quot;localhost&quot;</span><span class="p">,</span> <span class="nv">port: </span><span class="mi">80</span><span class="p">}</span>
+    <span class="vi">@defaults.env = </span><span class="nv">dirs: </span><span class="p">[</span><span class="s">&quot;temp&quot;</span><span class="p">,</span> <span class="s">&quot;run&quot;</span><span class="p">,</span> <span class="s">&quot;var&quot;</span><span class="p">],</span> <span class="nv">mode: </span><span class="mi">0</span><span class="nx">o666</span>
+    <span class="vi">@defaults.secure = </span><span class="nv">port: </span><span class="mi">443</span><span class="p">,</span> <span class="nv">key: </span><span class="s">&quot;key.pem&quot;</span><span class="p">,</span> <span class="nv">cert: </span><span class="s">&quot;cert.pem&quot;</span>
+    <span class="vi">@defaults.session = </span><span class="nv">secret: </span><span class="s">&quot;abcdefgh&quot;</span><span class="p">,</span> <span class="nv">cookie: maxAge: </span><span class="mi">60000</span>
+    <span class="vi">@defaults.log = </span><span class="nv">request: </span><span class="p">{</span><span class="nv">format: </span><span class="s">&quot;dev&quot;</span><span class="p">,</span> <span class="nv">level: </span><span class="s">&quot;debug&quot;</span><span class="p">}</span>
+    <span class="vi">@defaults.secure.key = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../keys/key.pem&quot;</span>
+    <span class="vi">@defaults.secure.cert = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../keys/cert.pem&quot;</span>
+    <span class="vi">@defaults.layout = </span><span class="nv">library: </span><span class="s">&quot;library&quot;</span><span class="p">,</span> <span class="nv">config: </span><span class="s">&quot;config&quot;</span>
+    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">no</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>One of the predefined scopes, baked into the framework. Scopes
+that are bundled with the framework are pretty standard and
+should generally cover 95% percent of the typical web needs.
+Of course you are free to define as much scopes as you need.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.DEVELOPMENT = </span><span class="k">new</span> <span class="nx">scoping</span><span class="p">.</span><span class="nx">Scope</span> <span class="s">&quot;development&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+    <span class="vi">@synopsis = </span><span class="s">&quot;Unstable working environment for developers&quot;</span>
+    <span class="vi">@defaults = </span><span class="nv">server: </span><span class="p">{</span><span class="nv">hostname: </span><span class="s">&quot;localhost&quot;</span><span class="p">,</span> <span class="nv">port: </span><span class="mi">8081</span><span class="p">}</span>
+    <span class="vi">@defaults.env = </span><span class="nv">dirs: </span><span class="p">[</span><span class="s">&quot;temp&quot;</span><span class="p">,</span> <span class="s">&quot;run&quot;</span><span class="p">,</span> <span class="s">&quot;var&quot;</span><span class="p">],</span> <span class="nv">mode: </span><span class="mi">0</span><span class="nx">o666</span>
+    <span class="vi">@defaults.secure = </span><span class="nv">port: </span><span class="mi">1443</span><span class="p">,</span> <span class="nv">key: </span><span class="s">&quot;key.pem&quot;</span><span class="p">,</span> <span class="nv">cert: </span><span class="s">&quot;cert.pem&quot;</span>
+    <span class="vi">@defaults.session = </span><span class="nv">secret: </span><span class="s">&quot;abcdefgh&quot;</span><span class="p">,</span> <span class="nv">cookie: maxAge: </span><span class="mi">60000</span>
+    <span class="vi">@defaults.log = </span><span class="nv">request: </span><span class="p">{</span><span class="nv">format: </span><span class="s">&quot;dev&quot;</span><span class="p">,</span> <span class="nv">level: </span><span class="s">&quot;debug&quot;</span><span class="p">}</span>
+    <span class="vi">@defaults.secure.key = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../keys/key.pem&quot;</span>
+    <span class="vi">@defaults.secure.cert = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../keys/cert.pem&quot;</span>
+    <span class="vi">@defaults.layout = </span><span class="nv">library: </span><span class="s">&quot;library&quot;</span><span class="p">,</span> <span class="nv">config: </span><span class="s">&quot;config&quot;</span>
+    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">no</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>One of the predefined scopes, baked into the framework. Scopes
+that are bundled with the framework are pretty standard and
+should generally cover 95% percent of the typical web needs.
+Of course you are free to define as much scopes as you need.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.TESTING = </span><span class="k">new</span> <span class="nx">scoping</span><span class="p">.</span><span class="nx">Scope</span> <span class="s">&quot;testing&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+    <span class="vi">@synopsis = </span><span class="s">&quot;Isolated environment for running the tests&quot;</span>
+    <span class="vi">@defaults = </span><span class="nv">server: </span><span class="p">{</span><span class="nv">hostname: </span><span class="s">&quot;localhost&quot;</span><span class="p">,</span> <span class="nv">port: </span><span class="mi">8081</span><span class="p">}</span>
+    <span class="vi">@defaults.env = </span><span class="nv">dirs: </span><span class="p">[</span><span class="s">&quot;temp&quot;</span><span class="p">,</span> <span class="s">&quot;run&quot;</span><span class="p">,</span> <span class="s">&quot;var&quot;</span><span class="p">],</span> <span class="nv">mode: </span><span class="mi">0</span><span class="nx">o666</span>
+    <span class="vi">@defaults.secure = </span><span class="nv">port: </span><span class="mi">1443</span><span class="p">,</span> <span class="nv">key: </span><span class="s">&quot;key.pem&quot;</span><span class="p">,</span> <span class="nv">cert: </span><span class="s">&quot;cert.pem&quot;</span>
+    <span class="vi">@defaults.session = </span><span class="nv">secret: </span><span class="s">&quot;abcdefgh&quot;</span><span class="p">,</span> <span class="nv">cookie: maxAge: </span><span class="mi">60000</span>
+    <span class="vi">@defaults.log = </span><span class="nv">request: </span><span class="p">{</span><span class="nv">format: </span><span class="s">&quot;dev&quot;</span><span class="p">,</span> <span class="nv">level: </span><span class="s">&quot;debug&quot;</span><span class="p">}</span>
+    <span class="vi">@defaults.secure.key = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../keys/key.pem&quot;</span>
+    <span class="vi">@defaults.secure.cert = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../keys/cert.pem&quot;</span>
+    <span class="vi">@defaults.layout = </span><span class="nv">library: </span><span class="s">&quot;library&quot;</span><span class="p">,</span> <span class="nv">config: </span><span class="s">&quot;config&quot;</span>
+    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">no</span></div></div></div></div></body></html>

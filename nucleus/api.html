@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="en"><head><title>nucleus/api</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/api"><meta name="groc-project-path" content="library/nucleus/api.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/api.coffee">library/nucleus/api.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">tools = </span><span class="nx">require</span> <span class="s">&quot;./tools&quot;</span>
+<span class="nv">extendz = </span><span class="nx">require</span> <span class="s">&quot;./extends&quot;</span>
+<span class="nv">routing = </span><span class="nx">require</span> <span class="s">&quot;./routing&quot;</span>
+<span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;./service&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class for every service in the system
+and in the end user application that provides a REST interface
+to some arbitrary resource, determined by HTTP path and guarded
+by the domain matching. This is the crucial piece of framework.
+It supports strictly methods defined in the HTTP specification.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Api = </span><span class="k">class</span> <span class="nx">Api</span> <span class="k">extends</span> <span class="nx">service</span><span class="p">.</span><span class="nx">Service</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An array of HTTP methods (also called verbs) supported by the
+this abstract base class. The array of methods is strictly
+limited by the HTTP specification by default. You can though
+override it and provie support for more methods, up to you.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@SUPPORTED = </span><span class="p">[</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="s">&quot;PUT&quot;</span><span class="p">,</span> <span class="s">&quot;POST&quot;</span><span class="p">,</span> <span class="s">&quot;DELETE&quot;</span><span class="p">,</span> <span class="s">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="s">&quot;PATCH&quot;</span><span class="p">]</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method is intended for indicating to a client that the
+method that has been used to make the request is not supported
+by this service of the internals that are comprising service.
+Can be used from the outside, but generally should not be done.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">unsupported: </span><span class="nf">(request, response, next) -&gt;</span>
+        <span class="nv">methodNotAllowed = </span><span class="mi">405</span>
+        <span class="nv">codes = </span><span class="nx">http</span><span class="p">.</span><span class="nx">STATUS_CODES</span>
+        <span class="nv">message = </span><span class="nx">codes</span><span class="p">[</span><span class="nx">methodNotAllowed</span><span class="p">]</span>
+        <span class="nv">doesJson = </span><span class="nx">response</span><span class="p">.</span><span class="nx">accepts</span> <span class="sr">/json/</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="nx">methodNotAllowed</span><span class="p">,</span> <span class="nx">message</span>
+        <span class="nv">descriptor = error: </span><span class="nx">message</span><span class="p">,</span> <span class="nv">code: </span><span class="nx">methodNotAllowed</span>
+        <span class="nx">@emit</span> <span class="s">&quot;unsupported&quot;</span><span class="p">,</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">next</span>
+        <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">send</span> <span class="nx">descriptor</span> <span class="k">if</span> <span class="nx">doesJson</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">send</span> <span class="nx">message</span><span class="p">;</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Process the already macted HTTP request according to the REST
+specification. That is, see if the request method conforms to
+to the RFC, and if so, dispatch it onto corresponding method
+defined in the subclass of this abstract base class. Default
+implementation of each method will throw a not implemented.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">process: </span><span class="nf">(request, response, next) -&gt;</span>
+        <span class="nv">method = </span><span class="nx">request</span><span class="o">?</span><span class="p">.</span><span class="nx">method</span><span class="o">?</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span><span class="o">?</span><span class="p">.</span><span class="nx">trim</span><span class="p">()</span>
+        <span class="p">[</span><span class="nx">tokens</span><span class="p">,</span> <span class="nx">knowns</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="k">super</span><span class="p">,</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">SUPPORTED</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nx">@unsupported</span> <span class="nx">arguments</span><span class="p">...</span> <span class="k">unless</span> <span class="nx">method</span> <span class="k">in</span> <span class="nx">knowns</span>
+        <span class="nv">missing = </span><span class="s">&quot;Missing implementation for </span><span class="si">#{</span><span class="nx">method</span><span class="si">}</span><span class="s"> method&quot;</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">missing</span> <span class="k">unless</span> <span class="nx">method</span> <span class="k">of</span> <span class="k">this</span>
+        <span class="nv">variables = </span><span class="p">[</span><span class="nx">tokens</span><span class="p">.</span><span class="nx">resource</span><span class="p">,</span> <span class="nx">tokens</span><span class="p">.</span><span class="nx">domain</span><span class="p">]</span>
+        <span class="nv">prestreamer = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;preprocess&quot;</span><span class="p">,</span> <span class="o">=&gt;</span>
+            <span class="k">this</span><span class="p">[</span><span class="nx">method</span><span class="p">](</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">variables</span><span class="p">...)</span>
+            <span class="nv">poststreamer = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;postprocess&quot;</span>
+            <span class="nx">poststreamer</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">variables</span><span class="p">...</span>
+        <span class="nx">prestreamer</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">variables</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Push the supplied content to the requester by utilizing the
+response object. This is effectively the same as calling the
+<code>response.send</code> directly, but this method is wired into the
+system of service hooks. Refer to the original sender for
+more information on how the content is encoded and passed.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">push: </span><span class="nf">(response, content) -&gt;</span>
+        <span class="nv">isContent = </span><span class="nx">content</span> <span class="o">isnt</span> <span class="kc">undefined</span>
+        <span class="nv">noContent = </span><span class="s">&quot;No valid content supplied&quot;</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">noContent</span> <span class="k">unless</span> <span class="nx">isContent</span>
+        <span class="nx">@emit</span> <span class="s">&quot;push&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">content</span>
+        <span class="nv">uploader = </span><span class="nf">-&gt;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">send</span> <span class="nx">content</span>
+        <span class="nv">prestreamer = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;prepushing&quot;</span><span class="p">,</span> <span class="o">=&gt;</span>
+            <span class="nv">poststreamer = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;postpushing&quot;</span>
+            <span class="nx">uploader</span><span class="p">();</span> <span class="nx">poststreamer</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">content</span>
+        <span class="nx">prestreamer</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">content</span></div></div></div></div></body></html>

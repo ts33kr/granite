@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="en"><head><title>membrane/exposure</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/exposure"><meta name="groc-project-path" content="library/membrane/exposure.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/exposure.coffee">library/membrane/exposure.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">api = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/api&quot;</span>
+<span class="nv">stubs = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/stubs&quot;</span>
+<span class="nv">tools = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/tools&quot;</span>
+<span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/service&quot;</span>
+<span class="nb">document</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./document&quot;</span>
+<span class="nv">skeleton = </span><span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This service exposes the entiry hierarchical structure of the
+service documentation, as they scanned and found in the current
+kernel instance. It exposes the data in a structured hierarchy
+encoded with JSON. Please refer to the implementation for info.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.ApiDoc = </span><span class="k">class</span> <span class="nx">ApiDoc</span> <span class="k">extends</span> <span class="nx">skeleton</span><span class="p">.</span><span class="nx">Standard</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>These invocations establish the parameters which are going
+to be used for matching HTTP requests against this service.
+Typically an HTTP pathname pattern and a domain name pattern.
+Try not to put constraints on the domain, unless necessary.
+Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@resource</span> <span class="s">&quot;/api/doc&quot;</span>
+    <span class="nx">@domain</span> <span class="nx">@WILDCARD</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Get the contents of the resources at the established path. It
+is a good idea for this HTTP method to be idempotent. As the
+rule, this method does not have to alter any contents or data
+of the resource. Use for unobtrusive retrieval of resources.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">GET: </span><span class="nf">(request, response) -&gt;</span>
+        <span class="nv">collected = </span><span class="nx">@collectSpecifications</span><span class="p">()</span>
+        <span class="nx">@push</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">collected</span><span class="p">,</span> <span class="nf">(record) -&gt;</span>
+            <span class="nv">constructor = </span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">constructor</span>
+            <span class="nv">location: </span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">location</span><span class="p">()</span>
+            <span class="nv">identify: </span><span class="nx">constructor</span><span class="p">.</span><span class="nx">nick</span> <span class="o">or</span> <span class="nx">constructor</span><span class="p">.</span><span class="nx">name</span>
+            <span class="nv">patterns: </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">constructor</span><span class="p">.</span><span class="nx">resources</span><span class="p">,</span> <span class="s">&quot;source&quot;</span>
+            <span class="nv">methods: </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">record</span><span class="p">.</span><span class="nx">methods</span><span class="p">,</span> <span class="nf">(doc, method) -&gt;</span>
+                <span class="nv">notes: </span><span class="nx">doc</span><span class="p">.</span><span class="nx">notes</span><span class="p">()</span>
+                <span class="nv">leads: </span><span class="nx">doc</span><span class="p">.</span><span class="nx">leads</span><span class="p">()</span>
+                <span class="nv">failure: </span><span class="nx">doc</span><span class="p">.</span><span class="nx">failure</span><span class="p">()</span>
+                <span class="nv">argument: </span><span class="nx">doc</span><span class="p">.</span><span class="nx">argument</span><span class="p">()</span>
+                <span class="nv">synopsis: </span><span class="nx">doc</span><span class="p">.</span><span class="nx">synopsis</span><span class="p">()</span>
+                <span class="nv">outputs: </span><span class="nx">doc</span><span class="p">.</span><span class="nx">outputs</span><span class="p">()</span>
+                <span class="nv">inputs: </span><span class="nx">doc</span><span class="p">.</span><span class="nx">inputs</span><span class="p">()</span>
+                <span class="nv">method: </span><span class="nx">method</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block describes certain method of abrbitrary service. The
+exact process of how it is being documented depends on how the
+documented function is implemented. Please refer to <code>Document</code>
+class and its module implementation for more information on it.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@specification</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">GET</span><span class="p">,</span> <span class="nf">(method, service) -&gt;</span>
+        <span class="nx">@leads</span> <span class="nx">tools</span><span class="p">.</span><span class="nx">urlWithHost</span> <span class="kc">no</span><span class="p">,</span> <span class="nx">service</span><span class="p">.</span><span class="nx">location</span><span class="p">()</span>
+        <span class="nx">@notes</span> <span class="s">&quot;See the Document class for more information&quot;</span>
+        <span class="nx">@synopsis</span> <span class="s">&quot;Get all of the APIs available in the system&quot;</span>
+        <span class="nx">@outputs</span> <span class="s">&quot;An array of objects, each describes a service&quot;</span></div></div></div></div></body></html>

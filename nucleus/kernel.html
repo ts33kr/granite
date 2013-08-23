@@ -1,0 +1,198 @@
+<!DOCTYPE html><html lang="en"><head><title>nucleus/kernel</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/kernel"><meta name="groc-project-path" content="library/nucleus/kernel.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/kernel.coffee">library/nucleus/kernel.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">moment = </span><span class="nx">require</span> <span class="s">&quot;moment&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">paths = </span><span class="nx">require</span> <span class="s">&quot;path&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="nv">fs = </span><span class="nx">require</span> <span class="s">&quot;fs&quot;</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">extendz = </span><span class="nx">require</span> <span class="s">&quot;./extends&quot;</span>
+<span class="nv">compose = </span><span class="nx">require</span> <span class="s">&quot;./compose&quot;</span>
+<span class="nv">bundles = </span><span class="nx">require</span> <span class="s">&quot;./bundles&quot;</span>
+<span class="nv">routing = </span><span class="nx">require</span> <span class="s">&quot;./routing&quot;</span>
+<span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;./service&quot;</span>
+<span class="nv">scoping = </span><span class="nx">require</span> <span class="s">&quot;./scoping&quot;</span>
+<span class="nv">content = </span><span class="nx">require</span> <span class="s">&quot;./content&quot;</span>
+<span class="nv">plumbs = </span><span class="nx">require</span> <span class="s">&quot;./plumbs&quot;</span>
+<span class="nv">watch = </span><span class="nx">require</span> <span class="s">&quot;./watch&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a primary gateway interface for the framework. This class
+provides methods and routines necessary to bootstrap the framework
+and the end user application constructed within the framework. It
+is both an abstract base class as well as a ready to use bootstrap.
+Please refer to the documentation of the methods for more info.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Generic = </span><span class="k">class</span> <span class="nx">Generic</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This static property should contain the loaded NPM package
+module which is used by the kernel to draw different kinds
+of the information and data. This could be overridden by the
+modified kernels that are custom to arbitrary applications.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@PACKAGE = </span><span class="nx">require</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../package&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An embedded system for adding ad-hoc configuration routines.
+Supply the reasoning and the routine and this method will add
+that routine to the configuration stack, to be launched once
+the kernel boots up. With no arguments it launches the stack.
+This is a convenient way of running additions config routines.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@configure: </span><span class="nf">(explain, routine) -&gt;</span>
+        <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">@$configure</span>
+            <span class="nv">level = </span><span class="nf">(e) -&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Configuring: %s&quot;</span><span class="p">,</span> <span class="nx">e</span>
+            <span class="nv">fix = </span><span class="nf">(o) -&gt;</span> <span class="nf">(a...) -&gt;</span> <span class="nx">level</span> <span class="nx">o</span><span class="p">.</span><span class="nx">explain</span><span class="p">;</span> <span class="nx">o</span><span class="p">.</span><span class="nx">routine</span> <span class="nx">a</span><span class="p">...</span>
+            <span class="k">return</span> <span class="nx">async</span><span class="p">.</span><span class="nx">series</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">@$configure</span><span class="p">,</span> <span class="nx">fix</span><span class="p">)</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">routine</span><span class="p">),</span> <span class="s">&quot;invalid config routine&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">explain</span><span class="p">),</span> <span class="s">&quot;no explanation given&quot;</span>
+        <span class="p">(</span><span class="nx">@$configure</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span>
+            <span class="nv">explain: </span><span class="nx">explain</span>
+            <span class="nv">routine: </span><span class="nx">routine</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Create a new instance of the kernel, run all the prerequisites
+that are necessary, do the configuration on the kernel, then
+boot it up, using the hostname and port parameters from config.
+Please use this static method instead of manually launching up.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@bootstrap: </span><span class="nf">-&gt;</span> <span class="k">new</span> <span class="k">this</span> <span class="nf">-&gt;</span>
+        <span class="nx">@setupRoutableServices</span><span class="p">()</span>
+        <span class="nx">@setupConnectPipeline</span><span class="p">()</span>
+        <span class="nx">@setupListeningServers</span><span class="p">()</span>
+        <span class="nx">@setupHotloadWatcher</span><span class="p">()</span>
+        <span class="vi">@broker = </span><span class="k">new</span> <span class="nx">content</span><span class="p">.</span><span class="nx">Broker</span>
+        <span class="nv">message = </span><span class="s">&quot;Booted up the kernel instance&quot;</span>
+        <span class="nv">sigint = </span><span class="s">&quot;Received the SIGINT (interrupt signal)&quot;</span>
+        <span class="nv">sigterm = </span><span class="s">&quot;Received the SIGTERM (terminate signal)&quot;</span>
+        <span class="nx">process</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;SIGINT&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@shutdownKernel</span> <span class="nx">sigint</span>
+        <span class="nx">process</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;SIGTERM&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@shutdownKernel</span> <span class="nx">sigterm</span>
+        <span class="nx">@constructor</span><span class="p">.</span><span class="nx">configure</span><span class="p">()</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The public constructor of the kernel instrances. Generally
+you should neither use it directly, not override. It serves
+the purpose of setting up the configurations will never be
+changed, such as the kernel self identification tokens.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(initializer) -&gt;</span>
+        <span class="nx">nconf</span><span class="p">.</span><span class="nx">env</span><span class="p">().</span><span class="nx">argv</span><span class="p">()</span>
+        <span class="nx">@setupLoggingFacade</span><span class="p">()</span>
+        <span class="vi">@package = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">PACKAGE</span>
+        <span class="nv">branding = </span><span class="p">[</span><span class="nx">@package</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="s">&quot;smisome1&quot;</span><span class="p">]</span>
+        <span class="nv">types = </span><span class="p">[</span><span class="nx">@package</span><span class="p">.</span><span class="nx">version</span><span class="p">,</span> <span class="nx">@package</span><span class="p">.</span><span class="nx">codename</span><span class="p">]</span>
+        <span class="nx">asciify</span> <span class="nx">branding</span><span class="p">...,</span> <span class="nf">(error, banner) =&gt;</span>
+            <span class="nx">util</span><span class="p">.</span><span class="nx">puts</span> <span class="nx">banner</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">blue</span> <span class="k">unless</span> <span class="nx">error</span>
+            <span class="nv">identify = </span><span class="s">&quot;Running ver %s, codename: %s&quot;</span>
+            <span class="nv">using = </span><span class="s">&quot;Using %s class as the kernel type&quot;</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">underline</span><span class="p">,</span> <span class="nx">types</span><span class="p">...</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">using</span><span class="p">,</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">name</span><span class="p">.</span><span class="nx">bold</span>
+            <span class="nx">initializer</span><span class="o">?</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Shutdown the kernel instance. This includes shutting down both
+HTTP and HTTPS server that may be running, stopping the router
+and unregistering all the services as a precauting. After that
+the scope is being dispersed and some events are being emited.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">shutdownKernel: </span><span class="nf">(reason) -&gt;</span>
+        <span class="nx">util</span><span class="p">.</span><span class="nx">puts</span> <span class="nx">require</span><span class="p">(</span><span class="s">&quot;os&quot;</span><span class="p">).</span><span class="nx">EOL</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">reason</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">red</span>
+        <span class="k">try</span> <span class="nx">@router</span><span class="p">.</span><span class="nx">shutdownRouter</span><span class="o">?</span><span class="p">()</span>
+        <span class="nv">snapshot = </span><span class="nx">_</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">@router</span><span class="p">.</span><span class="nx">registry</span> <span class="o">or</span> <span class="p">[])</span>
+        <span class="nx">@router</span><span class="p">.</span><span class="nx">unregister</span> <span class="nx">srv</span> <span class="k">for</span> <span class="nx">srv</span> <span class="k">in</span> <span class="nx">snapshot</span>
+        <span class="k">try</span> <span class="nx">@server</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span> <span class="k">try</span> <span class="nx">@secure</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
+        <span class="nv">shutdown = </span><span class="s">&quot;Shutting the kernel instance down&quot;</span><span class="p">.</span><span class="nx">red</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">shutdown</span><span class="p">;</span> <span class="nx">@emit</span> <span class="s">&quot;shutdown&quot;</span>
+        <span class="nx">@scope</span><span class="p">.</span><span class="nx">disperse</span><span class="p">();</span> <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span> <span class="o">-</span><span class="mi">1</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Instantiate a hot swapping watcher for this kernel and setup
+the watcher per the scoping configuration to watch for certain
+directories. Please refer to the <code>Watcher</code> implementation for
+more information on its operations and configuration routines.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupHotloadWatcher: </span><span class="nf">-&gt;</span>
+        <span class="vi">@watcher = </span><span class="k">new</span> <span class="nx">watch</span><span class="p">.</span><span class="nx">Watcher</span> <span class="k">this</span>
+        <span class="nv">subjects = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;watch:dirs&quot;</span>
+        <span class="nv">library = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;layout:library&quot;</span>
+        <span class="nv">noDirs = </span><span class="s">&quot;no watching configuration&quot;</span>
+        <span class="nv">noLibrary = </span><span class="s">&quot;no library layout is set&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">subjects</span><span class="p">),</span> <span class="nx">noDirs</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">library</span><span class="p">),</span> <span class="nx">noLibrary</span>
+        <span class="nv">watch = </span><span class="nx">@watcher</span><span class="p">.</span><span class="nx">watchDirectory</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@watcher</span>
+        <span class="nx">watch</span> <span class="nx">directory</span> <span class="k">for</span> <span class="nx">directory</span> <span class="k">in</span> <span class="nx">subjects</span>
+        <span class="nx">watch</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">__dirname</span><span class="p">,</span> <span class="s">&quot;../membrane&quot;</span>
+        <span class="nx">watch</span> <span class="nx">library</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The utilitary method that is being called by either the kernel
+or scope implementation to establish the desirable facade for
+logging. The options from the config may be used to configure
+various options of the logger, such as output format, etc.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupLoggingFacade: </span><span class="nf">-&gt;</span>
+        <span class="nv">format = </span><span class="s">&quot;DD/MM/YYYY @ hh:mm:ss&quot;</span>
+        <span class="nv">stamp = </span><span class="nf">-&gt;</span> <span class="nx">moment</span><span class="p">().</span><span class="nx">format</span> <span class="nx">format</span>
+        <span class="nv">options = timestamp: </span><span class="nx">stamp</span><span class="p">,</span> <span class="nv">colorize: </span><span class="kc">yes</span>
+        <span class="nv">options.level = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;log:level&quot;</span>
+        <span class="nv">noLevel = </span><span class="s">&quot;No logging level specified&quot;</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">noLevel</span> <span class="k">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">level</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">remove</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">transports</span><span class="p">.</span><span class="nx">Console</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">add</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">transports</span><span class="p">.</span><span class="nx">Console</span><span class="p">,</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Create and configure the HTTP and HTTPS servers to listen at
+the configured addresses and ports. This method reads up the
+scoping configuration in order to obtain the data necessary
+for instantiating, configuring and launching up the servers.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupListeningServers: </span><span class="nf">-&gt;</span>
+        <span class="k">try</span> <span class="nx">@startupHttpsServer</span><span class="p">()</span> <span class="k">catch</span> <span class="nx">error</span>
+            <span class="nv">message = </span><span class="s">&quot;Exception while launching HTTPS server:\r\n%s&quot;</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span><span class="p">,</span> <span class="nx">error</span><span class="p">.</span><span class="nx">stack</span><span class="p">;</span> <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">try</span> <span class="nx">@startupHttpServer</span><span class="p">()</span> <span class="k">catch</span> <span class="nx">error</span>
+            <span class="nv">message = </span><span class="s">&quot;Exception while launching HTTP server:\r\n%s&quot;</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span><span class="p">,</span> <span class="nx">error</span><span class="p">.</span><span class="nx">stack</span><span class="p">;</span> <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span> <span class="o">-</span><span class="mi">1</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup and launch either HTTP or HTTPS servers to listen at
+the configured addresses and ports. This method reads up the
+scoping configuration in order to obtain the data necessary
+for instantiating, configuring and launching up the servers.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">startupHttpsServer: </span><span class="nf">-&gt;</span>
+        <span class="nv">options = </span><span class="k">new</span> <span class="nb">Object</span>
+        <span class="nv">secure = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;secure&quot;</span>
+        <span class="nv">hostname = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;server:hostname&quot;</span>
+        <span class="nv">key = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">relative</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="nx">secure</span><span class="p">.</span><span class="nx">key</span>
+        <span class="nv">cert = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">relative</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="nx">secure</span><span class="p">.</span><span class="nx">cert</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Using SSL key file at %s&quot;</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">key</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Using SSL cert file at %s&quot;</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">cert</span>
+        <span class="nv">options.key = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">key</span>
+        <span class="nv">options.cert = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">cert</span>
+        <span class="nv">rsecure = </span><span class="s">&quot;Running HTTPS server at %s:%s&quot;</span><span class="p">.</span><span class="nx">magenta</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">rsecure</span><span class="p">,</span> <span class="nx">hostname</span><span class="p">,</span> <span class="nx">secure</span><span class="p">.</span><span class="nx">port</span>
+        <span class="vi">@secure = </span><span class="nx">https</span><span class="p">.</span><span class="nx">createServer</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">@connect</span>
+        <span class="nx">@secure</span><span class="o">?</span><span class="p">.</span><span class="nx">listen</span> <span class="nx">secure</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span> <span class="nx">hostname</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup and launch either HTTP or HTTPS servers to listen at
+the configured addresses and ports. This method reads up the
+scoping configuration in order to obtain the data necessary
+for instantiating, configuring and launching up the servers.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">startupHttpServer: </span><span class="nf">-&gt;</span>
+        <span class="nv">server = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;server&quot;</span>
+        <span class="nv">hostname = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;server:hostname&quot;</span>
+        <span class="nv">rserver = </span><span class="s">&quot;Running HTTP server at %s:%s&quot;</span><span class="p">.</span><span class="nx">magenta</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">rserver</span><span class="p">,</span> <span class="nx">hostname</span><span class="p">,</span> <span class="nx">server</span><span class="p">.</span><span class="nx">port</span>
+        <span class="vi">@server = </span><span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span> <span class="nx">@connect</span>
+        <span class="nx">@server</span><span class="o">?</span><span class="p">.</span><span class="nx">listen</span> <span class="nx">server</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span> <span class="nx">hostname</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method sets up the necessary internal toolkits, such as
+the determined scope and the router, which is then are wired
+in with the located and instantiated services. Please refer
+to the implementation on how and what is being done exactly.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupRoutableServices: </span><span class="nf">-&gt;</span>
+        <span class="nv">tag = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;NODE_ENV&quot;</span>
+        <span class="nv">missing = </span><span class="s">&quot;No NODE_ENV variable found&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">tag</span><span class="p">),</span> <span class="nx">missing</span>
+        <span class="vi">@scope = </span><span class="nx">scoping</span><span class="p">.</span><span class="nx">Scope</span><span class="p">.</span><span class="nx">lookupOrFail</span> <span class="nx">tag</span>
+        <span class="nx">@scope</span><span class="p">.</span><span class="nx">incorporate</span> <span class="k">this</span>
+        <span class="vi">@router = </span><span class="k">new</span> <span class="nx">routing</span><span class="p">.</span><span class="nx">Router</span> <span class="k">this</span>
+        <span class="vi">@middleware = </span><span class="nx">@router</span><span class="p">.</span><span class="nx">middleware</span>
+        <span class="vi">@middleware = </span><span class="nx">@middleware</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@router</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup the Connect middleware framework along with the default
+pipeline of middlewares necessary for the Granite framework to
+operate correctly. You are encouraged to override this method
+to provide a Connect setup procedure to your own liking, etc.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupConnectPipeline: </span><span class="nf">-&gt;</span>
+        <span class="vi">@connect = </span><span class="nx">connect</span><span class="p">()</span>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">connect</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">connect</span><span class="p">.</span><span class="nx">favicon</span><span class="p">()</span>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">connect</span><span class="p">.</span><span class="nx">bodyParser</span><span class="p">()</span>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">connect</span><span class="p">.</span><span class="nx">cookieParser</span><span class="p">()</span>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">plumbs</span><span class="p">.</span><span class="nx">params</span> <span class="k">this</span>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">plumbs</span><span class="p">.</span><span class="nx">redirect</span> <span class="k">this</span>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">plumbs</span><span class="p">.</span><span class="nx">session</span> <span class="k">this</span>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">plumbs</span><span class="p">.</span><span class="nx">accepts</span> <span class="k">this</span>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">plumbs</span><span class="p">.</span><span class="nx">sender</span> <span class="k">this</span>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">plumbs</span><span class="p">.</span><span class="nx">logger</span> <span class="k">this</span>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">@middleware</span></div></div></div></div></body></html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="en"><head><title>nucleus/content</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/content"><meta name="groc-project-path" content="library/nucleus/content.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/content.coffee">library/nucleus/content.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This class is a content negotiation broker. It is instantiated by
+the kernel and then can be used either directly or via middleware
+to negotiate the procedure of responding to a client with the data
+using the correct protocol, meaning correct <code>Content-Type</code>, etc.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Broker = </span><span class="k">class</span> <span class="nx">Broker</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Content negotiate the request/response pair to use the correct
+protocol. The protocol is implemented by the content negotiator
+that might or might not have been previously add to the broker.
+The negotiator returns a function if it can handle the pair.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">negotiate: </span><span class="nf">(request, response, content) -&gt;</span>
+        <span class="nv">registry = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">registry</span> <span class="o">?=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="k">own</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">negotiator</span> <span class="k">of</span> <span class="nx">registry</span>
+            <span class="nv">bounded = </span><span class="nx">negotiator</span><span class="p">.</span><span class="nx">bind</span> <span class="k">this</span>
+            <span class="nv">flusher = </span><span class="nx">bounded</span> <span class="nx">arguments</span><span class="p">...</span>
+            <span class="nv">handles = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">flusher</span>
+            <span class="k">return</span> <span class="nx">flusher</span> <span class="nx">arguments</span><span class="p">...</span> <span class="k">if</span> <span class="nx">handles</span>
+        <span class="nx">@output</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">content</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Output the encoded content to the response write stream. This is
+an utility method whose implementation is tweaked to the way it
+is being used by this class. It has to do with the way this method
+writes out the <code>Content-Length</code> header deduced from encoded size.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">output: </span><span class="nf">(response, encoded) -&gt;</span>
+        <span class="nv">valid = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">encoded</span>
+        <span class="nv">areSent = </span><span class="nx">response</span><span class="p">.</span><span class="nx">headersSent</span>
+        <span class="nv">invalid = </span><span class="s">&quot;Invalid encoded content&quot;</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">invalid</span> <span class="k">unless</span> <span class="nx">valid</span>
+        <span class="nv">args = </span><span class="p">[</span><span class="s">&quot;Content-Length&quot;</span><span class="p">,</span> <span class="nx">encoded</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="nx">args</span><span class="p">...</span> <span class="k">unless</span> <span class="nx">areSent</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">write</span> <span class="nx">encoded</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Register the specified content negotiator with the broker. The
+The negotiator returns a function if it can handle the request
+and response pair. If specific negotiator cannot handle the
+pair, it should return anything other than a function object.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@associate: </span><span class="nf">(negotiator) -&gt;</span>
+        <span class="nv">isValid = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">negotiator</span>
+        <span class="nv">invalid = </span><span class="s">&quot;Checker is not a valid method&quot;</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">invalid</span> <span class="k">unless</span> <span class="nx">isValid</span>
+        <span class="p">(</span><span class="nx">@registry</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">unshift</span> <span class="nx">negotiator</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Associate the JSON negotiator with the broker. This method
+checks if the content is either <code>Object</code> or <code>Array</code>, and if
+it is then it sets the appropriate <code>Content-Type</code> header and
+writes out the properly encoded JSON response to the client.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@associate</span> <span class="nf">(request, response, content) -&gt;</span>
+        <span class="nv">isArray = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">content</span>
+        <span class="nv">isObject = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">content</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">isArray</span> <span class="o">or</span> <span class="nx">isObject</span>
+        <span class="nf">(request, response, content) =&gt;</span>
+            <span class="nv">jsonType = </span><span class="s">&quot;application/json&quot;</span>
+            <span class="nv">doesHtml = </span><span class="nx">response</span><span class="p">.</span><span class="nx">accepts</span> <span class="sr">/html/</span>
+            <span class="nv">spaces = </span><span class="k">if</span> <span class="nx">doesHtml</span> <span class="k">then</span> <span class="mi">4</span> <span class="k">else</span> <span class="kc">null</span>
+            <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="nx">jsonType</span>
+            <span class="nv">jsoned = </span><span class="nf">(x) -&gt;</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">x</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">spaces</span>
+            <span class="nx">@output</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">jsoned</span> <span class="nx">content</span></div></div></div></div></body></html>

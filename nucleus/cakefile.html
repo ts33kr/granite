@@ -1,0 +1,113 @@
+<!DOCTYPE html><html lang="en"><head><title>nucleus/cakefile</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/cakefile"><meta name="groc-project-path" content="library/nucleus/cakefile.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/cakefile.coffee">library/nucleus/cakefile.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="p">{</span><span class="nx">spawn</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;child_process&quot;</span>
+<span class="p">{</span><span class="nx">rmdirSyncRecursive</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;wrench&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Here follows the definition of a number of constants that define
+the defaults for some of the options, generally for the ones that
+specify directory paths that constitute the directory layout of
+the project. Use one of these instead of hardcoding the defaults!</p></div></div><div class="code"><div class="wrapper"><span class="nv">DEFAULT_LIBRARY = </span><span class="s">&quot;library&quot;</span>
+<span class="nv">DEFAULT_ARTIFACT = </span><span class="s">&quot;artifact&quot;</span>
+<span class="nv">DEFAULT_DOCUMENTS = </span><span class="s">&quot;documents&quot;</span>
+<span class="nv">DEFAULT_MODULES = </span><span class="s">&quot;node_modules&quot;</span>
+<span class="nv">DEFAULT_SCOPING = </span><span class="s">&quot;development&quot;</span>
+<span class="nv">DEFAULT_LOGGING = </span><span class="s">&quot;info&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method contains a definition for the typical Cakefile for an
+application created within the framework. This very same template
+is also used by the framework itself for the Cakefile of its own.
+This method should satisfy the basic boilerplating needs of apps.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports = </span><span class="nf">-&gt;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Here follows the definition of the options required for some of
+the tasks defined in this Cakefile. Remember that the scope of
+definition of the options is global to a Cakefile, therefore the
+options are shared among all of the tasks and the entire file!</p></div></div><div class="code"><div class="wrapper">    <span class="nx">option</span> <span class="s">&quot;-l&quot;</span><span class="p">,</span> <span class="s">&quot;--library [PATH]&quot;</span><span class="p">,</span> <span class="s">&quot;Path to the library sources&quot;</span>
+    <span class="nx">option</span> <span class="s">&quot;-m&quot;</span><span class="p">,</span> <span class="s">&quot;--modules [PATH]&quot;</span><span class="p">,</span> <span class="s">&quot;Path to the modules directory&quot;</span>
+    <span class="nx">option</span> <span class="s">&quot;-a&quot;</span><span class="p">,</span> <span class="s">&quot;--artifact [PATH]&quot;</span><span class="p">,</span> <span class="s">&quot;Path to the artifact directory&quot;</span>
+    <span class="nx">option</span> <span class="s">&quot;-d&quot;</span><span class="p">,</span> <span class="s">&quot;--documents [PATH]&quot;</span><span class="p">,</span> <span class="s">&quot;Path to the documents directory&quot;</span>
+    <span class="nx">option</span> <span class="s">&quot;-s&quot;</span><span class="p">,</span> <span class="s">&quot;--scoping [SCOPE]&quot;</span><span class="p">,</span> <span class="s">&quot;The name of the scope to boot kernel&quot;</span>
+    <span class="nx">option</span> <span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="s">&quot;--logging [LEVEL]&quot;</span><span class="p">,</span> <span class="s">&quot;The level to use for the logging output&quot;</span>
+    <span class="nx">option</span> <span class="s">&quot;-w&quot;</span><span class="p">,</span> <span class="s">&quot;--watch&quot;</span><span class="p">,</span> <span class="s">&quot;Watch the library sources and recompile&quot;</span>
+    <span class="nx">option</span> <span class="s">&quot;-g&quot;</span><span class="p">,</span> <span class="s">&quot;--git-hub-pages&quot;</span><span class="p">,</span> <span class="s">&quot;Publish documents to GitHub pages&quot;</span>
+    <span class="nx">option</span> <span class="s">&quot;-n&quot;</span><span class="p">,</span> <span class="s">&quot;--clean-modules&quot;</span><span class="p">,</span> <span class="s">&quot;Remove node_modules during cleanup&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This task is defined here mainly for purpose of development and
+testing. It requires and bootstraps the kernel of the framework
+as if it was an end user application, built with the framework.
+This task can be used as a template for your end application!</p></div></div><div class="code"><div class="wrapper">    <span class="nx">task</span> <span class="s">&quot;bootstrap&quot;</span><span class="p">,</span> <span class="s">&quot;bootstrap the framework kernel&quot;</span><span class="p">,</span> <span class="nf">(options) -&gt;</span>
+        <span class="nv">library = </span><span class="nx">options</span><span class="p">.</span><span class="nx">library</span> <span class="o">or</span> <span class="nx">DEFAULT_LIBRARY</span>
+        <span class="nv">scoping = </span><span class="nx">options</span><span class="p">.</span><span class="nx">scoping</span> <span class="o">or</span> <span class="nx">DEFAULT_SCOPING</span>
+        <span class="nv">logging = </span><span class="nx">options</span><span class="p">.</span><span class="nx">logging</span> <span class="o">or</span> <span class="nx">DEFAULT_LOGGING</span>
+        <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">[</span><span class="s">&quot;NODE_ENV&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">scoping</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">[</span><span class="s">&quot;log:level&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">logging</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nv">granite = </span><span class="nx">require</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../index&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">granite</span><span class="p">),</span> <span class="s">&quot;framework failed&quot;</span>
+        <span class="nv">compiled = </span><span class="nx">granite</span><span class="p">.</span><span class="nx">collectPackages</span> <span class="kc">no</span><span class="p">,</span> <span class="nx">library</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">compiled</span><span class="p">),</span> <span class="s">&quot;invalid library&quot;</span>
+        <span class="nx">granite</span><span class="p">.</span><span class="nx">cachedKernel</span><span class="p">(</span><span class="nx">library</span><span class="p">).</span><span class="nx">bootstrap</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is one of the major tasks in this Cakefile, it implements
+the cleanup of everything that could have been generated by the
+build system; such as documentation, compiled JavaScript artifact,
+and every other piece of generated data that the system knows of.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">task</span> <span class="s">&quot;cleanup&quot;</span><span class="p">,</span> <span class="s">&quot;remove everything generated by build&quot;</span><span class="p">,</span> <span class="nf">(options) -&gt;</span>
+        <span class="nv">knm = </span><span class="s">&quot;clean-modules&quot;</span> <span class="k">of</span> <span class="nx">options</span>
+        <span class="nv">modules = </span><span class="nx">options</span><span class="p">.</span><span class="nx">modules</span> <span class="o">or</span> <span class="nx">DEFAULT_MODULES</span>
+        <span class="nv">artifact = </span><span class="nx">options</span><span class="p">.</span><span class="nx">artifact</span> <span class="o">or</span> <span class="nx">DEFAULT_ARTIFACT</span>
+        <span class="nv">documents = </span><span class="nx">options</span><span class="p">.</span><span class="nx">documents</span> <span class="o">or</span> <span class="nx">DEFAULT_DOCUMENTS</span>
+        <span class="nv">removing = </span><span class="s">&quot;Removing everything under %s&quot;</span><span class="p">.</span><span class="nx">yellow</span>
+        <span class="nv">note = </span><span class="nf">(path) -&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">removing</span><span class="p">,</span> <span class="nx">path</span>
+        <span class="nx">note</span> <span class="nx">artifact</span><span class="p">;</span> <span class="nx">rmdirSyncRecursive</span> <span class="nx">artifact</span><span class="p">,</span> <span class="kc">yes</span>
+        <span class="nx">note</span> <span class="nx">documents</span><span class="p">;</span> <span class="nx">rmdirSyncRecursive</span> <span class="nx">documents</span><span class="p">,</span> <span class="kc">yes</span>
+        <span class="p">(</span><span class="nx">note</span> <span class="nx">modules</span><span class="p">;</span> <span class="nx">rmdirSyncRecursive</span> <span class="nx">modules</span><span class="p">,</span> <span class="kc">yes</span><span class="p">)</span> <span class="k">if</span> <span class="nx">knm</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Finished cleaning everything up&quot;</span><span class="p">.</span><span class="nx">green</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is one of the major tasks in this Cakefile, it implements
+the generation of the documentation for the library, using the
+Groc documentation tool. The Groc depends on Pygments being set
+in place, before running. Takes some minor options via CLI call.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">task</span> <span class="s">&quot;documents&quot;</span><span class="p">,</span> <span class="s">&quot;generate the library documentation&quot;</span><span class="p">,</span> <span class="nf">(options) -&gt;</span>
+        <span class="nv">library = </span><span class="nx">options</span><span class="p">.</span><span class="nx">library</span> <span class="o">or</span> <span class="nx">DEFAULT_LIBRARY</span>
+        <span class="nv">documents = </span><span class="nx">options</span><span class="p">.</span><span class="nx">documents</span> <span class="o">or</span> <span class="nx">DEFAULT_DOCUMENTS</span>
+        <span class="p">[</span><span class="nx">pattern</span><span class="p">,</span> <span class="nx">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">library</span><span class="si">}</span><span class="s">/**/*.coffee&quot;</span><span class="p">,</span> <span class="s">&quot;README.md&quot;</span><span class="p">]</span>
+        <span class="nv">parameters = </span><span class="p">[</span><span class="nx">pattern</span><span class="p">,</span> <span class="s">&quot;Cakefile&quot;</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="s">&quot;-o&quot;</span><span class="p">,</span> <span class="nx">documents</span><span class="p">]</span>
+        <span class="nx">parameters</span><span class="p">.</span><span class="nx">push</span> <span class="s">&quot;--github&quot;</span> <span class="k">if</span> <span class="nv">g = </span><span class="s">&quot;git-hub-pages&quot;</span> <span class="k">of</span> <span class="nx">options</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Publishing docs to GitHub pages&quot;</span><span class="p">.</span><span class="nx">yellow</span> <span class="k">if</span> <span class="nx">g</span>
+        <span class="nv">generator = </span><span class="nx">spawn</span> <span class="s">&quot;groc&quot;</span><span class="p">,</span> <span class="nx">parameters</span>
+        <span class="nx">generator</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">pipe</span> <span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span>
+        <span class="nx">generator</span><span class="p">.</span><span class="nx">stderr</span><span class="p">.</span><span class="nx">pipe</span> <span class="nx">process</span><span class="p">.</span><span class="nx">stderr</span>
+        <span class="nx">generator</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;exit&quot;</span><span class="p">,</span> <span class="nf">(status) -&gt;</span>
+            <span class="nv">failure = </span><span class="s">&quot;Failed to generate documentation&quot;</span><span class="p">.</span><span class="nx">red</span>
+            <span class="nv">success = </span><span class="s">&quot;Generated documentation successfuly&quot;</span><span class="p">.</span><span class="nx">green</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="nx">failure</span> <span class="k">if</span> <span class="nx">status</span> <span class="o">isnt</span> <span class="mi">0</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">success</span> <span class="k">if</span> <span class="nx">status</span> <span class="o">is</span> <span class="mi">0</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is one of the major tasks in this Cakefile, it implements
+the compilatation of the library source code from CoffeeScript
+to JavaScript, taking into account the supplied options or the
+assumed defaults if the options are not supplied via CLI call.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">task</span> <span class="s">&quot;compile&quot;</span><span class="p">,</span> <span class="s">&quot;compile CoffeeScript into JavaScript&quot;</span><span class="p">,</span> <span class="nf">(options) -&gt;</span>
+        <span class="nv">library = </span><span class="nx">options</span><span class="p">.</span><span class="nx">library</span> <span class="o">or</span> <span class="nx">DEFAULT_LIBRARY</span>
+        <span class="nv">artifact = </span><span class="nx">options</span><span class="p">.</span><span class="nx">artifact</span> <span class="o">or</span> <span class="nx">DEFAULT_ARTIFACT</span>
+        <span class="nv">parameters = </span><span class="p">[</span><span class="s">&quot;-c&quot;</span><span class="p">,</span> <span class="s">&quot;-o&quot;</span><span class="p">,</span> <span class="nx">artifact</span><span class="p">,</span> <span class="nx">library</span><span class="p">]</span>
+        <span class="nx">parameters</span><span class="p">.</span><span class="nx">unshift</span> <span class="s">&quot;-w&quot;</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">watch</span><span class="o">?</span>
+        <span class="nv">watching = </span><span class="s">&quot;Watching the %s directory&quot;</span><span class="p">.</span><span class="nx">blue</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">watching</span><span class="p">,</span> <span class="nx">library</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">watch</span><span class="o">?</span>
+        <span class="nv">compiler = </span><span class="nx">spawn</span> <span class="s">&quot;coffee&quot;</span><span class="p">,</span> <span class="nx">parameters</span>
+        <span class="nx">compiler</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">pipe</span> <span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span>
+        <span class="nx">compiler</span><span class="p">.</span><span class="nx">stderr</span><span class="p">.</span><span class="nx">pipe</span> <span class="nx">process</span><span class="p">.</span><span class="nx">stderr</span>
+        <span class="nx">compiler</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;exit&quot;</span><span class="p">,</span> <span class="nf">(status) -&gt;</span>
+            <span class="nv">failure = </span><span class="s">&quot;Failed to compile library&quot;</span><span class="p">.</span><span class="nx">red</span>
+            <span class="nv">success = </span><span class="s">&quot;Compiled library successfuly&quot;</span><span class="p">.</span><span class="nx">green</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="nx">failure</span> <span class="k">if</span> <span class="nx">status</span> <span class="o">isnt</span> <span class="mi">0</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">success</span> <span class="k">if</span> <span class="nx">status</span> <span class="o">is</span> <span class="mi">0</span></div></div></div></div></body></html>
