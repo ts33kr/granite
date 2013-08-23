@@ -85,7 +85,7 @@ module.exports.RedisClient = class RedisClient extends Standard
         message = "Connecting to Redis at %s:%s"
         logger.info message.cyan.underline, host, port
         kernel.redis = redis.createClient port, host, options
-        assert _.isObject(kernel.redis); next()
+        assert _.isObject kernel.redis; next()
 
     # A hook that will be called prior to instantiating the service
     # implementation. Please refer to this prototype signature for
