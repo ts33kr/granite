@@ -181,8 +181,8 @@ module.exports.Watcher = class Watcher extends events.EventEmitter
     watchDirectory: (directory) ->
         notString = "The directory is not a string"
         notExists = "Dir %s does not exist, not watching"
+        assert _.isString(directory), notString
         exists = fs.existsSync directory.toString()
-        throw new Error(notString) unless _.isString directory
         relative = paths.relative process.cwd(), directory
         formats = [notExists.grey, relative.underline]
         return logger.warn formats... unless exists
