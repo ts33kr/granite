@@ -64,9 +64,9 @@ module.exports.Validator = class Validator extends Standard
         assert _.isObject(request), notRequest
         message = (error) -> error.message
         strings = _.map results, message
+        response.statusCode = 400
         map = _.object _.keys(results), strings
-        response.writeHead 400, "bad parameters"
-        return @push response, map
+        return @push response, errors: params: map
 
     # Given the request with possible validation contexts appended
     # run all the validator contexsts in parallel and wait for the
