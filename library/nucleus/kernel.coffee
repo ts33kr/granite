@@ -109,7 +109,7 @@ module.exports.Generic = class Generic extends events.EventEmitter
         types = [@package.version, @package.codename]
         asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
-            identify = "Running kernel %s, codename: %s"
+            identify = "Running ver %s, codename: %s"
             using = "Using %s class as the kernel type"
             logger.info identify.underline, types...
             logger.info using, @constructor.name.bold
