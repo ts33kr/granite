@@ -85,9 +85,11 @@ module.exports.Broker = class Broker extends events.EventEmitter
         isObject = _.isObject content
         return unless isArray or isObject
         (request, response, content) =>
-            jsonType = "application/json"
+            type = "Content-Type"
+            json = "application/json"
+            sent = response.headersSent
             doesHtml = response.accepts /html/
             spaces = if doesHtml then 4 else null
-            response.setHeader "Content-Type", jsonType
+            response.setHeader type, json unless sent
             jsoned = (x) -> JSON.stringify x, null, spaces
             @output response, jsoned content
