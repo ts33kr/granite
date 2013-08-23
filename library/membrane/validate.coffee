@@ -65,6 +65,7 @@ module.exports.Validator = class Validator extends Standard
         message = (error) -> error.message
         strings = _.map results, message
         map = _.object _.keys(results), strings
+        response.writeHead 400, "bad parameters"
         return @push response, map
 
     # Given the request with possible validation contexts appended
