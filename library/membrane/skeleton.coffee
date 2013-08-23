@@ -31,11 +31,8 @@ events = require "events"
 colors = require "colors"
 logger = require "winston"
 
-tools = require "./../nucleus/tools"
-extendz = require "./../nucleus/extends"
-compose = require "./../nucleus/compose"
-{WithHooks} = require "./../nucleus/stubs"
 {Descriptor} = require "./describe"
+{WithHooks} = require "./../nucleus/stubs"
 
 # This is an abstract base class for every service in the system
 # and in the end user application that provides a REST interface

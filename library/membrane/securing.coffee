@@ -23,6 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+_ = require "lodash"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
@@ -34,12 +35,6 @@ http = require "http"
 util = require "util"
 url = require "url"
 
-_ = require "lodash"
-api = require "../nucleus/api"
-stubs = require "../nucleus/stubs"
-tools = require "../nucleus/tools"
-service = require "../nucleus/service"
-extendz = require "./../nucleus/extends"
 {Standard} = require "./skeleton"
 
 # This is an abstract base class API stub service. Its purpose is

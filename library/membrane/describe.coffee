@@ -39,8 +39,6 @@ _ = require "lodash"
 api = require "../nucleus/api"
 stubs = require "../nucleus/stubs"
 tools = require "../nucleus/tools"
-service = require "../nucleus/service"
-extendz = require "./../nucleus/extends"
 {Document} = require "./document"
 
 # This is an abstract base class API stub service. Its purpose is

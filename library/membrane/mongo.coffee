@@ -37,11 +37,6 @@ url = require "url"
 
 _ = require "lodash"
 mongodb = require "mongodb"
-api = require "../nucleus/api"
-stubs = require "../nucleus/stubs"
-tools = require "../nucleus/tools"
-service = require "../nucleus/service"
-extendz = require "./../nucleus/extends"
 {Standard} = require "./skeleton"
 
 # This is an ABC service intended to be used only as a compund. It
