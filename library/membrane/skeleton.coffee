@@ -65,10 +65,10 @@ module.exports.Standard = class Standard extends WithHooks
         knowns = @constructor.SUPPORTED
         doesJson = response.accepts /json/
         pathname = try url.parse(request.url).pathname
-        checkIfSupported = (method) => @[method] isnt @unsupported
+        checkIfSupported = (m) => @[m] isnt @unsupported
         supported = _.filter knowns, checkIfSupported
         descriptor = methods: supported, resource: pathname
-        return response.send descriptor if doesJson
+        return @push response, descriptor if doesJson
         formatted = supported.join(", ") + "\r\n"
         response.send formatted; this
 
