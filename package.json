@@ -1,18 +1,18 @@
 {
-    "name": "flames",
-    "version": "0.4.2",
-    "codename": "cripple",
+    "name": "granite",
+    "version": "0.5.0",
+    "codename": "hipster",
     "main": "index.coffee",
 
-    "description": "The unconventional web development framework",
+    "description": "A rock solid Node.js web framework",
     "keywords": ["web", "framework", "http", "rest", "json"],
-    "bugs": "http://github.com/ts33kr/flames/issues",
-    "homepage": "http://ts33kr.github.io/flames/",
+    "bugs": "http://github.com/ts33kr/granite/issues",
+    "homepage": "http://ts33kr.github.io/granite",
     "license": "Simplified BSD-3",
 
     "repository": {
         "type": "git",
-        "url": "https://github.com/ts33kr/flames.git"
+        "url": "https://github.com/ts33kr/granite.git"
     },
 
     "author": {
@@ -23,14 +23,13 @@
 
     "licences": [{
         "type": "Simplified BSD-3",
-        "url": "https://github.com/ts33kr/flames/blob/master/LICENSE.md"
+        "url": "https://github.com/ts33kr/granite/blob/master/LICENSE.md"
     }],
 
     "dependencies": {
         "coffee-script": "1.6.x",
         "stack-trace": "0.0.x",
         "node-uuid": "1.4.x.",
-        "socket.io": "0.9.x",
         "asciify": "1.3.x",
         "connect": "2.8.x",
         "lodash": "1.3.x",
