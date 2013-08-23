@@ -40,47 +40,6 @@ url = require "url"
 {Primitive} = require "./primitive"
 {Standard} = require "./skeleton"
 
-# A base class for all the validation contexts. Basically the conext
-# encapsulates the necessary internal details as well as provides a
-# set of validators to be used. So in order to create custom ones, you
-# will need to create a descendant of this class and set is as context.
-# The context setting happens on the servies level with the directive.
-module.exports.Context = class Context extends Primitive
-
-    # Create a new instance of the validation context with the given
-    # value set as the subject for validation. Each validator will
-    # refer to this value to perform their validation logic on it.
-    # If the message arg is passed in then it will be used by force.
-    constructor: (@value, @message) ->
-
-    # Run the entire stack of chained validators. Once done, callback
-    # will be called with an error parameter passed in. If any of the
-    # validators in the chain has failed, then this parameter will have
-    # an error object set in with an appropriate message about mistake.
-    run: (callback) ->
-        validators = @validators ?= []
-        invalid = "inconsistent validators"
-        assert _.isArray validators, invalid
-        async.series validators, (error) =>
-            failed = _.isObject error
-            custom = _.isString @message
-            matches = failed and custom
-            error.message = @message if matches
-            @emit "run", error
-            callback error
-
-    # Chain in a new validator to the context. Validator is a method
-    # that will be called within this context that should look up the
-    # value and see if it fits the validator logic and report either
-    # an error, via standard async callback or pass on to the next one.
-    chain: (validator) ->
-        noFunction = "a #{validator} is not a function"
-        wrongParams = "a validator should have 1 argument"
-        assert _.isFunction(validator), noFunction
-        assert validator.length is 1, wrongParams
-        @emit "chain", validator, @validators
-        (@validators ?= []).push validator
-
 # This is an ABC service intended to be used only as a compund. It
 # provides a complete validation solution for the framework. The
 # important difference is this validation system supports asynchronous
@@ -144,3 +103,44 @@ module.exports.Validator = class Validator extends Standard
         return obtain if obtain = vcontexts[name]
         created = new context value, message
         vcontexts[name] = created; created
+
+# A base class for all the validation contexts. Basically the conext
+# encapsulates the necessary internal details as well as provides a
+# set of validators to be used. So in order to create custom ones, you
+# will need to create a descendant of this class and set is as context.
+# The context setting happens on the servies level with the directive.
+module.exports.Context = class Context extends Primitive
+
+    # Create a new instance of the validation context with the given
+    # value set as the subject for validation. Each validator will
+    # refer to this value to perform their validation logic on it.
+    # If the message arg is passed in then it will be used by force.
+    constructor: (@value, @message) ->
+
+    # Run the entire stack of chained validators. Once done, callback
+    # will be called with an error parameter passed in. If any of the
+    # validators in the chain has failed, then this parameter will have
+    # an error object set in with an appropriate message about mistake.
+    run: (callback) ->
+        validators = @validators ?= []
+        invalid = "inconsistent validators"
+        assert _.isArray validators, invalid
+        async.series validators, (error) =>
+            failed = _.isObject error
+            custom = _.isString @message
+            matches = failed and custom
+            error.message = @message if matches
+            @emit "run", error
+            callback error
+
+    # Chain in a new validator to the context. Validator is a method
+    # that will be called within this context that should look up the
+    # value and see if it fits the validator logic and report either
+    # an error, via standard async callback or pass on to the next one.
+    chain: (validator) ->
+        noFunction = "a #{validator} is not a function"
+        wrongParams = "a validator should have 1 argument"
+        assert _.isFunction(validator), noFunction
+        assert validator.length is 1, wrongParams
+        @emit "chain", validator, @validators
+        (@validators ?= []).push validator
