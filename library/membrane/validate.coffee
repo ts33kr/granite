@@ -38,14 +38,14 @@ util = require "util"
 url = require "url"
 
 {Primitive} = require "./primitive"
-{Standard} = require "./skeleton"
+{Barebones} = require "./skeleton"
 
 # This is an ABC service intended to be used only as a compund. It
 # provides a complete validation solution for the framework. The
 # important difference is this validation system supports asynchronous
 # validators which is what differs it from existent solutions. This
 # validation system is a one-stop-shop for checking all the inputs!
-module.exports.Validator = class Validator extends Standard
+module.exports.Validator = class Validator extends Barebones
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

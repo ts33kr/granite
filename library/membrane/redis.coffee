@@ -37,14 +37,14 @@ url = require "url"
 
 _ = require "lodash"
 redis = require "redis"
-{Standard} = require "./skeleton"
+{Barebones} = require "./skeleton"
 
 # This is an ABC service intended to be used only as a compund. It
 # provides the ready to use Redis client to any service that composits
 # this service in. The initialization is performed only once. If the
 # configuration environment does not contains the necessary information
 # then this service will not attempt to setup a Redis client at all.
-module.exports.RedisClient = class RedisClient extends Standard
+module.exports.RedisClient = class RedisClient extends Barebones
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
