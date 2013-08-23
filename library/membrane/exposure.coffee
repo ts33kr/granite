@@ -23,6 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+_ = require "lodash"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
@@ -33,19 +34,13 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-_ = require "lodash"
-api = require "../nucleus/api"
-stubs = require "../nucleus/stubs"
-tools = require "../nucleus/tools"
-service = require "../nucleus/service"
-document = require "./document"
-skeleton = require "./skeleton"
+{Standard} = require "./skeleton"
 
 # This service exposes the entiry hierarchical structure of the
 # service documentation, as they scanned and found in the current
 # kernel instance. It exposes the data in a structured hierarchy
 # encoded with JSON. Please refer to the implementation for info.
-module.exports.ApiDoc = class ApiDoc extends skeleton.Standard
+module.exports.ApiDoc = class ApiDoc extends Standard
 
     # These invocations establish the parameters which are going
     # to be used for matching HTTP requests against this service.
