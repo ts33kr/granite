@@ -108,18 +108,20 @@ Object.defineProperty Object::, "upstack",
 # between the foreign and common peers in the inheritance chain. Do
 # refer to the implementation for the understanding of what happens.
 Object.defineProperty Object::, "compose",
-    enumerable: no, value: (compound, shader=cloner) ->
+    enumerable: no, value: (compound, shader=cloner, silent=yes) ->
         current = this.hierarchy()
         foreign = compound.hierarchy()
         identify = compound.identify()
-        duplicate = "Duplicate #{identify} compound"
-        notAbstract = "The #{identify} is not abstract"
-        assert compound not in current, duplicate
+        cmp = (e) -> (c) -> c.similarWith e
+        present = _.any current, cmp compound
+        duplicate = "duplicate #{identify} compound"
+        notAbstract = "the #{identify} is not abstract"
+        assert not present or silent, duplicate
         assert compound.abstract?(), notAbstract
-        cmp = (ersatz) -> (c) -> c.similarWith ersatz
+        return undefined if present and silent
         culrpit = (shape) -> not _.any commons, cmp shape
         commons = _.filter current, (x) -> _.any foreign, cmp x
-        orphans = "No common base classes in hierarchy"
+        orphans = "no common base classes in hierarchy"
         throw new Error orphans if _.isEmpty commons
         differentiated = _.take current, culrpit
         alternative = _.map differentiated, shader
