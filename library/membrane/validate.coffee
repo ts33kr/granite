@@ -87,7 +87,7 @@ module.exports.Validator = class Validator extends Standard
             assert not error, "internval valdation error"
             errors = _.any _.values(results), _.isObject
             hasRender = _.isFunction @renderValidation
-            assert hasRender, "no renderValidation method"
+            assert hasRender, "no method to render validation"
             params = [results, request, response, continuation]
             return @renderValidation params... if errors
             return continuation.bind(this)()
