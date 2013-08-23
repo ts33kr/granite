@@ -12,4 +12,5 @@ that encompass not only the service implementation but also all the
 things that come with it, such as documentation, tests and so on.
 These things are well integrated with the framework which allows for
 a very rapid creation of extremely well designed and well decoupled
-services with a rock solid architecture.
+services with a rock solid architecture. Granite also bundles some
+unique approaches and systems, such as the class composition system.
