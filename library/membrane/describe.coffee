@@ -60,7 +60,7 @@ module.exports.Descriptor = class Descriptor extends stubs.WithHooks
     # and collect the documentation for each method, then given this
     # information, build a hierarhical tree object of all the methods
     # and the services that implement them and return to the invoker.
-    collectSpecifications: (substitution) ->
+    collectDescriptions: (substitution) ->
         services = @kernel?.router?.registry
         services = substitution if substitution?
         assert _.isArray(services), "invalid services"
@@ -81,7 +81,7 @@ module.exports.Descriptor = class Descriptor extends stubs.WithHooks
     # and expected way, so that it can later be used to programmatically
     # process such documentation and do with it whatever is necessary.
     # This approach gives unique ability to build self documented APIs.
-    @specification: (method, descriptor) ->
+    @describe: (method, descriptor) ->
         noMethod = "The #{method} is not a valid method"
         noDescriptor = "The #{descriptor} is not a descriptor"
         assert _.isFunction(method), noMethod

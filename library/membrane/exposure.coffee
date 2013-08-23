@@ -60,7 +60,7 @@ module.exports.ApiDoc = class ApiDoc extends skeleton.Standard
     # rule, this method does not have to alter any contents or data
     # of the resource. Use for unobtrusive retrieval of resources.
     GET: (request, response) ->
-        collected = @collectSpecifications()
+        collected = @collectDescriptions()
         @push response, _.map collected, (record) ->
             constructor = record.service.constructor
             location: record.service.location()
@@ -80,7 +80,7 @@ module.exports.ApiDoc = class ApiDoc extends skeleton.Standard
     # exact process of how it is being documented depends on how the
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
-    @specification @prototype.GET, (method, service) ->
+    @describe @prototype.GET, (method, service) ->
         @leads tools.urlWithHost no, service.location()
         @notes "See the Document class for more information"
         @synopsis "Get all of the APIs available in the system"
