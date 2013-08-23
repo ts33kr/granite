@@ -219,7 +219,7 @@ module.exports.Generic = class Generic extends events.EventEmitter
         @middleware = @middleware.bind @router
 
     # Setup the Connect middleware framework along with the default
-    # pipeline of middlewares necessary for the Flames framework to
+    # pipeline of middlewares necessary for the Granite framework to
     # operate correctly. You are encouraged to override this method
     # to provide a Connect setup procedure to your own liking, etc.
     setupConnectPipeline: ->
