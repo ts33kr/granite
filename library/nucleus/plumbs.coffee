@@ -43,7 +43,7 @@ module.exports.params = (kernel) ->
         body = request.body or {}
         query = request.query or {}
         params = _.extend query, body
-        response.params = params
+        request.params = params
         next() unless request.headersSent
 
 # A middleware that adds a `redirect` method to the response object.
