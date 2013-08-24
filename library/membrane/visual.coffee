@@ -79,7 +79,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         scripts = _.map(context.scripts, script).join new String
         sources = _.map(context.sources, source).join new String
         joined = sheets + styles + scripts + sources
-        util.format template, context.doctype, joined
+        format template, context.doctype, joined
 
     # This is an internal routine that performs a very important task
     # of deploying the context onto the call (client) site. It also
