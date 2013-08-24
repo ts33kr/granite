@@ -47,7 +47,7 @@ compiler = module.exports.compiler = (symbol) ->
     @symbol = symbol unless _.isEmpty symbol
     assert not _.isEmpty(@symbol), noSymbol
     f = => "var #{@symbol} = (#{@source})()"
-    return d() unless _.isObject @compiled
+    return f() unless _.isObject @compiled
     hierarchy = try @compiled.hierarchy?()
     assert _.isArray(hierarchy), "no hierarchy"
     hasRemote = (x) ->_.isObject x.remote
