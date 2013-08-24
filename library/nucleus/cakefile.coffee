@@ -65,7 +65,7 @@ module.exports = ->
     # testing. It requires and bootstraps the kernel of the framework
     # as if it was an end user application, built with the framework.
     # This task can be used as a template for your end application!
-    task "bootstrap", "bootstrap the framework kernel", (options) ->
+    task "boot", "bootstrap the framework kernel", (options) ->
         library = options.library or DEFAULT_LIBRARY
         scoping = options.scoping or DEFAULT_SCOPING
         logging = options.logging or DEFAULT_LOGGING
