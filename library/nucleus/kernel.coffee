@@ -228,6 +228,7 @@ module.exports.Generic = class Generic extends events.EventEmitter2
         @connect.use connect.favicon()
         @connect.use connect.bodyParser()
         @connect.use connect.cookieParser()
+        @connect.use plumbs.capture this
         @connect.use plumbs.params this
         @connect.use plumbs.redirect this
         @connect.use plumbs.session this

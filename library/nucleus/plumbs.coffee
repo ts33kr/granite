@@ -34,17 +34,30 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+# This middleware captures the relevant (and unrelevant) data when
+# the request comes in and attaches the data to the request so it
+# can later be used by whoever might needs this. At the moment it
+# just captures some rudimentary data, such as timestamp and UUID.
+module.exports.capture = (kernel) ->
+    (request, response, next) ->
+        sent = request.headersSent
+        request.uuid = uuid.v1()
+        request.date = new Date
+        request.kernel = kernel
+        next() unless sent
+
 # This middleware is a little handy utility that merges the set
 # of parameters, specifically the ones transferred via query or
 # via body mechanism into one object that can be used to easily
 # access the parameters without thinking about transfer mechanism.
 module.exports.params = (kernel) ->
     (request, response, next) ->
+        sent = request.headersSent
         body = request.body or {}
         query = request.query or {}
         params = _.extend query, body
         request.params = params
-        next() unless request.headersSent
+        next() unless sent
 
 # A middleware that adds a `redirect` method to the response object.
 # This redirects to the supplied URL with the 302 status code and
