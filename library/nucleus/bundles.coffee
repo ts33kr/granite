@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 connect = require "connect"
 logger = require "winston"
-events = require "events"
+events = require "eventemitter2"
 colors = require "colors"
 nconf = require "nconf"
 util = require "util"

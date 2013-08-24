@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 assert = require "assert"
 logger = require "winston"
-events = require "events"
+events = require "eventemitter2"
 colors = require "colors"
 util = require "util"
 url = require "url"

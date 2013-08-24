@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 url = require "url"
 http = require "http"
-events = require "events"
+events = require "eventemitter2"
 colors = require "colors"
 logger = require "winston"
 

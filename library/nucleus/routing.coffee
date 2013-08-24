@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _ = require "lodash"
 logger = require "winston"
-events = require "events"
+events = require "eventemitter2"
 colors = require "colors"
 assert = require "assert"
 util = require "util"
