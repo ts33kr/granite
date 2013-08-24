@@ -89,7 +89,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         prepared = util.inspect context
         entrypoint = @entrypoint.remote.source
         installer = "var context = #{prepared}"
-        invoker = "context.entrypoint(context)"
+        invoker = "context.entrypoint()"
         _.forIn this, (value, key, object) ->
             return unless _.isObject value.remote
             return unless src = value.remote.source
