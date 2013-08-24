@@ -31,7 +31,6 @@ events = require "events"
 colors = require "colors"
 logger = require "winston"
 
-tools = require "./../nucleus/tools"
 extendz = require "./../nucleus/extends"
 compose = require "./../nucleus/compose"
 {WithHooks} = require "./../nucleus/stubs"
@@ -72,7 +71,7 @@ module.exports.Barebones = class Barebones extends WithHooks
         formatted = supported.join(", ") + "\r\n"
         response.send formatted; this
 
-    # This block describes certain method a abrbitrary service. The
+    # This block describes certain method of abrbitrary service. The
     # exact process of how it is being documented depends on how the
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
