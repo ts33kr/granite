@@ -62,10 +62,11 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # method is wired in an synchronous way for greater functionality.
     # This is the place where you would be importing the dependencies.
     prelude: (context, request, next) ->
+        context.uuid = request: request.uuid
         context.headers = request.headers
         context.params = request.params
+        context.uuid.service = @uuid
         context.url = request.url
-        context.uuid = @uuid
         return next()
 
     # Use this method in the `predule` scope to bring dependencies into
