@@ -61,7 +61,12 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # context being compiled and flushed down to the client site. The
     # method is wired in an synchronous way for greater functionality.
     # This is the place where you would be importing the dependencies.
-    prelude: (context, request, next) -> next context
+    prelude: (context, request, next) ->
+        context.headers = request.headers
+        context.params = request.params
+        context.url = request.url
+        context.uuid = @uuid
+        return next()
 
     # Use this method in the `predule` scope to bring dependencies into
     # the scope. This method supports JavaScript scripts as a link or
@@ -125,11 +130,13 @@ module.exports.Screenplay = class Screenplay extends Barebones
         assert _.isFunction(@entrypoint), noEntrypoint
         assert @entrypoint.remote?.compile, notRemote
         context = scripts: [], sources: [], styles: [], sheets: []
-        context.doctype = "<!DOCTYPE html>"; context.uuid = @uuid
-        @prelude context, request, (context) =>
+        context.doctype = "<!DOCTYPE html>"
+        prelude = @upstreamAsync "prelude", =>
             context = @deployContext context
-            length = @compileContext(context).length
+            compiled = @compileContext context
+            length = compiled.length or undefined
             response.setHeader "Content-Length", length
             response.setHeader "Content-Type", "text/html"
             response.writeHead 200, STATUS_CODES[200]
-            response.end @compileContext context
+            response.end compiled.toString()
+        return prelude context, request
