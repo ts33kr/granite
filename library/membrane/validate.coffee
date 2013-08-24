@@ -89,7 +89,7 @@ module.exports.Validator = class Validator extends Barebones
     # If some mistakes are found, however, run `@renderValidation`.
     continueWithValidation: (request, response, continuation) ->
         notRequest = "a #{request} is not a request"
-        notResponse = "a #{response} is not a respnonse"
+        notResponse = "a #{response} is not a response"
         notContinuation = "a #{continuation} is not function"
         transformer = (o) -> (c) -> o.run (e) -> c null, e
         assert _.isFunction(continuation), notContinuation
