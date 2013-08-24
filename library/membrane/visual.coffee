@@ -63,6 +63,19 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # This is the place where you would be importing the dependencies.
     prelude: (context, request, next) -> next context
 
+    # Use this method in the `predule` scope to bring dependencies into
+    # the scope. This method supports JavaScript scripts as a link or
+    # JavaScript sources passed in as the remote objects. Please refer
+    # to the implementation and the class for more information on it.
+    require: (context, subject) ->
+        compile = -> subject.remote?.compile?()
+        scripts = -> context.scripts.push subject
+        sources = -> context.sources.push compile()
+        invalid = "not a remote object and not a link"
+        return sources() if _.isString subject.remote.source
+        return scripts() if _.isString subject
+        throw new Error invalid
+
     # This is an internal routine that performs the task of compiling
     # a screenplay context into a valid HTML document to be rendered
     # and launched on the client (browser side). Please refer to the
