@@ -53,6 +53,17 @@ module.exports.Validator = class Validator extends Barebones
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
+    # Either get or set a class object that will be used as to create
+    # new validation contexts. If this isnt configured per service
+    # via this method - then the default `Context` class will be used
+    # which inherits `Primitives` as a collection of the validators.
+    # If you want to add validators - create and set context class.
+    @validationContext: (context) ->
+        invalid = "the #{context} is not a class"
+        return @$vcontext if arguments.length is 0
+        assert _.isObject(context?.__super__), invalid
+        @$vcontext = context; return this
+
     # This method is a default implementation of the renderer that
     # will be called when the validation has failed. You can easily
     # override it in either your service or in an external compound.
