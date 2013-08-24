@@ -46,7 +46,7 @@ service = require "./service"
 # the modules that contain services. It can be configured to watch
 # only specific directories. It also features automatic reloading
 # that takes care of unregistering and registering the services.
-module.exports.Watcher = class Watcher extends events.EventEmitter
+module.exports.Watcher = class Watcher extends events.EventEmitter2
 
     # This defines the set of filename extensions that will be
     # interpreted by the watcher as valid modules and therefore

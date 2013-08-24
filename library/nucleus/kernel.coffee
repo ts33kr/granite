@@ -54,7 +54,7 @@ watch = require "./watch"
 # and the end user application constructed within the framework. It
 # is both an abstract base class as well as a ready to use bootstrap.
 # Please refer to the documentation of the methods for more info.
-module.exports.Generic = class Generic extends events.EventEmitter
+module.exports.Generic = class Generic extends events.EventEmitter2
 
     # This static property should contain the loaded NPM package
     # module which is used by the kernel to draw different kinds

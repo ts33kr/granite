@@ -38,7 +38,7 @@ util = require "util"
 # the kernel and then can be used either directly or via middleware
 # to negotiate the procedure of responding to a client with the data
 # using the correct protocol, meaning correct `Content-Type`, etc.
-module.exports.Broker = class Broker extends events.EventEmitter
+module.exports.Broker = class Broker extends events.EventEmitter2
 
     # Content negotiate the request/response pair to use the correct
     # protocol. The protocol is implemented by the content negotiator

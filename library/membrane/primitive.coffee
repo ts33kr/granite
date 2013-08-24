@@ -40,7 +40,7 @@ url = require "url"
 # a set of primitive and standard validators that can be used either
 # directly or as a foundation for more complex validators that could
 # be defined in the descendants of the default context implementation.
-module.exports.Primitive = class Primitive extends events.EventEmitter
+module.exports.Primitive = class Primitive extends events.EventEmitter2
 
     # Check if the value is not empty. The validation will succeed
     # if the value is a string that contains anything, and not empty.
