@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 assert = require "assert"
 logger = require "winston"
+uuid = require "node-uuid"
 events = require "eventemitter2"
 colors = require "colors"
 util = require "util"
@@ -58,7 +59,7 @@ module.exports.Service = class Service extends events.EventEmitter2
     # the kernel instance as a parameter. You can override it as
     # you see fit, but be sure to invoke the super constructor and
     # it is highly advised to store the kernel instance in object.
-    constructor: (@kernel) -> super
+    constructor: (@kernel) -> @uuid = uuid.v4()
 
     # Either obtain or set the HTTP location of the current service.
     # This method is a proxy that forwards the invocation to the
