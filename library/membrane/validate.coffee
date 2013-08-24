@@ -59,9 +59,13 @@ module.exports.Validator = class Validator extends Barebones
     # which inherits `Primitives` as a collection of the validators.
     # If you want to add validators - create and set context class.
     @validationContext: (context) ->
-        invalid = "the #{context} is not a class"
         return @$vcontext if arguments.length is 0
-        assert _.isObject(context?.__super__), invalid
+        noContext = "the #{context} is not a class"
+        assert _.isObject(context?.__super__), noContext
+        noRun = "the #{context} has no valid run method"
+        noChain = "the #{context} has no valid chain method"
+        assert _.isFunction(context.prototype.run), noRun
+        assert _.isFunction(context.prototype.chain), noChain
         @$vcontext = context; return this
 
     # This method is a default implementation of the renderer that
