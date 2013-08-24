@@ -125,7 +125,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         assert _.isFunction(@entrypoint), noEntrypoint
         assert @entrypoint.remote?.compile, notRemote
         context = scripts: [], sources: [], styles: [], sheets: []
-        context.doctype = "<!DOCTYPE html>"
+        context.doctype = "<!DOCTYPE html>"; context.uuid = @uuid
         @prelude context, request, (context) =>
             context = @deployContext context
             length = @compileContext(context).length
