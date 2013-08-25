@@ -88,6 +88,7 @@ module.exports.Generic = class Generic extends events.EventEmitter2
         @setupRoutableServices()
         @setupConnectPipeline()
         @setupListeningServers()
+        @setupSocketServers()
         @setupHotloadWatcher()
         @broker = new content.Broker
         message = "Booted up the kernel instance"
@@ -181,7 +182,6 @@ module.exports.Generic = class Generic extends events.EventEmitter2
     startupHttpsServer: ->
         options = Object.create {}
         assert secure = nconf.get "secure"
-        assert sconfig = nconf.get "socket"
         hostname = nconf.get "server:hostname"
         key = paths.relative process.cwd(), secure.key
         cert = paths.relative process.cwd(), secure.cert
@@ -192,8 +192,6 @@ module.exports.Generic = class Generic extends events.EventEmitter2
         rsecure = "Running HTTPS server at %s:%s".magenta
         logger.info rsecure, hostname, secure.port
         @secure = https.createServer options, @connect
-        logger.info "Attaching Socket.IO to HTTPS server"
-        @secureSocket = socket.listen @secure, sconfig
         @secure?.listen secure.port, hostname
 
     # Setup and launch either HTTP or HTTPS servers to listen at
@@ -202,14 +200,22 @@ module.exports.Generic = class Generic extends events.EventEmitter2
     # for instantiating, configuring and launching up the servers.
     startupHttpServer: ->
         assert server = nconf.get "server"
-        assert sconfig = nconf.get "socket"
         hostname = nconf.get "server:hostname"
         rserver = "Running HTTP server at %s:%s".magenta
         logger.info rserver, hostname, server.port
         @server = http.createServer @connect
-        logger.info "Attaching Socket.IO to HTTP server"
-        @serverSocket = socket.listen @server, sconfig
         @server?.listen server.port, hostname
+
+    setupSocketServers: ->
+        assert _.isObject(sconfig = nconf.get "socket")
+        logger.info "Attaching Socket.IO to HTTPS server"
+        logger.info "Attaching Socket.IO to HTTP server"
+        newMessage = "New Socket.IO connected at %s server"
+        newSocket = (o) -> logger.debug newMessage.grey, o
+        @secureSocket = socket.listen @secure, sconfig
+        @serverSocket = socket.listen @server, sconfig
+        @secureSocket.on "connection", -> newSocket "HTTPS"
+        @serverSocket.on "connection", -> newSocket "HTTP"
 
     # This method sets up the necessary internal toolkits, such as
     # the determined scope and the router, which is then are wired
