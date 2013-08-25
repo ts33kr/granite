@@ -51,6 +51,7 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @defaults.layout = library: "library", config: "config"
     @defaults.watch = dirs: [], force: no
+    @defaults.socket = "log level": 0
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -67,6 +68,7 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @defaults.layout = library: "library", config: "config"
     @defaults.watch = dirs: [], force: no
+    @defaults.socket = "log level": 0
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -83,6 +85,7 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @defaults.layout = library: "library", config: "config"
     @defaults.watch = dirs: [], force: no
+    @defaults.socket = "log level": 0
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -99,3 +102,4 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @defaults.layout = library: "library", config: "config"
     @defaults.watch = dirs: [], force: no
+    @defaults.socket = "log level": 0

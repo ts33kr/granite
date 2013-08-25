@@ -27,6 +27,7 @@ asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
 moment = require "moment"
+socket = require "socket.io"
 events = require "eventemitter2"
 colors = require "colors"
 assert = require "assert"
@@ -178,8 +179,9 @@ module.exports.Generic = class Generic extends events.EventEmitter2
     # scoping configuration in order to obtain the data necessary
     # for instantiating, configuring and launching up the servers.
     startupHttpsServer: ->
-        options = new Object
-        secure = nconf.get "secure"
+        options = Object.create {}
+        assert secure = nconf.get "secure"
+        assert sconfig = nconf.get "socket"
         hostname = nconf.get "server:hostname"
         key = paths.relative process.cwd(), secure.key
         cert = paths.relative process.cwd(), secure.cert
@@ -190,6 +192,8 @@ module.exports.Generic = class Generic extends events.EventEmitter2
         rsecure = "Running HTTPS server at %s:%s".magenta
         logger.info rsecure, hostname, secure.port
         @secure = https.createServer options, @connect
+        logger.info "Attaching Socket.IO to HTTPS server"
+        @secureSocket = socket.listen @secure, sconfig
         @secure?.listen secure.port, hostname
 
     # Setup and launch either HTTP or HTTPS servers to listen at
@@ -197,11 +201,14 @@ module.exports.Generic = class Generic extends events.EventEmitter2
     # scoping configuration in order to obtain the data necessary
     # for instantiating, configuring and launching up the servers.
     startupHttpServer: ->
-        server = nconf.get "server"
+        assert server = nconf.get "server"
+        assert sconfig = nconf.get "socket"
         hostname = nconf.get "server:hostname"
         rserver = "Running HTTP server at %s:%s".magenta
         logger.info rserver, hostname, server.port
         @server = http.createServer @connect
+        logger.info "Attaching Socket.IO to HTTP server"
+        @serverSocket = socket.listen @server, sconfig
         @server?.listen server.port, hostname
 
     # This method sets up the necessary internal toolkits, such as
