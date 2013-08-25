@@ -206,6 +206,10 @@ module.exports.Generic = class Generic extends events.EventEmitter2
         @server = http.createServer @connect
         @server?.listen server.port, hostname
 
+    # Setup and attach Socket.IO handlers to each of the servers.
+    # That is HTTP and HTTPS servers that are running and listening
+    # for new connections. The kernel itself does not use the sockets
+    # it just sets it up. Please refer to the Socket.IO docs for info.
     setupSocketServers: ->
         assert _.isObject(sconfig = nconf.get "socket")
         logger.info "Attaching Socket.IO to HTTPS server"
