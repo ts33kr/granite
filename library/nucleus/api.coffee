@@ -89,6 +89,11 @@ module.exports.Api = class Api extends service.Service
             poststreamer request, response, variables...
         prestreamer request, response, variables...
 
+    # Reject the request by sending an error descriptor to as the
+    # response. The error descriptor is a top level object that will
+    # embed the supplied content object inside of itself. Optionally
+    # you can supply the failing code and an HTTP response phrase.
+    # Please use this methods rather than sending errors directly!
     reject: (response, content, code, phrase) ->
         isContent = _.isObject content
         noContent = "content has to be object"
