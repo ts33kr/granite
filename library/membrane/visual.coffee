@@ -57,6 +57,18 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
+    # Use this static method to mark up the remote/external methods
+    # that need to be automaticalled called, once everything is set
+    # on the client site and before the entrypoint gets executed. It
+    # is a get idea to place generic or setup code in the autocalls.
+    @autocall: (parameters..., method) ->
+        compiler = method?.remote?.compile
+        noRemote = "no valid remote is passed"
+        assert _.isFunction(compiler), noRemote
+        parameters = [] unless _.isArray parameters
+        method.remote.autocall = parameters
+        return method
+
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
     # method is wired in an synchronous way for greater functionality.
@@ -69,7 +81,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         context.url = request.url
         return next()
 
-    # Use this method in the `predule` scope to bring dependencies into
+    # Use this method in the `prelude` scope to bring dependencies into
     # the scope. This method supports JavaScript scripts as a link or
     # JavaScript sources passed in as the remote objects. Please refer
     # to the implementation and the class for more information on it.
@@ -108,16 +120,31 @@ module.exports.Screenplay = class Screenplay extends Barebones
     deployContext: (context) ->
         assert _.isObject context
         prepared = JSON.stringify context
-        entrypoint = @entrypoint.remote.source
         installer = "var context = #{prepared}"
-        invoker = "context.entrypoint(context)"
         _.forIn this, (value, key, object) ->
             return unless _.isObject value.remote
             return unless src = value.remote.source
             set = "context.%s = (#{src})()"
             installer += "\r\n#{format set, key}\r\n"
         context.sources.unshift installer
-        context.sources.push invoker
+        return context
+
+    # Issue the autocalls into the context. Traverse the hierarchy
+    # from top to bottom (the ordering is important) and issue an
+    # autocall for each remote/external method that is marked with
+    # an autocall decorator and therefore must be called on site.
+    issueAutocalls: (context) ->
+        hierarchy = @constructor?.hierarchy?()
+        noHierarchy = "could not scan the hierarchy"
+        assert _.isArray(hierarchy), noHierarchy
+        hierarchy.push @constructor if hierarchy
+        for peer in hierarchy then do (peer, hierarchy) ->
+            _.forOwn peer.prototype, (value, key, object) ->
+                return unless _.isObject value.remote
+                return unless value.remote.autocall?.length?
+                params = JSON.stringify value.remote.autocall
+                template = "context.#{key}.apply(context, %s)"
+                context.sources.push format(template, params)
         return context
 
     # Get the contents of the resources at the established path. It
@@ -126,15 +153,12 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # of the resource. Use for unobtrusive retrieval of resources.
     GET: (request, response) ->
         noPrelude = "no prelude method detected"
-        noEntrypoint = "no valid entrypoint detected"
-        notRemote = "the entrypoint not a valid remote"
         assert _.isFunction(@prelude), noPrelude
-        assert _.isFunction(@entrypoint), noEntrypoint
-        assert @entrypoint.remote?.compile, notRemote
         context = scripts: [], sources: [], styles: [], sheets: []
         context.doctype = "<!DOCTYPE html>"
         prelude = @upstreamAsync "prelude", =>
             context = @deployContext context
+            context = @issueAutocalls context
             compiled = @compileContext context
             length = compiled.length or undefined
             response.setHeader "Content-Length", length
