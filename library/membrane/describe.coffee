@@ -67,7 +67,7 @@ module.exports.Descriptor = class Descriptor extends stubs.WithHooks
             unsupported = service.unsupported
             supported = service.constructor.SUPPORTED
             implemented = (m) -> service[m] isnt unsupported
-            fix = (m) => @constructor.specification service[m], ->
+            fix = (m) => @constructor.describe service[m], ->
             doc = (m) => (service[m].document or fix(m)).blankSlate()
             filtered = _.filter supported, implemented
             methods = _.object filtered, _.map(filtered, doc)
