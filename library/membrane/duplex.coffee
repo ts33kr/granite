@@ -144,6 +144,5 @@ module.exports.Duplex = class Duplex extends Screenplay
             providing = value?.providing or null
             return unless _.isFunction providing
             assert _.isFunction(value), internal
-            binder = (s) => s.on name, providing(s)
-            context.removeListener "connection", binder
+            context.removeAllListeners "connection"
         return next()
