@@ -106,7 +106,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # includes merging all the remoted defined in the services with a
     # context object, which is defered to be done on the client site.
     deployContext: (context) ->
-        prepared = util.inspect context
+        assert _.isObject context
+        prepared = JSON.stringify context
         entrypoint = @entrypoint.remote.source
         installer = "var context = #{prepared}"
         invoker = "context.entrypoint(context)"
