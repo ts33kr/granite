@@ -69,7 +69,9 @@ module.exports.Duplex = class Duplex extends Screenplay
         assert _.isFunction(method), noMethod
         assert method.length >= 1, invalidArgs
         method.provider = Object.create {}
-        method.providing = (s) -> method
+        method.providing = (s) -> (args..., callback) ->
+            respond = -> callback.apply this, arguments
+            respond.socket = s; method args..., respond
         method.origin = this
         return method
 
@@ -146,3 +148,4 @@ module.exports.Duplex = class Duplex extends Screenplay
             assert _.isFunction(value), internal
             context.removeAllListeners "connection"
         return next()
+        util.inspect next
