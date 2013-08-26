@@ -62,9 +62,10 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # on the client site and before the entrypoint gets executed. It
     # is a get idea to place generic or setup code in the autocalls.
     @autocall: (parameters..., method) ->
-        compiler = method?.remote?.compile
-        noRemote = "no valid remote is passed"
-        assert _.isFunction(compiler), noRemote
+        isRemote = _.isObject method?.remote
+        notFunction = "no function is passed in"
+        assert _.isFunction(method), notFunction
+        method = external method unless isRemote
         parameters = [] unless _.isArray parameters
         method.remote.autocall = parameters
         return method

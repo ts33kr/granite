@@ -95,7 +95,7 @@ module.exports.Duplex = class Duplex extends Screenplay
     # client end of the Socket.IO channel and creates wrapper around
     # all the providers residing in the current service implementation.
     # Refer to other `Duplex` methods for understanding what goes on.
-    setupDuplexChannel: @autocall external ->
+    setupDuplexChannel: @autocall ->
         try @socket = io.connect @duplex catch error
             message = "blew up Socket.IO: #{error.message}"
             error.message = message.toString(); throw error
