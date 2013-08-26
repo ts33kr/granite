@@ -115,8 +115,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
             return unless src = value.remote.source
             set = "context.%s = (#{src})()"
             installer += "\r\n#{format set, key}\r\n"
-        context.sources.unshift invoker
         context.sources.unshift installer
+        context.sources.push invoker
         return context
 
     # Get the contents of the resources at the established path. It
