@@ -42,7 +42,7 @@ compose = require "./../nucleus/compose"
 {format} = require "util"
 {STATUS_CODES} = require "http"
 {Barebones} = require "./skeleton"
-{remote} = require "./remote"
+{remote, external} = require "./remote"
 
 # This is an abstract service that provides the unique functionality
 # of rendering the server side store code on the client side with all
