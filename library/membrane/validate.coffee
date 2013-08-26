@@ -81,7 +81,7 @@ module.exports.Validator = class Validator extends Barebones
         strings = _.map results, message
         response.statusCode = 400
         map = _.object _.keys(results), strings
-        return @push response, errors: params: map
+        return @fail response, params: map
 
     # Given the request with possible validation contexts appended
     # run all the validator contexsts in parallel and wait for the

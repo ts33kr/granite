@@ -35,6 +35,7 @@ tools = require "./tools"
 extendz = require "./extends"
 routing = require "./routing"
 service = require "./service"
+{STATUS_CODES} = require "http"
 
 # This is an abstract base class for every service in the system
 # and in the end user application that provides a REST interface
@@ -87,6 +88,20 @@ module.exports.Api = class Api extends service.Service
             poststreamer = @upstreamAsync "postprocess"
             poststreamer request, response, variables...
         prestreamer request, response, variables...
+
+    reject: (response, content, code, phrase) ->
+        isContent = _.isObject content
+        noContent = "content has to be object"
+        throw new Error noContent unless isContent
+        @emit "reject", this, response, content
+        code = 400 unless _.isNumber code
+        phrase = phrase or STATUS_CODES[code]
+        uploader = -> response.send errors: content
+        prestreamer = @upstreamAsync "prerejection", =>
+            response.writeHead(code, phrase); uploader()
+            poststreamer = @upstreamAsync "postrejection"
+            poststreamer response, content
+        prestreamer response, content
 
     # Push the supplied content to the requester by utilizing the
     # response object. This is effectively the same as calling the
