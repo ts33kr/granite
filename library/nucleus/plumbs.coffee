@@ -24,6 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 _ = require "lodash"
+uuid = require "node-uuid"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
