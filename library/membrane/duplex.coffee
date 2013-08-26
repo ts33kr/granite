@@ -104,6 +104,9 @@ module.exports.Duplex = class Duplex extends Screenplay
         for provider in @providers then do (provider) =>
             console.log "setting up provider: #{provider}"
             this[provider] = (archarguments...) ->
+                tail = archarguments[archarguments.length - 1]
+                noCallback = "#{provider} call has no callback"
+                throw new Error noCallback unless tail?.apply
                 console.log "emitting provider: #{provider}"
                 @socket.emit provider, archarguments...
 
