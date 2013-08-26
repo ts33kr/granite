@@ -76,3 +76,21 @@ remote = module.exports.remote = (wrapper) ->
     compiled.remote.source = wrapper.toString()
     compiled.remote.compile = compiler
     return compiled
+
+# A handy shortcut for the `remote` decorator that can be used with
+# pure functions (not classes) to avoid having the top level, zero
+# arguments functional closure over the compiled routines that is
+# only necessary for properly capturing classes. Please refer to
+# the `remote` method for info, since it is relevant here as well.
+external = module.exports.external = (compiled) ->
+    notFunction = "the compiled is not a function"
+    wrongCompiled = "do not use external with classes"
+    assert.ok _.isFunction(compiled), notFunction
+    assert not compiled.__super__?, wrongCompiled
+    wrapper = "function() { return #{compiled} }"
+    compiled.remote = Object.create {}
+    compiled.remote.compiled = compiled
+    compiled.remote.symbol = compiled.name
+    compiled.remote.source = wrapper.toString()
+    compiled.remote.compile = compiler
+    return compiled
