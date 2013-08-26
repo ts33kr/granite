@@ -69,7 +69,7 @@ module.exports.Duplex = class Duplex extends Screenplay
         assert _.isFunction(method), noMethod
         assert method.length >= 1, invalidArgs
         method.provider = Object.create {}
-        method.providing = method
+        method.providing = (s) -> method
         method.origin = this
         return method
 
@@ -125,7 +125,7 @@ module.exports.Duplex = class Duplex extends Screenplay
             providing = value?.providing or null
             return unless _.isFunction providing
             assert _.isFunction(value), internal
-            binder = (s) => s.on name, providing
+            binder = (s) => s.on name, providing(s)
             context.on "connection", binder
         return next()
 
@@ -144,6 +144,6 @@ module.exports.Duplex = class Duplex extends Screenplay
             providing = value?.providing or null
             return unless _.isFunction providing
             assert _.isFunction(value), internal
-            binder = (s) => s.on name, providing
+            binder = (s) => s.on name, providing(s)
             context.removeListener "connection", binder
         return next()
