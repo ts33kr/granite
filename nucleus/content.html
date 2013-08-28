@@ -27,7 +27,7 @@
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
 <span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
@@ -35,7 +35,7 @@
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This class is a content negotiation broker. It is instantiated by
 the kernel and then can be used either directly or via middleware
 to negotiate the procedure of responding to a client with the data
-using the correct protocol, meaning correct <code>Content-Type</code>, etc.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Broker = </span><span class="k">class</span> <span class="nx">Broker</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Content negotiate the request/response pair to use the correct
+using the correct protocol, meaning correct <code>Content-Type</code>, etc.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Broker = </span><span class="k">class</span> <span class="nx">Broker</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Content negotiate the request/response pair to use the correct
 protocol. The protocol is implemented by the content negotiator
 that might or might not have been previously add to the broker.
 The negotiator returns a function if it can handle the pair.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">negotiate: </span><span class="nf">(request, response, content) -&gt;</span>
@@ -70,9 +70,11 @@ writes out the properly encoded JSON response to the client.</p></div></div><div
         <span class="nv">isObject = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">content</span>
         <span class="k">return</span> <span class="k">unless</span> <span class="nx">isArray</span> <span class="o">or</span> <span class="nx">isObject</span>
         <span class="nf">(request, response, content) =&gt;</span>
-            <span class="nv">jsonType = </span><span class="s">&quot;application/json&quot;</span>
+            <span class="nv">type = </span><span class="s">&quot;Content-Type&quot;</span>
+            <span class="nv">json = </span><span class="s">&quot;application/json&quot;</span>
+            <span class="nv">sent = </span><span class="nx">response</span><span class="p">.</span><span class="nx">headersSent</span>
             <span class="nv">doesHtml = </span><span class="nx">response</span><span class="p">.</span><span class="nx">accepts</span> <span class="sr">/html/</span>
             <span class="nv">spaces = </span><span class="k">if</span> <span class="nx">doesHtml</span> <span class="k">then</span> <span class="mi">4</span> <span class="k">else</span> <span class="kc">null</span>
-            <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="nx">jsonType</span>
+            <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">json</span> <span class="k">unless</span> <span class="nx">sent</span>
             <span class="nv">jsoned = </span><span class="nf">(x) -&gt;</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">x</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">spaces</span>
             <span class="nx">@output</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">jsoned</span> <span class="nx">content</span></div></div></div></div></body></html>

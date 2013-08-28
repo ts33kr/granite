@@ -28,7 +28,7 @@
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
@@ -56,6 +56,7 @@ Each method must call its last parameter <code>next</code> for proceeding.</p></
     <span class="nv">enumerable: </span><span class="kc">no</span><span class="p">,</span> <span class="nv">value: </span><span class="nf">(method, callback) -&gt;</span> <span class="nf">(args...) =&gt;</span>
         <span class="nv">applicator = </span><span class="nf">(f) =&gt;</span> <span class="nf">(a...) =&gt;</span> <span class="nx">f</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">args</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">a</span>
         <span class="nv">hierarchy = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">hierarchy</span><span class="p">()</span>
+        <span class="nx">hierarchy</span><span class="p">.</span><span class="nx">unshift</span> <span class="nx">@constructor</span>
         <span class="nv">resolve = </span><span class="nf">(c) -&gt;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">prototype</span><span class="o">?</span><span class="p">[</span><span class="nx">method</span><span class="p">]</span>
         <span class="nv">threads = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">hierarchy</span><span class="p">,</span> <span class="nx">resolve</span>
         <span class="nv">methods = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">threads</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span>
@@ -93,18 +94,20 @@ into the linear hierarchical inheritance chain of existing class.
 This method integrated the supplied compound class in the tear in
 between the foreign and common peers in the inheritance chain. Do
 refer to the implementation for the understanding of what happens.</p></div></div><div class="code"><div class="wrapper"><span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nb">Object</span><span class="o">::</span><span class="p">,</span> <span class="s">&quot;compose&quot;</span><span class="p">,</span>
-    <span class="nv">enumerable: </span><span class="kc">no</span><span class="p">,</span> <span class="nv">value: </span><span class="nf">(compound, shader=cloner) -&gt;</span>
+    <span class="nv">enumerable: </span><span class="kc">no</span><span class="p">,</span> <span class="nv">value: </span><span class="nf">(compound, shader=cloner, silent=yes) -&gt;</span>
         <span class="nv">current = </span><span class="k">this</span><span class="p">.</span><span class="nx">hierarchy</span><span class="p">()</span>
         <span class="nv">foreign = </span><span class="nx">compound</span><span class="p">.</span><span class="nx">hierarchy</span><span class="p">()</span>
         <span class="nv">identify = </span><span class="nx">compound</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
-        <span class="nv">duplicate = </span><span class="s">&quot;Duplicate </span><span class="si">#{</span><span class="nx">identify</span><span class="si">}</span><span class="s"> compound&quot;</span>
-        <span class="nv">notAbstract = </span><span class="s">&quot;The </span><span class="si">#{</span><span class="nx">identify</span><span class="si">}</span><span class="s"> is not abstract&quot;</span>
-        <span class="nx">assert</span> <span class="nx">compound</span> <span class="o">not</span> <span class="k">in</span> <span class="nx">current</span><span class="p">,</span> <span class="nx">duplicate</span>
+        <span class="nv">cmp = </span><span class="nf">(e) -&gt;</span> <span class="nf">(c) -&gt;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">similarWith</span> <span class="nx">e</span>
+        <span class="nv">present = </span><span class="nx">_</span><span class="p">.</span><span class="nx">any</span> <span class="nx">current</span><span class="p">,</span> <span class="nx">cmp</span> <span class="nx">compound</span>
+        <span class="nv">duplicate = </span><span class="s">&quot;duplicate </span><span class="si">#{</span><span class="nx">identify</span><span class="si">}</span><span class="s"> compound&quot;</span>
+        <span class="nv">notAbstract = </span><span class="s">&quot;the </span><span class="si">#{</span><span class="nx">identify</span><span class="si">}</span><span class="s"> is not abstract&quot;</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">present</span> <span class="o">or</span> <span class="nx">silent</span><span class="p">,</span> <span class="nx">duplicate</span>
         <span class="nx">assert</span> <span class="nx">compound</span><span class="p">.</span><span class="nx">abstract</span><span class="o">?</span><span class="p">(),</span> <span class="nx">notAbstract</span>
-        <span class="nv">cmp = </span><span class="nf">(ersatz) -&gt;</span> <span class="nf">(c) -&gt;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">similarWith</span> <span class="nx">ersatz</span>
+        <span class="k">return</span> <span class="kc">undefined</span> <span class="k">if</span> <span class="nx">present</span> <span class="o">and</span> <span class="nx">silent</span>
         <span class="nv">culrpit = </span><span class="nf">(shape) -&gt;</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">any</span> <span class="nx">commons</span><span class="p">,</span> <span class="nx">cmp</span> <span class="nx">shape</span>
         <span class="nv">commons = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">current</span><span class="p">,</span> <span class="nf">(x) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">any</span> <span class="nx">foreign</span><span class="p">,</span> <span class="nx">cmp</span> <span class="nx">x</span>
-        <span class="nv">orphans = </span><span class="s">&quot;No common base classes in hierarchy&quot;</span>
+        <span class="nv">orphans = </span><span class="s">&quot;no common base classes in hierarchy&quot;</span>
         <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">orphans</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">commons</span>
         <span class="nv">differentiated = </span><span class="nx">_</span><span class="p">.</span><span class="nx">take</span> <span class="nx">current</span><span class="p">,</span> <span class="nx">culrpit</span>
         <span class="nv">alternative = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">differentiated</span><span class="p">,</span> <span class="nx">shader</span>

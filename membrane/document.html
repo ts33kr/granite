@@ -27,7 +27,7 @@
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
@@ -36,7 +36,7 @@
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Descriptor of some method of arbitrary service, in a structured
 and expected way, so that it can later be used to programmatically
 process such documentation and do with it whatever is necessary.
-This approach gives unique ability to build self documented APIs.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Document = </span><span class="k">class</span> <span class="nx">Document</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the example of the method that is being
+This approach gives unique ability to build self documented APIs.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Document = </span><span class="k">class</span> <span class="nx">Document</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the example of the method that is being
 described by this document. If you do not supply example
 this method will return you one, assuming it was set before.
 Notes are warning/beware messages about the implementation.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">notes: </span><span class="nf">(notes) -&gt;</span>

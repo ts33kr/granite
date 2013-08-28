@@ -23,26 +23,21 @@
 <span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="cm">###</span>
 
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
 <span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
-<span class="nv">api = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/api&quot;</span>
-<span class="nv">stubs = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/stubs&quot;</span>
-<span class="nv">tools = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/tools&quot;</span>
-<span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/service&quot;</span>
-<span class="nb">document</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./document&quot;</span>
-<span class="nv">skeleton = </span><span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This service exposes the entiry hierarchical structure of the
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This service exposes the entiry hierarchical structure of the
 service documentation, as they scanned and found in the current
 kernel instance. It exposes the data in a structured hierarchy
-encoded with JSON. Please refer to the implementation for info.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.ApiDoc = </span><span class="k">class</span> <span class="nx">ApiDoc</span> <span class="k">extends</span> <span class="nx">skeleton</span><span class="p">.</span><span class="nx">Standard</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>These invocations establish the parameters which are going
+encoded with JSON. Please refer to the implementation for info.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.ApiDoc = </span><span class="k">class</span> <span class="nx">ApiDoc</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>These invocations establish the parameters which are going
 to be used for matching HTTP requests against this service.
 Typically an HTTP pathname pattern and a domain name pattern.
 Try not to put constraints on the domain, unless necessary.
@@ -51,7 +46,7 @@ Also, the compounds for the composition system belong here.</p></div></div><div 
 is a good idea for this HTTP method to be idempotent. As the
 rule, this method does not have to alter any contents or data
 of the resource. Use for unobtrusive retrieval of resources.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">GET: </span><span class="nf">(request, response) -&gt;</span>
-        <span class="nv">collected = </span><span class="nx">@collectSpecifications</span><span class="p">()</span>
+        <span class="nv">collected = </span><span class="nx">@collectDescriptions</span><span class="p">()</span>
         <span class="nx">@push</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">collected</span><span class="p">,</span> <span class="nf">(record) -&gt;</span>
             <span class="nv">constructor = </span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">constructor</span>
             <span class="nv">location: </span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">location</span><span class="p">()</span>
@@ -68,8 +63,7 @@ of the resource. Use for unobtrusive retrieval of resources.</p></div></div><div
                 <span class="nv">method: </span><span class="nx">method</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block describes certain method of abrbitrary service. The
 exact process of how it is being documented depends on how the
 documented function is implemented. Please refer to <code>Document</code>
-class and its module implementation for more information on it.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@specification</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">GET</span><span class="p">,</span> <span class="nf">(method, service) -&gt;</span>
-        <span class="nx">@leads</span> <span class="nx">tools</span><span class="p">.</span><span class="nx">urlWithHost</span> <span class="kc">no</span><span class="p">,</span> <span class="nx">service</span><span class="p">.</span><span class="nx">location</span><span class="p">()</span>
+class and its module implementation for more information on it.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">GET</span><span class="p">,</span> <span class="nf">(method, service) -&gt;</span>
         <span class="nx">@notes</span> <span class="s">&quot;See the Document class for more information&quot;</span>
         <span class="nx">@synopsis</span> <span class="s">&quot;Get all of the APIs available in the system&quot;</span>
         <span class="nx">@outputs</span> <span class="s">&quot;An array of objects, each describes a service&quot;</span></div></div></div></div></body></html>

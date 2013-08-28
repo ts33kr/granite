@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="en"><head><title>membrane/primitive</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/primitive"><meta name="groc-project-path" content="library/membrane/primitive.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/primitive.coffee">library/membrane/primitive.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is the basis for the default validation context. It contains
+a set of primitive and standard validators that can be used either
+directly or as a foundation for more complex validators that could
+be defined in the descendants of the default context implementation.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Primitive = </span><span class="k">class</span> <span class="nx">Primitive</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Check if the value is not empty. The validation will succeed
+if the value is a string that contains anything, and not empty.
+Please refer to the implementation for more details on the way
+validator works. Also, refer to the <code>validate</code> module for info.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">notEmpty: </span><span class="nf">-&gt;</span> <span class="nx">@chain</span> <span class="nf">(callback) =&gt;</span>
+        <span class="nv">message = </span><span class="s">&quot;the value is missing or empty&quot;</span>
+        <span class="k">return</span> <span class="nx">callback</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">@value</span>
+        <span class="k">return</span> <span class="nx">callback</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">message</span></div></div></div></div></body></html>

@@ -25,7 +25,8 @@
 
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">uuid = </span><span class="nx">require</span> <span class="s">&quot;node-uuid&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 <span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
@@ -37,7 +38,7 @@
 framework and the end user application. It provides the matching
 and processing logic based on domain matches and RE match/extract
 logics, to deal with paths. Remember that this service is just a
-an internal base class, you generally should not use it directly.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Service = </span><span class="k">class</span> <span class="nx">Service</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+an internal base class, you generally should not use it directly.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Service = </span><span class="k">class</span> <span class="nx">Service</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Here follows a set of definitions that predefine the usual
@@ -46,7 +47,7 @@ a number of convenient shorthands for wildcard patterns.
 Use them when you need to wildcard or do a wide match.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@INDEX = </span><span class="sr">/^\/$/</span><span class="p">;</span> <span class="vi">@WILDCARD = </span><span class="sr">/^.+$/</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Every service has to have a public constructor that accepts
 the kernel instance as a parameter. You can override it as
 you see fit, but be sure to invoke the super constructor and
-it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span> <span class="k">super</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either obtain or set the HTTP location of the current service.
+it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span> <span class="vi">@uuid = </span><span class="nx">uuid</span><span class="p">.</span><span class="nx">v4</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either obtain or set the HTTP location of the current service.
 This method is a proxy that forwards the invocation to the
 service constructor, for the purpose of easy access to service
 location when programmatically operating on the instances. Do

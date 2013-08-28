@@ -26,7 +26,7 @@
 <span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
 
@@ -34,7 +34,8 @@
 <span class="nv">tools = </span><span class="nx">require</span> <span class="s">&quot;./tools&quot;</span>
 <span class="nv">extendz = </span><span class="nx">require</span> <span class="s">&quot;./extends&quot;</span>
 <span class="nv">routing = </span><span class="nx">require</span> <span class="s">&quot;./routing&quot;</span>
-<span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;./service&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class for every service in the system
+<span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;./service&quot;</span>
+<span class="p">{</span><span class="nx">STATUS_CODES</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;http&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class for every service in the system
 and in the end user application that provides a REST interface
 to some arbitrary resource, determined by HTTP path and guarded
 by the domain matching. This is the crucial piece of framework.
@@ -71,7 +72,23 @@ implementation of each method will throw a not implemented.</p></div></div><div 
             <span class="k">this</span><span class="p">[</span><span class="nx">method</span><span class="p">](</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">variables</span><span class="p">...)</span>
             <span class="nv">poststreamer = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;postprocess&quot;</span>
             <span class="nx">poststreamer</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">variables</span><span class="p">...</span>
-        <span class="nx">prestreamer</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">variables</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Push the supplied content to the requester by utilizing the
+        <span class="nx">prestreamer</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">variables</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Reject the request by sending an error descriptor to as the
+response. The error descriptor is a top level object that will
+embed the supplied content object inside of itself. Optionally
+you can supply the failing code and an HTTP response phrase.
+Please use this methods rather than sending errors directly!</p></div></div><div class="code"><div class="wrapper">    <span class="nv">reject: </span><span class="nf">(response, content, code, phrase) -&gt;</span>
+        <span class="nv">isContent = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">content</span>
+        <span class="nv">noContent = </span><span class="s">&quot;content has to be object&quot;</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">noContent</span> <span class="k">unless</span> <span class="nx">isContent</span>
+        <span class="nx">@emit</span> <span class="s">&quot;reject&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">content</span>
+        <span class="nv">code = </span><span class="mi">400</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span> <span class="nx">code</span>
+        <span class="nv">phrase = </span><span class="nx">phrase</span> <span class="o">or</span> <span class="nx">STATUS_CODES</span><span class="p">[</span><span class="nx">code</span><span class="p">]</span>
+        <span class="nv">uploader = </span><span class="nf">-&gt;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">send</span> <span class="nv">errors: </span><span class="nx">content</span>
+        <span class="nv">prestreamer = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;prerejection&quot;</span><span class="p">,</span> <span class="o">=&gt;</span>
+            <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="nx">code</span><span class="p">,</span> <span class="nx">phrase</span><span class="p">);</span> <span class="nx">uploader</span><span class="p">()</span>
+            <span class="nv">poststreamer = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;postrejection&quot;</span>
+            <span class="nx">poststreamer</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">content</span>
+        <span class="nx">prestreamer</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">content</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Push the supplied content to the requester by utilizing the
 response object. This is effectively the same as calling the
 <code>response.send</code> directly, but this method is wired into the
 system of service hooks. Refer to the original sender for

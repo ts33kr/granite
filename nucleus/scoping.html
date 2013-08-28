@@ -29,7 +29,7 @@
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">moment = </span><span class="nx">require</span> <span class="s">&quot;moment&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
 <span class="nv">paths = </span><span class="nx">require</span> <span class="s">&quot;path&quot;</span>
@@ -42,7 +42,7 @@
 provides methods and routines necessary to bootstrap the framework
 and the end user application constructed within the framework. It
 is both an abstract base class as well as a ready to use bootstrap.
-Please refer to the documentation of the methods for more info.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Scope = </span><span class="k">class</span> <span class="nx">Scope</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Construct a new scope, using the supplied tag (a short name)
+Please refer to the documentation of the methods for more info.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Scope = </span><span class="k">class</span> <span class="nx">Scope</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Construct a new scope, using the supplied tag (a short name)
 and a synopsis (short description of the scope) parameters.
 The constructor of the scope should only associate the data.
 The scope startup logic should be implemented in the method.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@tag, synopsis) -&gt;</span>

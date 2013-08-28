@@ -25,14 +25,14 @@
 
 <span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;events&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A simple yet solid HTTP request router. This is designed to map
 HTTP requests to the correpsonding handlers by examining URL and
 the supplied host, among other things. The exact matching logic
 is up to the handlers that implement the corresponding methods.
-This router just provides the infrastructure and boilerplating.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Router = </span><span class="k">class</span> <span class="nx">Router</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Every router has to have a public constructor that accepts
+This router just provides the infrastructure and boilerplating.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Router = </span><span class="k">class</span> <span class="nx">Router</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Every router has to have a public constructor that accepts
 the kernel instance as a parameter. You can override it as
 you see fit, but be sure to invoke the super constructor and
 it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Try registering a new routable object. The method checks for
