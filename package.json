@@ -30,7 +30,7 @@
         "eventemitter2": "0.4.x",
         "coffee-script": "1.6.x",
         "stack-trace": "0.0.x",
-        "node-uuid": "1.4.x.",
+        "node-uuid": "1.4.x",
         "socket.io": "0.9.x",
         "asciify": "1.3.x",
         "connect": "2.8.x",
