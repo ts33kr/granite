@@ -109,7 +109,7 @@ module.exports.Duplex = class Duplex extends Screenplay
                 tail = archarguments[archarguments.length - 1]
                 noCallback = "#{provider} call has no callback"
                 throw new Error noCallback unless tail?.apply
-                console.log "emitting provider: #{provider}"
+                console.log "requesting provider: #{provider}"
                 @socket.emit provider, archarguments...
 
     # A hook that will be called prior to registering the service
