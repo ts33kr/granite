@@ -148,4 +148,3 @@ module.exports.Duplex = class Duplex extends Screenplay
             assert _.isFunction(value), internal
             context.removeAllListeners "connection"
         return next()
-        util.inspect next
