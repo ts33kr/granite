@@ -111,7 +111,7 @@ module.exports.Validator = class Validator extends Barebones
     # the `name` and add it to the current request. If the `message`
     # is supplied then it will be forced as an error messages. Use
     # this method to automatically obtain contex for the parameter.
-    check: (request, name, message) ->
+    param: (request, name, message) ->
         context = @constructor.validationContext?()
         context = Context unless _.isObject context
         assert request; value = request.params?[name]
