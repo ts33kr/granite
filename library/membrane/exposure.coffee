@@ -59,7 +59,7 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
         @push response, _.map collected, (record) ->
             constructor = record.service.constructor
             location: record.service.location()
-            identify: constructor.nick or constructor.name
+            identify: constructor.identify()
             patterns: _.map constructor.resources, "source"
             methods: _.map record.methods, (doc, method) ->
                 notes: doc.notes()
