@@ -75,6 +75,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # method is wired in an synchronous way for greater functionality.
     # This is the place where you would be importing the dependencies.
     prelude: (context, request, next) ->
+        context.service = @constructor.identify()
         context.session = request.session
         context.uuid = request: request.uuid
         context.headers = request.headers
