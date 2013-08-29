@@ -87,7 +87,7 @@ module.exports.Validator = class Validator extends Barebones
     # run all the validator contexsts in parallel and wait for the
     # completion. If no validation mistakes found, run continuation.
     # If some mistakes are found, however, run `@renderValidation`.
-    continueWithValidation: (request, response, continuation) ->
+    validateAndContinue: (request, response, continuation) ->
         notRequest = "a #{request} is not a request"
         notResponse = "a #{response} is not a response"
         notContinuation = "a #{continuation} is not function"
