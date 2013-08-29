@@ -130,8 +130,8 @@ module.exports.logger = (kernel) ->
 # the session storage using the kernel and scoping configuration
 # data. It is automatically connected by the kernel instance.
 module.exports.session = (kernel) ->
-    options = nconf.get("session")
+    options = nconf.get "session"
     defined = _.isObject options
     noSession = "No session settings in scope"
-    throw new Error(noSession) unless defined
+    throw new Error noSession unless defined
     connect.session options
