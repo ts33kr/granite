@@ -235,12 +235,34 @@ module.exports.Generic = class Generic extends events.EventEmitter2
         @middleware = @router.middleware
         @middleware = @middleware.bind @router
 
+    # Setup a set of appropriate Connect middlewares that will take
+    # care of serving static directory content for all configured
+    # assets directory, using the options drawed from configuration.
+    # You should override the method to tweak the creation process.
+    connectAssetsPipeline: ->
+        dirs = nconf.get "assets:dirs"
+        opts = nconf.get "assets:opts"
+        assert _.isObject(opts), "no assets options"
+        assert _.isArray(dirs), "no assets directories"
+        (dirs ?= []).push "#{__dirname}/../../public"
+        for directory in dirs then do (directory) =>
+            cwd = process.cwd().toString()
+            solved = paths.relative cwd, directory
+            serving = "serving %s as static assets dir"
+            notExist = "assets dir %s does not exist"
+            fail = -> logger.warn notExist, solved.underline
+            return fail() unless fs.existsSync directory
+            middleware = connect.static directory, opts
+            logger.info serving.cyan, solved.underline
+            @connect.use middleware
+
     # Setup the Connect middleware framework along with the default
     # pipeline of middlewares necessary for the Granite framework to
     # operate correctly. You are encouraged to override this method
     # to provide a Connect setup procedure to your own liking, etc.
     setupConnectPipeline: ->
         @connect = connect()
+        @connectAssetsPipeline()
         @connect.use connect.query()
         @connect.use connect.favicon()
         @connect.use connect.bodyParser()

@@ -50,6 +50,7 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @defaults.layout = library: "library", config: "config"
+    @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: no
     @defaults.socket = "log level": 0
 
@@ -67,6 +68,7 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @defaults.layout = library: "library", config: "config"
+    @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: no
     @defaults.socket = "log level": 0
 
@@ -84,6 +86,7 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @defaults.layout = library: "library", config: "config"
+    @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: no
     @defaults.socket = "log level": 0
 
@@ -101,5 +104,6 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @defaults.layout = library: "library", config: "config"
+    @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: no
     @defaults.socket = "log level": 0
