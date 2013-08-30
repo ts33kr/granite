@@ -83,12 +83,12 @@ module.exports.Preflight = class Preflight extends Screenplay
         running = "Running Bower install for %s service"
         identify = @constructor?.identify().toString()
         logger.info running.grey, identify.underline
-        handler = install(targets, {}, options)
-        handler.on "error", (error) ->
+        installer = install(targets, {}, options)
+        installer.on "error", (error) ->
             reason = "failed Bower package installation"
             logger.error error.message.red, error
             kernel.shutdownKernel reason
-        handler.on "end", (installed) =>
+        installer.on "end", (installed) =>
             message = "Get Bower lib %s@%s at %s"
             for install in _.values(installed or {})
                 what = install.pkgMeta?.name.underline
