@@ -44,7 +44,7 @@ util = require "util"
 # basis that does some further environment initialization and set
 # up. These preparations will be nececessary no matter what sort of
 # visual functionality you are going to implement. Currently the
-# preflight provides the Bower support and consumes some libraries.
+# primary purpose of preflight is implementation of Bower support.
 module.exports.Preflight = class Preflight extends Screenplay
 
     # This is a marker that indicates to some internal subsystems
