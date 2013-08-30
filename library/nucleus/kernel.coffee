@@ -244,7 +244,6 @@ module.exports.Generic = class Generic extends events.EventEmitter2
         opts = nconf.get "assets:opts"
         assert _.isObject(opts), "no assets options"
         assert _.isArray(dirs), "no assets directories"
-        (dirs ?= []).push "#{__dirname}/../../public"
         for directory in dirs then do (directory) =>
             cwd = process.cwd().toString()
             solved = paths.relative cwd, directory
