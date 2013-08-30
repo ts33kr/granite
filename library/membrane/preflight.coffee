@@ -88,28 +88,6 @@ module.exports.Preflight = class Preflight extends Screenplay
         logger.info running.grey, identify.underline
         @installation kernel, targets, options, next
 
-    # This server side method is called on the context prior to the
-    # context being compiled and flushed down to the client site. The
-    # method is wired in an synchronous way for greater functionality.
-    # This is the place where you would be importing the dependencies.
-    prelude: (context, request, next) ->
-        list = bower.commands.list
-        bowerings = (@constructor.bowerings ?= [])
-        return next f context if f = bowerings.cached
-        options = directory: bowerings.directory
-        esc = (p) -> new RegExp RegExp.escape "#{p}"
-        match = (k) -> (b) -> esc(k).test b.target
-        sorter = (v, k) -> _.findIndex bowerings, match(k)
-        list(paths: yes, options).on "end", (paths) ->
-            bowerings.cached = (context) ->
-                sorted = _.sortBy paths, sorter
-                files = _.flatten _.values sorted
-                for file in files then do (file) ->
-                    ext = (e) -> path.extname(file) is e
-                    context.scripts.push file if ext ".js"
-                    context.sheets.push file if ext ".css"
-            return next bowerings.cached context
-
     # An internal routine that launches the actual Bower installer.
     # It takes a series of pre calculated parameters to be able to
     # perform the installation properly. Plese refer to the register
@@ -131,3 +109,25 @@ module.exports.Preflight = class Preflight extends Screenplay
                 where = @constructor.identify().underline
                 logger.debug message.cyan, what, vers, where
         return next()
+
+    # This server side method is called on the context prior to the
+    # context being compiled and flushed down to the client site. The
+    # method is wired in an synchronous way for greater functionality.
+    # This is the place where you would be importing the dependencies.
+    prelude: (context, request, next) ->
+        list = bower.commands.list
+        bowerings = (@constructor.bowerings ?= [])
+        return next f context if f = bowerings.cached
+        options = directory: bowerings.directory
+        esc = (p) -> new RegExp RegExp.escape "#{p}"
+        match = (k) -> (b) -> esc(k).test b.target
+        sorter = (v, k) -> _.findIndex bowerings, match(k)
+        list(paths: yes, options).on "end", (paths) ->
+            bowerings.cached = (context) ->
+                sorted = _.sortBy paths, sorter
+                files = _.flatten _.values sorted
+                for file in files then do (file) ->
+                    ext = (e) -> path.extname(file) is e
+                    context.scripts.push file if ext ".js"
+                    context.sheets.push file if ext ".css"
+            return next bowerings.cached context
