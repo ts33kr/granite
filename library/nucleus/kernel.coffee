@@ -63,6 +63,21 @@ module.exports.Generic = class Generic extends events.EventEmitter2
     # modified kernels that are custom to arbitrary applications.
     @PACKAGE = require "#{__dirname}/../../package"
 
+    # Create and wire in an appropriate Connext middleware that will
+    # serve the specified directory as the directory with a static
+    # content. That is, it will expose it to the world (not list it).
+    # The serving aspects can be configured via a passed in options.
+    serveStaticDirectory: (directory, options) ->
+        cwd = process.cwd().toString()
+        solved = paths.relative cwd, directory
+        serving = "serving %s as static assets dir"
+        notExist = "assets dir %s does not exist"
+        fail = -> logger.warn notExist, solved.underline
+        return fail() unless fs.existsSync directory
+        middleware = connect.static directory, options
+        logger.info serving.cyan, solved.underline
+        @connect.use middleware
+
     # An embedded system for adding ad-hoc configuration routines.
     # Supply the reasoning and the routine and this method will add
     # that routine to the configuration stack, to be launched once
@@ -239,21 +254,16 @@ module.exports.Generic = class Generic extends events.EventEmitter2
     # care of serving static directory content for all configured
     # assets directory, using the options drawed from configuration.
     # You should override the method to tweak the creation process.
-    connectAssetsPipeline: ->
+    connectStaticAssets: ->
+        envs = nconf.get "env:dirs"
         dirs = nconf.get "assets:dirs"
         opts = nconf.get "assets:opts"
+        pub = -> _.find envs, (dir) -> dir is "pub"
+        assert _.isString(pub()), "no pub environment"
         assert _.isObject(opts), "no assets options"
         assert _.isArray(dirs), "no assets directories"
-        for directory in dirs then do (directory) =>
-            cwd = process.cwd().toString()
-            solved = paths.relative cwd, directory
-            serving = "serving %s as static assets dir"
-            notExist = "assets dir %s does not exist"
-            fail = -> logger.warn notExist, solved.underline
-            return fail() unless fs.existsSync directory
-            middleware = connect.static directory, opts
-            logger.info serving.cyan, solved.underline
-            @connect.use middleware
+        @serveStaticDirectory d, opts for d in dirs
+        @serveStaticDirectory pub()
 
     # Setup the Connect middleware framework along with the default
     # pipeline of middlewares necessary for the Granite framework to
@@ -261,7 +271,7 @@ module.exports.Generic = class Generic extends events.EventEmitter2
     # to provide a Connect setup procedure to your own liking, etc.
     setupConnectPipeline: ->
         @connect = connect()
-        @connectAssetsPipeline()
+        @connectStaticAssets()
         @connect.use connect.query()
         @connect.use connect.favicon()
         @connect.use connect.bodyParser()
