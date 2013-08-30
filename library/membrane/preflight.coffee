@@ -31,6 +31,7 @@ logger = require "winston"
 events = require "eventemitter2"
 assert = require "assert"
 colors = require "colors"
+crypto = require "crypto"
 nconf = require "nconf"
 https = require "https"
 path = require "path"
@@ -72,31 +73,20 @@ module.exports.Preflight = class Preflight extends Screenplay
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     register: (kernel, router, next) ->
-        install = bower.commands.install
+        hash = crypto.createHash "md5"
+        hash.update @constructor.identify()
+        id = hash.digest("hex").toString()
         bowerings = (@constructor.bowerings ?= [])
         options = _.map(bowerings, (b) -> b.options)
         options = _.merge Object.create({}), options...
-        directory = kernel?.scope?.envPath "pub", "bower"
+        directory = kernel?.scope?.envPath "pub", "bower", id
         assert _.isString(directory), "failed to get dir"
         options.directory = bowerings.directory = directory
         targets = _.map bowerings, (b) -> b.target
         running = "Running Bower install for %s service"
         identify = @constructor?.identify().toString()
         logger.info running.grey, identify.underline
-        installer = install(targets, {}, options)
-        installer.on "error", (error) ->
-            reason = "failed Bower package installation"
-            logger.error error.message.red, error
-            kernel.shutdownKernel reason
-        installer.on "end", (installed) =>
-            message = "Get Bower lib %s@%s at %s"
-            for install in _.values(installed or {})
-                what = install.pkgMeta?.name.underline
-                vers = install.pkgMeta?.version.underline
-                where = @constructor.identify().underline
-                logger.debug message.cyan, what, vers, where
-                bowerings.installed = installed
-            return next()
+        @installation kernel, targets, options, next
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
@@ -119,3 +109,25 @@ module.exports.Preflight = class Preflight extends Screenplay
                     context.scripts.push file if ext ".js"
                     context.sheets.push file if ext ".css"
             return next bowerings.cached context
+
+    # An internal routine that launches the actual Bower installer.
+    # It takes a series of pre calculated parameters to be able to
+    # perform the installation properly. Plese refer to the register
+    # hook implementation in this ABC service for more information.
+    installation: (kernel, targets, options, next) ->
+        install = bower.commands.install
+        bowerings = (@constructor.bowerings ?= [])
+        installer = install(targets, {}, options)
+        installer.on "error", (error) ->
+            reason = "failed Bower package installation"
+            logger.error error.message.red, error
+            kernel.shutdownKernel reason
+        installer.on "end", (installed) =>
+            message = "Get Bower lib %s@%s at %s"
+            for packet in _.values(installed or {})
+                what = packet.pkgMeta?.name.underline
+                vers = packet.pkgMeta?.version.underline
+                where = @constructor.identify().underline
+                logger.debug message.cyan, what, vers, where
+                bowerings.installed = installed
+        return next()
