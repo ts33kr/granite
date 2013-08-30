@@ -104,4 +104,4 @@ module.exports.Router = class Router extends events.EventEmitter2
         matching = "Request %s matches %s service"
         logger.debug matching.grey, incoming, identify
         return results = recognized.process arguments...
-        return next() unless response.headerSent
+        next() unless response.headerSent
