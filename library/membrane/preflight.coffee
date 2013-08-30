@@ -59,13 +59,16 @@ module.exports.Preflight = class Preflight extends Screenplay
     # assets, by using the `pub` env dir. The package installation
     # is per service and automatically will be included in `prelude`.
     @bower: (target, options={}) ->
+        previous = @bowerings or []
         noTarget = "target must be a string"
         noOptions = "options must be an object"
+        setup = Object.hasOwnProperty "bowerings"
         assert _.isObject(options), noOptions
         assert _.isString(target), noTarget
-        bowerings = (@bowerings ?= []).push
-            options: options
-            target: target
+        instance = => previous.concat []
+        tag = options: options, target: target
+        @bowerings = instance() unless setup
+        return @bowerings.push tag
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
