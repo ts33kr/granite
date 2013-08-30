@@ -103,12 +103,12 @@ module.exports.Preflight = class Preflight extends Screenplay
         return next f context if f = bowerings.cached
         options = directory: bowerings.directory
         esc = (p) -> new RegExp RegExp.escape "#{p}"
-        match = (k) -> (b) -> b.target.match esc k
+        match = (k) -> (b) -> esc(k).test b.target
         sorter = (v, k) -> _.findIndex bowerings, match(k)
         list(paths: yes, options).on "end", (paths) ->
             bowerings.cached = (context) ->
-                paths = _.sortBy paths, sorter
-                files = _.flatten _.values(paths)
+                sorted = _.sortBy paths, sorter
+                files = _.flatten _.values sorted
                 for file in files then do (file) ->
                     ext = (e) -> path.extname(file) is e
                     context.scripts.push file if ext ".js"
