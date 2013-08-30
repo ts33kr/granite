@@ -102,11 +102,9 @@ module.exports.Preflight = class Preflight extends Screenplay
         bowerings = (@constructor?.bowerings ?= [])
         return next f context if f = bowerings.cached
         options = directory: bowerings.directory
-        sorter = (f) -> bowerings.
         list(paths: yes, options).on "end", (paths) ->
             bowerings.cached = (context) ->
                 files = _.flatten _.values(paths)
-                files = _.sortBy files, sorter
                 for file in files then do (file) ->
                     ext = (e) -> path.extname(file) is e
                     context.scripts.push file if ext ".js"
