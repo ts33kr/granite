@@ -102,8 +102,11 @@ module.exports.Preflight = class Preflight extends Screenplay
         bowerings = (@constructor?.bowerings ?= [])
         return next f context if f = bowerings.cached
         options = directory: bowerings.directory
+        match = (k) -> (bower) -> bower.target is k
+        sorter = (v, k) -> _.findIndex bowerings, match(k)
         list(paths: yes, options).on "end", (paths) ->
             bowerings.cached = (context) ->
+                paths = _.sortBy paths, sorter
                 files = _.flatten _.values(paths)
                 for file in files then do (file) ->
                     ext = (e) -> path.extname(file) is e
