@@ -102,7 +102,8 @@ module.exports.Preflight = class Preflight extends Screenplay
         bowerings = (@constructor?.bowerings ?= [])
         return next f context if f = bowerings.cached
         options = directory: bowerings.directory
-        match = (k) -> (bower) -> bower.target is k
+        esc = (p) -> new RegExp RegExp.escape "#{p}"
+        match = (k) -> (b) -> b.target.match esc k
         sorter = (v, k) -> _.findIndex bowerings, match(k)
         list(paths: yes, options).on "end", (paths) ->
             bowerings.cached = (context) ->
