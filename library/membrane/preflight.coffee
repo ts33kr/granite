@@ -123,11 +123,11 @@ module.exports.Preflight = class Preflight extends Screenplay
             logger.error error.message.red, error
             kernel.shutdownKernel reason
         installer.on "end", (installed) =>
+            bowerings.installed = installed
             message = "Get Bower lib %s@%s at %s"
             for packet in _.values(installed or {})
                 what = packet.pkgMeta?.name.underline
                 vers = packet.pkgMeta?.version.underline
                 where = @constructor.identify().underline
                 logger.debug message.cyan, what, vers, where
-                bowerings.installed = installed
         return next()
