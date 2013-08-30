@@ -73,7 +73,7 @@ module.exports.Preflight = class Preflight extends Screenplay
     # Please be sure invoke the `next` arg to proceed, if relevant.
     register: (kernel, router, next) ->
         install = bower.commands.install
-        bowerings = (@constructor?.bowerings ?= [])
+        bowerings = (@constructor.bowerings ?= [])
         options = _.map(bowerings, (b) -> b.options)
         options = _.merge Object.create({}), options...
         directory = kernel?.scope?.envPath "pub", "bower"
@@ -83,7 +83,12 @@ module.exports.Preflight = class Preflight extends Screenplay
         running = "Running Bower install for %s service"
         identify = @constructor?.identify().toString()
         logger.info running.grey, identify.underline
-        install(targets, {}, options).on "end", (installed) =>
+        handler = install(targets, {}, options)
+        handler.on "error", (error) ->
+            reason = "failed Bower package installation"
+            logger.error error.message.red, error
+            kernel.shutdownKernel reason
+        handler.on "end", (installed) =>
             message = "Get Bower lib %s@%s at %s"
             for install in _.values(installed or {})
                 what = install.pkgMeta?.name.underline
@@ -99,7 +104,7 @@ module.exports.Preflight = class Preflight extends Screenplay
     # This is the place where you would be importing the dependencies.
     prelude: (context, request, next) ->
         list = bower.commands.list
-        bowerings = (@constructor?.bowerings ?= [])
+        bowerings = (@constructor.bowerings ?= [])
         return next f context if f = bowerings.cached
         options = directory: bowerings.directory
         esc = (p) -> new RegExp RegExp.escape "#{p}"
