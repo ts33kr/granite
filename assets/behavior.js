@@ -49,6 +49,32 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
     }, {
       "type": "folder",
       "data": {
+        "path": "exposure",
+        "title": "exposure"
+      },
+      "depth": 1,
+      "children": [
+        {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "singleLineComment": ["#"],
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/apidoc.coffee",
+            "projectPath": "library/exposure/apidoc.coffee",
+            "targetPath": "exposure/apidoc",
+            "title": "apidoc"
+          },
+          "depth": 2,
+          "outline": []
+        }
+      ]
+    }, {
+      "type": "folder",
+      "data": {
         "path": "membrane",
         "title": "membrane"
       },
@@ -99,22 +125,6 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "projectPath": "library/membrane/duplex.coffee",
             "targetPath": "membrane/duplex",
             "title": "duplex"
-          },
-          "depth": 2,
-          "outline": []
-        }, {
-          "type": "file",
-          "data": {
-            "language": {
-              "nameMatchers": [".coffee", "Cakefile"],
-              "pygmentsLexer": "coffee-script",
-              "singleLineComment": ["#"],
-              "name": "CoffeeScript"
-            },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/exposure.coffee",
-            "projectPath": "library/membrane/exposure.coffee",
-            "targetPath": "membrane/exposure",
-            "title": "exposure"
           },
           "depth": 2,
           "outline": []

@@ -61,10 +61,10 @@ that this compound/ABC sets up: a half duplex web sockets channel.</p></div></di
         <span class="nx">assert</span> <span class="nx">method</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">invalidArgs</span>
         <span class="nv">method.provider = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">create</span> <span class="p">{}</span>
         <span class="nv">method.providing = </span><span class="nf">(s) -&gt;</span> <span class="nf">(args..., callback) -&gt;</span>
-            <span class="nv">respond = </span><span class="nf">-&gt;</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span>
-            <span class="nv">respond.socket = </span><span class="nx">s</span><span class="p">;</span> <span class="nx">method</span> <span class="nx">args</span><span class="p">...,</span> <span class="nx">respond</span>
-        <span class="nv">method.origin = </span><span class="k">this</span>
-        <span class="k">return</span> <span class="nx">method</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This server side method is called on the context prior to the
+            <span class="nv">execute = </span><span class="o">=&gt;</span> <span class="nx">method</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span>
+            <span class="nv">respond = </span><span class="o">=&gt;</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span>
+            <span class="nv">respond.socket = </span><span class="nx">s</span><span class="p">;</span> <span class="nx">execute</span> <span class="nx">args</span><span class="p">...,</span> <span class="nx">respond</span>
+        <span class="nv">method.origin = </span><span class="k">this</span><span class="p">;</span> <span class="k">return</span> <span class="nx">method</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This server side method is called on the context prior to the
 context being compiled and flushed down to the client site. The
 method is wired in an synchronous way for greater functionality.
 This is the place where you would be importing the dependencies.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(context, request, next) -&gt;</span>
@@ -109,7 +109,8 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
             <span class="nv">providing = </span><span class="nx">value</span><span class="o">?</span><span class="p">.</span><span class="nx">providing</span> <span class="o">or</span> <span class="kc">null</span>
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">providing</span>
             <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">value</span><span class="p">),</span> <span class="nx">internal</span>
-            <span class="nv">binder = </span><span class="nf">(s) =&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">on</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">providing</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+            <span class="nv">bound = </span><span class="nf">(s) =&gt;</span> <span class="nx">providing</span><span class="p">(</span><span class="nx">s</span><span class="p">).</span><span class="nx">bind</span> <span class="k">this</span>
+            <span class="nv">binder = </span><span class="nf">(s) =&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">on</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">bound</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connection&quot;</span><span class="p">,</span> <span class="nx">binder</span>
         <span class="k">return</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to unregistering the service
 implementation. Please refer to this prototype signature for
