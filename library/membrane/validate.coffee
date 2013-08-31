@@ -148,6 +148,31 @@ module.exports.Validator = class Validator extends Barebones
             return @renderValidation params... if errors
             return continuation.bind(this)()
 
+    # Create a validation context for the parameter designated by
+    # the `name` and add it to the current request. If the `message`
+    # is supplied then it will be forced as an error messages. Use
+    # this method to automatically obtain contex for the parameter.
+    param: (request, name, message) ->
+        context = @constructor.validationContext?()
+        context = Context unless _.isObject context
+        assert request; value = request.params?[name]
+        vcontexts = (request.vcontexts ?= {})
+        return obtain if obtain = vcontexts[name]
+        created = new context value, message
+        vcontexts[name] = created; created
+
+# An abstract base class that inherts from the standard Validator
+# and adds specific functionality on top of it. This functionality
+# is related to using the validation subsystem from outside of a
+# request/response context. Designed to be used by the providers.
+module.exports.PValidator = class PValidator extends Validator
+
+    # This is a marker that indicates to some internal subsystems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete class implementation. This
+    # mainly is used to exclude or account for abstract classes.
+    @abstract yes
+
     # Given the request with possible validation contexts appended
     # run all the validator contexts in parallel and wait for the
     # completion. Once the validation has been completed, call the
@@ -168,19 +193,6 @@ module.exports.Validator = class Validator extends Barebones
                 messaged = _.isString val?.message
                 acc[key] = val.message if messaged
             return continuation.bind(this) errors, results
-
-    # Create a validation context for the parameter designated by
-    # the `name` and add it to the current request. If the `message`
-    # is supplied then it will be forced as an error messages. Use
-    # this method to automatically obtain contex for the parameter.
-    param: (request, name, message) ->
-        context = @constructor.validationContext?()
-        context = Context unless _.isObject context
-        assert request; value = request.params?[name]
-        vcontexts = (request.vcontexts ?= {})
-        return obtain if obtain = vcontexts[name]
-        created = new context value, message
-        vcontexts[name] = created; created
 
     # Create a validation context for the parameter designated by
     # the `name` and add it to the supplied storage. If the `message`
