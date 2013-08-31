@@ -72,7 +72,7 @@ By default it renders JSON object with errors mapped to params.</p></div></div><
         <span class="k">return</span> <span class="nx">@fail</span> <span class="nx">response</span><span class="p">,</span> <span class="nv">params: </span><span class="nx">map</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Given the request with possible validation contexts appended
 run all the validator contexsts in parallel and wait for the
 completion. If no validation mistakes found, run continuation.
-If some mistakes are found, however, run <code>@renderValidation</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">continueWithValidation: </span><span class="nf">(request, response, continuation) -&gt;</span>
+If some mistakes are found, however, run <code>@renderValidation</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">validateAndContinue: </span><span class="nf">(request, response, continuation) -&gt;</span>
         <span class="nv">notRequest = </span><span class="s">&quot;a </span><span class="si">#{</span><span class="nx">request</span><span class="si">}</span><span class="s"> is not a request&quot;</span>
         <span class="nv">notResponse = </span><span class="s">&quot;a </span><span class="si">#{</span><span class="nx">response</span><span class="si">}</span><span class="s"> is not a response&quot;</span>
         <span class="nv">notContinuation = </span><span class="s">&quot;a </span><span class="si">#{</span><span class="nx">continuation</span><span class="si">}</span><span class="s"> is not function&quot;</span>
@@ -93,7 +93,7 @@ If some mistakes are found, however, run <code>@renderValidation</code>.</p></di
             <span class="k">return</span> <span class="nx">continuation</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">)()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Create a validation context for the parameter designated by
 the <code>name</code> and add it to the current request. If the <code>message</code>
 is supplied then it will be forced as an error messages. Use
-this method to automatically obtain contex for the parameter.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">check: </span><span class="nf">(request, name, message) -&gt;</span>
+this method to automatically obtain contex for the parameter.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">param: </span><span class="nf">(request, name, message) -&gt;</span>
         <span class="nv">context = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">validationContext</span><span class="o">?</span><span class="p">()</span>
         <span class="nv">context = </span><span class="nx">Context</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">context</span>
         <span class="nx">assert</span> <span class="nx">request</span><span class="p">;</span> <span class="nv">value = </span><span class="nx">request</span><span class="p">.</span><span class="nx">params</span><span class="o">?</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span>

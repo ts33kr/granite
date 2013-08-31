@@ -3,3 +3,6 @@
 *.sublime-*
 node_modules
 documents
+tmp
+var
+pub

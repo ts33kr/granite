@@ -63,6 +63,8 @@ is a get idea to place generic or setup code in the autocalls.</p></div></div><d
 context being compiled and flushed down to the client site. The
 method is wired in an synchronous way for greater functionality.
 This is the place where you would be importing the dependencies.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(context, request, next) -&gt;</span>
+        <span class="nv">context.service = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
+        <span class="nv">context.session = </span><span class="nx">request</span><span class="p">.</span><span class="nx">session</span>
         <span class="nv">context.uuid = request: </span><span class="nx">request</span><span class="p">.</span><span class="nx">uuid</span>
         <span class="nv">context.headers = </span><span class="nx">request</span><span class="p">.</span><span class="nx">headers</span>
         <span class="nv">context.params = </span><span class="nx">request</span><span class="p">.</span><span class="nx">params</span>

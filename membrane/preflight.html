@@ -1,0 +1,116 @@
+<!DOCTYPE html><html lang="en"><head><title>membrane/preflight</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/preflight"><meta name="groc-project-path" content="library/membrane/preflight.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/preflight.coffee">library/membrane/preflight.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">bower = </span><span class="nx">require</span> <span class="s">&quot;bower&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">crypto = </span><span class="nx">require</span> <span class="s">&quot;crypto&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">path = </span><span class="nx">require</span> <span class="s">&quot;path&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">Screenplay</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./visual&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This abstract base class service is an extension of the <code>Visual</code>
+basis that does some further environment initialization and set
+up. These preparations will be nececessary no matter what sort of
+visual functionality you are going to implement. Currently the
+primary purpose of preflight is implementation of Bower support.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Preflight = </span><span class="k">class</span> <span class="nx">Preflight</span> <span class="k">extends</span> <span class="nx">Screenplay</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Install the specified package via Bower into the specific
+location within the system that is figured out automatically.
+All packages installed via Bower will be served as the static
+assets, by using the <code>pub</code> env dir. The package installation
+is per service and automatically will be included in <code>prelude</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@bower: </span><span class="nf">(target, options={}) -&gt;</span>
+        <span class="nv">previous = </span><span class="nx">@bowerings</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">noTarget = </span><span class="s">&quot;target must be a string&quot;</span>
+        <span class="nv">noOptions = </span><span class="s">&quot;options must be an object&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">options</span><span class="p">),</span> <span class="nx">noOptions</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">target</span><span class="p">),</span> <span class="nx">noTarget</span>
+        <span class="k">return</span> <span class="vi">@bowerings = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span>
+            <span class="nv">options: </span><span class="nx">options</span>
+            <span class="nv">target: </span><span class="nx">target</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to registering the service
+implementation. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">register: </span><span class="nf">(kernel, router, next) -&gt;</span>
+        <span class="nv">hash = </span><span class="nx">crypto</span><span class="p">.</span><span class="nx">createHash</span> <span class="s">&quot;md5&quot;</span>
+        <span class="nx">hash</span><span class="p">.</span><span class="nx">update</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
+        <span class="nv">id = </span><span class="nx">hash</span><span class="p">.</span><span class="nx">digest</span><span class="p">(</span><span class="s">&quot;hex&quot;</span><span class="p">).</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nv">bowerings = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">bowerings</span> <span class="o">?=</span> <span class="p">[]</span>
+        <span class="nv">options = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">bowerings</span><span class="p">,</span> <span class="nf">(b) -&gt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">options</span><span class="p">)</span>
+        <span class="nv">options = </span><span class="nx">_</span><span class="p">.</span><span class="nx">merge</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">({}),</span> <span class="nx">options</span><span class="p">...</span>
+        <span class="nv">directory = </span><span class="nx">kernel</span><span class="o">?</span><span class="p">.</span><span class="nx">scope</span><span class="o">?</span><span class="p">.</span><span class="nx">envPath</span> <span class="s">&quot;pub&quot;</span><span class="p">,</span> <span class="s">&quot;bower&quot;</span><span class="p">,</span> <span class="nx">id</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">directory</span><span class="p">),</span> <span class="s">&quot;failed to get dir&quot;</span>
+        <span class="nv">options.directory = bowerings.directory = </span><span class="nx">directory</span>
+        <span class="nv">targets = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">bowerings</span><span class="p">,</span> <span class="nf">(b) -&gt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">target</span>
+        <span class="nv">running = </span><span class="s">&quot;Running Bower install for %s service&quot;</span>
+        <span class="nv">identify = </span><span class="nx">@constructor</span><span class="o">?</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">running</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">underline</span>
+        <span class="nx">@installation</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">targets</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">next</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internal routine that launches the actual Bower installer.
+It takes a series of pre calculated parameters to be able to
+perform the installation properly. Plese refer to the register
+hook implementation in this ABC service for more information.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">installation: </span><span class="nf">(kernel, targets, options, next) -&gt;</span>
+        <span class="nv">install = </span><span class="nx">bower</span><span class="p">.</span><span class="nx">commands</span><span class="p">.</span><span class="nx">install</span>
+        <span class="nv">bowerings = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">bowerings</span> <span class="o">?=</span> <span class="p">[]</span>
+        <span class="nv">installer = </span><span class="nx">install</span> <span class="nx">targets</span><span class="p">,</span> <span class="p">{},</span> <span class="nx">options</span>
+        <span class="nx">installer</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="nf">(error) -&gt;</span>
+            <span class="nv">reason = </span><span class="s">&quot;failed Bower package installation&quot;</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">red</span><span class="p">,</span> <span class="nx">error</span>
+            <span class="nx">kernel</span><span class="p">.</span><span class="nx">shutdownKernel</span> <span class="nx">reason</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nx">installer</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;end&quot;</span><span class="p">,</span> <span class="nf">(installed) =&gt;</span>
+            <span class="nv">bowerings.installed = </span><span class="nx">installed</span>
+            <span class="nv">message = </span><span class="s">&quot;Get Bower lib %s@%s at %s&quot;</span>
+            <span class="k">for</span> <span class="nx">packet</span> <span class="k">in</span> <span class="nx">_</span><span class="p">.</span><span class="nx">values</span><span class="p">(</span><span class="nx">installed</span> <span class="o">or</span> <span class="p">{})</span>
+                <span class="nv">name = </span><span class="nx">packet</span><span class="p">.</span><span class="nx">pkgMeta</span><span class="o">?</span><span class="p">.</span><span class="nx">name</span><span class="p">.</span><span class="nx">underline</span>
+                <span class="nv">version = </span><span class="nx">packet</span><span class="p">.</span><span class="nx">pkgMeta</span><span class="o">?</span><span class="p">.</span><span class="nx">version</span><span class="p">.</span><span class="nx">underline</span>
+                <span class="nv">where = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+                <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">cyan</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">version</span><span class="p">,</span> <span class="nx">where</span>
+            <span class="k">return</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This server side method is called on the context prior to the
+context being compiled and flushed down to the client site. The
+method is wired in an synchronous way for greater functionality.
+This is the place where you would be importing the dependencies.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(context, request, next) -&gt;</span>
+        <span class="nv">list = </span><span class="nx">bower</span><span class="p">.</span><span class="nx">commands</span><span class="p">.</span><span class="nx">list</span>
+        <span class="nv">bowerings = </span><span class="p">(</span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">bowerings</span> <span class="o">?=</span> <span class="p">[])</span>
+        <span class="k">return</span> <span class="nx">next</span> <span class="nx">f</span> <span class="nx">context</span> <span class="k">if</span> <span class="nv">f = </span><span class="nx">bowerings</span><span class="p">.</span><span class="nx">cached</span>
+        <span class="nv">options = directory: </span><span class="nx">bowerings</span><span class="p">.</span><span class="nx">directory</span>
+        <span class="nv">esc = </span><span class="nf">(p) -&gt;</span> <span class="k">new</span> <span class="nb">RegExp</span> <span class="nb">RegExp</span><span class="p">.</span><span class="nx">escape</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">p</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">match = </span><span class="nf">(k) -&gt;</span> <span class="nf">(b) -&gt;</span> <span class="nx">esc</span><span class="p">(</span><span class="nx">k</span><span class="p">).</span><span class="nx">test</span> <span class="nx">b</span><span class="p">.</span><span class="nx">target</span>
+        <span class="nv">sorter = </span><span class="nf">(v, k) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">findIndex</span> <span class="nx">bowerings</span><span class="p">,</span> <span class="nx">match</span><span class="p">(</span><span class="nx">k</span><span class="p">)</span>
+        <span class="nx">list</span><span class="p">(</span><span class="nv">paths: </span><span class="kc">yes</span><span class="p">,</span> <span class="nx">options</span><span class="p">).</span><span class="nx">on</span> <span class="s">&quot;end&quot;</span><span class="p">,</span> <span class="nf">(paths) -&gt;</span>
+            <span class="nv">bowerings.cached = </span><span class="nf">(context) -&gt;</span>
+                <span class="nv">sorted = </span><span class="nx">_</span><span class="p">.</span><span class="nx">sortBy</span> <span class="nx">paths</span><span class="p">,</span> <span class="nx">sorter</span>
+                <span class="nv">files = </span><span class="nx">_</span><span class="p">.</span><span class="nx">flatten</span> <span class="nx">_</span><span class="p">.</span><span class="nx">values</span> <span class="nx">sorted</span>
+                <span class="k">for</span> <span class="nx">file</span> <span class="k">in</span> <span class="nx">files</span> <span class="k">then</span> <span class="nx">do</span> <span class="nf">(file) -&gt;</span>
+                    <span class="nv">ext = </span><span class="nf">(e) -&gt;</span> <span class="nx">path</span><span class="p">.</span><span class="nx">extname</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="o">is</span> <span class="nx">e</span>
+                    <span class="nx">context</span><span class="p">.</span><span class="nx">scripts</span><span class="p">.</span><span class="nx">push</span> <span class="nx">file</span> <span class="k">if</span> <span class="nx">ext</span> <span class="s">&quot;.js&quot;</span>
+                    <span class="nx">context</span><span class="p">.</span><span class="nx">sheets</span><span class="p">.</span><span class="nx">push</span> <span class="nx">file</span> <span class="k">if</span> <span class="nx">ext</span> <span class="s">&quot;.css&quot;</span>
+            <span class="k">return</span> <span class="nx">next</span> <span class="nx">bowerings</span><span class="p">.</span><span class="nx">cached</span> <span class="nx">context</span></div></div></div></div></body></html>

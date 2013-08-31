@@ -94,7 +94,7 @@ Refer to other <code>Duplex</code> methods for understanding what goes on.</p></
                 <span class="nv">tail = </span><span class="nx">archarguments</span><span class="p">[</span><span class="nx">archarguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
                 <span class="nv">noCallback = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">provider</span><span class="si">}</span><span class="s"> call has no callback&quot;</span>
                 <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">noCallback</span> <span class="k">unless</span> <span class="nx">tail</span><span class="o">?</span><span class="p">.</span><span class="nx">apply</span>
-                <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="s">&quot;emitting provider: </span><span class="si">#{</span><span class="nx">provider</span><span class="si">}</span><span class="s">&quot;</span>
+                <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="s">&quot;requesting provider: </span><span class="si">#{</span><span class="nx">provider</span><span class="si">}</span><span class="s">&quot;</span>
                 <span class="nx">@socket</span><span class="p">.</span><span class="nx">emit</span> <span class="nx">provider</span><span class="p">,</span> <span class="nx">archarguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to registering the service
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
@@ -126,5 +126,4 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">providing</span>
             <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">value</span><span class="p">),</span> <span class="nx">internal</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">removeAllListeners</span> <span class="s">&quot;connection&quot;</span>
-        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span>
-        <span class="nx">util</span><span class="p">.</span><span class="nx">inspect</span> <span class="nx">next</span></div></div></div></div></body></html>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span></div></div></div></div></body></html>
