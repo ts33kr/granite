@@ -113,7 +113,7 @@ module.exports.Preflight = class Preflight extends Screenplay
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
-    # method is wired in an synchronous way for greater functionality.
+    # method is wired in an asynchronous way for greater functionality.
     # This is the place where you would be importing the dependencies.
     prelude: (context, request, next) ->
         list = bower.commands.list
