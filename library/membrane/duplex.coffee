@@ -70,10 +70,10 @@ module.exports.Duplex = class Duplex extends Screenplay
         assert method.length >= 1, invalidArgs
         method.provider = Object.create {}
         method.providing = (s) -> (args..., callback) ->
-            respond = -> callback.apply this, arguments
-            respond.socket = s; method args..., respond
-        method.origin = this
-        return method
+            execute = => method.apply this, arguments
+            respond = => callback.apply this, arguments
+            respond.socket = s; execute args..., respond
+        method.origin = this; return method
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
@@ -127,7 +127,8 @@ module.exports.Duplex = class Duplex extends Screenplay
             providing = value?.providing or null
             return unless _.isFunction providing
             assert _.isFunction(value), internal
-            binder = (s) => s.on name, providing(s)
+            bound = (s) => providing(s).bind this
+            binder = (s) => s.on name, bound(s)
             context.on "connection", binder
         return next()
 
