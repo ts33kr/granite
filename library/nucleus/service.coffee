@@ -129,8 +129,8 @@ module.exports.Service = class Service extends events.EventEmitter2
         associate = "Associating #{inspected} resource with #{identify}"
         notRegexp = "The #{inspected} is not a valid regular expression"
         assert _.isRegExp(pattern), notRegexp
-        (@resources ?= []).push pattern
-        logger.debug associate.grey; @
+        @resources = (@resources or []).concat pattern
+        logger.debug associate.grey; this
 
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted domain patterns.
@@ -138,6 +138,7 @@ module.exports.Service = class Service extends events.EventEmitter2
     # Supports implicit extraction of captured groups in the match.
     # Use this to configure what domains should match with service.
     @domain: (pattern) ->
+        previous = @domains or []
         identify = @identify().underline
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
         pattern = regexify pattern if _.isString pattern
@@ -145,8 +146,8 @@ module.exports.Service = class Service extends events.EventEmitter2
         associate = "Associating #{inspected} resource with #{identify}"
         notRegexp = "The #{inspected} is not a valid regular expression"
         assert _.isRegExp(pattern), notRegexp
-        (@domains ?= []).push pattern
-        logger.debug associate.grey; @
+        @domains = (@domains or []).concat pattern
+        logger.debug associate.grey; this
 
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the
