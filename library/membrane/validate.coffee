@@ -189,9 +189,6 @@ module.exports.PValidator = class PValidator extends Validator
         async.parallel transformed, (error, results) =>
             assert not error, "internal valdation error"
             errors = _.any _.values(results), _.isObject
-            results = _.transform results, (acc, val, key) ->
-                messaged = _.isString val?.message
-                acc[key] = val.message if messaged
             return continuation.bind(this) errors, results
 
     # Create a validation context for the parameter designated by
