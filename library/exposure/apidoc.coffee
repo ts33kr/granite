@@ -34,7 +34,7 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-{Barebones} = require "./skeleton"
+{Barebones} = require "../membrane/skeleton"
 
 # This service exposes the entiry hierarchical structure of the
 # service documentation, as they scanned and found in the current
