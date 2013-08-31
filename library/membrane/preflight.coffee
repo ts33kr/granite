@@ -62,13 +62,11 @@ module.exports.Preflight = class Preflight extends Screenplay
         previous = @bowerings or []
         noTarget = "target must be a string"
         noOptions = "options must be an object"
-        setup = Object.hasOwnProperty "bowerings"
         assert _.isObject(options), noOptions
         assert _.isString(target), noTarget
-        instance = => previous.concat []
-        tag = options: options, target: target
-        @bowerings = instance() unless setup
-        return @bowerings.push tag
+        return @bowerings = previous.concat
+            options: options
+            target: target
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
@@ -79,7 +77,7 @@ module.exports.Preflight = class Preflight extends Screenplay
         hash = crypto.createHash "md5"
         hash.update @constructor.identify()
         id = hash.digest("hex").toString()
-        bowerings = (@constructor.bowerings ?= [])
+        bowerings = @constructor.bowerings ?= []
         options = _.map(bowerings, (b) -> b.options)
         options = _.merge Object.create({}), options...
         directory = kernel?.scope?.envPath "pub", "bower", id
@@ -97,7 +95,7 @@ module.exports.Preflight = class Preflight extends Screenplay
     # hook implementation in this ABC service for more information.
     installation: (kernel, targets, options, next) ->
         install = bower.commands.install
-        bowerings = (@constructor.bowerings ?= [])
+        bowerings = @constructor.bowerings ?= []
         installer = install(targets, {}, options)
         installer.on "error", (error) ->
             reason = "failed Bower package installation"
@@ -111,7 +109,7 @@ module.exports.Preflight = class Preflight extends Screenplay
                 vers = packet.pkgMeta?.version.underline
                 where = @constructor.identify().underline
                 logger.debug message.cyan, what, vers, where
-        return next()
+            return next()
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
