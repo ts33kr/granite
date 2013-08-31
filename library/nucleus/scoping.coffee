@@ -119,7 +119,9 @@ module.exports.Scope = class Scope extends events.EventEmitter2
         fpath = "#{nconf.get "layout:config"}/#{@tag}.json"
         logger.info "Dissipating the #{@tag.bold} scope".grey
         logger.info "Used #{fpath.underline} as config".grey
+        assert _.isArray preserve = nconf.get "env:preserve"
         for directory in nconf.get("env:dirs") or []
+            continue if directory in preserve
             msg = "Wiping out the env directory at %s".yellow
             logger.info msg, directory.underline
             rmdirSyncRecursive directory, yes

@@ -53,6 +53,7 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: no
     @defaults.socket = "log level": 0
+    @defaults.env.preserve = ["pub"]
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -71,6 +72,7 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: no
     @defaults.socket = "log level": 0
+    @defaults.env.preserve = ["pub"]
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -89,6 +91,7 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: no
     @defaults.socket = "log level": 0
+    @defaults.env.preserve = ["pub"]
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -107,3 +110,4 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: no
     @defaults.socket = "log level": 0
+    @defaults.env.preserve = ["pub"]
