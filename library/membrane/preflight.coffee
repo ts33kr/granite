@@ -38,98 +38,17 @@ path = require "path"
 http = require "http"
 util = require "util"
 
-{Screenplay} = require "./visual"
+{BowerSupport} = require "./bower"
 
-# This abstract base class service is an extension of the `Visual`
-# basis that does some further environment initialization and set
+# This abstract base class service is an extension of the Screenplay
+# family that does some further environment initialization and set
 # up. These preparations will be nececessary no matter what sort of
-# visual functionality you are going to implement. Currently the
-# primary purpose of preflight is implementation of Bower support.
-module.exports.Preflight = class Preflight extends Screenplay
+# Screebplay functionality you are going to implement. Currently the
+# purpose of preflight is drawing in the remoted and Bower packages.
+module.exports.Preflight = class Preflight extends BowerSupport
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete class implementation. This
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
-
-    # Install the specified package via Bower into the specific
-    # location within the system that is figured out automatically.
-    # All packages installed via Bower will be served as the static
-    # assets, by using the `pub` env dir. The package installation
-    # is per service and automatically will be included in `prelude`.
-    @bower: (target, options={}) ->
-        previous = @bowerings or []
-        noTarget = "target must be a string"
-        noOptions = "options must be an object"
-        assert _.isObject(options), noOptions
-        assert _.isString(target), noTarget
-        return @bowerings = previous.concat
-            options: options
-            target: target
-
-    # A hook that will be called prior to registering the service
-    # implementation. Please refer to this prototype signature for
-    # information on the parameters it accepts. Beware, this hook
-    # is asynchronously wired in, so consult with `async` package.
-    # Please be sure invoke the `next` arg to proceed, if relevant.
-    register: (kernel, router, next) ->
-        hash = crypto.createHash "md5"
-        hash.update @constructor.identify()
-        id = hash.digest("hex").toString()
-        bowerings = @constructor.bowerings ?= []
-        options = _.map(bowerings, (b) -> b.options)
-        options = _.merge Object.create({}), options...
-        directory = kernel?.scope?.envPath "pub", "bower", id
-        assert _.isString(directory), "failed to get dir"
-        options.directory = bowerings.directory = directory
-        targets = _.map bowerings, (b) -> b.target
-        running = "Running Bower install for %s service"
-        identify = @constructor?.identify().toString()
-        logger.info running.grey, identify.underline
-        @installation kernel, targets, options, next
-
-    # An internal routine that launches the actual Bower installer.
-    # It takes a series of pre calculated parameters to be able to
-    # perform the installation properly. Plese refer to the register
-    # hook implementation in this ABC service for more information.
-    installation: (kernel, targets, options, next) ->
-        install = bower.commands.install
-        bowerings = @constructor.bowerings ?= []
-        installer = install targets, {}, options
-        installer.on "error", (error) ->
-            reason = "failed Bower package installation"
-            logger.error error.message.toString().red, error
-            kernel.shutdownKernel reason.toString()
-        installer.on "end", (installed) =>
-            bowerings.installed = installed
-            message = "Get Bower lib %s@%s at %s"
-            for packet in _.values(installed or {})
-                name = packet.pkgMeta?.name.underline
-                version = packet.pkgMeta?.version.underline
-                where = @constructor.identify().underline
-                logger.debug message.cyan, name, version, where
-            return next()
-
-    # This server side method is called on the context prior to the
-    # context being compiled and flushed down to the client site. The
-    # method is wired in an asynchronous way for greater functionality.
-    # This is the place where you would be importing the dependencies.
-    prelude: (context, request, next) ->
-        list = bower.commands.list
-        bowerings = @constructor.bowerings ?= []
-        cached context if cached = bowerings.cached
-        return next() if _.isFunction cached
-        options = directory: bowerings.directory
-        esc = (p) -> new RegExp RegExp.escape "#{p}"
-        match = (k) -> (b) -> esc(k).test b.target
-        sorter = (v, k) -> _.findIndex bowerings, match(k)
-        list(paths: yes, options).on "end", (paths) ->
-            bowerings.cached = (context) ->
-                sorted = _.sortBy paths, sorter
-                files = _.flatten _.values sorted
-                for file in files then do (file) ->
-                    ext = (e) -> path.extname(file) is e
-                    context.scripts.push file if ext ".js"
-                    context.sheets.push file if ext ".css"
-            bowerings.cached context; next()
