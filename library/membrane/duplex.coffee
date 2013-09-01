@@ -27,6 +27,7 @@ _ = require "lodash"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
+domain = require "domain"
 events = require "eventemitter2"
 assert = require "assert"
 colors = require "colors"
@@ -72,10 +73,15 @@ module.exports.Duplex = class Duplex extends Preflight
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
         method.provider = Object.create {}
-        method.providing = (s) -> (args..., callback) ->
-            execute = => method.apply this, i arguments
-            respond = => callback.apply this, o arguments
-            respond.socket = s; execute args..., respond
+        method.providing = (socket) -> (args..., callback) ->
+            (guarded = domain.create()).on "error", (error) ->
+                message = "Error running provider:\r\n%s"
+                logger.error message.red, error.stack
+                try socket.disconnect?()
+            assert _.isFunction g = guarded.run.bind guarded
+            execute = => g => method.apply this, i arguments
+            respond = => g => callback.apply this, o arguments
+            respond.socket = socket; execute args..., respond
         method.origin = this; return method
 
     # This server side method is called on the context prior to the
