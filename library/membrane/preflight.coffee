@@ -54,6 +54,14 @@ module.exports.Preflight = class Preflight extends BowerSupport
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
+    # This block here defines a set of Bower dependencies that are
+    # going to be necessary no matter what sort of functionality is
+    # is going to be implemented. Most of these libraries required
+    # by the internal implementations of the various subcomponents.
+    @bower "eventemitter2"
+    @bower "bootstrap#3"
+    @bower "lodash"
+
     # A directive to mark the certain remote class or object to be
     # included in the `Screenplay` context that is going to be emited
     # and deployed on the client site. Basically, use this to bring
@@ -75,11 +83,3 @@ module.exports.Preflight = class Preflight extends BowerSupport
         for remote in _.unique remotes
             @inject context, remote
         return next()
-
-    # This block here defines a set of Bower dependencies that are
-    # going to be necessary no matter what sort of functionality is
-    # is going to be implemented. Most of these libraries required
-    # by the internal implementations of the various subcomponents.
-    @bower "eventemitter2"
-    @bower "bootstrap#3"
-    @bower "lodash"
