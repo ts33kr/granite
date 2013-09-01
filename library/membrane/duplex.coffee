@@ -43,14 +43,14 @@ compose = require "./../nucleus/compose"
 {STATUS_CODES} = require "http"
 {remote, external} = require "./remote"
 {Barebones} = require "./skeleton"
-{Screenplay} = require "./visual"
+{Preflight} = require "./preflight"
 
 # This abstract base class can be used as either a direct parent or
 # a compount to the `Screenplay` abstract service. It provides the
 # unique ability of half duplex data exchange between the external
 # code that is executed on the call site via `Screenplay` facility
 # and an instance of the service that resides on the server site.
-module.exports.Duplex = class Duplex extends Screenplay
+module.exports.Duplex = class Duplex extends Preflight
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
