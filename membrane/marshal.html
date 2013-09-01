@@ -1,0 +1,51 @@
+<!DOCTYPE html><html lang="en"><head><title>membrane/marshal</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/marshal"><meta name="groc-project-path" content="library/membrane/marshal.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/marshal.coffee">library/membrane/marshal.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">remote</span><span class="p">,</span> <span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./remote&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This class is not meant to be instantianted, but rather to be used
+as static class, a container. It exposes the functionality for the
+data marshalling to be applied on the data that is being transfered
+between the server site and the client site. Used on both sites.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Marshal = </span><span class="nx">remote</span> <span class="nf">-&gt;</span> <span class="k">class</span> <span class="nx">Marshal</span> <span class="k">extends</span> <span class="nb">Object</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Recover the sequence of values transferred from the another
+environment. Typically you would use this on the parameter
+list from a remote function. It performs deep deserialization
+of objects from the plain JavaScript objects to be recovered.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@deserialize: </span><span class="nf">(sequence) -&gt;</span> <span class="nx">sequence</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Prepare the sequence of values to be transferred to another
+environment. Typically you would use this on the parameter
+list for a remote function. It performs deep serialization
+of objects into the plain JavaScript objects to be passed.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@serialize: </span><span class="nf">(sequence) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span> <span class="nx">_</span><span class="p">.</span><span class="nx">cloneDeep</span> <span class="nx">sequence</span><span class="p">,</span> <span class="nf">-&gt;</span>
+        <span class="nv">possibleError = </span><span class="nf">(o) -&gt;</span> <span class="nx">o</span><span class="p">.</span><span class="nx">message</span><span class="o">?</span> <span class="o">and</span> <span class="nx">o</span><span class="p">.</span><span class="nx">stack</span><span class="o">?</span>
+        <span class="nv">value = </span><span class="nx">_</span><span class="p">.</span><span class="nx">head</span> <span class="nx">arguments</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">possibleError</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">is</span> <span class="kc">yes</span>
+        <span class="nv">message: </span><span class="nx">value</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="nv">stack: </span><span class="nx">value</span><span class="p">.</span><span class="nx">stack</span></div></div></div></div></body></html>

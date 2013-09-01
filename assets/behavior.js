@@ -89,6 +89,22 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "singleLineComment": ["#"],
               "name": "CoffeeScript"
             },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/bower.coffee",
+            "projectPath": "library/membrane/bower.coffee",
+            "targetPath": "membrane/bower",
+            "title": "bower"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "singleLineComment": ["#"],
+              "name": "CoffeeScript"
+            },
             "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/describe.coffee",
             "projectPath": "library/membrane/describe.coffee",
             "targetPath": "membrane/describe",
@@ -125,6 +141,22 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "projectPath": "library/membrane/duplex.coffee",
             "targetPath": "membrane/duplex",
             "title": "duplex"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "singleLineComment": ["#"],
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/marshal.coffee",
+            "projectPath": "library/membrane/marshal.coffee",
+            "targetPath": "membrane/marshal",
+            "title": "marshal"
           },
           "depth": 2,
           "outline": []
@@ -205,6 +237,22 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "projectPath": "library/membrane/remote.coffee",
             "targetPath": "membrane/remote",
             "title": "remote"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "singleLineComment": ["#"],
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/runtime.coffee",
+            "projectPath": "library/membrane/runtime.coffee",
+            "targetPath": "membrane/runtime",
+            "title": "runtime"
           },
           "depth": 2,
           "outline": []

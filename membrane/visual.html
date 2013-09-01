@@ -42,7 +42,8 @@
 <span class="p">{</span><span class="nx">format</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 <span class="p">{</span><span class="nx">STATUS_CODES</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
-<span class="p">{</span><span class="nx">remote</span><span class="p">,</span> <span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./remote&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract service that provides the unique functionality
+<span class="p">{</span><span class="nx">remote</span><span class="p">,</span> <span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./remote&quot;</span>
+<span class="p">{</span><span class="nx">coffee</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./runtime&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract service that provides the unique functionality
 of rendering the server side store code on the client side with all
 its dependencies, such as classes and class hierarchies and even more.
 This ABC constitutes a primary tool for writing UI/UX with Granite.
@@ -73,11 +74,12 @@ This is the place where you would be importing the dependencies.</p></div></div>
         <span class="k">return</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Use this method in the <code>prelude</code> scope to bring dependencies into
 the scope. This method supports JavaScript scripts as a link or
 JavaScript sources passed in as the remote objects. Please refer
-to the implementation and the class for more information on it.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">require: </span><span class="nf">(context, subject, symbol) -&gt;</span>
+to the implementation and the class for more information on it.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">inject: </span><span class="nf">(context, subject, symbol) -&gt;</span>
         <span class="nv">scripts = </span><span class="nf">-&gt;</span> <span class="nx">context</span><span class="p">.</span><span class="nx">scripts</span><span class="p">.</span><span class="nx">push</span> <span class="nx">subject</span>
         <span class="nv">sources = </span><span class="nf">-&gt;</span> <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">push</span> <span class="nx">compile</span><span class="p">()</span>
         <span class="nv">compile = </span><span class="nf">-&gt;</span> <span class="nx">subject</span><span class="p">.</span><span class="nx">remote</span><span class="o">?</span><span class="p">.</span><span class="nx">compile</span><span class="o">?</span> <span class="nx">symbol</span>
         <span class="nv">invalid = </span><span class="s">&quot;not a remote object and not a link&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">context</span><span class="p">),</span> <span class="s">&quot;got invalid context&quot;</span>
         <span class="nv">compilable = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">subject</span><span class="p">.</span><span class="nx">remote</span><span class="o">?</span><span class="p">.</span><span class="nx">compile</span>
         <span class="k">return</span> <span class="nx">scripts</span><span class="p">()</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">subject</span>
         <span class="k">return</span> <span class="nx">sources</span><span class="p">()</span> <span class="k">if</span> <span class="nx">compilable</span>
@@ -102,6 +104,7 @@ includes merging all the remoted defined in the services with a
 context object, which is defered to be done on the client site.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">deployContext: </span><span class="nf">(context) -&gt;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">context</span>
         <span class="nv">prepared = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">context</span>
+        <span class="nv">runtime = </span><span class="s">&quot;(</span><span class="si">#{</span><span class="nx">coffee</span><span class="si">}</span><span class="s">).apply(this)&quot;</span>
         <span class="nv">installer = </span><span class="s">&quot;var context = </span><span class="si">#{</span><span class="nx">prepared</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nx">_</span><span class="p">.</span><span class="nx">forIn</span> <span class="k">this</span><span class="p">,</span> <span class="nf">(value, key, object) -&gt;</span>
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">value</span><span class="p">.</span><span class="nx">remote</span>
@@ -109,6 +112,7 @@ context object, which is defered to be done on the client site.</p></div></div><
             <span class="nv">set = </span><span class="s">&quot;context.%s = (</span><span class="si">#{</span><span class="nx">src</span><span class="si">}</span><span class="s">)()&quot;</span>
             <span class="nx">installer</span> <span class="o">+=</span> <span class="s">&quot;\r\n</span><span class="si">#{</span><span class="nx">format</span> <span class="nx">set</span><span class="p">,</span> <span class="nx">key</span><span class="si">}</span><span class="s">\r\n&quot;</span>
         <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">unshift</span> <span class="nx">installer</span>
+        <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">unshift</span> <span class="nx">runtime</span>
         <span class="k">return</span> <span class="nx">context</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Issue the autocalls into the context. Traverse the hierarchy
 from top to bottom (the ordering is important) and issue an
 autocall for each remote/external method that is marked with
@@ -131,6 +135,8 @@ of the resource. Use for unobtrusive retrieval of resources.</p></div></div><div
         <span class="nv">noPrelude = </span><span class="s">&quot;no prelude method detected&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">@prelude</span><span class="p">),</span> <span class="nx">noPrelude</span>
         <span class="nv">context = scripts: </span><span class="p">[],</span> <span class="nv">sources: </span><span class="p">[],</span> <span class="nv">styles: </span><span class="p">[],</span> <span class="nv">sheets: </span><span class="p">[]</span>
+        <span class="nv">pusher = </span><span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">push</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span>
+        <span class="nv">context.inline = </span><span class="nf">(f) -&gt;</span> <span class="nx">pusher</span> <span class="s">&quot;(</span><span class="si">#{</span><span class="nx">f</span><span class="si">}</span><span class="s">).apply(this)&quot;</span>
         <span class="nv">context.doctype = </span><span class="s">&quot;&lt;!DOCTYPE html&gt;&quot;</span>
         <span class="nv">prelude = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;prelude&quot;</span><span class="p">,</span> <span class="o">=&gt;</span>
             <span class="nv">context = </span><span class="nx">@deployContext</span> <span class="nx">context</span>

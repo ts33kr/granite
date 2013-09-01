@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="en"><head><title>membrane/runtime</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/runtime"><meta name="groc-project-path" content="library/membrane/runtime.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/runtime.coffee">library/membrane/runtime.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">coffee = </span><span class="nx">require</span> <span class="s">&quot;coffee-script&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This exports the function whose source codes installs the usual
+CoffeeScript runtime definitions. This is necessary to properly
+initialize the remote call site, because the source code capture
+mechanism is not able to capture these, when emited by compiler.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.coffee = </span><span class="o">`</span><span class="nx">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nv">__slice = </span><span class="p">[].</span><span class="nx">slice</span>
+    <span class="nv">__hasProp = </span><span class="p">{}.</span><span class="nx">hasOwnProperty</span>
+    <span class="nv">__extends = </span><span class="nx">function</span><span class="p">(</span><span class="nx">child</span><span class="p">,</span> <span class="nx">parent</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">var</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">parent</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">__hasProp</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">parent</span><span class="p">,</span> <span class="nx">key</span><span class="p">))</span>
+                <span class="nx">child</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+    <span class="p">};</span> <span class="nx">function</span> <span class="nx">ctor</span><span class="p">()</span> <span class="p">{</span> <span class="k">this</span><span class="p">.</span><span class="nv">constructor = </span><span class="nx">child</span><span class="p">;</span> <span class="p">}</span>
+        <span class="nv">ctor.prototype = </span><span class="nx">parent</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
+        <span class="nv">child.prototype = </span><span class="k">new</span> <span class="nx">ctor</span><span class="p">();</span>
+        <span class="nv">child.__super__ = </span><span class="nx">parent</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
+        <span class="k">return</span> <span class="nx">child</span><span class="p">;</span>
+    <span class="p">}};</span>
+<span class="o">`</span></div></div></div></div></body></html>
