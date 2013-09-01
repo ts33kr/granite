@@ -75,7 +75,7 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
     # exact process of how it is being documented depends on how the
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
-    @describe @prototype.GET, (method, service) ->
+    @GET (method, service) ->
         @synopsis "Get all of the APIs available in the system"
         @outputs "An array of objects, each describes a service"
         @notes "See the Document class for the API structure"
