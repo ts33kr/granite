@@ -56,4 +56,4 @@ module.exports.Marshal = remote -> class Marshal extends Object
     @serialize: (sequence) -> _.toArray _.cloneDeep sequence, ->
         value = _.head arguments or undefined
         return unless value?.constructor is Error
-        return message: value.message
+        message: value.message, stack: value.stack
