@@ -77,7 +77,7 @@ module.exports.Duplex = class Duplex extends Preflight
             (guarded = domain.create()).on "error", (error) ->
                 message = "Error running provider:\r\n%s"
                 logger.error message.red, error.stack
-                socket.emit "exception", o(error)
+                socket.emit "exception", o([error])...
                 try socket.disconnect?()
             assert _.isFunction g = guarded.run.bind guarded
             execute = (a...) => g => method.apply this, i(a)
@@ -114,6 +114,8 @@ module.exports.Duplex = class Duplex extends Preflight
         throw new Error failed unless @socket.emit
         chai.assert _.isFunction o = Marshal.serialize
         chai.assert _.isFunction i = Marshal.deserialize
+        p = "an exception happend at the server provider"
+        @socket.on "exception", (e) -> console.error p, e
         for provider in @providers then do (provider) =>
             console.log "register context provider: #{provider}"
             this[provider] = (parameters..., callback) ->
