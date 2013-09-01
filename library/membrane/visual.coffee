@@ -93,6 +93,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         sources = -> context.sources.push compile()
         compile = -> subject.remote?.compile? symbol
         invalid = "not a remote object and not a link"
+        assert _.isObject(context), "got invalid context"
         compilable = _.isFunction subject.remote?.compile
         return scripts() if _.isString subject
         return sources() if compilable
