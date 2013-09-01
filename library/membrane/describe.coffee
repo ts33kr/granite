@@ -99,7 +99,10 @@ module.exports.Descriptor = class Descriptor extends stubs.WithHooks
         assert _.isFunction(method), noMethod
         assert _.isFunction(descriptor), noDescriptor
         method.document ?= new Document
-        method.document.descriptor = descriptor
+        previous = method.document.descriptor
+        method.document.descriptor = ->
+            previous?.apply this, arguments
+            descriptor.apply this, arguments
         method.document.blankSlate = ->
             document = new Document
             document.descriptor = @descriptor
