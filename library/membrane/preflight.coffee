@@ -39,6 +39,7 @@ http = require "http"
 util = require "util"
 
 {BowerSupport} = require "./bower"
+{Marshal} = require "./marshal"
 
 # This abstract base class service is an extension of the Screenplay
 # family that does some further environment initialization and set
@@ -52,3 +53,33 @@ module.exports.Preflight = class Preflight extends BowerSupport
     # can not be treated as a complete class implementation. This
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
+
+    # A directive to mark the certain remote class or object to be
+    # included in the `Screenplay` context that is going to be emited
+    # and deployed on the client site. Basically, use this to bring
+    # in all the remote classes that you need to the remote call site.
+    @remote: (subject) ->
+        previous = @remotes or []
+        qualify = subject?.remote?.compile
+        noRemote = "the subject is not remote"
+        assert _.isFunction(qualify), noRemote
+        @remotes = previous.concat subject
+
+    # This server side method is called on the context prior to the
+    # context being compiled and flushed down to the client site. The
+    # method is wired in an asynchronous way for greater functionality.
+    # This is the place where you would be importing the dependencies.
+    prelude: (context, request, next) ->
+        remotes = @constructor.remotes or []
+        remotes = remotes.concat Marshal
+        for remote in _.unique remotes
+            @inject context, remote
+        return next()
+
+    # This block here defines a set of Bower dependencies that are
+    # going to be necessary no matter what sort of functionality is
+    # is going to be implemented. Most of these libraries required
+    # by the internal implementations of the various subcomponents.
+    @bower "eventemitter2"
+    @bower "bootstrap#3"
+    @bower "lodash"
