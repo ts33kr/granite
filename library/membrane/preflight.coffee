@@ -44,7 +44,7 @@ util = require "util"
 # This abstract base class service is an extension of the Screenplay
 # family that does some further environment initialization and set
 # up. These preparations will be nececessary no matter what sort of
-# Screebplay functionality you are going to implement. Currently the
+# Screenplay functionality you are going to implement. Currently the
 # purpose of preflight is drawing in the remoted and Bower packages.
 module.exports.Preflight = class Preflight extends BowerSupport
 
