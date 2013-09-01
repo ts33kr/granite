@@ -27,7 +27,7 @@ _ = require "lodash"
 logger = require "winston"
 events = require "eventemitter2"
 colors = require "colors"
-{assert} = require "chai"
+assert = require "assert"
 util = require "util"
 
 # A simple yet solid HTTP request router. This is designed to map

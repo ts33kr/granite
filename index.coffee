@@ -24,7 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 _ = require "lodash"
-{assert} = require "chai"
+assert = require "assert"
 wrench = require "wrench"
 colors = require "colors"
 logger = require "winston"

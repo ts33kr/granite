@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _ = require "lodash"
 uuid = require "node-uuid"
-{assert} = require "chai"
+assert = require "assert"
 connect = require "connect"
 moment = require "moment"
 logger = require "winston"

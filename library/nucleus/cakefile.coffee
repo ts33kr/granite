@@ -24,7 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 _ = require "lodash"
-{assert} = require "chai"
+assert = require "assert"
 colors = require "colors"
 logger = require "winston"
 {spawn} = require "child_process"
