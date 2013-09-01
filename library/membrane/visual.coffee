@@ -88,7 +88,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # the scope. This method supports JavaScript scripts as a link or
     # JavaScript sources passed in as the remote objects. Please refer
     # to the implementation and the class for more information on it.
-    require: (context, subject, symbol) ->
+    inject: (context, subject, symbol) ->
         scripts = -> context.scripts.push subject
         sources = -> context.sources.push compile()
         compile = -> subject.remote?.compile? symbol
