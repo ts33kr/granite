@@ -77,6 +77,7 @@ module.exports.Duplex = class Duplex extends Preflight
             (guarded = domain.create()).on "error", (error) ->
                 message = "Error running provider:\r\n%s"
                 logger.error message.red, error.stack
+                socket.emit "exception", o(error)
                 try socket.disconnect?()
             assert _.isFunction g = guarded.run.bind guarded
             execute = (a...) => g => method.apply this, i(a)
