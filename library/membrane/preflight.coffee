@@ -61,7 +61,6 @@ module.exports.Preflight = class Preflight extends BowerSupport
     @bower "eventemitter2"
     @bower "bootstrap#3"
     @bower "lodash"
-    @bower "async"
 
     # A directive to mark the certain remote class or object to be
     # included in the `Screenplay` context that is going to be emited
