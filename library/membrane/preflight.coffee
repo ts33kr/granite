@@ -80,8 +80,8 @@ module.exports.Preflight = class Preflight extends BowerSupport
     # method is wired in an asynchronous way for greater functionality.
     # This is the place where you would be importing the dependencies.
     prelude: (context, request, next) ->
-        chai = -> `assert = chai.assert`
-        context.sources.push "(#{chai})()"
+        inline = context.inline or ->
+        inline -> `assert = chai.assert`
         remotes = @constructor.remotes or []
         remotes = remotes.concat Marshal
         for remote in _.unique remotes

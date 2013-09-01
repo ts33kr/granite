@@ -162,6 +162,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
         noPrelude = "no prelude method detected"
         assert _.isFunction(@prelude), noPrelude
         context = scripts: [], sources: [], styles: [], sheets: []
+        pusher = context.sources.push.bind context.sources
+        context.inline = (f) -> pusher "(#{f}).apply(this)"
         context.doctype = "<!DOCTYPE html>"
         prelude = @upstreamAsync "prelude", =>
             context = @deployContext context
