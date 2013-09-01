@@ -117,7 +117,7 @@ module.exports.Preflight = class Preflight extends Screenplay
     # This is the place where you would be importing the dependencies.
     prelude: (context, request, next) ->
         list = bower.commands.list
-        bowerings = (@constructor.bowerings ?= [])
+        bowerings = @constructor.bowerings ?= []
         return next f context if f = bowerings.cached
         options = directory: bowerings.directory
         esc = (p) -> new RegExp RegExp.escape "#{p}"
