@@ -132,8 +132,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
             return unless src = value.remote.source
             set = "context.%s = (#{src})()"
             installer += "\r\n#{format set, key}\r\n"
-        context.sources.unshift runtime
         context.sources.unshift installer
+        context.sources.unshift runtime
         return context
 
     # Issue the autocalls into the context. Traverse the hierarchy
