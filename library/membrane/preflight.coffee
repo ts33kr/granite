@@ -118,7 +118,8 @@ module.exports.Preflight = class Preflight extends Screenplay
     prelude: (context, request, next) ->
         list = bower.commands.list
         bowerings = @constructor.bowerings ?= []
-        return next f context if f = bowerings.cached
+        cached context if cached = bowerings.cached
+        return next() if _.isFunction cached
         options = directory: bowerings.directory
         esc = (p) -> new RegExp RegExp.escape "#{p}"
         match = (k) -> (b) -> esc(k).test b.target
@@ -131,4 +132,4 @@ module.exports.Preflight = class Preflight extends Screenplay
                     ext = (e) -> path.extname(file) is e
                     context.scripts.push file if ext ".js"
                     context.sheets.push file if ext ".css"
-            return next bowerings.cached context
+            bowerings.cached context; next()
