@@ -98,8 +98,8 @@ module.exports.Descriptor = class Descriptor extends stubs.WithHooks
         noDescriptor = "The #{descriptor} is not a descriptor"
         assert _.isFunction(method), noMethod
         assert _.isFunction(descriptor), noDescriptor
+        previous = method.document?.descriptor
         method.document ?= new Document
-        previous = method.document.descriptor
         method.document.descriptor = ->
             previous?.apply this, arguments
             descriptor.apply this, arguments
