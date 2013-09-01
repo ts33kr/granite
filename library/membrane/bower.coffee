@@ -112,6 +112,24 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
                 logger.debug message.cyan, name, version, where
             return next()
 
+    # This complicated definition is used to produce and then install
+    # a method that is going to be cached and used for each request
+    # once the initial Bower package installation is done. Please do
+    # refer to the `prelude` implementation in this class for the info.
+    cachier: (sorter, finder, paths) -> (context) ->
+        sorted = _.sortBy paths, sorter
+        files = _.flatten _.values sorted
+        locate = (f) -> _.findKey paths, resides(f)
+        resides = (f) -> (x) -> f is x or try f in x
+        for file in files then do (file) ->
+            ext = (e) -> path.extname(file) is e
+            context.scripts.push file if ext ".js"
+            context.sheets.push file if ext ".css"
+            bowering = finder null, locate(file)
+            entry = bowering?.entry or new String
+            return if _.isEmpty entry.toString()
+            context.scripts.push "#{file}/#{entry}"
+
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
     # method is wired in an asynchronous way for greater functionality.
@@ -126,18 +144,7 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         match = (k) -> (b) -> esc(k).test b.target
         sorter = (v, k) -> _.findIndex bowerings, match(k)
         finder = (v, k) -> _.find bowerings, match(k)
-        list(paths: yes, options).on "end", (paths) ->
-            locate = (f) -> _.findKey paths, resides(f)
-            resides = (f) -> (x) -> f is x or try f in x
-            bowerings.cached = (context) ->
-                sorted = _.sortBy paths, sorter
-                files = _.flatten _.values sorted
-                for file in files then do (file) ->
-                    ext = (e) -> path.extname(file) is e
-                    context.scripts.push file if ext ".js"
-                    context.sheets.push file if ext ".css"
-                    bowering = finder null, locate(file)
-                    entry = bowering?.entry or new String
-                    return if _.isEmpty entry.toString()
-                    context.scripts.push "#{file}/#{entry}"
+        list(paths: yes, options).on "end", (paths) =>
+            scope = [sorter, finder, paths]
+            bowerings.cached = @cachier scope...
             bowerings.cached context; next()
