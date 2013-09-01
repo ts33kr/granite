@@ -44,6 +44,7 @@ compose = require "./../nucleus/compose"
 {remote, external} = require "./remote"
 {Barebones} = require "./skeleton"
 {Preflight} = require "./preflight"
+{Marshal} = require "./marshal"
 
 # This abstract base class can be used as either a direct parent or
 # a compount to the `Screenplay` abstract service. It provides the
@@ -68,10 +69,12 @@ module.exports.Duplex = class Duplex extends Preflight
         invalidArgs = "has to have at least 1 parameter"
         assert _.isFunction(method), noMethod
         assert method.length >= 1, invalidArgs
+        assert _.isFunction o = Marshal.serialize
+        assert _.isFunction i = Marshal.deserialize
         method.provider = Object.create {}
         method.providing = (s) -> (args..., callback) ->
-            execute = => method.apply this, arguments
-            respond = => callback.apply this, arguments
+            execute = => method.apply this, i arguments
+            respond = => callback.apply this, o arguments
             respond.socket = s; execute args..., respond
         method.origin = this; return method
 
