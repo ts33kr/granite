@@ -76,8 +76,6 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # method is wired in an synchronous way for greater functionality.
     # This is the place where you would be importing the dependencies.
     prelude: (context, request, next) ->
-        runtime = "(#{coffee}).apply(this)"
-        context.sources.unshift runtime
         context.service = @constructor.identify()
         context.session = request.session
         context.uuid = request: request.uuid
@@ -127,12 +125,14 @@ module.exports.Screenplay = class Screenplay extends Barebones
     deployContext: (context) ->
         assert _.isObject context
         prepared = JSON.stringify context
+        runtime = "(#{coffee}).apply(this)"
         installer = "var context = #{prepared}"
         _.forIn this, (value, key, object) ->
             return unless _.isObject value.remote
             return unless src = value.remote.source
             set = "context.%s = (#{src})()"
             installer += "\r\n#{format set, key}\r\n"
+        context.sources.unshift runtime
         context.sources.unshift installer
         return context
 
