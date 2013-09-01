@@ -99,20 +99,21 @@ module.exports.Duplex = class Duplex extends Preflight
     # client end of the Socket.IO channel and creates wrapper around
     # all the providers residing in the current service implementation.
     # Refer to other `Duplex` methods for understanding what goes on.
-    setupDuplexChannel: @autocall ->
+    openChannel: @autocall ->
         try @socket = io.connect @duplex catch error
             message = "blew up Socket.IO: #{error.message}"
             error.message = message.toString(); throw error
         failed = "failed to created Socket.IO connection"
         throw new Error failed unless @socket.emit
+        chai.assert _.isFunction o = Marshal.serialize
+        chai.assert _.isFunction i = Marshal.deserialize
         for provider in @providers then do (provider) =>
-            console.log "setting up provider: #{provider}"
-            this[provider] = (archarguments...) ->
-                tail = archarguments[archarguments.length - 1]
-                noCallback = "#{provider} call has no callback"
-                throw new Error noCallback unless tail?.apply
-                console.log "requesting provider: #{provider}"
-                @socket.emit provider, archarguments...
+            console.log "register context provider: #{provider}"
+            this[provider] = (parameters..., callback) ->
+                noCallback = "#{callback} is not a callback"
+                chai.assert _.isFunction(callback), noCallback
+                deliver = => callback.apply this, i(arguments)
+                @socket.emit provider, o(parameters)..., deliver
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
