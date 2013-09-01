@@ -53,4 +53,7 @@ module.exports.Marshal = remote -> class Marshal extends Object
     # environment. Typically you would use this on the parameter
     # list for a remote function. It performs deep serialization
     # of objects into the plain JavaScript objects to be passed.
-    @serialize: (sequence) -> sequence
+    @serialize: (sequence) -> _.toArray _.cloneDeep sequence, ->
+        value = _.head arguments or undefined
+        return unless value?.constructor is Error
+        return message: value.message
