@@ -79,8 +79,8 @@ module.exports.Duplex = class Duplex extends Preflight
                 logger.error message.red, error.stack
                 try socket.disconnect?()
             assert _.isFunction g = guarded.run.bind guarded
-            execute = => g => method.apply this, i arguments
-            respond = => g => callback.apply this, o arguments
+            execute = (a...) => g => method.apply this, i(a)
+            respond = (a...) => g => callback.apply this, o(a)
             respond.socket = socket; execute args..., respond
         method.origin = this; return method
 
