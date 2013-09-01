@@ -58,7 +58,7 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     # All packages installed via Bower will be served as the static
     # assets, by using the `pub` env dir. The package installation
     # is per service and automatically will be included in `prelude`.
-    @bower: (target, options={}) ->
+    @bower: (target, entry, options={}) ->
         previous = @bowerings or []
         noTarget = "target must be a string"
         noOptions = "options must be an object"
@@ -67,6 +67,7 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         return @bowerings = previous.concat
             options: options
             target: target
+            entry: entry
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
@@ -124,7 +125,10 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         esc = (p) -> new RegExp RegExp.escape "#{p}"
         match = (k) -> (b) -> esc(k).test b.target
         sorter = (v, k) -> _.findIndex bowerings, match(k)
+        finder = (v, k) -> _.find bowerings, match(k)
         list(paths: yes, options).on "end", (paths) ->
+            locate = (f) -> _.findKey paths, resides(f)
+            resides = (f) -> (x) -> f is x or try f in x
             bowerings.cached = (context) ->
                 sorted = _.sortBy paths, sorter
                 files = _.flatten _.values sorted
@@ -132,4 +136,8 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
                     ext = (e) -> path.extname(file) is e
                     context.scripts.push file if ext ".js"
                     context.sheets.push file if ext ".css"
+                    bowering = finder null, locate(file)
+                    entry = bowering?.entry or new String
+                    return if _.isEmpty entry.toString()
+                    context.scripts.push "#{file}/#{entry}"
             bowerings.cached context; next()

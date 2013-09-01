@@ -58,6 +58,7 @@ module.exports.Preflight = class Preflight extends BowerSupport
     # going to be necessary no matter what sort of functionality is
     # is going to be implemented. Most of these libraries required
     # by the internal implementations of the various subcomponents.
+    @bower "async", "lib/async.js"
     @bower "eventemitter2"
     @bower "bootstrap#3"
     @bower "lodash"
