@@ -43,6 +43,7 @@ compose = require "./../nucleus/compose"
 {STATUS_CODES} = require "http"
 {Barebones} = require "./skeleton"
 {remote, external} = require "./remote"
+{coffee} = require "./runtime"
 
 # This is an abstract service that provides the unique functionality
 # of rendering the server side store code on the client side with all
@@ -75,6 +76,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # method is wired in an synchronous way for greater functionality.
     # This is the place where you would be importing the dependencies.
     prelude: (context, request, next) ->
+        runtime = "(#{coffee}).apply(this)"
+        context.sources.unshift runtime
         context.service = @constructor.identify()
         context.session = request.session
         context.uuid = request: request.uuid
