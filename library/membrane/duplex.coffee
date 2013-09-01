@@ -112,15 +112,15 @@ module.exports.Duplex = class Duplex extends Preflight
             error.message = message.toString(); throw error
         failed = "failed to created Socket.IO connection"
         throw new Error failed unless @socket.emit
-        chai.assert _.isFunction o = Marshal.serialize
-        chai.assert _.isFunction i = Marshal.deserialize
+        assert _.isFunction o = Marshal.serialize
+        assert _.isFunction i = Marshal.deserialize
         p = "an exception happend at the server provider"
         @socket.on "exception", (e) -> console.error p, e
         for provider in @providers then do (provider) =>
             console.log "register context provider: #{provider}"
             this[provider] = (parameters..., callback) ->
                 noCallback = "#{callback} is not a callback"
-                chai.assert _.isFunction(callback), noCallback
+                assert _.isFunction(callback), noCallback
                 deliver = => callback.apply this, i(arguments)
                 @socket.emit provider, o(parameters)..., deliver
 
