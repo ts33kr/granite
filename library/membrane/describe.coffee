@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 asciify = require "asciify"
 connect = require "connect"
-assert = require "assert"
+{assert} = require "chai"
 logger = require "winston"
 events = require "eventemitter2"
 colors = require "colors"

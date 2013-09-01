@@ -23,7 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
-assert = require "assert"
+{assert} = require "chai"
 logger = require "winston"
 uuid = require "node-uuid"
 events = require "eventemitter2"
