@@ -83,7 +83,6 @@ module.exports.Duplex = class Duplex extends Screenplay
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
         context.scripts.push "/socket.io/socket.io.js"
-        context.sources.push "var __slice = [].slice"
         context.duplex = tools.urlWithHost yes, @location()
         context.providers = new Array
         _.forIn this, (value, name, service) =>
