@@ -219,9 +219,9 @@ module.exports.Generic = class Generic extends events.EventEmitter2
         rserver = "Running HTTP server at %s:%s".magenta
         logger.info rserver, hostname, server.port
         @server = http.createServer @connect
+        @server?.listen server.port, hostname
         @server.on "connection", (socket) ->
             socket.setNoDelay yes
-        @server?.listen server.port, hostname
 
     # Setup and attach Socket.IO handlers to each of the servers.
     # That is HTTP and HTTPS servers that are running and listening
