@@ -75,7 +75,11 @@ module.exports.Barebones = class Barebones extends WithHooks
     # exact process of how it is being documented depends on how the
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
-    @describe @prototype.OPTIONS, (method, service) ->
+    @OPTIONS (method, service, kernel) ->
+        @github "ts33kr", "granite", "library/membrane/skeleton.coffee"
+        @relevant "ts33kr.github.io/granite/membrane/skeleton.html"
         @notes "This method is default implemented for each service"
         @synopsis "Get a set of HTTP methods supported by service"
         @outputs "An array of supported methods, JSON or string"
+        @markings framework: "critical", stable: "positive"
+        @version kernel.package.version or undefined
