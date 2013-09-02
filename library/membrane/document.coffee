@@ -158,6 +158,17 @@ module.exports.Document = class Document extends events.EventEmitter2
         @emit "relevant", arguments...
         (@$relevant ?= []).push relevant
 
+    # Either get or set the mimes information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # The mimes should be array that contains a valid MIME types.
+    mimes: (mimes) ->
+        return @$mimes if arguments.length is 0
+        noMimes = "the mimes should be an array"
+        assert _.isArray(mimes), noMimes
+        @emit "mimes", arguments...
+        (@$mimes ?= []).push mimes
+
     # Either get or set the markings information of the method that
     # is being described by this document. If you do no supply any
     # arguments this method will return already described failures.

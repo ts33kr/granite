@@ -83,3 +83,4 @@ module.exports.Barebones = class Barebones extends WithHooks
         @outputs "An array of supported methods, JSON or string"
         @markings framework: "critical", stable: "positive"
         @version kernel.package.version or undefined
+        @mimes ["application/json", "text/html"]
