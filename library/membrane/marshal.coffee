@@ -56,5 +56,6 @@ module.exports.Marshal = remote -> class Marshal extends Object
     @serialize: (sequence) -> _.toArray _.cloneDeep sequence, ->
         possibleError = (o) -> o.message? and o.stack?
         value = _.head arguments or undefined
+        return value unless _.isObject value
         return unless possibleError(value) is yes
         message: value.message, stack: value.stack
