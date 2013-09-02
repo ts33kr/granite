@@ -62,20 +62,28 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
             identify: constructor.identify()
             patterns: _.map constructor.resources, "source"
             methods: _.map record.methods, (doc, method) ->
-                notes: doc.notes()
-                leads: doc.leads()
-                failure: doc.failure()
+                github: doc.github()
+                relevant: doc.relevant()
+                markings: doc.markings()
                 argument: doc.argument()
                 synopsis: doc.synopsis()
+                version: doc.version()
+                failure: doc.failure()
                 outputs: doc.outputs()
                 inputs: doc.inputs()
+                notes: doc.notes()
+                leads: doc.leads()
                 method: method
 
     # This block describes certain method of abrbitrary service. The
     # exact process of how it is being documented depends on how the
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
-    @GET (method, service) ->
+    @GET (method, service, kernel) ->
+        @github "ts33kr", "granite", "library/exposure/apidoc.coffee"
+        @relevant "ts33kr.github.io/granite/exposure/apidoc.html"
         @synopsis "Get all of the APIs available in the system"
         @outputs "An array of objects, each describes a service"
         @notes "See the Document class for the API structure"
+        @markings framework: "critical", stable: "positive"
+        @version kernel.package.version or undefined

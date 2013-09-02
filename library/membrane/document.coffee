@@ -128,3 +128,54 @@ module.exports.Document = class Document extends events.EventEmitter2
         (@$failure ?= []).push
             reasoning: reasoning
             code: code
+
+    # Either get or set the Github information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # Each consists of a username, the repository name and the path.
+    github: (username, repository, path) ->
+        return @$github if arguments.length is 0
+        noUsername = "the username must be a string"
+        noRepository = "the repository must be a string"
+        noPath = "the path name must be a valid string"
+        assert _.isString(username), noUsername
+        assert _.isString(repository), noRepository
+        assert _.isString(path), noPath
+        @emit "github", arguments...
+        (@$github ?= []).push
+            repository: repository
+            username: username
+            path: path
+
+    # Either get or set the relevant information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # The relevant should be a string that contains a valid URL.
+    relevant: (relevant) ->
+        return @$relevant if arguments.length is 0
+        noRelevant = "the relevant should be a string"
+        assert _.isString(relevant), noRelevant
+        @emit "relevant", arguments...
+        (@$relevant ?= []).push relevant
+
+    # Either get or set the markings information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # The markings should be an object of `marking: level` values.
+    markings: (markings) ->
+        return @$markings if arguments.length is 0
+        noMarkings = "the markings should be a object"
+        assert _.isObject(markings), noMarkings
+        @emit "markings", arguments...
+        (@$markings ?= []).push markings
+
+    # Either get or set the version information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # The version should be a string with an arbitrary contents.
+    version: (version) ->
+        return @$version if arguments.length is 0
+        noVersion = "the version should be a string"
+        assert _.isString(version), noVersion
+        @emit "version", arguments...
+        @$version = version
