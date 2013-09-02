@@ -81,8 +81,8 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
     @GET (method, service, kernel) ->
-        @github "ts33kr", "granite", "library/exposure/apidoc.coffee"
         @relevant "ts33kr.github.io/granite/exposure/apidoc.html"
+        @github "ts33kr", "granite", "library/exposure/apidoc.coffee"
         @synopsis "Get all of the APIs available in the system"
         @outputs "An array of objects, each describes a service"
         @notes "See the Document class for the API structure"
