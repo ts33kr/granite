@@ -28,3 +28,7 @@ scenario, when one or more programmers have to do the job of an entire
 team. The framework provides a unique way of the client/server site
 integration that allows for entirely transparent data and event passing.
 The overall architecture of Granite makes it perfect for engineers.
+Granite makes hard emphasis on the decomposed objective architecture
+in order to provide enterprise level design and make the factor of
+the reusable code sky high. It also embeds and provides support for
+the community standard sort of toolkits, such as NPM, Bower, Cakefile.
