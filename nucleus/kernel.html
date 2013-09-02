@@ -183,7 +183,9 @@ for instantiating, configuring and launching up the servers.</p></div></div><div
         <span class="nv">rserver = </span><span class="s">&quot;Running HTTP server at %s:%s&quot;</span><span class="p">.</span><span class="nx">magenta</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">rserver</span><span class="p">,</span> <span class="nx">hostname</span><span class="p">,</span> <span class="nx">server</span><span class="p">.</span><span class="nx">port</span>
         <span class="vi">@server = </span><span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span> <span class="nx">@connect</span>
-        <span class="nx">@server</span><span class="o">?</span><span class="p">.</span><span class="nx">listen</span> <span class="nx">server</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span> <span class="nx">hostname</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup and attach Socket.IO handlers to each of the servers.
+        <span class="nx">@server</span><span class="o">?</span><span class="p">.</span><span class="nx">listen</span> <span class="nx">server</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span> <span class="nx">hostname</span>
+        <span class="nx">@server</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connection&quot;</span><span class="p">,</span> <span class="nf">(socket) -&gt;</span>
+            <span class="nx">socket</span><span class="p">.</span><span class="nx">setNoDelay</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup and attach Socket.IO handlers to each of the servers.
 That is HTTP and HTTPS servers that are running and listening
 for new connections. The kernel itself does not use the sockets
 it just sets it up. Please refer to the Socket.IO docs for info.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupSocketServers: </span><span class="nf">-&gt;</span>

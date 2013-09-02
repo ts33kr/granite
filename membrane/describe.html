@@ -46,7 +46,16 @@ provide not only function for definition but also for retrieval of
 the documentation on either the per-service or all-at-once basis.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Descriptor = </span><span class="k">class</span> <span class="nx">Descriptor</span> <span class="k">extends</span> <span class="nx">stubs</span><span class="p">.</span><span class="nx">WithHooks</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
-mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Traverse all of the services that are registered with the router
+mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Define a set of aliases that allow for extremely convenient
+and short way of running the description against the REST
+methods. These definitions proxy the calls from static scope
+to the prototype scope, and implicitly run the description
+routine on the targeted REST methods. Prefer using these.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@OPTIONS = </span><span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">OPTIONS</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+    <span class="vi">@DELETE = </span><span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">DELETE</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+    <span class="vi">@PATCH = </span><span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">PATCH</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+    <span class="vi">@POST = </span><span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">POST</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+    <span class="vi">@GET = </span><span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">GET</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+    <span class="vi">@PUT = </span><span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">PUT</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Traverse all of the services that are registered with the router
 and collect the documentation for each method, then given this
 information, build a hierarhical tree object of all the methods
 and the services that implement them and return to the invoker.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">collectDescriptions: </span><span class="nf">(substitution) -&gt;</span>
@@ -74,8 +83,11 @@ This approach gives unique ability to build self documented APIs.</p></div></div
         <span class="nv">noDescriptor = </span><span class="s">&quot;The </span><span class="si">#{</span><span class="nx">descriptor</span><span class="si">}</span><span class="s"> is not a descriptor&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">method</span><span class="p">),</span> <span class="nx">noMethod</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">descriptor</span><span class="p">),</span> <span class="nx">noDescriptor</span>
+        <span class="nv">previous = </span><span class="nx">method</span><span class="p">.</span><span class="nb">document</span><span class="o">?</span><span class="p">.</span><span class="nx">descriptor</span>
         <span class="nx">method</span><span class="p">.</span><span class="nb">document</span> <span class="o">?=</span> <span class="k">new</span> <span class="nx">Document</span>
-        <span class="nv">method.document.descriptor = </span><span class="nx">descriptor</span>
+        <span class="nv">method.document.descriptor = </span><span class="nf">-&gt;</span>
+            <span class="nx">previous</span><span class="o">?</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span>
+            <span class="nx">descriptor</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span>
         <span class="nv">method.document.blankSlate = </span><span class="nf">-&gt;</span>
             <span class="nb">document</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Document</span>
             <span class="nb">document</span><span class="p">.</span><span class="nv">descriptor = </span><span class="nx">@descriptor</span>

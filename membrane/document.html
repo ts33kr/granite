@@ -103,4 +103,51 @@ Each failure consists of the expected code and reason for fail</p></div></div><d
         <span class="nx">@emit</span> <span class="s">&quot;failure&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
         <span class="p">(</span><span class="nx">@$failure</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span>
             <span class="nv">reasoning: </span><span class="nx">reasoning</span>
-            <span class="nv">code: </span><span class="nx">code</span></div></div></div></div></body></html>
+            <span class="nv">code: </span><span class="nx">code</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the Github information of the method that
+is being described by this document. If you do no supply any
+arguments this method will return already described failures.
+Each consists of a username, the repository name and the path.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">github: </span><span class="nf">(username, repository, path) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$github</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">noUsername = </span><span class="s">&quot;the username must be a string&quot;</span>
+        <span class="nv">noRepository = </span><span class="s">&quot;the repository must be a string&quot;</span>
+        <span class="nv">noPath = </span><span class="s">&quot;the path name must be a valid string&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">username</span><span class="p">),</span> <span class="nx">noUsername</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">repository</span><span class="p">),</span> <span class="nx">noRepository</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">path</span><span class="p">),</span> <span class="nx">noPath</span>
+        <span class="nx">@emit</span> <span class="s">&quot;github&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="p">(</span><span class="nx">@$github</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span>
+            <span class="nv">repository: </span><span class="nx">repository</span>
+            <span class="nv">username: </span><span class="nx">username</span>
+            <span class="nv">path: </span><span class="nx">path</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the relevant information of the method that
+is being described by this document. If you do no supply any
+arguments this method will return already described failures.
+The relevant should be a string that contains a valid URL.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">relevant: </span><span class="nf">(relevant) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$relevant</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">noRelevant = </span><span class="s">&quot;the relevant should be a string&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">relevant</span><span class="p">),</span> <span class="nx">noRelevant</span>
+        <span class="nx">@emit</span> <span class="s">&quot;relevant&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="p">(</span><span class="nx">@$relevant</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">relevant</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the mimes information of the method that
+is being described by this document. If you do no supply any
+arguments this method will return already described failures.
+The mimes should be array that contains a valid MIME types.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">mimes: </span><span class="nf">(mimes) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$mimes</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">noMimes = </span><span class="s">&quot;the mimes should be an array&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">mimes</span><span class="p">),</span> <span class="nx">noMimes</span>
+        <span class="nx">@emit</span> <span class="s">&quot;mimes&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="p">(</span><span class="nx">@$mimes</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">mimes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the markings information of the method that
+is being described by this document. If you do no supply any
+arguments this method will return already described failures.
+The markings should be an object of <code>marking: level</code> values.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">markings: </span><span class="nf">(markings) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$markings</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">noMarkings = </span><span class="s">&quot;the markings should be a object&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">markings</span><span class="p">),</span> <span class="nx">noMarkings</span>
+        <span class="nx">@emit</span> <span class="s">&quot;markings&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="p">(</span><span class="nx">@$markings</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">markings</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the version information of the method that
+is being described by this document. If you do no supply any
+arguments this method will return already described failures.
+The version should be a string with an arbitrary contents.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">version: </span><span class="nf">(version) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$version</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">noVersion = </span><span class="s">&quot;the version should be a string&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">version</span><span class="p">),</span> <span class="nx">noVersion</span>
+        <span class="nx">@emit</span> <span class="s">&quot;version&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="vi">@$version = </span><span class="nx">version</span></div></div></div></div></body></html>
