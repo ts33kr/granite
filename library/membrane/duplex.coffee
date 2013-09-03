@@ -154,8 +154,8 @@ module.exports.Duplex = class Duplex extends Preflight
             providing = value?.providing or null
             return unless _.isFunction providing
             assert _.isFunction(value), internal
-            bound = (s) => providing(socket).bind this
-            socket.on name, bound(socket)
+            bound = (s) => providing(socket).bind @
+            socket.on name, bound socket
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
