@@ -144,7 +144,7 @@ module.exports.Duplex = class Duplex extends Preflight
         throw new Error failed unless @socket.emit
         p = "an exception happend at the server provider"
         @socket.on "exception", (e) -> console.error p, e
-        assert @unrollProviders; @unrollProviders @socket
+        assert @consumeProviders; @consumeProviders @socket
         open = "notified the service of an opened channel"
         args = [_.omit(this, "socket"), -> console.log open]
         n.apply @, args if _.isFunction n = @channelOpened
@@ -154,7 +154,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # unroll and set up all the providers that were deployed by the
     # server site in the transferred context. Refer to the server
     # method called `deployProviders` for more information on it.
-    unrollProviders: external (socket) ->
+    consumeProviders: external (socket) ->
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
         for provider in @providers then do (provider) =>
@@ -170,7 +170,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # in order to attach all of the providers founds in this service
     # to the opened channel. Refer to the `register` implementation
     # for more information on when, where and how this is happening.
-    deployProviders: (context, socket) ->
+    publishProviders: (context, socket) ->
         _.forIn this, (value, name, service) =>
             internal = "the #{value} is not function"
             providing = value?.providing or null
@@ -190,8 +190,8 @@ module.exports.Duplex = class Duplex extends Preflight
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
         context.on "connection", (socket) =>
-            dep = => @deployProviders context, socket
-            prescreen = @upstreamAsync "prescreen", dep
+            pub = => @publishProviders context, socket
+            prescreen = @upstreamAsync "prescreen", pub
             prescreen context, socket
         return next()
 
