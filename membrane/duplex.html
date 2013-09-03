@@ -87,7 +87,20 @@ This is the place where you would be importing the dependencies.</p></div></div>
             <span class="nv">providing = </span><span class="nx">value</span><span class="o">?</span><span class="p">.</span><span class="nx">providing</span> <span class="o">or</span> <span class="kc">null</span>
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">providing</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">providers</span><span class="p">.</span><span class="nx">push</span> <span class="nx">name</span>
-        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an external method that will be automatically executed
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internal provider that gets automatically invoked once client
+establishes a protected Socket.IO channel back to the service
+instance at the server site. This implementation that uses the
+<code>upstreamAsync</code> mechanism to invoke the <code>connected</code> method at all
+peers of the inheritance hierarchy. Refer to the method for info.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">channelOpened: </span><span class="nx">@provider</span> <span class="nf">(context, callback) -&gt;</span>
+        <span class="nv">identify = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="o">?</span><span class="p">()</span>
+        <span class="nv">isocket = </span><span class="s">&quot;Notified from socket %s&quot;</span>
+        <span class="nv">message = </span><span class="s">&quot;Inbound duplex connection at %s&quot;</span>
+        <span class="nv">request = </span><span class="s">&quot;Acknowledged from request at %s&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">underline</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">request</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">url</span><span class="p">.</span><span class="nx">underline</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">isocket</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span><span class="p">.</span><span class="nx">id</span>
+        <span class="nv">connected = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;connected&quot;</span><span class="p">,</span> <span class="nx">callback</span>
+        <span class="nx">connected</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span><span class="p">;</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an external method that will be automatically executed
 on the client site by the duplex implementation. It sets up a
 client end of the Socket.IO channel and creates wrapper around
 all the providers residing in the current service implementation.
@@ -107,7 +120,10 @@ Refer to other <code>Duplex</code> methods for understanding what goes on.</p></
                 <span class="nv">noCallback = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">callback</span><span class="si">}</span><span class="s"> is not a callback&quot;</span>
                 <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">callback</span><span class="p">),</span> <span class="nx">noCallback</span>
                 <span class="nv">deliver = </span><span class="o">=&gt;</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">i</span><span class="p">(</span><span class="nx">arguments</span><span class="p">)</span>
-                <span class="nx">@socket</span><span class="p">.</span><span class="nx">emit</span> <span class="nx">provider</span><span class="p">,</span> <span class="nx">o</span><span class="p">(</span><span class="nx">parameters</span><span class="p">)...,</span> <span class="nx">deliver</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to registering the service
+                <span class="nx">@socket</span><span class="p">.</span><span class="nx">emit</span> <span class="nx">provider</span><span class="p">,</span> <span class="nx">o</span><span class="p">(</span><span class="nx">parameters</span><span class="p">)...,</span> <span class="nx">deliver</span>
+        <span class="nv">open = </span><span class="s">&quot;notified the service of an opened channel&quot;</span>
+        <span class="nv">args = </span><span class="p">[</span><span class="nx">_</span><span class="p">.</span><span class="nx">omit</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s">&quot;socket&quot;</span><span class="p">),</span> <span class="nf">-&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="nx">open</span><span class="p">]</span>
+        <span class="nx">n</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">args</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nv">n = </span><span class="nx">@channelOpened</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to registering the service
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
