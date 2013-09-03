@@ -101,6 +101,22 @@ module.exports.Duplex = class Duplex extends Preflight
             context.providers.push name
         return next()
 
+    # An internal provider that gets automatically invoked once client
+    # establishes a protected Socket.IO channel back to the service
+    # instance at the server site. This implementation that uses the
+    # `upstreamAsync` mechanism to invoke the `connected` method at all
+    # peers of the inheritance hierarchy. Refer to the method for info.
+    channelOpened: @provider (context, callback) ->
+        identify = @constructor.identify?()
+        isocket = "Notified from socket %s"
+        message = "Inbound duplex connection at %s"
+        request = "Acknowledged from request at %s"
+        logger.debug message.magenta, identify.underline
+        logger.debug request.magenta, context.url.underline
+        logger.debug isocket.magenta, callback.socket.id
+        connected = @upstreamAsync "connected", callback
+        connected context, callback.socket; this
+
     # This is an external method that will be automatically executed
     # on the client site by the duplex implementation. It sets up a
     # client end of the Socket.IO channel and creates wrapper around
@@ -123,6 +139,9 @@ module.exports.Duplex = class Duplex extends Preflight
                 assert _.isFunction(callback), noCallback
                 deliver = => callback.apply this, i(arguments)
                 @socket.emit provider, o(parameters)..., deliver
+        open = "notified the service of an opened channel"
+        args = [_.omit(this, "socket"), -> console.log open]
+        n.apply @, args if _.isFunction n = @channelOpened
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
