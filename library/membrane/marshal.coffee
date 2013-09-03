@@ -47,7 +47,13 @@ module.exports.Marshal = remote -> class Marshal extends Object
     # environment. Typically you would use this on the parameter
     # list from a remote function. It performs deep deserialization
     # of objects from the plain JavaScript objects to be recovered.
-    @deserialize: (sequence) -> sequence
+    @deserialize: (sequence) -> _.toArray _.cloneDeep sequence, ->
+        possibleError = (o) -> o.message? and o.stack?
+        value = _.head arguments or undefined
+        return value unless _.isObject value
+        return unless possibleError(value) is yes
+        error = new Error value.message
+        error.stack = value.stack; error
 
     # Prepare the sequence of values to be transferred to another
     # environment. Typically you would use this on the parameter
