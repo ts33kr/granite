@@ -39,6 +39,7 @@ tools = require "./../nucleus/tools"
 extendz = require "./../nucleus/extends"
 compose = require "./../nucleus/compose"
 
+{EOL} = require "os"
 {format} = require "util"
 {STATUS_CODES} = require "http"
 {Barebones} = require "./skeleton"
@@ -154,6 +155,18 @@ module.exports.Screenplay = class Screenplay extends Barebones
                 context.sources.push format(template, params)
         return context
 
+    # An internal routine that is called on the context object prior
+    # to flushing it down to the client. This method gathers all the
+    # JS sources in the context and minifies & compresses those into
+    # one blob using the library called UglifyJS2. See it for info.
+    compressSources: (context) ->
+        sources = _.toArray context.sources
+        emptySources = "the JS sources are empty"
+        assert not _.isEmpty(sources), emptySources
+        assert minify = require("uglify-js").minify
+        minified = minify sources, fromString: yes
+        context.sources = [minified.code]; context
+
     # Get the contents of the resources at the established path. It
     # is a good idea for this HTTP method to be idempotent. As the
     # rule, this method does not have to alter any contents or data
@@ -168,6 +181,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         prelude = @upstreamAsync "prelude", =>
             context = @deployContext context
             context = @issueAutocalls context
+            context = @compressSources context
             compiled = @compileContext context
             length = compiled.length or undefined
             response.setHeader "Content-Length", length
