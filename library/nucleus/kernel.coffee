@@ -276,6 +276,7 @@ module.exports.Generic = class Generic extends events.EventEmitter2
         @connectStaticAssets()
         @connect.use connect.query()
         @connect.use connect.favicon()
+        @connect.use connect.compress()
         @connect.use connect.bodyParser()
         @connect.use connect.cookieParser()
         @connect.use plumbs.capture this
