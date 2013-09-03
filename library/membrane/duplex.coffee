@@ -60,6 +60,20 @@ module.exports.Duplex = class Duplex extends Preflight
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
+    # A usable hook that gets asynchronously invoked once a new
+    # channel (socket) gets connected and acknowledges by the server.
+    # The method gets a set of parameters that maybe be useful to
+    # have by the actual implementation. Please remember thet the
+    # method is asynchronously wired, so be sure to call `next`.
+    connected: (context, socket, next) -> next()
+
+    # A usable hook that gets asynchronously invoked once a new
+    # channel (socket) gets connected to the Socket.IO hub in the
+    # context of the current service. The channel will be considered
+    # established only when prescreen calls the next procedure. If
+    # you wish to decline, just don't call `next` and close socket.
+    prescreen: (context, socket, next) -> next()
+
     # An internal, static method that is used to obtain gurading
     # domains for each of the declared server site providers. Please
     # refer to the Node.js documentation for more information on
