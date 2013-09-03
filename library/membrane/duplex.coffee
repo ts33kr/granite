@@ -60,6 +60,24 @@ module.exports.Duplex = class Duplex extends Preflight
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
+    # An internal, static method that is used to obtain gurading
+    # domains for each of the declared server site providers. Please
+    # refer to the Node.js documentation for more information on
+    # the domains and error handling itself. This method is generally
+    # used only once per the domain declaration. See `provider`.
+    @guarded: (method, socket) ->
+        guarded = domain.create()
+        identify = @identify().underline
+        assert _.isFunction o = Marshal.serialize
+        assert _.isFunction i = Marshal.deserialize
+        location = "Breakpoint at @#{method}#%s"
+        message = "Error running provider:\r\n%s"
+        guarded.on "error", (error) ->
+            logger.error location.red, identify
+            logger.error message.red, error.stack
+            socket.emit "exception", o([error])...
+            try socket.disconnect?()
+
     # A utility method to mark the certain function as the provider.
     # The method returns the original function back so it can be used
     # as the normal function, nothing disrupts that. When function is
@@ -74,11 +92,7 @@ module.exports.Duplex = class Duplex extends Preflight
         assert _.isFunction i = Marshal.deserialize
         method.provider = Object.create {}
         method.providing = (socket) -> (args..., callback) ->
-            (guarded = domain.create()).on "error", (error) ->
-                message = "Error running provider:\r\n%s"
-                logger.error message.red, error.stack
-                socket.emit "exception", o([error])...
-                try socket.disconnect?()
+            guarded = @constructor.guarded? method, socket
             assert _.isFunction g = guarded.run.bind guarded
             execute = (a...) => g => method.apply this, i(a)
             respond = (a...) => g => callback.apply this, o(a)
