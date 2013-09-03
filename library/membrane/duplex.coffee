@@ -64,7 +64,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # The method returns the original function back so it can be used
     # as the normal function, nothing disrupts that. When function is
     # marked as a provider, it will be exposed via Socket.IO channel
-    # that this compound/ABC sets up: a half duplex web sockets channel.
+    # that this compound sets up: a half duplex web sockets channel.
     @provider: (method) ->
         noMethod = "a #{method} is not a function"
         invalidArgs = "has to have at least 1 parameter"
