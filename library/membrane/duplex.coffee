@@ -143,6 +143,20 @@ module.exports.Duplex = class Duplex extends Preflight
         args = [_.omit(this, "socket"), -> console.log open]
         n.apply @, args if _.isFunction n = @channelOpened
 
+    # After a both ways duplex channel has been established between
+    # the client site and the server side, this method will be invoked
+    # in order to attach all of the providers founds in this service
+    # to the opened channel. Refer to the `register` implementation
+    # for more information on when, where and how this is happening.
+    deployProviders: (context, socket) ->
+        _.forIn this, (value, name, service) =>
+            internal = "the #{value} is not function"
+            providing = value?.providing or null
+            return unless _.isFunction providing
+            assert _.isFunction(value), internal
+            bound = (s) => providing(socket).bind this
+            socket.on name, bound(socket)
+
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
@@ -153,14 +167,10 @@ module.exports.Duplex = class Duplex extends Preflight
         context = kernel.secureSocket.of @location()
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
-        _.forIn this, (value, name, service) =>
-            internal = "the #{value} is not function"
-            providing = value?.providing or null
-            return unless _.isFunction providing
-            assert _.isFunction(value), internal
-            bound = (s) => providing(s).bind this
-            binder = (s) => s.on name, bound(s)
-            context.on "connection", binder
+        context.on "connection", (socket) =>
+            dep = => @deployProviders context, socket
+            prescreen = @upstreamAsync "prescreen", dep
+            prescreen context, socket
         return next()
 
     # A hook that will be called prior to unregistering the service
@@ -173,10 +183,5 @@ module.exports.Duplex = class Duplex extends Preflight
         context = kernel.secureSocket.of @location()
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
-        _.forIn this, (value, name, service) =>
-            internal = "the #{value} is not function"
-            providing = value?.providing or null
-            return unless _.isFunction providing
-            assert _.isFunction(value), internal
-            context.removeAllListeners "connection"
+        context.removeAllListeners "connection"
         return next()
