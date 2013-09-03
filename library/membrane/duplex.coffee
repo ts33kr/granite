@@ -128,20 +128,28 @@ module.exports.Duplex = class Duplex extends Preflight
             error.message = message.toString(); throw error
         failed = "failed to created Socket.IO connection"
         throw new Error failed unless @socket.emit
-        assert _.isFunction o = Marshal.serialize
-        assert _.isFunction i = Marshal.deserialize
         p = "an exception happend at the server provider"
         @socket.on "exception", (e) -> console.error p, e
+        assert @unrollProviders; @unrollProviders @socket
+        open = "notified the service of an opened channel"
+        args = [_.omit(this, "socket"), -> console.log open]
+        n.apply @, args if _.isFunction n = @channelOpened
+
+    # An external routine that will be invoked once a both way duplex
+    # channel is established at the client site. This will normally
+    # unroll and set up all the providers that were deployed by the
+    # server site in the transferred context. Refer to the server
+    # method called `deployProviders` for more information on it.
+    unrollProviders: external (socket) ->
+        assert _.isFunction o = Marshal.serialize
+        assert _.isFunction i = Marshal.deserialize
         for provider in @providers then do (provider) =>
             console.log "register context provider: #{provider}"
             this[provider] = (parameters..., callback) ->
                 noCallback = "#{callback} is not a callback"
                 assert _.isFunction(callback), noCallback
                 deliver = => callback.apply this, i(arguments)
-                @socket.emit provider, o(parameters)..., deliver
-        open = "notified the service of an opened channel"
-        args = [_.omit(this, "socket"), -> console.log open]
-        n.apply @, args if _.isFunction n = @channelOpened
+                socket.emit provider, o(parameters)..., deliver
 
     # After a both ways duplex channel has been established between
     # the client site and the server side, this method will be invoked
