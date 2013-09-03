@@ -128,11 +128,14 @@ module.exports.Screenplay = class Screenplay extends Barebones
         prepared = JSON.stringify context
         runtime = "(#{coffee}).apply(this)"
         installer = "var context = #{prepared}"
+        em = -> _.extend @, EventEmitter2.prototype
+        applicator = "(#{em}).apply(context)"
         _.forIn this, (value, key, object) ->
             return unless _.isObject value.remote
             return unless src = value.remote.source
             set = "context.%s = (#{src})()"
             installer += "\r\n#{format set, key}\r\n"
+        context.sources.unshift applicator
         context.sources.unshift installer
         context.sources.unshift runtime
         return context
