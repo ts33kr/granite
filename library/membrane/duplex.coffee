@@ -62,10 +62,17 @@ module.exports.Duplex = class Duplex extends Preflight
 
     # A usable hook that gets asynchronously invoked once a new
     # channel (socket) gets connected to the Socket.IO hub in the
-    # context of the current service. The channel will be considered
-    # established only when prescreen calls the next procedure. If
+    # context of the current service. The channel will be allowed
+    # to proceed only when prescreen calls the next procedure. If
     # you wish to decline, just don't call `next` and close socket.
     prescreen: (context, socket, next) -> next()
+
+    # A usable hook that gets asynchronously invoked once a new
+    # channel (socket) gets past the prescreening hook and is rated
+    # to be good to go through the screening process. This is good
+    # place to implementation various schemes for authorization. If
+    # you wish to decline, just don't call `next` and close socket.
+    screening: (context, socket, binder, next) -> next()
 
     # A usable hook that gets asynchronously invoked once a new
     # channel (socket) gets connected and acknowledges by the server.
@@ -155,14 +162,15 @@ module.exports.Duplex = class Duplex extends Preflight
         try @socket = io.connect @duplex catch error
             message = "blew up Socket.IO: #{error.message}"
             error.message = message.toString(); throw error
-        failed = "failed to created Socket.IO connection"
-        throw new Error failed unless @socket.emit
+        failed = "failed to create Socket.IO connection"
+        assert _.isFunction(@socket.emit), failed
         p = "an exception happend at the server provider"
         @socket.on "exception", (e) -> console.error p, e
-        assert @consumeProviders; @consumeProviders @socket
-        open = "notified the service of an opened channel"
-        args = [_.omit(this, "socket"), -> console.log open]
-        n.apply @, args if _.isFunction n = @channelOpened
+        @socket.emit "screening", _.omit(@, "socket"), (ack) =>
+            assert @consumeProviders; @consumeProviders @socket
+            open = "notified the service of an opened channel"
+            confirm = => console.log open; @emit "booted"
+            @channelOpened _.omit(@, "socket"), confirm
 
     # An external routine that will be invoked once a both way duplex
     # channel is established at the client site. This will normally
@@ -185,14 +193,14 @@ module.exports.Duplex = class Duplex extends Preflight
     # in order to attach all of the providers founds in this service
     # to the opened channel. Refer to the `register` implementation
     # for more information on when, where and how this is happening.
-    publishProviders: (context, socket) ->
+    publishProviders: (context, socket, next) ->
         _.forIn this, (value, name, service) =>
             internal = "the #{value} is not function"
             providing = value?.providing or null
             return unless _.isFunction providing
             assert _.isFunction(value), internal
             bound = (s) => providing(socket).bind @
-            socket.on name, bound socket
+            socket.on name, bound socket; next()
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
@@ -205,8 +213,11 @@ module.exports.Duplex = class Duplex extends Preflight
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
         context.on "connection", (socket) =>
-            pub = => @publishProviders context, socket
-            prescreen = @upstreamAsync "prescreen", pub
+            prescreen = @upstreamAsync "prescreen", =>
+                socket.on "screening", (binder, next) =>
+                    screening = @upstreamAsync "screening", =>
+                        @publishProviders context, socket, next
+                    screening context, socket, binder
             prescreen context, socket
         return next()
 
