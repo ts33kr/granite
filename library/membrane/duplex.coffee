@@ -77,6 +77,7 @@ module.exports.Duplex = class Duplex extends Preflight
             logger.error message.red, error.stack
             socket.emit "exception", o([error])...
             try socket.disconnect?()
+        return guarded
 
     # A utility method to mark the certain function as the provider.
     # The method returns the original function back so it can be used
