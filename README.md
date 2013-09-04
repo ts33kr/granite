@@ -16,7 +16,7 @@ services with a rock solid architecture. Granite also bundles some
 unique approaches and systems, such as the class composition system
 along with a unique, code driven approach for crafting UI/UX.
 
-##Concept
+##Concepts
 The Granite framework is built around the concept of being entirely
 code driven. That means it diverts from the modern ideas of heavily
 using markup languages and declarative techniques, such as HTML, CSS,
