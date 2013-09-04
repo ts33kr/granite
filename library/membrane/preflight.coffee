@@ -38,8 +38,8 @@ path = require "path"
 http = require "http"
 util = require "util"
 
-{BowerSupport} = require "./bower"
 {Marshal} = require "./marshal"
+{BowerSupport} = require "./bower"
 
 # This abstract base class service is an extension of the Screenplay
 # family that does some further environment initialization and set
