@@ -44,7 +44,7 @@ url = require "url"
 # encapsulates the necessary internal details as well as provides a
 # set of validators to be used. So in order to create custom ones, you
 # will need to create a descendant of this class and set is as context.
-# The context setting happens on the servies level with the directive.
+# The context setting happens on the service level with the directive.
 module.exports.Context = class Context extends Primitive
 
     # Create a new instance of the validation context with the given
@@ -122,7 +122,7 @@ module.exports.Validator = class Validator extends Barebones
         strings = _.map results, message
         response.statusCode = 400
         map = _.object _.keys(results), strings
-        return @fail response, params: map
+        return @reject response, params: map
 
     # Given the request with possible validation contexts appended
     # run all the validator contexts in parallel and wait for the
