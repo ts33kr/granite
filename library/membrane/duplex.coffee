@@ -61,11 +61,11 @@ module.exports.Duplex = class Duplex extends Preflight
     @abstract yes
 
     # A usable hook that gets asynchronously invoked once a new
-    # channel (socket) gets connected to the Socket.IO hub in the
-    # context of the current service. The channel will be allowed
-    # to proceed only when prescreen calls the next procedure. If
-    # you wish to decline, just don't call `next` and close socket.
-    prescreen: (context, socket, next) -> next()
+    # channel (socket) gets connected and acknowledges by the server.
+    # The method gets a set of parameters that maybe be useful to
+    # have by the actual implementation. Please remember thet the
+    # method is asynchronously wired, so be sure to call `next`.
+    connected: (context, socket, next) -> next()
 
     # A usable hook that gets asynchronously invoked once a new
     # channel (socket) gets past the prescreening hook and is rated
@@ -73,13 +73,6 @@ module.exports.Duplex = class Duplex extends Preflight
     # place to implementation various schemes for authorization. If
     # you wish to decline, just don't call `next` and close socket.
     screening: (context, socket, binder, next) -> next()
-
-    # A usable hook that gets asynchronously invoked once a new
-    # channel (socket) gets connected and acknowledges by the server.
-    # The method gets a set of parameters that maybe be useful to
-    # have by the actual implementation. Please remember thet the
-    # method is asynchronously wired, so be sure to call `next`.
-    connected: (context, socket, next) -> next()
 
     # An internal, static method that is used to obtain gurading
     # domains for each of the declared server site providers. Please
@@ -213,12 +206,10 @@ module.exports.Duplex = class Duplex extends Preflight
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
         context.on "connection", (socket) =>
-            prescreen = @upstreamAsync "prescreen", =>
-                socket.on "screening", (binder, next) =>
-                    screening = @upstreamAsync "screening", =>
-                        @publishProviders context, socket, next
-                    screening context, socket, binder
-            prescreen context, socket
+            socket.on "screening", (binder, next) =>
+                screening = @upstreamAsync "screening", =>
+                    @publishProviders context, socket, next
+                screening context, socket, binder
         return next()
 
     # A hook that will be called prior to unregistering the service
