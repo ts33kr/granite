@@ -36,7 +36,7 @@ util = require "util"
 url = require "url"
 
 _ = require "lodash"
-redis = require "redis"
+redisio = require "redis"
 {Barebones} = require "./skeleton"
 
 # This is an ABC service intended to be used only as a compund. It
@@ -79,7 +79,7 @@ module.exports.RedisClient = class RedisClient extends Barebones
         assert _.isObject(options), "invalid Redis options"
         message = "Connecting to Redis at %s:%s"
         logger.info message.cyan.underline, host, port
-        kernel.redis = redis.createClient port, host, options
+        kernel.redis = redisio.createClient port, host, options
         assert _.isObject kernel.redis; next()
 
     # A hook that will be called prior to instantiating the service
