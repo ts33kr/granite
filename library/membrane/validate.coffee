@@ -78,8 +78,7 @@ module.exports.Context = class Context extends Primitive
             custom = _.isString @message
             matches = failed and custom
             error.message = @message if matches
-            @emit "run", error
-            callback error
+            @emit "run", error; callback error
 
 # This is an ABC service intended to be used only as a compund. It
 # provides a complete validation solution for the framework. The
