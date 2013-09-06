@@ -68,6 +68,37 @@ module.exports.Validator = class Validator extends Barebones
         assert _.isFunction(context.prototype.chain), noChain
         @$vcontext = context; return this
 
+    # Given the request with possible validation contexts appended
+    # run all the validator contexts in parallel and wait for the
+    # completion. Once the validation has been completed, call the
+    # continuation routine and pass the validation results to it.
+    validateValues: (storage, continuation) ->
+        notStorage = "a #{storage} is not a storage"
+        notContinuation = "a #{continuation} is not function"
+        transformer = (o) -> (c) -> o.run (e) -> c null, e
+        assert _.isFunction(continuation), notContinuation
+        assert _.isObject(storage), notStorage
+        vcontexts = storage.vcontexts or {}
+        transformed =  _.map _.values(vcontexts), transformer
+        transformed = _.object _.keys(vcontexts), transformed
+        async.parallel transformed, (error, results) =>
+            assert not error, "internal valdation error"
+            errors = _.any _.values(results), _.isObject
+            return continuation.bind(this) errors, results
+
+    # Create a validation context for the parameter designated by
+    # the `name` and add it to the supplied storage. If the `message`
+    # is supplied then it will be forced as an error messages. Use
+    # this method to automatically obtain contex for the parameter.
+    value: (storage, name, message) ->
+        context = @constructor.validationContext?()
+        context = Primitive unless _.isObject context
+        assert storage; value = storage[name]
+        vcontexts = (storage.vcontexts ?= {})
+        return obtain if obtain = vcontexts[name]
+        created = new context value, message
+        vcontexts[name] = created; created
+
 # This is an ABC service intended to be used only as a compund. It
 # provides a complete validation solution for request parameters. The
 # important difference is this validation system supports asynchronous
@@ -194,50 +225,6 @@ module.exports.HValidator = class HValidator extends Validator
         context = Primitive unless _.isObject context
         assert request; value = request.headers?[name]
         vcontexts = request.headers.vcontexts ?= {}
-        return obtain if obtain = vcontexts[name]
-        created = new context value, message
-        vcontexts[name] = created; created
-
-# This is an ABC service intended to be used only as a compund. It
-# provides a complete validation solution for the plain objects. The
-# important difference is this validation system supports asynchronous
-# validators which is what differs it from existent solutions. This
-# validation system is a one-stop-shop for checking all the inputs!
-module.exports.PValidator = class PValidator extends Validator
-
-    # This is a marker that indicates to some internal subsystems
-    # that this class has to be considered abstract and therefore
-    # can not be treated as a complete class implementation. This
-    # mainly is used to exclude or account for abstract classes.
-    @abstract yes
-
-    # Given the request with possible validation contexts appended
-    # run all the validator contexts in parallel and wait for the
-    # completion. Once the validation has been completed, call the
-    # continuation routine and pass the validation results to it.
-    validateValues: (storage, continuation) ->
-        notStorage = "a #{storage} is not a storage"
-        notContinuation = "a #{continuation} is not function"
-        transformer = (o) -> (c) -> o.run (e) -> c null, e
-        assert _.isFunction(continuation), notContinuation
-        assert _.isObject(storage), notStorage
-        vcontexts = storage.vcontexts or {}
-        transformed =  _.map _.values(vcontexts), transformer
-        transformed = _.object _.keys(vcontexts), transformed
-        async.parallel transformed, (error, results) =>
-            assert not error, "internal valdation error"
-            errors = _.any _.values(results), _.isObject
-            return continuation.bind(this) errors, results
-
-    # Create a validation context for the parameter designated by
-    # the `name` and add it to the supplied storage. If the `message`
-    # is supplied then it will be forced as an error messages. Use
-    # this method to automatically obtain contex for the parameter.
-    value: (storage, name, message) ->
-        context = @constructor.validationContext?()
-        context = Primitive unless _.isObject context
-        assert storage; value = storage[name]
-        vcontexts = (storage.vcontexts ?= {})
         return obtain if obtain = vcontexts[name]
         created = new context value, message
         vcontexts[name] = created; created
