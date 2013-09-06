@@ -122,8 +122,10 @@ module.exports.RValidator = class RValidator extends Validator
     param: (request, name, message) ->
         notParams = "the request has no params"
         notRequest = "a #{request} is not a request"
+        notNaming = "invalid parameter name supplied"
         assert _.isObject(request), notRequest
         assert params = request.params, notParams
+        assert _.notEmpty(name), notNaming
         return @value params, name, message
 
     # Given the request with possible validation contexts appended
@@ -176,8 +178,10 @@ module.exports.HValidator = class HValidator extends Validator
     header: (request, name, message) ->
         notHeaders = "the request has no headers"
         notRequest = "a #{request} is not a request"
+        notNaming = "invalid header name supplied"
         assert _.isObject(request), notRequest
         assert headers = request.headers, notHeaders
+        assert _.notEmpty(name), notNaming
         return @value headers, name, message
 
     # Given the request with possible validation contexts appended
