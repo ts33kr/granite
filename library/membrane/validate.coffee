@@ -79,7 +79,7 @@ module.exports.Validator = class Validator extends Barebones
         transformer = (o) -> (c) -> o.run (e) -> c null, e
         assert _.isFunction(continuation), notContinuation
         assert _.isObject(storage), notStorage
-        vcontexts = storage.vcontexts or {}
+        vcontexts = storage.__vcontexts__ or {}
         transformed =  _.map _.values(vcontexts), transformer
         transformed = _.object _.keys(vcontexts), transformed
         async.parallel transformed, (error, results) =>
@@ -97,7 +97,7 @@ module.exports.Validator = class Validator extends Barebones
         context = @constructor.validationContext?()
         context = Primitive unless _.isObject context
         assert storage; value = storage[name]
-        vcontexts = storage.vcontexts ?= {}
+        vcontexts = storage.__vcontexts__ ?= {}
         return obtain if obtain = vcontexts[name]
         created = new context value, message
         vcontexts[name] = created; created
