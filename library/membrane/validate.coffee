@@ -108,7 +108,7 @@ module.exports.RValidator = class RValidator extends Validator
         assert _.isFunction(continuation), notContinuation
         assert _.isObject(response), notResponse
         assert _.isObject(request), notRequest
-        vcontexts = request.vcontexts or {}
+        vcontexts = request.params.vcontexts or {}
         transformed =  _.map _.values(vcontexts), transformer
         transformed = _.object _.keys(vcontexts), transformed
         async.parallel transformed, (error, results) =>
@@ -128,7 +128,72 @@ module.exports.RValidator = class RValidator extends Validator
         context = @constructor.validationContext?()
         context = Primitive unless _.isObject context
         assert request; value = request.params?[name]
-        vcontexts = (request.vcontexts ?= {})
+        vcontexts = request.params.vcontexts ?= {}
+        return obtain if obtain = vcontexts[name]
+        created = new context value, message
+        vcontexts[name] = created; created
+
+# This is an ABC service intended to be used only as a compund. It
+# provides a complete validation solution for request headers. The
+# important difference is this validation system supports asynchronous
+# validators which is what differs it from existent solutions. This
+# validation system is a one-stop-shop for checking all the inputs!
+module.exports.HValidator = class HValidator extends Validator
+
+    # This is a marker that indicates to some internal subsystems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete class implementation. This
+    # mainly is used to exclude or account for abstract classes.
+    @abstract yes
+
+    # This method is a default implementation of the renderer that
+    # will be called when the validation has failed. You can easily
+    # override it in either your service or in an external compound.
+    # By default it renders JSON object with errors mapped to params.
+    renderHeaderValidation: (results, request, response) ->
+        notRequest = "a #{request} is not a request"
+        notResponse = "a #{response} is not a respnonse"
+        assert _.isObject(response), notResponse
+        assert _.isObject(request), notRequest
+        message = (error) -> error.message
+        strings = _.map results, message
+        response.statusCode = 400
+        map = _.object _.keys(results), strings
+        return @reject response, headers: map
+
+    # Given the request with possible validation contexts appended
+    # run all the validator contexts in parallel and wait for the
+    # completion. If no validation mistakes found, run continuation.
+    # If some mistakes are found, however, run `@renderValidation`.
+    validateHeaders: (request, response, continuation) ->
+        notRequest = "a #{request} is not a request"
+        notResponse = "a #{response} is not a response"
+        notContinuation = "a #{continuation} is not function"
+        transformer = (o) -> (c) -> o.run (e) -> c null, e
+        assert _.isFunction(continuation), notContinuation
+        assert _.isObject(response), notResponse
+        assert _.isObject(request), notRequest
+        vcontexts = request.headers.vcontexts or {}
+        transformed =  _.map _.values(vcontexts), transformer
+        transformed = _.object _.keys(vcontexts), transformed
+        async.parallel transformed, (error, results) =>
+            assert not error, "internal valdation error"
+            errors = _.any _.values(results), _.isObject
+            hasRender = _.isFunction @renderHeaderValidation
+            assert hasRender, "no method to render validation"
+            params = [results, request, response, continuation]
+            return @renderHeaderValidation params... if errors
+        return continuation.bind(this)()
+
+    # Create a validation context for the parameter designated by
+    # the `name` and add it to the current request. If the `message`
+    # is supplied then it will be forced as an error messages. Use
+    # this method to automatically obtain contex for the parameter.
+    header: (request, name, message) ->
+        context = @constructor.validationContext?()
+        context = Primitive unless _.isObject context
+        assert request; value = request.headers?[name]
+        vcontexts = request.headers.vcontexts ?= {}
         return obtain if obtain = vcontexts[name]
         created = new context value, message
         vcontexts[name] = created; created
