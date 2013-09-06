@@ -174,10 +174,10 @@ module.exports.HValidator = class HValidator extends Validator
     # is supplied then it will be forced as an error messages. Use
     # this method to automatically obtain contex for the parameter.
     header: (request, name, message) ->
-        notParams = "the request has no params"
+        notHeaders = "the request has no headers"
         notRequest = "a #{request} is not a request"
         assert _.isObject(request), notRequest
-        assert headers = request.headers, notParams
+        assert headers = request.headers, notHeaders
         return @value headers, name, message
 
     # Given the request with possible validation contexts appended
