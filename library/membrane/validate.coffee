@@ -68,10 +68,11 @@ module.exports.Validator = class Validator extends Barebones
         assert _.isFunction(context.prototype.chain), noChain
         @$vcontext = context; return this
 
-    # Given the request with possible validation contexts appended
+    # Given the storage with possible validation contexts appended
     # run all the validator contexts in parallel and wait for the
     # completion. Once the validation has been completed, call the
     # continuation routine and pass the validation results to it.
+    # Continuation will recieved error indicator and results params.
     validateValues: (storage, continuation) ->
         notStorage = "a #{storage} is not a storage"
         notContinuation = "a #{continuation} is not function"
@@ -86,10 +87,11 @@ module.exports.Validator = class Validator extends Barebones
             errors = _.any _.values(results), _.isObject
             return continuation.bind(this) errors, results
 
-    # Create a validation context for the parameter designated by
+    # Create a validation context for the values designated by
     # the `name` and add it to the supplied storage. If the `message`
     # is supplied then it will be forced as an error messages. Use
     # this method to automatically obtain contex for the parameter.
+    # This variation of method is intended to work on any storage.
     value: (storage, name, message) ->
         context = @constructor.validationContext?()
         context = Primitive unless _.isObject context
