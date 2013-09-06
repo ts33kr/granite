@@ -139,14 +139,14 @@ module.exports.RValidator = class RValidator extends Validator
         assert _.isObject(request), notRequest
         @validateValues request.params, (failure, results) ->
             signature = [results, request, response]
-            return @parametersFailed signature... if failure
+            return @abnormalParameters signature... if failure
             return continuation.bind(this) failure, results
 
     # This method is a default implementation of the renderer that
     # will be called when the validation has failed. You can easily
     # override it in either your service or in an external compound.
     # By default it renders JSON object with errors mapped to params.
-    parametersFailed: (results, request, response) ->
+    abnormalParameters: (results, request, response) ->
         notRequest = "a #{request} is not a request"
         notResponse = "a #{response} is not a respnonse"
         assert _.isObject(response), notResponse
@@ -193,14 +193,14 @@ module.exports.HValidator = class HValidator extends Validator
         assert _.isObject(request), notRequest
         @validateValues request.headers, (failure, results) ->
             signature = [results, request, response]
-            return @headersFailed signature... if failure
+            return @abnormalHeaders signature... if failure
             return continuation.bind(this) failure, results
 
     # This method is a default implementation of the renderer that
     # will be called when the validation has failed. You can easily
     # override it in either your service or in an external compound.
     # By default it renders JSON object with errors mapped to headers.
-    headersFailed: (results, request, response) ->
+    abnormalHeaders: (results, request, response) ->
         notRequest = "a #{request} is not a request"
         notResponse = "a #{response} is not a respnonse"
         assert _.isObject(response), notResponse
