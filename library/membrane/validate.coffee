@@ -83,9 +83,9 @@ module.exports.Validator = class Validator extends Barebones
         transformed =  _.map _.values(vcontexts), transformer
         transformed = _.object _.keys(vcontexts), transformed
         async.parallel transformed, (error, results) =>
-            assert not error, "internal valdation error"
-            errors = _.any _.values(results), _.isObject
-            return continuation.bind(this) errors, results
+            failure = _.any _.values(results), _.isObject
+            assert.ifError error, "internal valdation error"
+            return continuation.bind(this) failure, results
 
     # Create new validation context for the values designated by
     # the `name` and add it to the supplied storage. If the `message`
@@ -151,9 +151,9 @@ module.exports.RValidator = class RValidator extends Validator
         assert _.isFunction(continuation), notContinuation
         assert _.isObject(response), notResponse
         assert _.isObject(request), notRequest
-        @validateValues request.params, (error, results) ->
+        @validateValues request.params, (failure, results) ->
             signature = [results, request, response, continuation]
-            return @renderParamValidation signature... if error
+            return @renderParamValidation signature... if failure
             return continuation.bind(this) results
 
 # This is an ABC service intended to be used only as a compund. It
@@ -205,7 +205,7 @@ module.exports.HValidator = class HValidator extends Validator
         assert _.isFunction(continuation), notContinuation
         assert _.isObject(response), notResponse
         assert _.isObject(request), notRequest
-        @validateValues request.headers, (error, results) ->
+        @validateValues request.headers, (failure, results) ->
             signature = [results, request, response, continuation]
-            return @renderHeaderValidation signature... if error
+            return @renderHeaderValidation signature... if failure
             return continuation.bind(this) results
