@@ -119,7 +119,6 @@ module.exports.RValidator = class RValidator extends Validator
     # the `name` and add it to the current request. If the `message`
     # is supplied then it will be forced as an error messages. Use
     # this method to automatically obtain contex for the parameter.
-    # This variation of method is intended to work on the parameters.
     param: (request, name, message) ->
         notParams = "the request has no params"
         notRequest = "a #{request} is not a request"
@@ -153,6 +152,60 @@ module.exports.RValidator = class RValidator extends Validator
         assert _.isObject(response), notResponse
         assert _.isObject(request), notRequest
         @validateValues request.params, (error, results) ->
-            params = [results, request, response, continuation]
-            return @renderParamValidation params... if error
+            signature = [results, request, response, continuation]
+            return @renderParamValidation signature... if error
+            return continuation.bind(this) results
+
+# This is an ABC service intended to be used only as a compund. It
+# provides a complete validation solution for request headers. The
+# important difference is this validation system supports asynchronous
+# validators which is what differs it from existent solutions. This
+# validation system is a one-stop-shop for checking all the inputs!
+module.exports.HValidator = class HValidator extends Validator
+
+    # This is a marker that indicates to some internal subsystems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete class implementation. This
+    # mainly is used to exclude or account for abstract classes.
+    @abstract yes
+
+    # Create a validation context for request header designated by
+    # the `name` and add it to the current request. If the `message`
+    # is supplied then it will be forced as an error messages. Use
+    # this method to automatically obtain contex for the parameter.
+    header: (request, name, message) ->
+        notParams = "the request has no params"
+        notRequest = "a #{request} is not a request"
+        assert _.isObject(request), notRequest
+        assert headers = request.headers, notParams
+        return @value headers, name, message
+
+    # This method is a default implementation of the renderer that
+    # will be called when the validation has failed. You can easily
+    # override it in either your service or in an external compound.
+    # By default it renders JSON object with errors mapped to headers.
+    renderHeaderValidation: (results, request, response) ->
+        notRequest = "a #{request} is not a request"
+        notResponse = "a #{response} is not a respnonse"
+        assert _.isObject(response), notResponse
+        assert _.isObject(request), notRequest
+        response.statusCode = 400 # bad headers
+        strings = _.map results, (e) -> e.message
+        map = _.object _.keys(results), strings
+        return @reject response, headers: map
+
+    # Given the request with possible validation contexts appended
+    # run all the validator contexts in parallel and wait for the
+    # completion. If no validation mistakes found, run continuation.
+    # If some mistakes are found, however, `@renderHeaderValidation`.
+    validateParameters: (request, response, continuation) ->
+        notRequest = "a #{request} is not a request"
+        notResponse = "a #{response} is not a response"
+        notContinuation = "a #{continuation} is not function"
+        assert _.isFunction(continuation), notContinuation
+        assert _.isObject(response), notResponse
+        assert _.isObject(request), notRequest
+        @validateValues request.headers, (error, results) ->
+            signature = [results, request, response, continuation]
+            return @renderHeaderValidation signature... if error
             return continuation.bind(this) results
