@@ -34,10 +34,42 @@
 <span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
-<span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is the basis for the default validation context. It contains
+<span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
+
+<span class="p">{</span><span class="nx">Primitive</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./primitive&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
+<span class="p">{</span><span class="nx">EventEmitter2</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A base class for all the validation contexts. Basically the conext
+encapsulates the necessary internal details as well as provides a
+set of validators to be used. So in order to create custom ones, you
+will need to create a descendant of this class and set is as context.
+The context setting happens on the service level with the directive.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Context = </span><span class="k">class</span> <span class="nx">Context</span> <span class="k">extends</span> <span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Create a new instance of the validation context with the given
+value set as the subject for validation. Each validator will
+refer to this value to perform their validation logic on it.
+If the message arg is passed in then it will be used by force.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@value, @message) -&gt;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Chain in a new validator to the context. Validator is a method
+that will be called within this context that should look up the
+value and see if it fits the validator logic and report either
+an error, via standard async callback or pass on to the next one.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">chain: </span><span class="nf">(validator) -&gt;</span>
+        <span class="nv">noFunction = </span><span class="s">&quot;a </span><span class="si">#{</span><span class="nx">validator</span><span class="si">}</span><span class="s"> is not a function&quot;</span>
+        <span class="nv">wrongParams = </span><span class="s">&quot;a validator should have 1 argument&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">validator</span><span class="p">),</span> <span class="nx">noFunction</span>
+        <span class="nx">assert</span> <span class="nx">validator</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">wrongParams</span>
+        <span class="nx">@emit</span> <span class="s">&quot;chain&quot;</span><span class="p">,</span> <span class="nx">validator</span><span class="p">,</span> <span class="nx">@validators</span>
+        <span class="p">(</span><span class="nx">@validators</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">validator</span><span class="p">;</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Run the entire stack of chained validators. Once done, callback
+will be called with an error parameter passed in. If any of the
+validators in the chain has failed, then this parameter will have
+an error object set in with an appropriate message about mistake.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">run: </span><span class="nf">(callback) -&gt;</span>
+        <span class="nv">validators = </span><span class="nx">@validators</span> <span class="o">?=</span> <span class="p">[]</span>
+        <span class="nv">invalid = </span><span class="s">&quot;inconsistent validators&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">validators</span><span class="p">),</span> <span class="nx">invalid</span>
+        <span class="nx">async</span><span class="p">.</span><span class="nx">series</span> <span class="nx">validators</span><span class="p">,</span> <span class="nf">(error) =&gt;</span>
+            <span class="nv">failed = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">error</span>
+            <span class="nv">custom = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">@message</span>
+            <span class="nv">matches = </span><span class="nx">failed</span> <span class="o">and</span> <span class="nx">custom</span>
+            <span class="nv">error.message = </span><span class="nx">@message</span> <span class="k">if</span> <span class="nx">matches</span>
+            <span class="nx">@emit</span> <span class="s">&quot;run&quot;</span><span class="p">,</span> <span class="nx">error</span><span class="p">;</span> <span class="nx">callback</span> <span class="nx">error</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is the basis for the default validation context. It contains
 a set of primitive and standard validators that can be used either
 directly or as a foundation for more complex validators that could
-be defined in the descendants of the default context implementation.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Primitive = </span><span class="k">class</span> <span class="nx">Primitive</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Check if the value is not empty. The validation will succeed
+be defined in the descendants of the default context implementation.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Primitive = </span><span class="k">class</span> <span class="nx">Primitive</span> <span class="k">extends</span> <span class="nx">Context</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Check if the value is not empty. The validation will succeed
 if the value is a string that contains anything, and not empty.
 Please refer to the implementation for more details on the way
 validator works. Also, refer to the <code>validate</code> module for info.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">notEmpty: </span><span class="nf">-&gt;</span> <span class="nx">@chain</span> <span class="nf">(callback) =&gt;</span>

@@ -53,14 +53,14 @@ and an instance of the service that resides on the server site.</p></div></div><
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
-channel (socket) gets connected to the Socket.IO hub in the
-context of the current service. The channel will be considered
-established only when prescreen calls the next procedure. If
-you wish to decline, just don't call <code>next</code> and close socket.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prescreen: </span><span class="nf">(context, socket, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
 channel (socket) gets connected and acknowledges by the server.
 The method gets a set of parameters that maybe be useful to
 have by the actual implementation. Please remember thet the
-method is asynchronously wired, so be sure to call <code>next</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">connected: </span><span class="nf">(context, socket, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internal, static method that is used to obtain gurading
+method is asynchronously wired, so be sure to call <code>next</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">connected: </span><span class="nf">(context, socket, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
+channel (socket) gets past the prescreening hook and is rated
+to be good to go through the screening process. This is good
+place to implementation various schemes for authorization. If
+you wish to decline, just don't call <code>next</code> and close socket.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">screening: </span><span class="nf">(context, socket, binder, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internal, static method that is used to obtain gurading
 domains for each of the declared server site providers. Please
 refer to the Node.js documentation for more information on
 the domains and error handling itself. This method is generally
@@ -128,14 +128,15 @@ Refer to other <code>Duplex</code> methods for understanding what goes on.</p></
         <span class="k">try</span> <span class="vi">@socket = </span><span class="nx">io</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">@duplex</span> <span class="k">catch</span> <span class="nx">error</span>
             <span class="nv">message = </span><span class="s">&quot;blew up Socket.IO: </span><span class="si">#{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="si">}</span><span class="s">&quot;</span>
             <span class="nv">error.message = </span><span class="nx">message</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span> <span class="k">throw</span> <span class="nx">error</span>
-        <span class="nv">failed = </span><span class="s">&quot;failed to created Socket.IO connection&quot;</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">failed</span> <span class="k">unless</span> <span class="nx">@socket</span><span class="p">.</span><span class="nx">emit</span>
+        <span class="nv">failed = </span><span class="s">&quot;failed to create Socket.IO connection&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">@socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">),</span> <span class="nx">failed</span>
         <span class="nv">p = </span><span class="s">&quot;an exception happend at the server provider&quot;</span>
         <span class="nx">@socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;exception&quot;</span><span class="p">,</span> <span class="nf">(e) -&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">error</span> <span class="nx">p</span><span class="p">,</span> <span class="nx">e</span>
-        <span class="nx">assert</span> <span class="nx">@consumeProviders</span><span class="p">;</span> <span class="nx">@consumeProviders</span> <span class="nx">@socket</span>
-        <span class="nv">open = </span><span class="s">&quot;notified the service of an opened channel&quot;</span>
-        <span class="nv">args = </span><span class="p">[</span><span class="nx">_</span><span class="p">.</span><span class="nx">omit</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s">&quot;socket&quot;</span><span class="p">),</span> <span class="nf">-&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="nx">open</span><span class="p">]</span>
-        <span class="nx">n</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">args</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nv">n = </span><span class="nx">@channelOpened</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An external routine that will be invoked once a both way duplex
+        <span class="nx">@socket</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;screening&quot;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">omit</span><span class="p">(</span><span class="nx">@</span><span class="p">,</span> <span class="s">&quot;socket&quot;</span><span class="p">),</span> <span class="nf">(ack) =&gt;</span>
+            <span class="nx">assert</span> <span class="nx">@consumeProviders</span><span class="p">;</span> <span class="nx">@consumeProviders</span> <span class="nx">@socket</span>
+            <span class="nv">open = </span><span class="s">&quot;notified the service of an opened channel&quot;</span>
+            <span class="nv">confirm = </span><span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="nx">open</span><span class="p">;</span> <span class="nx">@emit</span> <span class="s">&quot;booted&quot;</span>
+            <span class="nx">@channelOpened</span> <span class="nx">_</span><span class="p">.</span><span class="nx">omit</span><span class="p">(</span><span class="nx">@</span><span class="p">,</span> <span class="s">&quot;socket&quot;</span><span class="p">),</span> <span class="nx">confirm</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An external routine that will be invoked once a both way duplex
 channel is established at the client site. This will normally
 unroll and set up all the providers that were deployed by the
 server site in the transferred context. Refer to the server
@@ -152,14 +153,14 @@ method called <code>deployProviders</code> for more information on it.</p></div>
 the client site and the server side, this method will be invoked
 in order to attach all of the providers founds in this service
 to the opened channel. Refer to the <code>register</code> implementation
-for more information on when, where and how this is happening.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">publishProviders: </span><span class="nf">(context, socket) -&gt;</span>
+for more information on when, where and how this is happening.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">publishProviders: </span><span class="nf">(context, socket, next) -&gt;</span>
         <span class="nx">_</span><span class="p">.</span><span class="nx">forIn</span> <span class="k">this</span><span class="p">,</span> <span class="nf">(value, name, service) =&gt;</span>
             <span class="nv">internal = </span><span class="s">&quot;the </span><span class="si">#{</span><span class="nx">value</span><span class="si">}</span><span class="s"> is not function&quot;</span>
             <span class="nv">providing = </span><span class="nx">value</span><span class="o">?</span><span class="p">.</span><span class="nx">providing</span> <span class="o">or</span> <span class="kc">null</span>
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">providing</span>
             <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">value</span><span class="p">),</span> <span class="nx">internal</span>
             <span class="nv">bound = </span><span class="nf">(s) =&gt;</span> <span class="nx">providing</span><span class="p">(</span><span class="nx">socket</span><span class="p">).</span><span class="nx">bind</span> <span class="nx">@</span>
-            <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">bound</span> <span class="nx">socket</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to registering the service
+            <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">bound</span> <span class="nx">socket</span><span class="p">;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to registering the service
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
@@ -169,9 +170,10 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
         <span class="nv">pure = </span><span class="sr">/[a-zA-Z0-9/-_]+/</span><span class="p">.</span><span class="nx">test</span> <span class="nx">@location</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nx">pure</span><span class="p">,</span> <span class="s">&quot;location is not pure enough&quot;</span>
         <span class="nx">context</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connection&quot;</span><span class="p">,</span> <span class="nf">(socket) =&gt;</span>
-            <span class="nv">pub = </span><span class="o">=&gt;</span> <span class="nx">@publishProviders</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">socket</span>
-            <span class="nv">prescreen = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;prescreen&quot;</span><span class="p">,</span> <span class="nx">pub</span>
-            <span class="nx">prescreen</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">socket</span>
+            <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;screening&quot;</span><span class="p">,</span> <span class="nf">(binder, next) =&gt;</span>
+                <span class="nv">screening = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;screening&quot;</span><span class="p">,</span> <span class="o">=&gt;</span>
+                    <span class="nx">@publishProviders</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">socket</span><span class="p">,</span> <span class="nx">next</span>
+                <span class="nx">screening</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">socket</span><span class="p">,</span> <span class="nx">binder</span>
         <span class="k">return</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to unregistering the service
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook

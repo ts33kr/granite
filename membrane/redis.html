@@ -36,7 +36,7 @@
 <span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
 
 <span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
-<span class="nv">redis = </span><span class="nx">require</span> <span class="s">&quot;redis&quot;</span>
+<span class="nv">redisio = </span><span class="nx">require</span> <span class="s">&quot;redis&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an ABC service intended to be used only as a compund. It
 provides the ready to use Redis client to any service that composits
 this service in. The initialization is performed only once. If the
@@ -67,7 +67,7 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">options</span><span class="p">),</span> <span class="s">&quot;invalid Redis options&quot;</span>
         <span class="nv">message = </span><span class="s">&quot;Connecting to Redis at %s:%s&quot;</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">message</span><span class="p">.</span><span class="nx">cyan</span><span class="p">.</span><span class="nx">underline</span><span class="p">,</span> <span class="nx">host</span><span class="p">,</span> <span class="nx">port</span>
-        <span class="nv">kernel.redis = </span><span class="nx">redis</span><span class="p">.</span><span class="nx">createClient</span> <span class="nx">port</span><span class="p">,</span> <span class="nx">host</span><span class="p">,</span> <span class="nx">options</span>
+        <span class="nv">kernel.redis = </span><span class="nx">redisio</span><span class="p">.</span><span class="nx">createClient</span> <span class="nx">port</span><span class="p">,</span> <span class="nx">host</span><span class="p">,</span> <span class="nx">options</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">redis</span><span class="p">;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to instantiating the service
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook

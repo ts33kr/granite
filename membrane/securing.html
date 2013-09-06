@@ -27,6 +27,7 @@
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
@@ -35,7 +36,52 @@
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 <span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
 
-<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class API stub service. Its purpose is
+<span class="p">{</span><span class="nx">Duplex</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./duplex&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
+<span class="p">{</span><span class="nx">RedisClient</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./redis&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an extension of the <code>Duple</code> abstract base service that
+implements a dialogue sort of protection for the duplex channel.
+It means that a client who made the initial GET request must be
+ensured to be the same client that tried to connect over duplex
+channel. Also, each request has a TTL for the duplex connection.
+The implementation depends on <code>RedisClient</code> and running Redis!</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.RDuplex = </span><span class="k">class</span> <span class="nx">RDuplex</span> <span class="k">extends</span> <span class="nx">Duplex</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>These invocations establish the parameters which are going
+to be used for matching HTTP requests against this service.
+Typically an HTTP pathname pattern and a domain name pattern.
+Try not to put constraints on the domain, unless necessary.
+Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@compose</span> <span class="nx">RedisClient</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called after invoking the API method
+implementation. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">postprocess: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">response</span><span class="p">.</span><span class="nx">headersSent</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">is</span> <span class="mi">200</span>
+        <span class="nv">md5 = </span><span class="nf">-&gt;</span> <span class="nx">require</span><span class="p">(</span><span class="s">&quot;crypto&quot;</span><span class="p">).</span><span class="nx">createHash</span><span class="p">(</span><span class="s">&quot;md5&quot;</span><span class="p">)</span>
+        <span class="nv">key = </span><span class="nf">(x) -&gt;</span> <span class="s">&quot;securing:rduplex:token:dynamic:</span><span class="si">#{</span><span class="nx">x</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">gen = </span><span class="nf">(u) -&gt;</span> <span class="nx">md5</span><span class="p">().</span><span class="nx">update</span><span class="p">(</span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">@uuid</span><span class="si">}</span><span class="s">-</span><span class="si">#{</span><span class="nx">u</span><span class="si">}</span><span class="s">&quot;</span><span class="p">).</span><span class="nx">digest</span><span class="p">(</span><span class="s">&quot;hex&quot;</span><span class="p">)</span>
+        <span class="nv">internal = </span><span class="nf">(e) -&gt;</span> <span class="s">&quot;internal Redis error: </span><span class="si">#{</span><span class="nx">e</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">noUuid = </span><span class="s">&quot;the request has not UUID attached&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">u = </span><span class="nx">request</span><span class="p">.</span><span class="nx">uuid</span><span class="p">,</span> <span class="nx">noUuid</span>
+        <span class="nx">@redis</span><span class="p">.</span><span class="nx">setex</span> <span class="nx">key</span><span class="p">(</span><span class="nx">u</span><span class="p">),</span> <span class="mi">60</span><span class="p">,</span> <span class="nx">gen</span><span class="p">(</span><span class="nx">u</span><span class="p">),</span> <span class="nf">(error) -&gt;</span>
+            <span class="nv">success = </span><span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">error</span>
+            <span class="nx">assert</span> <span class="nx">success</span><span class="p">,</span> <span class="nx">internal</span> <span class="nx">error</span>
+            <span class="k">return</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
+channel (socket) gets past the prescreening hook and is rated
+to be good to go through the screening process. This is good
+place to implementation various schemes for authorization. If
+you wish to decline, just don't call <code>next</code> and close socket.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">screening: </span><span class="nf">(context, socket, binder, next) -&gt;</span>
+        <span class="nv">md5 = </span><span class="nf">-&gt;</span> <span class="nx">require</span><span class="p">(</span><span class="s">&quot;crypto&quot;</span><span class="p">).</span><span class="nx">createHash</span><span class="p">(</span><span class="s">&quot;md5&quot;</span><span class="p">)</span>
+        <span class="nv">key = </span><span class="nf">(x) -&gt;</span> <span class="s">&quot;securing:rduplex:token:dynamic:</span><span class="si">#{</span><span class="nx">x</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">gen = </span><span class="nf">(u) -&gt;</span> <span class="nx">md5</span><span class="p">().</span><span class="nx">update</span><span class="p">(</span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">@uuid</span><span class="si">}</span><span class="s">-</span><span class="si">#{</span><span class="nx">u</span><span class="si">}</span><span class="s">&quot;</span><span class="p">).</span><span class="nx">digest</span><span class="p">(</span><span class="s">&quot;hex&quot;</span><span class="p">)</span>
+        <span class="nv">internal = </span><span class="nf">(e) -&gt;</span> <span class="s">&quot;internal Redis error: </span><span class="si">#{</span><span class="nx">e</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">noUuid = </span><span class="s">&quot;the context has not UUID attached&quot;</span>
+        <span class="nx">assert</span> <span class="nv">uuid = </span><span class="nx">binder</span><span class="p">.</span><span class="nx">uuid</span><span class="p">.</span><span class="nx">request</span><span class="p">,</span> <span class="nx">noUuid</span>
+        <span class="nx">@redis</span><span class="p">.</span><span class="nx">get</span> <span class="nx">key</span><span class="p">(</span><span class="nx">uuid</span><span class="p">),</span> <span class="nf">(error, value) =&gt;</span>
+            <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">error</span><span class="p">),</span> <span class="nx">internal</span> <span class="nx">error</span>
+            <span class="nx">@redis</span><span class="p">.</span><span class="nx">del</span> <span class="nx">key</span><span class="p">(</span><span class="nx">uuid</span><span class="p">),</span> <span class="nf">(error, number) =&gt;</span>
+                <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="nx">gen</span><span class="p">(</span><span class="nx">uuid</span><span class="p">)</span> <span class="o">is</span> <span class="nx">value</span>
+                <span class="k">return</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class API stub service. Its purpose is
 providing the boilerplate for ensuring that the connection is
 going through the HTTPS channel. If a request is not going via
 SSL transport then redirect the current request to such one.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.OnlySsl = </span><span class="k">class</span> <span class="nx">OnlySsl</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems

@@ -39,6 +39,7 @@
 <span class="nv">extendz = </span><span class="nx">require</span> <span class="s">&quot;./../nucleus/extends&quot;</span>
 <span class="nv">compose = </span><span class="nx">require</span> <span class="s">&quot;./../nucleus/compose&quot;</span>
 
+<span class="p">{</span><span class="nx">EOL</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;os&quot;</span>
 <span class="p">{</span><span class="nx">format</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 <span class="p">{</span><span class="nx">STATUS_CODES</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
@@ -106,11 +107,14 @@ context object, which is defered to be done on the client site.</p></div></div><
         <span class="nv">prepared = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">context</span>
         <span class="nv">runtime = </span><span class="s">&quot;(</span><span class="si">#{</span><span class="nx">coffee</span><span class="si">}</span><span class="s">).apply(this)&quot;</span>
         <span class="nv">installer = </span><span class="s">&quot;var context = </span><span class="si">#{</span><span class="nx">prepared</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">em = </span><span class="nf">-&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">EventEmitter2</span><span class="p">.</span><span class="nx">prototype</span>
+        <span class="nv">applicator = </span><span class="s">&quot;(</span><span class="si">#{</span><span class="nx">em</span><span class="si">}</span><span class="s">).apply(context)&quot;</span>
         <span class="nx">_</span><span class="p">.</span><span class="nx">forIn</span> <span class="k">this</span><span class="p">,</span> <span class="nf">(value, key, object) -&gt;</span>
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">value</span><span class="p">.</span><span class="nx">remote</span>
             <span class="k">return</span> <span class="k">unless</span> <span class="nv">src = </span><span class="nx">value</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">source</span>
             <span class="nv">set = </span><span class="s">&quot;context.%s = (</span><span class="si">#{</span><span class="nx">src</span><span class="si">}</span><span class="s">)()&quot;</span>
             <span class="nx">installer</span> <span class="o">+=</span> <span class="s">&quot;\r\n</span><span class="si">#{</span><span class="nx">format</span> <span class="nx">set</span><span class="p">,</span> <span class="nx">key</span><span class="si">}</span><span class="s">\r\n&quot;</span>
+        <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">unshift</span> <span class="nx">applicator</span>
         <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">unshift</span> <span class="nx">installer</span>
         <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">unshift</span> <span class="nx">runtime</span>
         <span class="k">return</span> <span class="nx">context</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Issue the autocalls into the context. Traverse the hierarchy
@@ -128,7 +132,16 @@ an autocall decorator and therefore must be called on site.</p></div></div><div 
                 <span class="nv">params = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">value</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">autocall</span>
                 <span class="nv">template = </span><span class="s">&quot;context.</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">.apply(context, %s)&quot;</span>
                 <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">push</span> <span class="nx">format</span><span class="p">(</span><span class="nx">template</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nx">context</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Get the contents of the resources at the established path. It
+        <span class="k">return</span> <span class="nx">context</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internal routine that is called on the context object prior
+to flushing it down to the client. This method gathers all the
+JS sources in the context and minifies &amp; compresses those into
+one blob using the library called UglifyJS2. See it for info.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">compressSources: </span><span class="nf">(context) -&gt;</span>
+        <span class="nv">sources = </span><span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span> <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span>
+        <span class="nv">emptySources = </span><span class="s">&quot;the JS sources are empty&quot;</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">sources</span><span class="p">),</span> <span class="nx">emptySources</span>
+        <span class="nx">assert</span> <span class="nv">minify = </span><span class="nx">require</span><span class="p">(</span><span class="s">&quot;uglify-js&quot;</span><span class="p">).</span><span class="nx">minify</span>
+        <span class="nv">minified = </span><span class="nx">minify</span> <span class="nx">sources</span><span class="p">,</span> <span class="nv">fromString: </span><span class="kc">yes</span>
+        <span class="nv">context.sources = </span><span class="p">[</span><span class="nx">minified</span><span class="p">.</span><span class="nx">code</span><span class="p">];</span> <span class="nx">context</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Get the contents of the resources at the established path. It
 is a good idea for this HTTP method to be idempotent. As the
 rule, this method does not have to alter any contents or data
 of the resource. Use for unobtrusive retrieval of resources.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">GET: </span><span class="nf">(request, response) -&gt;</span>
@@ -141,6 +154,7 @@ of the resource. Use for unobtrusive retrieval of resources.</p></div></div><div
         <span class="nv">prelude = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;prelude&quot;</span><span class="p">,</span> <span class="o">=&gt;</span>
             <span class="nv">context = </span><span class="nx">@deployContext</span> <span class="nx">context</span>
             <span class="nv">context = </span><span class="nx">@issueAutocalls</span> <span class="nx">context</span>
+            <span class="nv">context = </span><span class="nx">@compressSources</span> <span class="nx">context</span>
             <span class="nv">compiled = </span><span class="nx">@compileContext</span> <span class="nx">context</span>
             <span class="nv">length = </span><span class="nx">compiled</span><span class="p">.</span><span class="nx">length</span> <span class="o">or</span> <span class="kc">undefined</span>
             <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s">&quot;Content-Length&quot;</span><span class="p">,</span> <span class="nx">length</span>
