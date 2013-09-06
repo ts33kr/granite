@@ -72,7 +72,7 @@ module.exports.RValidator = class RValidator extends Barebones
     # will be called when the validation has failed. You can easily
     # override it in either your service or in an external compound.
     # By default it renders JSON object with errors mapped to params.
-    renderValidation: (results, request, response) ->
+    renderParamValidation: (results, request, response) ->
         notRequest = "a #{request} is not a request"
         notResponse = "a #{response} is not a respnonse"
         assert _.isObject(response), notResponse
@@ -87,7 +87,7 @@ module.exports.RValidator = class RValidator extends Barebones
     # run all the validator contexts in parallel and wait for the
     # completion. If no validation mistakes found, run continuation.
     # If some mistakes are found, however, run `@renderValidation`.
-    validateAndContinue: (request, response, continuation) ->
+    validateParameters: (request, response, continuation) ->
         notRequest = "a #{request} is not a request"
         notResponse = "a #{response} is not a response"
         notContinuation = "a #{continuation} is not function"
@@ -101,10 +101,10 @@ module.exports.RValidator = class RValidator extends Barebones
         async.parallel transformed, (error, results) =>
             assert not error, "internal valdation error"
             errors = _.any _.values(results), _.isObject
-            hasRender = _.isFunction @renderValidation
+            hasRender = _.isFunction @renderParamValidation
             assert hasRender, "no method to render validation"
             params = [results, request, response, continuation]
-            return @renderValidation params... if errors
+            return @renderParamValidation params... if errors
             return continuation.bind(this)()
 
     # Create a validation context for the parameter designated by
