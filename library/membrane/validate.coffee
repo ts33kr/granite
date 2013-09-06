@@ -120,7 +120,12 @@ module.exports.RValidator = class RValidator extends Validator
     # is supplied then it will be forced as an error messages. Use
     # this method to automatically obtain contex for the parameter.
     # This variation of method is intended to work on the parameters.
-    param: (request, args...) -> @value request.params, args...
+    param: (request, name, message) ->
+        notParams = "the request has no params"
+        notRequest = "a #{request} is not a request"
+        assert _.isObject(request), notRequest
+        assert params = request.params, notParams
+        return @value params, name, message
 
     # This method is a default implementation of the renderer that
     # will be called when the validation has failed. You can easily
@@ -131,9 +136,8 @@ module.exports.RValidator = class RValidator extends Validator
         notResponse = "a #{response} is not a respnonse"
         assert _.isObject(response), notResponse
         assert _.isObject(request), notRequest
-        message = (error) -> error.message
-        strings = _.map results, message
-        response.statusCode = 400
+        response.statusCode = 400 # bad parameters
+        strings = _.map results, (e) -> e.message
         map = _.object _.keys(results), strings
         return @reject response, params: map
 
