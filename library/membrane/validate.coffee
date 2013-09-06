@@ -135,7 +135,7 @@ module.exports.RValidator = class RValidator extends Validator
         notResponse = "a #{response} is not a respnonse"
         assert _.isObject(response), notResponse
         assert _.isObject(request), notRequest
-        response.statusCode = 400 # bad parameters
+        response.statusCode = 400 # bad HTTP request
         strings = _.map results, (e) -> e.message
         map = _.object _.keys(results), strings
         return @reject response, params: map
@@ -189,7 +189,7 @@ module.exports.HValidator = class HValidator extends Validator
         notResponse = "a #{response} is not a respnonse"
         assert _.isObject(response), notResponse
         assert _.isObject(request), notRequest
-        response.statusCode = 400 # bad headers
+        response.statusCode = 400 # bad HTTP request
         strings = _.map results, (e) -> e.message
         map = _.object _.keys(results), strings
         return @reject response, headers: map
