@@ -36,11 +36,15 @@ http = require "http"
 util = require "util"
 url = require "url"
 
+{Primitive} = require "./primitive"
+{Barebones} = require "./skeleton"
+{EventEmitter2} = require "eventemitter2"
+
 # This is the basis for the default validation context. It contains
 # a set of primitive and standard validators that can be used either
 # directly or as a foundation for more complex validators that could
 # be defined in the descendants of the default context implementation.
-module.exports.Primitive = class Primitive extends events.EventEmitter2
+module.exports.Primitive = class Primitive extends EventEmitter2
 
     # Check if the value is not empty. The validation will succeed
     # if the value is a string that contains anything, and not empty.
