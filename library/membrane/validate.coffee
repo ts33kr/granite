@@ -198,7 +198,7 @@ module.exports.HValidator = class HValidator extends Validator
     # run all the validator contexts in parallel and wait for the
     # completion. If no validation mistakes found, run continuation.
     # If some mistakes are found, however, `@renderHeaderValidation`.
-    validateParameters: (request, response, continuation) ->
+    validateHeaders: (request, response, continuation) ->
         notRequest = "a #{request} is not a request"
         notResponse = "a #{response} is not a response"
         notContinuation = "a #{continuation} is not function"
