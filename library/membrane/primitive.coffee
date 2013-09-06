@@ -63,7 +63,7 @@ module.exports.Context = class Context extends EventEmitter2
         assert _.isFunction(validator), noFunction
         assert validator.length is 1, wrongParams
         @emit "chain", validator, @validators
-        (@validators ?= []).push validator
+        (@validators ?= []).push validator; @
 
     # Run the entire stack of chained validators. Once done, callback
     # will be called with an error parameter passed in. If any of the
@@ -72,7 +72,7 @@ module.exports.Context = class Context extends EventEmitter2
     run: (callback) ->
         validators = @validators ?= []
         invalid = "inconsistent validators"
-        assert _.isArray validators, invalid
+        assert _.isArray(validators), invalid
         async.series validators, (error) =>
             failed = _.isObject error
             custom = _.isString @message
