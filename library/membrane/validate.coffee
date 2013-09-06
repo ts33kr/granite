@@ -45,7 +45,7 @@ url = require "url"
 # important difference is this validation system supports asynchronous
 # validators which is what differs it from existent solutions. This
 # validation system is a one-stop-shop for checking all the inputs!
-module.exports.Validator = class Validator extends Barebones
+module.exports.RValidator = class RValidator extends Barebones
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -124,7 +124,7 @@ module.exports.Validator = class Validator extends Barebones
 # and adds specific functionality on top of it. This functionality
 # is related to using the validation subsystem from outside of a
 # request/response context. Designed to be used by the providers.
-module.exports.PValidator = class PValidator extends Validator
+module.exports.PValidator = class PValidator extends RValidator
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
