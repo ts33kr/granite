@@ -154,7 +154,7 @@ module.exports.RValidator = class RValidator extends Validator
         @validateValues request.params, (failure, results) ->
             signature = [results, request, response, continuation]
             return @renderParamValidation signature... if failure
-            return continuation.bind(this) results
+            return continuation.bind(this) failure, results
 
 # This is an ABC service intended to be used only as a compund. It
 # provides a complete validation solution for request headers. The
@@ -208,4 +208,4 @@ module.exports.HValidator = class HValidator extends Validator
         @validateValues request.headers, (failure, results) ->
             signature = [results, request, response, continuation]
             return @renderHeaderValidation signature... if failure
-            return continuation.bind(this) results
+            return continuation.bind(this) failure, results
