@@ -40,12 +40,12 @@ url = require "url"
 {Primitive} = require "./primitive"
 {Barebones} = require "./skeleton"
 
-# This is an ABC service intended to be used only as a compund. It
-# provides a complete validation solution for the framework. The
-# important difference is this validation system supports asynchronous
-# validators which is what differs it from existent solutions. This
-# validation system is a one-stop-shop for checking all the inputs!
-module.exports.RValidator = class RValidator extends Barebones
+# This is an ABC service intended to be used only as a compound. It
+# provides the internal abstractions that are necessary for validators.
+# This class is not a complete implementation, it just servres as the
+# boilerplate for the actual validators implementation. Those actually
+# follow belows, please refer to each one for more specific information.
+module.exports.Validator = class Validator extends Barebones
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -67,6 +67,19 @@ module.exports.RValidator = class RValidator extends Barebones
         assert _.isFunction(context.prototype.run), noRun
         assert _.isFunction(context.prototype.chain), noChain
         @$vcontext = context; return this
+
+# This is an ABC service intended to be used only as a compund. It
+# provides a complete validation solution for request parameters. The
+# important difference is this validation system supports asynchronous
+# validators which is what differs it from existent solutions. This
+# validation system is a one-stop-shop for checking all the inputs!
+module.exports.RValidator = class RValidator extends Validator
+
+    # This is a marker that indicates to some internal subsystems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete class implementation. This
+    # mainly is used to exclude or account for abstract classes.
+    @abstract yes
 
     # This method is a default implementation of the renderer that
     # will be called when the validation has failed. You can easily
@@ -120,11 +133,12 @@ module.exports.RValidator = class RValidator extends Barebones
         created = new context value, message
         vcontexts[name] = created; created
 
-# An abstract base class that inherts from the standard Validator
-# and adds specific functionality on top of it. This functionality
-# is related to using the validation subsystem from outside of a
-# request/response context. Designed to be used by the providers.
-module.exports.PValidator = class PValidator extends RValidator
+# This is an ABC service intended to be used only as a compund. It
+# provides a complete validation solution for the plain objects. The
+# important difference is this validation system supports asynchronous
+# validators which is what differs it from existent solutions. This
+# validation system is a one-stop-shop for checking all the inputs!
+module.exports.PValidator = class PValidator extends Validator
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -136,7 +150,7 @@ module.exports.PValidator = class PValidator extends RValidator
     # run all the validator contexts in parallel and wait for the
     # completion. Once the validation has been completed, call the
     # continuation routine and pass the validation results to it.
-    withValidation: (storage, continuation) ->
+    validateValues: (storage, continuation) ->
         notStorage = "a #{storage} is not a storage"
         notContinuation = "a #{continuation} is not function"
         transformer = (o) -> (c) -> o.run (e) -> c null, e
