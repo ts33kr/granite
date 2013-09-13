@@ -84,7 +84,6 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
         @github "ts33kr", "granite", "library/exposure/apidoc.coffee"
         @synopsis "Get all of the APIs available in the system"
         @outputs "An array of objects, each describes a service"
-        @notes "See the Document class for the API structure"
         @markings framework: "critical", stable: "positive"
         @version kernel.package.version or undefined
         @produces ["application/json"]
