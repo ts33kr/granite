@@ -60,19 +60,19 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
             location: record.service.location()
             identify: constructor.identify()
             patterns: _.map constructor.resources, "source"
-            methods: _.map record.methods, (doc, method) ->
-                relevant: doc.relevant()
-                markings: doc.markings()
-                argument: doc.argument()
-                synopsis: doc.synopsis()
-                produces: doc.produces()
-                version: doc.version()
-                failure: doc.failure()
-                outputs: doc.outputs()
-                inputs: doc.inputs()
-                github: doc.github()
-                notes: doc.notes()
-                leads: doc.leads()
+            methods: _.map record.methods, (document, method) ->
+                relevant: document.relevant()
+                markings: document.markings()
+                argument: document.argument()
+                synopsis: document.synopsis()
+                produces: document.produces()
+                version: document.version()
+                failure: document.failure()
+                outputs: document.outputs()
+                inputs: document.inputs()
+                github: document.github()
+                notes: document.notes()
+                leads: document.leads()
                 method: method
 
     # This block describes certain method of abrbitrary service. The
