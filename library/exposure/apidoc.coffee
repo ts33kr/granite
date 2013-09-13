@@ -82,7 +82,7 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
     @GET (method, service, kernel) ->
         @relevant "ts33kr.github.io/granite/exposure/apidoc.html"
         @github "ts33kr", "granite", "library/exposure/apidoc.coffee"
-        @synopsis "Get all of the APIs available in the system"
+        @synopsis "Get inventory of all APIs available in the system"
         @outputs "An array of objects, each describes a service"
         @markings framework: "critical", stable: "positive"
         @version kernel.package.version or undefined
