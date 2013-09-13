@@ -65,12 +65,12 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
                 markings: doc.markings()
                 argument: doc.argument()
                 synopsis: doc.synopsis()
+                produces: doc.produces()
                 version: doc.version()
                 failure: doc.failure()
                 outputs: doc.outputs()
                 inputs: doc.inputs()
                 github: doc.github()
-                mimes: doc.mimes()
                 notes: doc.notes()
                 leads: doc.leads()
                 method: method
@@ -87,4 +87,4 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
         @notes "See the Document class for the API structure"
         @markings framework: "critical", stable: "positive"
         @version kernel.package.version or undefined
-        @mimes ["application/json"]
+        @produces ["application/json"]

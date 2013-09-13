@@ -162,12 +162,23 @@ module.exports.Document = class Document extends events.EventEmitter2
     # is being described by this document. If you do no supply any
     # arguments this method will return already described failures.
     # The mimes should be array that contains a valid MIME types.
-    mimes: (mimes) ->
-        return @$mimes if arguments.length is 0
-        noMimes = "the mimes should be an array"
-        assert _.isArray(mimes), noMimes
-        @emit "mimes", arguments...
-        (@$mimes ?= []).push mimes
+    produces: (produces) ->
+        return @$produces if arguments.length is 0
+        noProduces = "the produces should be an array"
+        assert _.isArray(produces), noProduces
+        @emit "produces", arguments...
+        (@$produces ?= []).push produces
+
+    # Either get or set the mimes information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # The mimes should be array that contains a valid MIME types.
+    consumes: (consumes) ->
+        return @$consumes if arguments.length is 0
+        noConsumes = "the consumes should be an array"
+        assert _.isArray(consumes), noConsumes
+        @emit "consumes", arguments...
+        (@$consumes ?= []).push consumes
 
     # Either get or set the markings information of the method that
     # is being described by this document. If you do no supply any
