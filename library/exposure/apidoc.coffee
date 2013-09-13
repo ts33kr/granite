@@ -86,4 +86,4 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
         @outputs "An array of objects, each describes a service"
         @markings framework: "critical", stable: "positive"
         @version kernel.package.version or undefined
-        @produces ["application/json"]
+        @produces "application/json"
