@@ -156,8 +156,9 @@ module.exports.Service = class Service extends events.EventEmitter2
     matches: (request, response, next) ->
         return no unless request.url?
         return no unless request.headers.host?
-        domains = @constructor.domains or []
+        wildcard = @constructor.WILDCARD
         resources = @constructor.resources or []
+        domains = @constructor.domains or [wildcard]
         pathname = url.parse(request.url).pathname
         hostname = _.first request.headers.host.split ":"
         pdomain = (pattern) -> pattern.test hostname
@@ -177,8 +178,9 @@ module.exports.Service = class Service extends events.EventEmitter2
         gdomain = null; gresource = null
         pathname = url.parse(request.url).pathname
         hostname = _.first request.headers.host.split ":"
-        domains = @constructor.domains or []
+        wildcard = @constructor.WILDCARD
         resources = @constructor.resources or []
+        domains = @constructor.domains or [wildcard]
         pdomain = (p) -> gdomain = hostname.match p
         presource = (p) -> gresource = pathname.match p
         pdomain = _.find domains, pdomain

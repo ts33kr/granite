@@ -48,7 +48,6 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
     @resource "/api/doc"
-    @domain @WILDCARD
 
     # Get the contents of the resources at the established path. It
     # is a good idea for this HTTP method to be idempotent. As the
