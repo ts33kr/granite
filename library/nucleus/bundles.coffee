@@ -89,7 +89,7 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @defaults.layout = library: "library", config: "config"
     @defaults.assets = dirs: [], opts: {}
-    @defaults.watch = dirs: [], force: no
+    @defaults.watch = dirs: [], force: yes
     @defaults.socket = "log level": 0
     @defaults.env.preserve = ["pub"]
 
@@ -108,6 +108,6 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
     @defaults.layout = library: "library", config: "config"
     @defaults.assets = dirs: [], opts: {}
-    @defaults.watch = dirs: [], force: no
+    @defaults.watch = dirs: [], force: yes
     @defaults.socket = "log level": 0
     @defaults.env.preserve = ["pub"]
