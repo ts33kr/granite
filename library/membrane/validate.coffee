@@ -93,7 +93,7 @@ module.exports.Validator = class Validator extends Barebones
     # this method to automatically obtain contex for the parameter.
     # This variation of method is intended to work on any storage.
     value: (storage, name, message) ->
-        assert _.notEmpty(name), "invalid name"
+        assert not _.isEmpty(name), "invalid name"
         context = @constructor.validationContext?()
         context = Primitive unless _.isObject context
         assert storage; value = storage[name]
@@ -125,7 +125,7 @@ module.exports.RValidator = class RValidator extends Validator
         notNaming = "invalid parameter name supplied"
         assert _.isObject(request), notRequest
         assert params = request.params, notParams
-        assert _.notEmpty(name), notNaming
+        assert not _.isEmpty(name), notNaming
         return @value params, name, message
 
     # Given the request with possible validation contexts appended
@@ -181,7 +181,7 @@ module.exports.HValidator = class HValidator extends Validator
         notNaming = "invalid header name supplied"
         assert _.isObject(request), notRequest
         assert headers = request.headers, notHeaders
-        assert _.notEmpty(name), notNaming
+        assert not _.isEmpty(name), notNaming
         return @value headers, name, message
 
     # Given the request with possible validation contexts appended
