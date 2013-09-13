@@ -175,6 +175,22 @@ module.exports.Watcher = class Watcher extends events.EventEmitter2
         services = _.filter services, isFinal
         _.unique services
 
+    # Directory tracking routine keeps inventory of all directories
+    # that have been added to the watcher. Besides that it is called
+    # upon an addition of a new directory to ensure that the directory
+    # does not intersect with any directories that already present.
+    directoryTracking: (directory) ->
+        tracked = @tracked ?= []
+        pattern = /^(?:\.{2}\/?)+$/
+        resolved = paths.resolve directory
+        return undefined if resolved in tracked
+        relA = (p) -> paths.relative(p, resolved)
+        relB = (p) -> paths.relative(resolved, p)
+        matches = (f) -> (p) -> pattern.test f(p)
+        return no if _.any tracked, matches(relA)
+        return no if _.any tracked, matches(relB)
+        tracked.push resolved.toString()
+
     # Watch the specified directory for addition and changing of
     # the files, looking for modules with services there and then
     # loading them and reloading and doing all other routines for
@@ -186,6 +202,7 @@ module.exports.Watcher = class Watcher extends events.EventEmitter2
         exists = fs.existsSync directory.toString()
         relative = paths.relative process.cwd(), directory
         formats = [notExists.grey, relative.underline]
+        return unless @directoryTracking directory
         return logger.warn formats... unless exists
         watching = "Watching %s directory for modules"
         logger.info watching.blue, relative.underline
