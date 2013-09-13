@@ -182,7 +182,8 @@ module.exports.HValidator = class HValidator extends Validator
         assert _.isObject(request), notRequest
         assert headers = request.headers, notHeaders
         assert not _.isEmpty(name), notNaming
-        return @value headers, name, message
+        normalized = name.toString().toLowerCase()
+        return @value headers, normalized, message
 
     # Given the request with possible validation contexts appended
     # run all the validator contexts in parallel and wait for the
