@@ -45,10 +45,11 @@ module.exports.Broker = class Broker extends events.EventEmitter2
     # and response pair. If specific negotiator cannot handle the
     # pair, it should return anything other than a function object.
     @associate: (negotiator) ->
+        registry = @registry or []
         isValid = _.isFunction negotiator
         invalid = "Checker is not a valid method"
         throw new Error invalid unless isValid
-        (@registry ?= []).unshift negotiator
+        @registry = registry.concat negotiator
 
     # Content negotiate the request/response pair to use the correct
     # protocol. The protocol is implemented by the content negotiator
@@ -75,6 +76,12 @@ module.exports.Broker = class Broker extends events.EventEmitter2
         args = ["Content-Length", encoded.length]
         response.setHeader args... unless areSent
         response.write encoded
+
+# This class is a content negotiation broker. It is instantiated by
+# the kernel and then can be used either directly or via middleware
+# to negotiate the procedure of responding to a client with the data
+# using the correct protocol, meaning correct `Content-Type`, etc.
+module.exports.JsonBroker = class JsonBroker extends Broker
 
     # Associate the JSON negotiator with the broker. This method
     # checks if the content is either `Object` or `Array`, and if
