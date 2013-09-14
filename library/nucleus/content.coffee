@@ -40,6 +40,16 @@ util = require "util"
 # using the correct protocol, meaning correct `Content-Type`, etc.
 module.exports.Broker = class Broker extends events.EventEmitter2
 
+    # Register the specified content negotiator with the broker. The
+    # The negotiator returns a function if it can handle the request
+    # and response pair. If specific negotiator cannot handle the
+    # pair, it should return anything other than a function object.
+    @associate: (negotiator) ->
+        isValid = _.isFunction negotiator
+        invalid = "Checker is not a valid method"
+        throw new Error invalid unless isValid
+        (@registry ?= []).unshift negotiator
+
     # Content negotiate the request/response pair to use the correct
     # protocol. The protocol is implemented by the content negotiator
     # that might or might not have been previously add to the broker.
@@ -65,16 +75,6 @@ module.exports.Broker = class Broker extends events.EventEmitter2
         args = ["Content-Length", encoded.length]
         response.setHeader args... unless areSent
         response.write encoded
-
-    # Register the specified content negotiator with the broker. The
-    # The negotiator returns a function if it can handle the request
-    # and response pair. If specific negotiator cannot handle the
-    # pair, it should return anything other than a function object.
-    @associate: (negotiator) ->
-        isValid = _.isFunction negotiator
-        invalid = "Checker is not a valid method"
-        throw new Error invalid unless isValid
-        (@registry ?= []).unshift negotiator
 
     # Associate the JSON negotiator with the broker. This method
     # checks if the content is either `Object` or `Array`, and if
