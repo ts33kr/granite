@@ -36,6 +36,7 @@ https = require "https"
 http = require "http"
 util = require "util"
 url = require "url"
+tv4 = require "tv4"
 
 {Primitive} = require "./primitive"
 {Barebones} = require "./skeleton"
@@ -87,6 +88,19 @@ module.exports.Validator = class Validator extends Barebones
             assert.ifError error, "internal valdation error"
             return continuation.bind(this) failure, results
 
+    # Given an arbitrary JavaScript value, validate it against the
+    # specified JSON Schema (according to the Draft v4). Depending
+    # of whether the validation succeeds or fails the continuation
+    # will be invoked with the respectful arguments. Please refer
+    # to http://json-schema.org/latest/json-schema-validation.html.
+    validateSchema: (subject, schema, continuation) ->
+        oneOfValid = _.isString(schema) or _.isObject(schema)
+        assert oneOfValid, "invalid schema definition is supplied"
+        assert _.isFunction(continuation), "got invalid callback"
+        results = tv4.validateMultiple(subject, schema)
+        assert results; failure = results.valid is false
+        return continuation.bind(this) failure, results
+
     # Create new validation context for the values designated by
     # the `name` and add it to the supplied storage. If the `message`
     # is supplied then it will be forced as an error messages. Use
@@ -107,7 +121,7 @@ module.exports.Validator = class Validator extends Barebones
 # important difference is this validation system supports asynchronous
 # validators which is what differs it from existent solutions. This
 # validation system is a one-stop-shop for checking all the inputs!
-module.exports.RValidator = class RValidator extends Validator
+module.exports.PValidator = class PValidator extends Validator
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -131,7 +145,7 @@ module.exports.RValidator = class RValidator extends Validator
     # Given the request with possible validation contexts appended
     # run all the validator contexts in parallel and wait for the
     # completion. If no validation mistakes found, run continuation.
-    # If some mistakes are found, however, `@renderParamValidation`.
+    # If some mistakes are found however, see `@abnormalParameters`.
     validateParameters: (request, response, continuation) ->
         notRequest = "a #{request} is not a request"
         notResponse = "a #{response} is not a response"
@@ -188,7 +202,7 @@ module.exports.HValidator = class HValidator extends Validator
     # Given the request with possible validation contexts appended
     # run all the validator contexts in parallel and wait for the
     # completion. If no validation mistakes found, run continuation.
-    # If some mistakes are found, however, `@renderHeaderValidation`.
+    # If some mistakes are found however, see `@abnormalHeaders`.
     validateHeaders: (request, response, continuation) ->
         notRequest = "a #{request} is not a request"
         notResponse = "a #{response} is not a response"
@@ -214,3 +228,46 @@ module.exports.HValidator = class HValidator extends Validator
         strings = _.map results, (e) -> e.message
         map = _.object _.keys(results), strings
         return @reject response, headers: map
+
+# This is an ABC service intended to be used only as a compund. It
+# provides a complete validation solution for the request body. The
+# important difference is this validation system supports asynchronous
+# validators which is what differs it from existent solutions. This
+# validation system is a one-stop-shop for checking all the inputs!
+module.exports.BValidator = class BValidator extends Validator
+
+    # This is a marker that indicates to some internal subsystems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete class implementation. This
+    # mainly is used to exclude or account for abstract classes.
+    @abstract yes
+
+    # Given the request with possible validation contexts appended
+    # run all the validator contexts in parallel and wait for the
+    # completion. If no validation mistakes found, run continuation.
+    # If some mistakes are found however, see `@abnormalBody` method.
+    validateBody: (request, response, schema, continuation) ->
+        notRequest = "a #{request} is not a request"
+        notResponse = "a #{response} is not a response"
+        notContinuation = "a #{continuation} is not function"
+        assert _.isFunction(continuation), notContinuation
+        assert _.isObject(response), notResponse
+        assert _.isObject(request), notRequest
+        @validateSchema request.body, schema, (failure, results) ->
+            signature = [results, request, response]
+            return @abnormalBody signature... if failure
+            return continuation.bind(this) failure, results
+
+    # This method is a default implementation of the renderer that
+    # will be called when the validation has failed. You can easily
+    # override it in either your service or in an external compound.
+    # By default it renders JSON object with errors mapped to params.
+    abnormalBody: (results, request, response) ->
+        notRequest = "a #{request} is not a request"
+        notResponse = "a #{response} is not a respnonse"
+        assert _.isObject(response), notResponse
+        assert _.isObject(request), notRequest
+        response.statusCode = 400 # bad HTTP request
+        noErrors = "the schema results is not valid"
+        assert _.isObject(results.errors), noErrors
+        return @reject response, body: results.errors
