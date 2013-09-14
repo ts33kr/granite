@@ -69,6 +69,7 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
                 version: document.version()
                 failure: document.failure()
                 outputs: document.outputs()
+                schemas: document.schemas()
                 inputs: document.inputs()
                 github: document.github()
                 notes: document.notes()

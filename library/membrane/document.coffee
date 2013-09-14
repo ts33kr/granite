@@ -188,8 +188,19 @@ module.exports.Document = class Document extends events.EventEmitter2
         return @$markings if arguments.length is 0
         noMarkings = "the markings should be a object"
         assert _.isObject(markings), noMarkings
-        @emit "markings", arguments...
         (@$markings ?= []).push markings
+        @emit "markings", arguments...
+
+    # Either get or set the schemas information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # The schemas should be an object of `slot: schema` values.
+    schemas: (schemas) ->
+        return @$schemas if arguments.length is 0
+        noSchemas = "the schemas should be a object"
+        assert _.isObject(schemas), noSchemas
+        _.extend (@$schemas ?= {}), schemas
+        @emit "schemas", arguments...
 
     # Either get or set the version information of the method that
     # is being described by this document. If you do no supply any
