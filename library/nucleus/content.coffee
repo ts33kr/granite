@@ -40,6 +40,12 @@ util = require "util"
 # using the correct protocol, meaning correct `Content-Type`, etc.
 module.exports.Broker = class Broker extends events.EventEmitter2
 
+    # Every broker has to have a public constructor that accepts
+    # the kernel instance as a parameter. You can override it as
+    # you see fit, but be sure to invoke the super constructor and
+    # it is highly advised to store the kernel instance in object.
+    constructor: (@kernel) ->
+
     # Register the specified content negotiator with the broker. The
     # The negotiator returns a function if it can handle the request
     # and response pair. If specific negotiator cannot handle the

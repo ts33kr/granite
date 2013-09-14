@@ -105,7 +105,7 @@ module.exports.Generic = class Generic extends events.EventEmitter2
         @setupListeningServers()
         @setupSocketServers()
         @setupHotloadWatcher()
-        @broker = new content.JsonBroker
+        @broker = new content.JsonBroker this
         message = "Booted up the kernel instance"
         sigint = "Received the SIGINT (interrupt signal)"
         sigterm = "Received the SIGTERM (terminate signal)"
