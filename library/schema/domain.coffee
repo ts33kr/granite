@@ -116,6 +116,20 @@ module.exports.must = must = (pointer) -> (key) ->
     @required = (required or []).concat key
     return pointer.apply this, arguments
 
+# Modify the supplied JSON object reference to mark this object as
+# strict. This means that if an object contains any other properties
+# except for the explicitly declared ones, it will be invalid marked
+# invalid, as specified according to JSON schema draft v4 standard.
+# This applicable to a single object as well as an array of objects.
+module.exports.strict = strict = (reference) ->
+    invalidSubject = "subject is none of an object"
+    subject = reference if reference.type is "object"
+    subject = reference.items if reference.type is "array"
+    assert reference.type is "object", invalidSubject
+    assert _.isObject reference.properties
+    assert _.isObject reference.patternProperties
+    reference.additionalProperties = no; reference
+
 # Create a reference to the JSON enumeration. An enumeration defines
 # what values are valid for this data type. Everything else beyond
 # those values are considered invalid. This version may take array
