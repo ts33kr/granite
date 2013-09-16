@@ -52,21 +52,27 @@ module.exports.schema = schema = (id, title, pointer) ->
     assert _.isString(context.id = id), noId
     return rematerialize pointer.apply(context)
 
-# This defines of the the built in pointers. A pointer is a method
+# This defines one of the built in pointers. A pointer is a method
 # defintion that provides an ability to specify (or point to) to a
 # specific kind of data type. Pointers may create simple or complex
 # data type references and definitions. Refer to their implementation.
 # A modificator that marks objects as strict (no additional properties).
-module.exports.strict = strict = -> @additionalProperties = no
+module.exports.strict = strict = (object) ->
+    notObject = "applicable only for an object"
+    assert object.type is "object", notObject
+    object.additionalProperties = no; object
 
-# This defines of the the built in pointers. A pointer is a method
+# This defines one of the built in pointers. A pointer is a method
 # defintion that provides an ability to specify (or point to) to a
 # specific kind of data type. Pointers may create simple or complex
 # data type references and definitions. Refer to their implementation.
 # A modificator that marks arrays as containting only unique items.
-module.exports.unique = unique = (a) -> a.uniqueItems = yes; a
+module.exports.unique = unique = (array) ->
+    notArray = "applicable only for an array"
+    assert array.type is "array", notArray
+    array.uniqueItems = yes; return array
 
-# This defines of the the built in pointers. A pointer is a method
+# This defines one of the built in pointers. A pointer is a method
 # defintion that provides an ability to specify (or point to) to a
 # specific kind of data type. Pointers may create simple or complex
 # data type references and definitions. Refer to their implementation.
@@ -77,7 +83,7 @@ module.exports.must = must = (p) -> (k, o) ->
     assert _.isObject(o), "internal error, no outer object"
     (o.required ?= []).push k; p.apply @, arguments
 
-# This defines of the the built in pointers. A pointer is a method
+# This defines one of the built in pointers. A pointer is a method
 # defintion that provides an ability to specify (or point to) to a
 # specific kind of data type. Pointers may create simple or complex
 # data type references and definitions. Refer to their implementation.
@@ -96,7 +102,7 @@ module.exports.object = object = (description, pointer) ->
     @properties[key] = f key, p for key, p of compiled
     @type = "object"; return this
 
-# This defines of the the built in pointers. A pointer is a method
+# This defines one of the built in pointers. A pointer is a method
 # defintion that provides an ability to specify (or point to) to a
 # specific kind of data type. Pointers may create simple or complex
 # data type references and definitions. Refer to their implementation.
@@ -110,7 +116,7 @@ module.exports.array = array = (description, pointer) ->
     @description = description.toString()
     @type = "array"; pointer.apply items; @
 
-# This defines of the the built in pointers. A pointer is a method
+# This defines one of the built in pointers. A pointer is a method
 # defintion that provides an ability to specify (or point to) to a
 # specific kind of data type. Pointers may create simple or complex
 # data type references and definitions. Refer to their implementation.
@@ -123,7 +129,7 @@ module.exports.number = number = (description, props) ->
     @description = description.toString()
     @type = "number"; _.extend this, props; @
 
-# This defines of the the built in pointers. A pointer is a method
+# This defines one of the built in pointers. A pointer is a method
 # defintion that provides an ability to specify (or point to) to a
 # specific kind of data type. Pointers may create simple or complex
 # data type references and definitions. Refer to their implementation.
