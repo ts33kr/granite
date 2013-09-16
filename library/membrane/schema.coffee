@@ -56,6 +56,77 @@ module.exports.schema = schema = (id, title, pointer) ->
 # defintion that provides an ability to specify (or point to) to a
 # specific kind of data type. Pointers may create simple or complex
 # data type references and definitions. Refer to their implementation.
+# This pointer creates a reference to object with composite pointer.
+module.exports.object = object = (description, pointer) ->
+    noPointer = "got no pointer to the object members"
+    noDescription = "no description has been given"
+    assert _.isString(description), noDescription
+    assert _.isFunction(pointer), noPointer
+    compiled = pointer.apply this
+    @description = description.toString()
+    props = @properties = Object.create this
+    regex = @patternProperties = Object.create this
+    f = (k, p) => p.call n = Object.create(@), k, @; n
+    isp = (k, p) -> _.isFunction(p) and not p.pattern
+    isr = (k, p) -> _.isFunction(p) and p.pattern is yes
+    props[k] = f k, p for k, p of compiled when isp(k, p)
+    regex[k] = f k, p for k, p of compiled when isr(k, p)
+    @type = "object"; return this
+
+# This defines one of the built in pointers. A pointer is a method
+# defintion that provides an ability to specify (or point to) to a
+# specific kind of data type. Pointers may create simple or complex
+# data type references and definitions. Refer to their implementation.
+# This pointer creates a reference to an array of other pointers.
+module.exports.array = array = (description, pointer) ->
+    noPointer = "got no pointer to array elements"
+    noDescription = "no description has been given"
+    assert _.isString(description), noDescription
+    assert _.isFunction(pointer), noPointer
+    items = Object.create this; @items = items
+    @description = description.toString()
+    @type = "array"; pointer.apply items; @
+
+# This defines one of the built in pointers. A pointer is a method
+# defintion that provides an ability to specify (or point to) to a
+# specific kind of data type. Pointers may create simple or complex
+# data type references and definitions. Refer to their implementation.
+# This pointer is a shorthand that creates an array of pointed objects.
+module.exports.objects = objects = (description, pointer) ->
+    noPointer = "got no pointer to array elements"
+    noDescription = "no description has been given"
+    addendum = "an array of items: #{description}"
+    assert _.isString(description), noDescription
+    assert _.isFunction(pointer), noPointer
+    reference = -> @object description, pointer
+    @array addendum, reference; return @
+
+# This defines one of the built in pointers. A pointer is a method
+# defintion that provides an ability to specify (or point to) to a
+# specific kind of data type. Pointers may create simple or complex
+# data type references and definitions. Refer to their implementation.
+# This pointer is a shorthand that creates an array of strings.
+module.exports.strings = strings = (description) ->
+    noDescription = "no description has been given"
+    addendum = "an array of items: #{description}"
+    assert _.isString(description), noDescription
+    reference = -> @string description
+    @array addendum, reference; this
+
+# This defines one of the built in pointers. A pointer is a method
+# defintion that provides an ability to specify (or point to) to a
+# specific kind of data type. Pointers may create simple or complex
+# data type references and definitions. Refer to their implementation.
+# A modificator that marks object property as the pattern property.
+module.exports.pattern = pattern = (pointer) ->
+    notPointer = "incorrect pointer for pattern"
+    assert _.isFunction(pointer), notPointer
+    pointer.pattern = yes; return pointer
+
+# This defines one of the built in pointers. A pointer is a method
+# defintion that provides an ability to specify (or point to) to a
+# specific kind of data type. Pointers may create simple or complex
+# data type references and definitions. Refer to their implementation.
 # A modificator that marks objects as strict (no additional properties).
 module.exports.strict = strict = (object) ->
     notObject = "applicable only for an object"
@@ -81,35 +152,20 @@ module.exports.must = must = (p) -> (k, o) ->
     assert _.isFunction(p), "incorrect pointer for must"
     assert _.isString(k), "invalid name of property: #{k}"
     assert _.isObject(o), "internal error, no outer object"
-    (o.required ?= []).push k; p.apply @, arguments
-
-# This defines one of the built in pointers. A pointer is a method
-# defintion that provides an ability to specify (or point to) to a
-# specific kind of data type. Pointers may create simple or complex
-# data type references and definitions. Refer to their implementation.
-# This pointer creates a reference to object with composite pointer.
-module.exports.object = object = (description, pointer) ->
-    noPointer = "got no pointer to the object members"
-    noCompiled = "content pointer must return object"
-    noDescription = "no description has been given"
-    assert _.isString(description), noDescription
-    assert _.isFunction(pointer), noPointer
-    compiled = pointer.apply this
-    @properties = Object.create this
-    @description = description.toString()
-    assert _.isObject(compiled), noCompiled
-    f = (k, p) => p.call n = Object.create(@), k, @; n
-    @properties[key] = f key, p for key, p of compiled
-    @type = "object"; return this
+    required = o.required if _.has o, "required"
+    (o.required = (required or [])).push k
+    return p.apply this, arguments
 
 # This defines one of the built in pointers. A pointer is a method
 # defintion that provides an ability to specify (or point to) to a
 # specific kind of data type. Pointers may create simple or complex
 # data type references and definitions. Refer to their implementation.
 # This pointer creates a reference to an array of other pointers.
-module.exports.choose = choose = (description, values...) ->
+module.exports.choose = choose = (description, values) ->
     noValues = "all values must be primitive strings"
     noDescription = "no description has been given"
+    noArray = "the values should be an array"
+    assert _.isArray(values), noArray
     assert _.isString(description), noDescription
     assert _.all(values, _.isString), noValues
     @description = description.toString()
@@ -120,14 +176,13 @@ module.exports.choose = choose = (description, values...) ->
 # specific kind of data type. Pointers may create simple or complex
 # data type references and definitions. Refer to their implementation.
 # This pointer creates a reference to an array of other pointers.
-module.exports.array = array = (description, pointer) ->
-    noPointer = "got no pointer to array elements"
+module.exports.follows = follows = (description, values...) ->
+    noValues = "all values must be primitive strings"
     noDescription = "no description has been given"
     assert _.isString(description), noDescription
-    assert _.isFunction(pointer), noPointer
-    items = Object.create this; @items = items
+    assert _.all(values, _.isString), noValues
     @description = description.toString()
-    @type = "array"; pointer.apply items; @
+    @enum = values; return this
 
 # This defines one of the built in pointers. A pointer is a method
 # defintion that provides an ability to specify (or point to) to a
