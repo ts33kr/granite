@@ -110,7 +110,7 @@ module.exports.pattern = pattern = (pointer) ->
 module.exports.must = must = (pointer) -> (key) ->
     isObject = @properties? or patternProperties?
     assert _.isFunction(pointer), "incorrect pointer for must"
-    assert _.isString(key), "invalid name of property: #{k}"
+    assert _.isString(key), "invalid name of property: #{key}"
     assert isObject, "must can only be used on object"
     required = @required if _.has this, "required"
     @required = (required or []).concat key
