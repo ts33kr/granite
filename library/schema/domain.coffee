@@ -102,6 +102,20 @@ module.exports.pattern = pattern = (pointer) ->
     assert @patternProperties?, notObject
     pointer.pattern = yes; return pointer
 
+# Modify the pointer decorated with this method as a required member.
+# This modifier may only be used inside of the JSON object as defined
+# by the JSON schema draft v4. specification. Beware, this method does
+# modify the context object, although is being applied to the pointer.
+# This corresponds to the draft v4 as oppositve of the draft v3 spec.
+module.exports.must = must = (pointer) -> (key) ->
+    isObject = @properties? or patternProperties?
+    assert _.isFunction(pointer), "incorrect pointer for must"
+    assert _.isString(key), "invalid name of property: #{k}"
+    assert isObject, "must can only be used on object"
+    required = @required if _.has this, "required"
+    @required = (required or []).concat key
+    return pointer.apply this, arguments
+
 # Create a reference to a JSON schema number within the context. The
 # number can optionally be followed by an object that contains some
 # validation restrictions, as they are found in the JSON schema v4 or
