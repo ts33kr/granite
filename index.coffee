@@ -41,9 +41,9 @@ _.merge this, require "./library/nucleus/loader"
 # information on how this is being done. See the modules in the
 # framework library to see the structure of the built hieararchy.
 module.exports = @collectPackages __dirname
-module.exports.cachedKernel = @cachedKernel
-module.exports.collectModules = @collectModules
 module.exports.collectPackages = @collectPackages
+module.exports.collectModules = @collectModules
+module.exports.cachedKernel = @cachedKernel
 
 # Do some aliasing after asserting that the basic components of the
 # framework is indeed loaded and are not missing. This is precaution
