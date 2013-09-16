@@ -116,6 +116,21 @@ module.exports.must = must = (pointer) -> (key) ->
     @required = (required or []).concat key
     return pointer.apply this, arguments
 
+# Create a reference to the JSON enumeration. An enumeration defines
+# what values are valid for this data type. Everything else beyond
+# those values are considered invalid. This version takes an array
+# of values as scrubbed from all the arguments that follow after the
+# the description argument. Makes sure all values are plain strings.
+module.exports.choose = choose = (description, values) ->
+    noValues = "all values must be primitive strings"
+    noDescription = "no description has been given"
+    noArray = "values argument should be an array"
+    assert _.isArray(values), noArray
+    assert _.isString(description), noDescription
+    assert _.all(values, _.isString), noValues
+    @description = description.toString()
+    @enum = values; return this
+
 # Create a reference to a JSON schema number within the context. The
 # number can optionally be followed by an object that contains some
 # validation restrictions, as they are found in the JSON schema v4 or
