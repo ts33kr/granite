@@ -119,8 +119,8 @@ module.exports.must = must = (pointer) -> (key) ->
 # Create a reference to the JSON enumeration. An enumeration defines
 # what values are valid for this data type. Everything else beyond
 # those values are considered invalid. This version takes an array
-# of values as scrubbed from all the arguments that follow after the
-# the description argument. Makes sure all values are plain strings.
+# of values as array object, which is usefull for creating enums in
+# a programatic fashion. Makes sure all values are plain strings.
 module.exports.choose = choose = (description, values) ->
     noValues = "all values must be primitive strings"
     noDescription = "no description has been given"
