@@ -107,6 +107,19 @@ module.exports.object = object = (description, pointer) ->
 # specific kind of data type. Pointers may create simple or complex
 # data type references and definitions. Refer to their implementation.
 # This pointer creates a reference to an array of other pointers.
+module.exports.choose = choose = (description, values...) ->
+    noValues = "all values must be primitive strings"
+    noDescription = "no description has been given"
+    assert _.isString(description), noDescription
+    assert _.all(values, _.isString), noValues
+    @description = description.toString()
+    @enum = values; return this
+
+# This defines one of the built in pointers. A pointer is a method
+# defintion that provides an ability to specify (or point to) to a
+# specific kind of data type. Pointers may create simple or complex
+# data type references and definitions. Refer to their implementation.
+# This pointer creates a reference to an array of other pointers.
 module.exports.array = array = (description, pointer) ->
     noPointer = "got no pointer to array elements"
     noDescription = "no description has been given"
