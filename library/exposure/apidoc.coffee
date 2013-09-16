@@ -84,6 +84,7 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
     # class and its module implementation for more information on it.
     @GET (method, service, kernel) ->
         @relevant "ts33kr.github.io/granite/exposure/apidoc.html"
+        @relevant "ts33kr.github.io/granite/membrane/document.html"
         @github "ts33kr", "granite", "library/exposure/apidoc.coffee"
         @synopsis "Get inventory of all APIs available in the system"
         @outputs "An array of objects, each describes a service"
