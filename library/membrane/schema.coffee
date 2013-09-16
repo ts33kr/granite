@@ -58,6 +58,7 @@ module.exports.schema = schema = (id, title, pointer) ->
 # data type references and definitions. Refer to their implementation.
 # This pointer creates a reference to object with composite pointer.
 module.exports.object = object = (description, pointer) ->
+    (pointer = ->) if arguments.length is 1
     noPointer = "got no pointer to the object members"
     noDescription = "no description has been given"
     assert _.isString(description), noDescription
@@ -93,6 +94,7 @@ module.exports.array = array = (description, pointer) ->
 # data type references and definitions. Refer to their implementation.
 # This pointer is a shorthand that creates an array of pointed objects.
 module.exports.objects = objects = (description, pointer) ->
+    (pointer = ->) if arguments.length is 1
     noPointer = "got no pointer to array elements"
     noDescription = "no description has been given"
     addendum = "an array of items: #{description}"

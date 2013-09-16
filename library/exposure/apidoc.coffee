@@ -24,6 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 _ = require "lodash"
+assert = require "assert"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
@@ -35,6 +36,8 @@ http = require "http"
 util = require "util"
 
 {Barebones} = require "../membrane/skeleton"
+{schema} = require "../membrane/schema"
+{Api} = require "../nucleus/api"
 
 # This service exposes the entiry hierarchical structure of the
 # service documentation, as they scanned and found in the current
@@ -48,6 +51,33 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
     @resource "/api/doc"
+
+    # Here follows the definition of the JSON schema that represents
+    # some data structure used throughout the service of compound in
+    # which it is constructed or referenced from. This construction
+    # produces a usable, pure JSON Schema Draft v4. No further build
+    # up is possible, as the returned object clean of utility members.
+    @SERVICES = schema "#services", "schema for the API inventory", ->
+        @unique @objects "a unique object that describes a service", ->
+            location: @must -> @string "HTTP location of the service"
+            identify: @must -> @string "human readable ID of the service"
+            patterns: -> @strings "a regexp pattern that matches HTTP path"
+            methods: -> @objects "an HTTP method supported by the service", ->
+                method: @must -> @choose "an HTTP method (verb)", Api.SUPPORTED
+                relevant: -> @string "a relevant link or refernce or pointer"
+                synopsis: -> @string "a short summary of what the method does"
+                outputs: -> @string "human readable of what method returns away"
+                version: -> @string "human and machine readble version of method"
+                inputs: -> @string "human readable of what method takes as input"
+                leads: -> @string "a URL that leads to invocation of method"
+                notes: -> @string "a human readable remarks about the method"
+                produces: @strings "one of MIME types produced by the method"
+                consumes: @strings "one of MIME types consumed by the method"
+                schemas: -> @object "arbitrary JSON schemas for this method"
+                argument: -> @objects "a descriptor of a method argument"
+                failure: -> @objects "a descriptor of a possible failure"
+                markings: -> @object "arbitrary labels to put on method"
+                github: -> @objects "a reference to a file on GitHub"
 
     # Get the contents of the resources at the established path. It
     # is a good idea for this HTTP method to be idempotent. As the
@@ -66,6 +96,7 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
                 argument: document.argument()
                 synopsis: document.synopsis()
                 produces: document.produces()
+                consumes: document.consumes()
                 version: document.version()
                 failure: document.failure()
                 outputs: document.outputs()
@@ -86,5 +117,6 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
         @synopsis "Get inventory of all APIs available in the system"
         @outputs "An array of objects, each describes a service"
         @markings framework: "critical", stable: "positive"
+        @schemas exhaust: service.constructor.SERVICES
         @version kernel.package.version or undefined
         @produces "application/json"
