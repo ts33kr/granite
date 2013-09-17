@@ -73,6 +73,21 @@ module.exports.object = object = (description, pointer=(->)) ->
     regex[k] = f k, p for k, p of compiled when isr(k, p)
     @type = "object"; return this
 
+# Create a reference to a JSON schema array that contains objects in
+# it. This is pretty much the same as declaring an array with object
+# pointer passed to it, so this is just a convenient shorthand to aid
+# in writing less code. You should normally supply the pointer that
+# points to object members. Please refer to `object` implementation
+# for more information on the pointer and object creation routine.
+module.exports.objects = objects = (description, pointer=(->)) ->
+    noPointer = "got no pointer to array elements"
+    noDescription = "no description has been given"
+    addendum = "an array of items: #{description}"
+    assert _.isString(description), noDescription
+    assert _.isFunction(pointer), noPointer
+    reference = -> @object description, pointer
+    @array addendum, reference; return this
+
 # Create a reference to a JSON schema array within the context. The
 # array should be described it terms of items that it holds. These
 # items will be retrieved by invoking the supplied pointer function.
