@@ -23,12 +23,16 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+
 _ = require "lodash"
 assert = require "assert"
 colors = require "colors"
 logger = require "winston"
-{spawn} = require "child_process"
+paths = require "path"
+fs = require "fs"
+
 {rmdirSyncRecursive} = require "wrench"
+{spawn} = require "child_process"
 
 # Here follows the definition of a number of constants that define
 # the defaults for some of the options, generally for the ones that
@@ -72,7 +76,10 @@ module.exports = ->
         process.env["NODE_ENV"] = scoping.toString()
         process.env["log:level"] = logging.toString()
         granite = require "#{__dirname}/../../index"
+        assert resolved = paths.resolve library
+        missingLibrary = "missing library: #{resolved}"
         assert _.isObject(granite), "framework failed"
+        assert fs.existsSync(library), missingLibrary
         compiled = granite.collectPackages no, library
         assert _.isObject(compiled), "invalid library"
         granite.cachedKernel(library).bootstrap()
