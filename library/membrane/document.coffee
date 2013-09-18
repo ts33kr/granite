@@ -27,7 +27,6 @@ _ = require "lodash"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
-events = require "eventemitter2"
 colors = require "colors"
 assert = require "assert"
 nconf = require "nconf"
@@ -35,11 +34,13 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+{Archetype} = require "../nucleus/archetype"
+
 # Descriptor of some method of arbitrary service, in a structured
 # and expected way, so that it can later be used to programmatically
 # process such documentation and do with it whatever is necessary.
 # This approach gives unique ability to build self documented APIs.
-module.exports.Document = class Document extends events.EventEmitter2
+module.exports.Document = class Document extends Archetype
 
     # Either get or set the example of the method that is being
     # described by this document. If you do not supply example

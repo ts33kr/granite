@@ -27,7 +27,6 @@ _ = require "lodash"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
-events = require "eventemitter2"
 colors = require "colors"
 assert = require "assert"
 async = require "async"
@@ -39,14 +38,14 @@ url = require "url"
 
 {Primitive} = require "./primitive"
 {Barebones} = require "./skeleton"
-{EventEmitter2} = require "eventemitter2"
+{Archetype} = require "../nucleus/archetype"
 
 # A base class for all the validation contexts. Basically the conext
 # encapsulates the necessary internal details as well as provides a
 # set of validators to be used. So in order to create custom ones, you
 # will need to create a descendant of this class and set is as context.
 # The context setting happens on the service level with the directive.
-module.exports.Context = class Context extends EventEmitter2
+module.exports.Context = class Context extends Archetype
 
     # Create a new instance of the validation context with the given
     # value set as the subject for validation. Each validator will

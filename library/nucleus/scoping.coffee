@@ -29,7 +29,6 @@ assert = require "assert"
 connect = require "connect"
 moment = require "moment"
 logger = require "winston"
-events = require "eventemitter2"
 colors = require "colors"
 nconf = require "nconf"
 paths = require "path"
@@ -37,6 +36,7 @@ util = require "util"
 fs = require "fs"
 
 {spawn} = require "child_process"
+{Archetype} = require "./archetype"
 {rmdirSyncRecursive} = require "wrench"
 {mkdirSyncRecursive} = require "wrench"
 
@@ -45,7 +45,7 @@ fs = require "fs"
 # and the end user application constructed within the framework. It
 # is both an abstract base class as well as a ready to use bootstrap.
 # Please refer to the documentation of the methods for more info.
-module.exports.Scope = class Scope extends events.EventEmitter2
+module.exports.Scope = class Scope extends Archetype
 
     # Construct a new scope, using the supplied tag (a short name)
     # and a synopsis (short description of the scope) parameters.

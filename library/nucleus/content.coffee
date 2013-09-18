@@ -27,18 +27,19 @@ _ = require "lodash"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
-events = require "eventemitter2"
 colors = require "colors"
 nconf = require "nconf"
 https = require "https"
 http = require "http"
 util = require "util"
 
+{Archetype} = require "./archetype"
+
 # This class is a content negotiation broker. It is instantiated by
 # the kernel and then can be used either directly or via middleware
 # to negotiate the procedure of responding to a client with the data
 # using the correct protocol, meaning correct `Content-Type`, etc.
-module.exports.Broker = class Broker extends events.EventEmitter2
+module.exports.Broker = class Broker extends Archetype
 
     # Every broker has to have a public constructor that accepts
     # the kernel instance as a parameter. You can override it as

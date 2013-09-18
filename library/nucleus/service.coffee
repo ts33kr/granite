@@ -26,7 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 assert = require "assert"
 logger = require "winston"
 uuid = require "node-uuid"
-events = require "eventemitter2"
 colors = require "colors"
 util = require "util"
 url = require "url"
@@ -36,12 +35,14 @@ extendz = require "./extends"
 routing = require "./routing"
 scoping = require "./scoping"
 
+{Archetype} = require "./archetype"
+
 # This is an abstract base class for every kind of service in this
 # framework and the end user application. It provides the matching
 # and processing logic based on domain matches and RE match/extract
 # logics, to deal with paths. Remember that this service is just a
 # an internal base class, you generally should not use it directly.
-module.exports.Service = class Service extends events.EventEmitter2
+module.exports.Service = class Service extends Archetype
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

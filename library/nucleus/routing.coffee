@@ -25,17 +25,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _ = require "lodash"
 logger = require "winston"
-events = require "eventemitter2"
 colors = require "colors"
 assert = require "assert"
 util = require "util"
+
+{Archetype} = require "./archetype"
 
 # A simple yet solid HTTP request router. This is designed to map
 # HTTP requests to the correpsonding handlers by examining URL and
 # the supplied host, among other things. The exact matching logic
 # is up to the handlers that implement the corresponding methods.
 # This router just provides the infrastructure and boilerplating.
-module.exports.Router = class Router extends events.EventEmitter2
+module.exports.Router = class Router extends Archetype
 
     # Every router has to have a public constructor that accepts
     # the kernel instance as a parameter. You can override it as

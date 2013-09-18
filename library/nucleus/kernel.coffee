@@ -28,7 +28,6 @@ connect = require "connect"
 logger = require "winston"
 moment = require "moment"
 socket = require "socket.io"
-events = require "eventemitter2"
 colors = require "colors"
 assert = require "assert"
 async = require "async"
@@ -50,12 +49,14 @@ content = require "./content"
 plumbs = require "./plumbs"
 watch = require "./watch"
 
+{Archetype} = require "./archetype"
+
 # This is a primary gateway interface for the framework. This class
 # provides methods and routines necessary to bootstrap the framework
 # and the end user application constructed within the framework. It
 # is both an abstract base class as well as a ready to use bootstrap.
 # Please refer to the documentation of the methods for more info.
-module.exports.Generic = class Generic extends events.EventEmitter2
+module.exports.Generic = class Generic extends Archetype
 
     # This static property should contain the loaded NPM package
     # module which is used by the kernel to draw different kinds
