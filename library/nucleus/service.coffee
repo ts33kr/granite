@@ -35,13 +35,14 @@ _ = require "lodash"
 extendz = require "./extends"
 routing = require "./routing"
 scoping = require "./scoping"
+{EventEmitter2} = events
 
 # This is an abstract base class for every kind of service in this
 # framework and the end user application. It provides the matching
 # and processing logic based on domain matches and RE match/extract
 # logics, to deal with paths. Remember that this service is just a
 # an internal base class, you generally should not use it directly.
-module.exports.Service = class Service extends events.EventEmitter2
+module.exports.Service = class Service extends EventEmitter2
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
