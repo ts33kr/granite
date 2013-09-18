@@ -48,7 +48,7 @@ module.exports.cachedKernel = @cachedKernel
 # Do some aliasing after asserting that the basic components of the
 # framework is indeed loaded and are not missing. This is precaution
 # to make sure that the framework is in usable state, once is loaded.
-assert schema = module.exports.schema
 assert nucleus = module.exports.nucleus
 assert membrane = module.exports.membrane
+assert exposure = module.exports.exposure
 module.exports.cakefile = nucleus.cakefile
