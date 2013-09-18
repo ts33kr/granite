@@ -23,14 +23,13 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
-
-_ = require "lodash"
+fs = require "fs"
+paths = require "path"
 assert = require "assert"
 colors = require "colors"
 logger = require "winston"
-paths = require "path"
-fs = require "fs"
 
+_ = require "lodash"
 {rmdirSyncRecursive} = require "wrench"
 {spawn} = require "child_process"
 
