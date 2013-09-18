@@ -39,6 +39,7 @@ url = require "url"
 {Duplex} = require "./duplex"
 {Barebones} = require "./skeleton"
 {RedisClient} = require "./redis"
+tools = require "../nucleus/tools"
 
 # This is an extension of the `Duple` abstract base service that
 # implements a dialogue sort of protection for the duplex channel.
