@@ -48,7 +48,7 @@ cloner = module.exports.cloner = (subject) ->
     return subject if _.isObject subject.watermark
     snapshot = _.cloneDeep subject, d = (value) ->
         return unless _.isFunction value
-        func = _.head eval "[#{value.toString()}]"
+        func = -> value.apply this, arguments
         _.extend func.prototype, value.prototype
         func.constructor = value.constructor; func
     snapshot.watermark = subject; snapshot
