@@ -49,6 +49,7 @@ cloner = module.exports.cloner = (subject) ->
     snapshot = _.cloneDeep subject, d = (value) ->
         return unless _.isFunction value
         func = -> value.apply this, arguments
+        func.name = value.name or "<anonymous>"
         _.extend func.prototype, value.prototype
         func.constructor = value.constructor; func
     snapshot.watermark = subject; snapshot
