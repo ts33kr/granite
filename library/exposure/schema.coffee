@@ -161,6 +161,34 @@ module.exports.choose = choose = (description, values...) ->
     @description = description.toString()
     @enum = values; return this
 
+# Create a reference to a JSON schema array with references to the
+# JSON schema numbers inside of the array. This is a variation of
+# the plain `number` method, with the exception that it makes arrays
+# of numbers instead of numbers. This is complementatory DSL part.
+# Please refer to the original `number` implementation for the info.
+module.exports.numbers = numbers = (description, props) ->
+    noProps = "no valid properties object supplied"
+    noDescription = "no description has been given"
+    props = props.apply this if _.isFunction props
+    assert _.isString(description), noDescription
+    props ?= {}; assert _.isObject(props), noProps
+    @array "array of number items: #{description}", ->
+        return @number description, props
+
+# Create a reference to a JSON schema array with references to the
+# JSON schema strings inside of the array. This is a variation of
+# the plain `string` method, with the exception that it makes arrays
+# of strings instead of strings. This is complementatory DSL part.
+# Please refer to the original `string` implementation for the info.
+module.exports.strings = strings = (description, props) ->
+    noProps = "no valid properties object supplied"
+    noDescription = "no description has been given"
+    props = props.apply this if _.isFunction props
+    assert _.isString(description), noDescription
+    props ?= {}; assert _.isObject(props), noProps
+    @array "array of string items: #{description}", ->
+        return @string description, props
+
 # Create a reference to a JSON schema number within the context. The
 # number can optionally be followed by an object that contains some
 # validation restrictions, as they are found in the JSON schema v4 or
