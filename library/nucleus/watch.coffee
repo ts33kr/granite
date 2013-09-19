@@ -152,10 +152,10 @@ module.exports.Watcher = class Watcher extends Archetype
         dependents = _.filter registry, predicate
         dependents = _.filter dependents, originate
         return unless dependents.length > 0
+        @forcedHotSwappingInProgress = dependents
         message = "Forced watch enabled, swapping services: %s"
         logger.warn message.grey, dependents.length
         change = @hotSwappingChange.bind this
-        @forcedHotSwappingInProgress = yes
         change originate dep for dep in dependents
         delete @forcedHotSwappingInProgress
 
