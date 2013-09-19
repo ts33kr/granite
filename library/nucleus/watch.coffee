@@ -74,9 +74,9 @@ module.exports.Watcher = class Watcher extends Archetype
         entrypoint = require.main.filename
         go = => @reviewServices resolved
         return if resolved is entrypoint
-        return go() if resolved of require.cache
         relative = paths.relative process.cwd(), path
         logger.info "Addition at %s".cyan, relative.underline
+        return go() if resolved of require.cache
         try require resolved; go() catch error
             message = "Exception in module at #{path}:\r\n%s"
             logger.warn message.red, error.stack
