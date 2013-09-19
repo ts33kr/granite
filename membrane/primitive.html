@@ -27,9 +27,9 @@
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
 <span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
 <span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
@@ -38,11 +38,11 @@
 
 <span class="p">{</span><span class="nx">Primitive</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./primitive&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
-<span class="p">{</span><span class="nx">EventEmitter2</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A base class for all the validation contexts. Basically the conext
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/archetype&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A base class for all the validation contexts. Basically the conext
 encapsulates the necessary internal details as well as provides a
 set of validators to be used. So in order to create custom ones, you
 will need to create a descendant of this class and set is as context.
-The context setting happens on the service level with the directive.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Context = </span><span class="k">class</span> <span class="nx">Context</span> <span class="k">extends</span> <span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Create a new instance of the validation context with the given
+The context setting happens on the service level with the directive.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Context = </span><span class="k">class</span> <span class="nx">Context</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Create a new instance of the validation context with the given
 value set as the subject for validation. Each validator will
 refer to this value to perform their validation logic on it.
 If the message arg is passed in then it will be used by force.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@value, @message) -&gt;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Chain in a new validator to the context. Validator is a method

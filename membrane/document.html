@@ -27,16 +27,17 @@
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
 <span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
-<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Descriptor of some method of arbitrary service, in a structured
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/archetype&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Descriptor of some method of arbitrary service, in a structured
 and expected way, so that it can later be used to programmatically
 process such documentation and do with it whatever is necessary.
-This approach gives unique ability to build self documented APIs.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Document = </span><span class="k">class</span> <span class="nx">Document</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the example of the method that is being
+This approach gives unique ability to build self documented APIs.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Document = </span><span class="k">class</span> <span class="nx">Document</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the example of the method that is being
 described by this document. If you do not supply example
 this method will return you one, assuming it was set before.
 Notes are warning/beware messages about the implementation.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">notes: </span><span class="nf">(notes) -&gt;</span>
@@ -126,23 +127,39 @@ The relevant should be a string that contains a valid URL.</p></div></div><div c
         <span class="nv">noRelevant = </span><span class="s">&quot;the relevant should be a string&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">relevant</span><span class="p">),</span> <span class="nx">noRelevant</span>
         <span class="nx">@emit</span> <span class="s">&quot;relevant&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="p">(</span><span class="nx">@$relevant</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">relevant</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the mimes information of the method that
+        <span class="p">(</span><span class="nx">@$relevant</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">relevant</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the produces information of the method that
 is being described by this document. If you do no supply any
 arguments this method will return already described failures.
-The mimes should be array that contains a valid MIME types.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">mimes: </span><span class="nf">(mimes) -&gt;</span>
-        <span class="k">return</span> <span class="nx">@$mimes</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
-        <span class="nv">noMimes = </span><span class="s">&quot;the mimes should be an array&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">mimes</span><span class="p">),</span> <span class="nx">noMimes</span>
-        <span class="nx">@emit</span> <span class="s">&quot;mimes&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="p">(</span><span class="nx">@$mimes</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">mimes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the markings information of the method that
+The mimes should be args that contains a valid MIME types.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">produces: </span><span class="nf">(produces...) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$produces</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">notString = </span><span class="s">&quot;elements must be MIME type strings&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">produces</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">),</span> <span class="nx">notString</span>
+        <span class="vi">@$produces = </span><span class="p">(</span><span class="nx">@$produces</span> <span class="o">or</span> <span class="p">[]).</span><span class="nx">concat</span> <span class="nx">produces</span>
+        <span class="nx">@emit</span> <span class="s">&quot;produces&quot;</span><span class="p">,</span> <span class="nx">@$produces</span><span class="p">,</span> <span class="nx">arguments</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the consumes information of the method that
+is being described by this document. If you do no supply any
+arguments this method will return already described failures.
+The mimes should be args that contains a valid MIME types.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">consumes: </span><span class="nf">(consumes...) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$consumes</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">notString = </span><span class="s">&quot;elements must be MIME type strings&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">consumes</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">),</span> <span class="nx">notString</span>
+        <span class="vi">@$consumes = </span><span class="p">(</span><span class="nx">@$consumes</span> <span class="o">or</span> <span class="p">[]).</span><span class="nx">concat</span> <span class="nx">consumes</span>
+        <span class="nx">@emit</span> <span class="s">&quot;consumes&quot;</span><span class="p">,</span> <span class="nx">@$consumes</span><span class="p">,</span> <span class="nx">arguments</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the markings information of the method that
 is being described by this document. If you do no supply any
 arguments this method will return already described failures.
 The markings should be an object of <code>marking: level</code> values.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">markings: </span><span class="nf">(markings) -&gt;</span>
         <span class="k">return</span> <span class="nx">@$markings</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
         <span class="nv">noMarkings = </span><span class="s">&quot;the markings should be a object&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">markings</span><span class="p">),</span> <span class="nx">noMarkings</span>
-        <span class="nx">@emit</span> <span class="s">&quot;markings&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="p">(</span><span class="nx">@$markings</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">markings</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the version information of the method that
+        <span class="p">(</span><span class="nx">@$markings</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">markings</span>
+        <span class="nx">@emit</span> <span class="s">&quot;markings&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the schemas information of the method that
+is being described by this document. If you do no supply any
+arguments this method will return already described failures.
+The schemas should be an object of <code>slot: schema</code> values.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">schemas: </span><span class="nf">(schemas) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$schemas</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">noSchemas = </span><span class="s">&quot;the schemas should be a object&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">schemas</span><span class="p">),</span> <span class="nx">noSchemas</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="p">(</span><span class="nx">@$schemas</span> <span class="o">?=</span> <span class="p">{}),</span> <span class="nx">schemas</span>
+        <span class="nx">@emit</span> <span class="s">&quot;schemas&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the version information of the method that
 is being described by this document. If you do no supply any
 arguments this method will return already described failures.
 The version should be a string with an arbitrary contents.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">version: </span><span class="nf">(version) -&gt;</span>

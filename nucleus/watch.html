@@ -27,7 +27,6 @@
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
@@ -40,10 +39,12 @@
 <span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">extendz = </span><span class="nx">require</span> <span class="s">&quot;./extends&quot;</span>
 <span class="nv">routing = </span><span class="nx">require</span> <span class="s">&quot;./routing&quot;</span>
-<span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;./service&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Watcher is responsible for automatic discovery and hot loading of
+<span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;./service&quot;</span>
+
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./archetype&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Watcher is responsible for automatic discovery and hot loading of
 the modules that contain services. It can be configured to watch
 only specific directories. It also features automatic reloading
-that takes care of unregistering and registering the services.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Watcher = </span><span class="k">class</span> <span class="nx">Watcher</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This defines the set of filename extensions that will be
+that takes care of unregistering and registering the services.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Watcher = </span><span class="k">class</span> <span class="nx">Watcher</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This defines the set of filename extensions that will be
 interpreted by the watcher as valid modules and therefore
 process by the watching. Meaning adding it to the watch
 list and enabling the hot swapping of modules and services.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@EXTENSIONS = </span><span class="p">[</span><span class="s">&quot;.js&quot;</span><span class="p">,</span> <span class="s">&quot;.coffee&quot;</span><span class="p">]</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The public constructor for the watcher. It should never be
@@ -146,7 +147,20 @@ should be used only by the watcher internals, not directly.</p></div></div><div 
         <span class="nv">services = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">exports</span><span class="p">,</span> <span class="nx">isTyped</span>
         <span class="nv">services = </span><span class="nx">_</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">services</span><span class="p">,</span> <span class="nx">unscoped</span>
         <span class="nv">services = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">services</span><span class="p">,</span> <span class="nx">isFinal</span>
-        <span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">services</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Watch the specified directory for addition and changing of
+        <span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">services</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Directory tracking routine keeps inventory of all directories
+that have been added to the watcher. Besides that it is called
+upon an addition of a new directory to ensure that the directory
+does not intersect with any directories that already present.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">directoryTracking: </span><span class="nf">(directory) -&gt;</span>
+        <span class="nv">tracked = </span><span class="nx">@tracked</span> <span class="o">?=</span> <span class="p">[]</span>
+        <span class="nv">pattern = </span><span class="sr">/^(?:\.{2}\/?)+$/</span>
+        <span class="nv">resolved = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">directory</span>
+        <span class="k">return</span> <span class="kc">undefined</span> <span class="k">if</span> <span class="nx">resolved</span> <span class="k">in</span> <span class="nx">tracked</span>
+        <span class="nv">relA = </span><span class="nf">(p) -&gt;</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">relative</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span> <span class="nx">resolved</span><span class="p">)</span>
+        <span class="nv">relB = </span><span class="nf">(p) -&gt;</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">relative</span><span class="p">(</span><span class="nx">resolved</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span>
+        <span class="nv">matches = </span><span class="nf">(f) -&gt;</span> <span class="nf">(p) -&gt;</span> <span class="nx">pattern</span><span class="p">.</span><span class="nx">test</span> <span class="nx">f</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">no</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">any</span> <span class="nx">tracked</span><span class="p">,</span> <span class="nx">matches</span><span class="p">(</span><span class="nx">relA</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">no</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">any</span> <span class="nx">tracked</span><span class="p">,</span> <span class="nx">matches</span><span class="p">(</span><span class="nx">relB</span><span class="p">)</span>
+        <span class="nx">tracked</span><span class="p">.</span><span class="nx">push</span> <span class="nx">resolved</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Watch the specified directory for addition and changing of
 the files, looking for modules with services there and then
 loading them and reloading and doing all other routines for
 managing the hot swapping of the services inside modules.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">watchDirectory: </span><span class="nf">(directory) -&gt;</span>
@@ -156,6 +170,7 @@ managing the hot swapping of the services inside modules.</p></div></div><div cl
         <span class="nv">exists = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span> <span class="nx">directory</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
         <span class="nv">relative = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">relative</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="nx">directory</span>
         <span class="nv">formats = </span><span class="p">[</span><span class="nx">notExists</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">relative</span><span class="p">.</span><span class="nx">underline</span><span class="p">]</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">@directoryTracking</span> <span class="nx">directory</span>
         <span class="k">return</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">formats</span><span class="p">...</span> <span class="k">unless</span> <span class="nx">exists</span>
         <span class="nv">watching = </span><span class="s">&quot;Watching %s directory for modules&quot;</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">watching</span><span class="p">.</span><span class="nx">blue</span><span class="p">,</span> <span class="nx">relative</span><span class="p">.</span><span class="nx">underline</span>

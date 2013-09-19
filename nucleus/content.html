@@ -27,15 +27,27 @@
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
 <span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
-<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This class is a content negotiation broker. It is instantiated by
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./archetype&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This class is a content negotiation broker. It is instantiated by
 the kernel and then can be used either directly or via middleware
 to negotiate the procedure of responding to a client with the data
-using the correct protocol, meaning correct <code>Content-Type</code>, etc.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Broker = </span><span class="k">class</span> <span class="nx">Broker</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Content negotiate the request/response pair to use the correct
+using the correct protocol, meaning correct <code>Content-Type</code>, etc.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Broker = </span><span class="k">class</span> <span class="nx">Broker</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Every broker has to have a public constructor that accepts
+the kernel instance as a parameter. You can override it as
+you see fit, but be sure to invoke the super constructor and
+it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Register the specified content negotiator with the broker. The
+The negotiator returns a function if it can handle the request
+and response pair. If specific negotiator cannot handle the
+pair, it should return anything other than a function object.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@associate: </span><span class="nf">(negotiator) -&gt;</span>
+        <span class="nv">registry = </span><span class="nx">@registry</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">isValid = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">negotiator</span>
+        <span class="nv">invalid = </span><span class="s">&quot;Checker is not a valid method&quot;</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">invalid</span> <span class="k">unless</span> <span class="nx">isValid</span>
+        <span class="vi">@registry = </span><span class="nx">registry</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">negotiator</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Content negotiate the request/response pair to use the correct
 protocol. The protocol is implemented by the content negotiator
 that might or might not have been previously add to the broker.
 The negotiator returns a function if it can handle the pair.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">negotiate: </span><span class="nf">(request, response, content) -&gt;</span>
@@ -55,14 +67,10 @@ writes out the <code>Content-Length</code> header deduced from encoded size.</p>
         <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">invalid</span> <span class="k">unless</span> <span class="nx">valid</span>
         <span class="nv">args = </span><span class="p">[</span><span class="s">&quot;Content-Length&quot;</span><span class="p">,</span> <span class="nx">encoded</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span>
         <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="nx">args</span><span class="p">...</span> <span class="k">unless</span> <span class="nx">areSent</span>
-        <span class="nx">response</span><span class="p">.</span><span class="nx">write</span> <span class="nx">encoded</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Register the specified content negotiator with the broker. The
-The negotiator returns a function if it can handle the request
-and response pair. If specific negotiator cannot handle the
-pair, it should return anything other than a function object.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@associate: </span><span class="nf">(negotiator) -&gt;</span>
-        <span class="nv">isValid = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">negotiator</span>
-        <span class="nv">invalid = </span><span class="s">&quot;Checker is not a valid method&quot;</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">invalid</span> <span class="k">unless</span> <span class="nx">isValid</span>
-        <span class="p">(</span><span class="nx">@registry</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">unshift</span> <span class="nx">negotiator</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Associate the JSON negotiator with the broker. This method
+        <span class="nx">response</span><span class="p">.</span><span class="nx">write</span> <span class="nx">encoded</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This class is a content negotiation broker. It is instantiated by
+the kernel and then can be used either directly or via middleware
+to negotiate the procedure of responding to a client with the data
+using the correct protocol, meaning correct <code>Content-Type</code>, etc.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.JsonBroker = </span><span class="k">class</span> <span class="nx">JsonBroker</span> <span class="k">extends</span> <span class="nx">Broker</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Associate the JSON negotiator with the broker. This method
 checks if the content is either <code>Object</code> or <code>Array</code>, and if
 it is then it sets the appropriate <code>Content-Type</code> header and
 writes out the properly encoded JSON response to the client.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@associate</span> <span class="nf">(request, response, content) -&gt;</span>

@@ -28,7 +28,6 @@
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
 <span class="nv">moment = </span><span class="nx">require</span> <span class="s">&quot;moment&quot;</span>
 <span class="nv">socket = </span><span class="nx">require</span> <span class="s">&quot;socket.io&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
@@ -48,11 +47,13 @@
 <span class="nv">scoping = </span><span class="nx">require</span> <span class="s">&quot;./scoping&quot;</span>
 <span class="nv">content = </span><span class="nx">require</span> <span class="s">&quot;./content&quot;</span>
 <span class="nv">plumbs = </span><span class="nx">require</span> <span class="s">&quot;./plumbs&quot;</span>
-<span class="nv">watch = </span><span class="nx">require</span> <span class="s">&quot;./watch&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a primary gateway interface for the framework. This class
+<span class="nv">watch = </span><span class="nx">require</span> <span class="s">&quot;./watch&quot;</span>
+
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./archetype&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a primary gateway interface for the framework. This class
 provides methods and routines necessary to bootstrap the framework
 and the end user application constructed within the framework. It
 is both an abstract base class as well as a ready to use bootstrap.
-Please refer to the documentation of the methods for more info.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Generic = </span><span class="k">class</span> <span class="nx">Generic</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This static property should contain the loaded NPM package
+Please refer to the documentation of the methods for more info.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Generic = </span><span class="k">class</span> <span class="nx">Generic</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This static property should contain the loaded NPM package
 module which is used by the kernel to draw different kinds
 of the information and data. This could be overridden by the
 modified kernels that are custom to arbitrary applications.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@PACKAGE = </span><span class="nx">require</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../package&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Create and wire in an appropriate Connext middleware that will
@@ -90,7 +91,7 @@ Please use this static method instead of manually launching up.</p></div></div><
         <span class="nx">@setupListeningServers</span><span class="p">()</span>
         <span class="nx">@setupSocketServers</span><span class="p">()</span>
         <span class="nx">@setupHotloadWatcher</span><span class="p">()</span>
-        <span class="vi">@broker = </span><span class="k">new</span> <span class="nx">content</span><span class="p">.</span><span class="nx">Broker</span>
+        <span class="vi">@broker = </span><span class="k">new</span> <span class="nx">content</span><span class="p">.</span><span class="nx">JsonBroker</span> <span class="k">this</span>
         <span class="nv">message = </span><span class="s">&quot;Booted up the kernel instance&quot;</span>
         <span class="nv">sigint = </span><span class="s">&quot;Received the SIGINT (interrupt signal)&quot;</span>
         <span class="nv">sigterm = </span><span class="s">&quot;Received the SIGTERM (terminate signal)&quot;</span>

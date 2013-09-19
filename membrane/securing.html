@@ -38,7 +38,8 @@
 
 <span class="p">{</span><span class="nx">Duplex</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./duplex&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
-<span class="p">{</span><span class="nx">RedisClient</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./redis&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an extension of the <code>Duple</code> abstract base service that
+<span class="p">{</span><span class="nx">RedisClient</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./redis&quot;</span>
+<span class="nv">tools = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/tools&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an extension of the <code>Duple</code> abstract base service that
 implements a dialogue sort of protection for the duplex channel.
 It means that a client who made the initial GET request must be
 ensured to be the same client that tried to connect over duplex

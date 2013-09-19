@@ -26,7 +26,6 @@
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
 <span class="nv">uuid = </span><span class="nx">require</span> <span class="s">&quot;node-uuid&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 <span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
@@ -34,11 +33,13 @@
 <span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">extendz = </span><span class="nx">require</span> <span class="s">&quot;./extends&quot;</span>
 <span class="nv">routing = </span><span class="nx">require</span> <span class="s">&quot;./routing&quot;</span>
-<span class="nv">scoping = </span><span class="nx">require</span> <span class="s">&quot;./scoping&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class for every kind of service in this
+<span class="nv">scoping = </span><span class="nx">require</span> <span class="s">&quot;./scoping&quot;</span>
+
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./archetype&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class for every kind of service in this
 framework and the end user application. It provides the matching
 and processing logic based on domain matches and RE match/extract
 logics, to deal with paths. Remember that this service is just a
-an internal base class, you generally should not use it directly.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Service = </span><span class="k">class</span> <span class="nx">Service</span> <span class="k">extends</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+an internal base class, you generally should not use it directly.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Service = </span><span class="k">class</span> <span class="nx">Service</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Here follows a set of definitions that predefine the usual
@@ -117,8 +118,9 @@ domain/host and the path, in accordance with the patterns
 that were used for configuring the class of this service.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">matches: </span><span class="nf">(request, response, next) -&gt;</span>
         <span class="k">return</span> <span class="kc">no</span> <span class="k">unless</span> <span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="o">?</span>
         <span class="k">return</span> <span class="kc">no</span> <span class="k">unless</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span><span class="o">?</span>
-        <span class="nv">domains = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">domains</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">wildcard = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">WILDCARD</span>
         <span class="nv">resources = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">resources</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">domains = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">domains</span> <span class="o">or</span> <span class="p">[</span><span class="nx">wildcard</span><span class="p">]</span>
         <span class="nv">pathname = </span><span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">pathname</span>
         <span class="nv">hostname = </span><span class="nx">_</span><span class="p">.</span><span class="nx">first</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span><span class="p">.</span><span class="nx">split</span> <span class="s">&quot;:&quot;</span>
         <span class="nv">pdomain = </span><span class="nf">(pattern) -&gt;</span> <span class="nx">pattern</span><span class="p">.</span><span class="nx">test</span> <span class="nx">hostname</span>
@@ -135,8 +137,9 @@ The captured groups may be used by the overrider or ditched.</p></div></div><div
         <span class="nv">gdomain = </span><span class="kc">null</span><span class="p">;</span> <span class="nv">gresource = </span><span class="kc">null</span>
         <span class="nv">pathname = </span><span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">pathname</span>
         <span class="nv">hostname = </span><span class="nx">_</span><span class="p">.</span><span class="nx">first</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span><span class="p">.</span><span class="nx">split</span> <span class="s">&quot;:&quot;</span>
-        <span class="nv">domains = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">domains</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">wildcard = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">WILDCARD</span>
         <span class="nv">resources = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">resources</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">domains = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">domains</span> <span class="o">or</span> <span class="p">[</span><span class="nx">wildcard</span><span class="p">]</span>
         <span class="nv">pdomain = </span><span class="nf">(p) -&gt;</span> <span class="nv">gdomain = </span><span class="nx">hostname</span><span class="p">.</span><span class="nx">match</span> <span class="nx">p</span>
         <span class="nv">presource = </span><span class="nf">(p) -&gt;</span> <span class="nv">gresource = </span><span class="nx">pathname</span><span class="p">.</span><span class="nx">match</span> <span class="nx">p</span>
         <span class="nv">pdomain = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">domains</span><span class="p">,</span> <span class="nx">pdomain</span>

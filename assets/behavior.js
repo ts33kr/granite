@@ -78,6 +78,22 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           },
           "depth": 2,
           "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "singleLineComment": ["#"],
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/schema.coffee",
+            "projectPath": "library/exposure/schema.coffee",
+            "targetPath": "exposure/schema",
+            "title": "schema"
+          },
+          "depth": 2,
+          "outline": []
         }
       ]
     }, {
@@ -351,6 +367,22 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "projectPath": "library/nucleus/api.coffee",
             "targetPath": "nucleus/api",
             "title": "api"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "singleLineComment": ["#"],
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/nucleus/archetype.coffee",
+            "projectPath": "library/nucleus/archetype.coffee",
+            "targetPath": "nucleus/archetype",
+            "title": "archetype"
           },
           "depth": 2,
           "outline": []
