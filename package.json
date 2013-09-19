@@ -26,6 +26,10 @@
         "url": "https://github.com/ts33kr/granite/blob/master/LICENSE.md"
     }],
 
+    "engines": {
+        "node": ">=0.10"
+    },
+
     "dependencies": {
         "eventemitter2": "0.4.x",
         "coffee-script": "1.6.x",
