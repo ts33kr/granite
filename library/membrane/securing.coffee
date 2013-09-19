@@ -91,7 +91,7 @@ module.exports.RDuplex = class RDuplex extends Duplex
         key = (x) -> "securing:rduplex:token:dynamic:#{x}"
         gen = (u) -> md5().update("#{@uuid}-#{u}").digest("hex")
         internal = (e) -> "internal Redis error: #{e}"
-        noUuid = "the context has not UUID attached"
+        noUuid = "the context has no UUID attached"
         assert uuid = binder.uuid.request, noUuid
         @redis.get key(uuid), (error, value) =>
             assert not _.isObject(error), internal error
