@@ -74,6 +74,13 @@ module.exports.Duplex = class Duplex extends Preflight
     # you wish to decline, just don't call `next` and close socket.
     screening: (context, socket, binder, next) -> next()
 
+    # A usable hook that gets asynchronously invoked once a sentence
+    # comes through an opened channel. This happens every time when
+    # a client tries to invoke a server site provider method. This
+    # is a good place to validate if an invocation is legitimate or
+    # not. If you do not invoke `next` then the call won't happen!
+    sentence: (socket, name, provider, args, next) -> next()
+
     # An internal, static method that is used to obtain gurading
     # domains for each of the declared server site providers. Please
     # refer to the Node.js documentation for more information on
@@ -192,8 +199,12 @@ module.exports.Duplex = class Duplex extends Preflight
             providing = value?.providing or null
             return unless _.isFunction providing
             assert _.isFunction(value), internal
-            bound = (s) => providing(socket).bind @
-            socket.on name, bound socket; next()
+            bound = providing(socket).bind this
+            socket.on name, (args..., callback) =>
+                sentence = @upstreamAsync "sentence", =>
+                    bound.call this, args..., callback
+                sentence socket, name, value, args
+            return next()
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
