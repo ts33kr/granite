@@ -53,12 +53,12 @@ module.exports.capture = (kernel) ->
 # access the parameters without thinking about transfer mechanism.
 module.exports.params = (kernel) ->
     (request, response, next) ->
-        sent = request.headersSent
         body = request.body or {}
         query = request.query or {}
-        params = _.extend query, body
-        request.params = params
-        next() unless sent
+        request.params = Object.create {}
+        _.extend request.params, query
+        _.extend request.params, body
+        next() unless request.headersSent
 
 # A middleware that adds a `redirect` method to the response object.
 # This redirects to the supplied URL with the 302 status code and
