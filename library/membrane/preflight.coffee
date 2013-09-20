@@ -50,7 +50,7 @@ util = require "util"
 # up. These preparations will be nececessary no matter what sort of
 # Screenplay functionality you are going to implement. Currently the
 # purpose of preflight is drawing in the remoted and Bower packages.
-module.exports.DepToolkit = class DepToolkit extends BowerSupport
+module.exports.RToolkit = class RToolkit extends BowerSupport
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -86,7 +86,7 @@ module.exports.DepToolkit = class DepToolkit extends BowerSupport
 # up. These preparations will be nececessary no matter what sort of
 # Screenplay functionality you are going to implement. Currently the
 # purpose of preflight is drawing in the remoted and Bower packages.
-module.exports.Preflight = class Preflight extends DepToolkit
+module.exports.Preflight = class Preflight extends RToolkit
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
