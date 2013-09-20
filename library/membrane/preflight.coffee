@@ -41,28 +41,22 @@ util = require "util"
 {Marshal} = require "./marshal"
 {BowerSupport} = require "./bower"
 
+{Extending} = require "../nucleus/extends"
+{Composition} = require "../nucleus/compose"
+{Archetype} = require "../nucleus/archetype"
+
 # This abstract base class service is an extension of the Screenplay
-# family that does some further environment initialization and set
+# family that provides some tools for further initialization and set
 # up. These preparations will be nececessary no matter what sort of
 # Screenplay functionality you are going to implement. Currently the
 # purpose of preflight is drawing in the remoted and Bower packages.
-module.exports.Preflight = class Preflight extends BowerSupport
+module.exports.DepToolkit = class DepToolkit extends BowerSupport
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete class implementation. This
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
-
-    # This block here defines a set of Bower dependencies that are
-    # going to be necessary no matter what sort of functionality is
-    # is going to be implemented. Most of these libraries required
-    # by the internal implementations of the various subcomponents.
-    @bower "async", "lib/async.js"
-    @bower "eventemitter2"
-    @bower "bootstrap#3"
-    @bower "lodash"
-    @bower "chai"
 
     # A directive to mark the certain remote class or object to be
     # included in the `Screenplay` context that is going to be emited
@@ -83,7 +77,38 @@ module.exports.Preflight = class Preflight extends BowerSupport
         inline = context.inline or ->
         inline -> `assert = chai.assert`
         remotes = @constructor.remotes or []
-        remotes = remotes.concat Marshal
         for remote in _.unique remotes
             @inject context, remote
         return next()
+
+# This abstract base class service is an extension of the Screenplay
+# family that does some further environment initialization and set
+# up. These preparations will be nececessary no matter what sort of
+# Screenplay functionality you are going to implement. Currently the
+# purpose of preflight is drawing in the remoted and Bower packages.
+module.exports.Preflight = class Preflight extends DepToolkit
+
+    # This is a marker that indicates to some internal subsystems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete class implementation. This
+    # mainly is used to exclude or account for abstract classes.
+    @abstract yes
+
+    # This block here defines a set of Bower dependencies that are
+    # going to be necessary no matter what sort of functionality is
+    # is going to be implemented. Most of these libraries required
+    # by the internal implementations of the various subcomponents.
+    @bower "async", "lib/async.js"
+    @bower "eventemitter2"
+    @bower "bootstrap#3"
+    @bower "lodash"
+    @bower "chai"
+
+    # This block here defines a set of remote dependencies that are
+    # going to be necessary no matter what sort of functionality is
+    # is going to be implemented. Most of these libraries required
+    # by the internal implementations of the various subcomponents.
+    @remote Composition
+    @remote Extending
+    @remote Archetype
+    @remote Marshal

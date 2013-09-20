@@ -35,6 +35,7 @@ http = require "http"
 util = require "util"
 url = require "url"
 
+{remote} = require "../membrane/remote"
 {EventEmitter2} = require "eventemitter2"
 
 # An important base class that should be used when you need to inherit
@@ -42,7 +43,7 @@ url = require "url"
 # root object to inherit - use this one, not Object and not EventEmitter.
 # This abstraction also aids help for the dynamic class composition system
 # that needs a common point of match in the class hierarchies of the peers.
-module.exports.Archetype = class Archetype extends EventEmitter2
+module.exports.Archetype = remote -> class Archetype extends EventEmitter2
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

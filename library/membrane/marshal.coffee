@@ -36,12 +36,13 @@ http = require "http"
 util = require "util"
 
 {remote, external} = require "./remote"
+{Archetype} = require "../nucleus/archetype"
 
 # This class is not meant to be instantianted, but rather to be used
 # as static class, a container. It exposes the functionality for the
 # data marshalling to be applied on the data that is being transfered
 # between the server site and the client site. Used on both sites.
-module.exports.Marshal = remote -> class Marshal extends Object
+module.exports.Marshal = remote -> class Marshal extends Archetype
 
     # Recover the sequence of values transferred from the another
     # environment. Typically you would use this on the parameter
