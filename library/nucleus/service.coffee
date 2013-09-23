@@ -127,11 +127,11 @@ module.exports.Service = class Service extends Archetype
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
         pattern = regexify pattern if _.isString pattern
         inspected = pattern.unescape()?.underline or pattern
-        associate = "Associating #{inspected} resource with #{identify}"
-        notRegexp = "The #{inspected} is not a valid regular expression"
-        assert _.isRegExp(pattern), notRegexp
+        associate = "Associating #{inspected} resource with %s"
+        notRegexp = "The #{inspected} is not a valid regexp"
+        assert _.isRegExp(pattern) and pattern.source, notRegexp
         @resources = (@resources or []).concat pattern
-        logger.debug associate.grey; this
+        logger.debug associate.grey, identify; @
 
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted domain patterns.
@@ -144,11 +144,11 @@ module.exports.Service = class Service extends Archetype
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
         pattern = regexify pattern if _.isString pattern
         inspected = pattern.unescape()?.underline or pattern
-        associate = "Associating #{inspected} resource with #{identify}"
-        notRegexp = "The #{inspected} is not a valid regular expression"
-        assert _.isRegExp(pattern), notRegexp
+        associate = "Associating #{inspected} domain with %s"
+        notRegexp = "The #{inspected} is not a valid regexp"
+        assert _.isRegExp(pattern) and pattern.source, notRegexp
         @domains = (@domains or []).concat pattern
-        logger.debug associate.grey; this
+        logger.debug associate.grey, identify; @
 
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the
