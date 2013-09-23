@@ -110,6 +110,7 @@ module.exports.xSessionId = (kernel) ->
         key = nconf.get "session:key"
         noKey = "got no session key to use"
         assert not _.isEmpty(key), noKey
+        assert headers = request.headers
         constant = "X-Session-ID".toLowerCase()
         return next() if request.cookies[key]
         return next() if request.signedCookies[key]
