@@ -28,7 +28,6 @@ asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
 domain = require "domain"
-events = require "eventemitter2"
 assert = require "assert"
 colors = require "colors"
 nconf = require "nconf"
@@ -37,11 +36,13 @@ http = require "http"
 util = require "util"
 
 tools = require "./../nucleus/tools"
+plumbs = require "./../nucleus/plumbs"
 extendz = require "./../nucleus/extends"
 compose = require "./../nucleus/compose"
 
 {format} = require "util"
 {STATUS_CODES} = require "http"
+{EventEmitter2} = require "eventemitter2"
 {remote, external} = require "./remote"
 {Barebones} = require "./skeleton"
 {Preflight} = require "./preflight"
@@ -80,6 +81,25 @@ module.exports.Duplex = class Duplex extends Preflight
     # is a good place to validate if an invocation is legitimate or
     # not. If you do not invoke `next` then the call won't happen!
     sentence: (socket, name, provider, args, next) -> next()
+
+    # An internal method that is wired into the Socket.IO context to
+    # take care of the very first socket authorization. This happens
+    # during the handshake phase. This method checks that handshake
+    # contains correct session requsities and restores the session!
+    # The session can normally be used as you would use req session.
+    authorization: (handshake, accept) ->
+        assert _.isFunction session = @kernel.session
+        assert _.isFunction cookies = @kernel.cookieParser
+        handshake.originalUrl = handshake.url or "/"
+        Response = class RDummy extends EventEmitter2
+        Response::setHeader = (name, value) -> undefined
+        Response::end = (data, encoding) -> undefined
+        cookies handshake, response = new Response, ->
+            session handshake, response, ->
+                session = handshake.session
+                ns = new Error "no session found"
+                return accept ns, no unless session
+                return accept undefined, yes
 
     # An internal, static method that is used to obtain gurading
     # domains for each of the declared server site providers. Please
@@ -126,7 +146,7 @@ module.exports.Duplex = class Duplex extends Preflight
         guarded = @constructor.guarded? method, socket
         assert _.isFunction g = guarded.run.bind guarded
         execute = (a...) => g => method.apply this, i(a)
-        respond = (a...) => g => callback.apply this, o(a)
+        respond = (a...) => g => s => callback.apply this, o(a)
         respond.socket = socket; respond.context = context
         respond.session = socket?.handshake?.session
         return execute parameters..., respond
@@ -226,6 +246,7 @@ module.exports.Duplex = class Duplex extends Preflight
         context = kernel.secureSocket.of @location()
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
+        context.authorization @authorization.bind(@)
         context.on "connection", (socket) =>
             socket.on "screening", (binder, next) =>
                 screening = @upstreamAsync "screening", =>

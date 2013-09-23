@@ -275,17 +275,17 @@ module.exports.Generic = class Generic extends Archetype
     setupConnectPipeline: ->
         @connect = connect()
         @connectStaticAssets()
-        @connect.use connect.query()
-        @connect.use connect.favicon()
-        @connect.use connect.compress()
-        @connect.use connect.bodyParser()
-        @connect.use connect.cookieParser()
-        @connect.use plumbs.xSessionId this
-        @connect.use plumbs.capture this
-        @connect.use plumbs.params this
-        @connect.use plumbs.redirect this
-        @connect.use plumbs.session this
-        @connect.use plumbs.accepts this
-        @connect.use plumbs.sender this
-        @connect.use plumbs.logger this
+        @connect.use @query = connect.query()
+        @connect.use @favicon = connect.favicon()
+        @connect.use @compress = connect.compress()
+        @connect.use @bodyParser = connect.bodyParser()
+        @connect.use @cookieParser = connect.cookieParser()
+        @connect.use @xSessionId = plumbs.xSessionId this
+        @connect.use @capture = plumbs.capture this
+        @connect.use @params = plumbs.params this
+        @connect.use @redirect = plumbs.redirect this
+        @connect.use @session = plumbs.session this
+        @connect.use @accepts = plumbs.accepts this
+        @connect.use @sender = plumbs.sender this
+        @connect.use @logger = plumbs.logger this
         @connect.use @middleware
