@@ -49,7 +49,7 @@ module.exports.Router = class Router extends Archetype
     # that it is capable of doing the routing functionality code.
     # If something is wrong, this method will throw an exception.
     # The method is idempotent, ergo no duplication of routables.
-    register: (routable) ->
+    register: (routable, callback) ->
         identify = routable?.constructor?.identify()
         inspected = identify.toString().underline
         [matches, process] = [routable.matches, routable.process]
@@ -65,6 +65,7 @@ module.exports.Router = class Router extends Archetype
             logger.info attaching.blue, inspected
             @emit "register", routable, @kernel
             (@registry ?= []).unshift routable
+            return callback routable
         register @kernel, this; @
 
     # Unregister the supplied service instance from the kernel router.
@@ -72,7 +73,7 @@ module.exports.Router = class Router extends Archetype
     # previously registered with the kernel router. This method does
     # modify the router register, ergo does write access to kernel.
     # It will also call hooks on the service, notifying unregister.
-    unregister: (routable) ->
+    unregister: (routable, callback) ->
         noClass = "broken routable: #{routable}"
         assert routable?.constructor?, noClass
         identify = routable.constructor.identify()
@@ -86,6 +87,7 @@ module.exports.Router = class Router extends Archetype
             @emit "unregister", @routable, @kernel
             logger.info removing.yellow, inspected
             @registry.splice index, 1
+            return callback routable
         unregister @kernel, this; @
 
     # The method implements a middleware (for Connect) that looks
