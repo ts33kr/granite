@@ -123,8 +123,8 @@ module.exports.redirect = (kernel) ->
 # access the parameters without thinking about transfer mechanism.
 module.exports.params = (kernel) ->
     (request, response, next) ->
-        body = request.body or {}
-        query = request.query or {}
+        body = request.body or Object()
+        query = request.query or Object()
         request.params = Object.create {}
         _.extend request.params, query
         _.extend request.params, body
