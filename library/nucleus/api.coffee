@@ -83,6 +83,9 @@ module.exports.Api = class Api extends service.Service
         missing = "Missing implementation for #{method} method"
         throw new Error missing unless method of this
         variables = [tokens.resource, tokens.domain]
+        headers = @upstreamAsync "headers", _.identity
+        partial = _.partialRight headers, request, response
+        response.on "header", -> partial variables...
         prestreamer = @upstreamAsync "preprocess", =>
             this[method](request, response, variables...)
             poststreamer = @upstreamAsync "postprocess"

@@ -97,6 +97,13 @@ module.exports.WithHooks = class WithHooks extends Restful
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
+    # A hook that will be called once the Connect middleware writes
+    # off the headers. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    headers: (request, response, resource, domain, next) -> next()
+
     # A hook that will be called prior to invoking the API method
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
