@@ -146,7 +146,7 @@ module.exports.Duplex = class Duplex extends Preflight
         guarded = @constructor.guarded? method, socket
         assert _.isFunction g = guarded.run.bind guarded
         execute = (a...) => g => method.apply this, i(a)
-        respond = (a...) => g => s => callback.apply this, o(a)
+        respond = (a...) => g => callback.apply this, o(a)
         respond.socket = socket; respond.context = context
         respond.session = socket?.handshake?.session
         return execute parameters..., respond
