@@ -108,18 +108,28 @@ module.exports.Duplex = class Duplex extends Preflight
     @provider: (method) ->
         noMethod = "a #{method} is not a function"
         invalidArgs = "has to have at least 1 parameter"
+        applicator = _.partial @covering, method
         assert _.isFunction(method), noMethod
         assert method.length >= 1, invalidArgs
+        method.provider = Object.create {}
+        method.providing = applicator
+        method.origin = this; method
+
+    # An important method that pertains to the details of internal
+    # duplex implementation. This method is used to produce a wrapper
+    # around the provider invocation procedure. This wrapping is of
+    # protective nature. It also exposes some goodies for the provider.
+    # Such as Socket.IO handle, session if available and the context.
+    @covering: (method, socket, context) -> (parameters..., callback) ->
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
-        method.provider = Object.create {}
-        method.providing = (socket) -> (args..., callback) ->
-            guarded = @constructor.guarded? method, socket
-            assert _.isFunction g = guarded.run.bind guarded
-            execute = (a...) => g => method.apply this, i(a)
-            respond = (a...) => g => callback.apply this, o(a)
-            respond.socket = socket; execute args..., respond
-        method.origin = this; return method
+        guarded = @constructor.guarded? method, socket
+        assert _.isFunction g = guarded.run.bind guarded
+        execute = (a...) => g => method.apply this, i(a)
+        respond = (a...) => g => callback.apply this, o(a)
+        respond.socket = socket; respond.context = context
+        respond.session = socket?.handshake?.session
+        return execute parameters..., respond
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
@@ -199,7 +209,7 @@ module.exports.Duplex = class Duplex extends Preflight
             providing = value?.providing or null
             return unless _.isFunction providing
             assert _.isFunction(value), internal
-            bound = providing(socket).bind this
+            bound = providing socket, context
             socket.on name, (args..., callback) =>
                 sentence = @upstreamAsync "sentence", =>
                     bound.call this, args..., callback
