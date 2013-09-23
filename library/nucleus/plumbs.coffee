@@ -101,6 +101,21 @@ module.exports.accepts = (kernel) ->
             _.find merged, handles
         next() unless request.headersSent
 
+# A middeware that makes possible external specification of session
+# bearer via HTTP headers. This basically meanins it allows for you
+# to explicitly specify a session ID via the `X-Session-ID` header.
+# This is a convenient way for the API client to identify themselves.
+module.exports.xSessionId = (kernel) ->
+    (request, response, next) ->
+        key = nconf.get "session:key"
+        noKey = "got no session key to use"
+        assert not _.isEmpty(key), noKey
+        constant = "X-Session-ID".toLowerCase()
+        return next() if request.cookies[key]
+        return next() if request.signedCookies[key]
+        return next() unless id = headers[constant]
+        request.signedCookies[key] = id; next()
+
 # A middleware that adds a `redirect` method to the response object.
 # This redirects to the supplied URL with the 302 status code and
 # the corresponding reason phrase. This method also sets some of the
