@@ -111,7 +111,7 @@ module.exports.Extending = remote -> class Extending extends Object
     Object.defineProperty Object::, "inherits",
         enumerable: no, value: (archetype, loose) ->
             notObject = "acrhetype is not object"
-            assert _.isObject archetype, notObject
+            assert _.isObject(archetype), notObject
             predicate = (x) -> x.similarWith archetype, loose
             assert @__super__, "not a class"
             return yes if predicate this
