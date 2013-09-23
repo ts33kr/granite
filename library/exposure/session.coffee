@@ -59,7 +59,7 @@ module.exports.RedisStorage = class RedisStorage extends Zombie
     # The session may or may not exist. Please refer to the `Connect`.
     destory: (sid, callback) ->
         qualified = @namespaced sid
-        message = "Redis session engine error: destroy: %s"
+        message = "Redis session engine error at destroy"
         @redis.del qualified, (error, trailings...) ->
             logger.error message.red, error if error
             return callback error if error
@@ -74,7 +74,7 @@ module.exports.RedisStorage = class RedisStorage extends Zombie
         encoded = JSON.stringify session
         expire = session?.cookie?.maxAge / 1000 | 0
         expire = 86400 unless expire and expire > 0
-        message = "Redis session engine error: set: %s"
+        message = "Redis session engine error at set"
         @redis.setex qualified, expire, encoded, (error) ->
             logger.error message.red, error if error
             return callback error if error
@@ -86,7 +86,7 @@ module.exports.RedisStorage = class RedisStorage extends Zombie
     # The session may or may not exist. Please refer to the `Connect`.
     get: (sid, callback) ->
         qualified = @namespaced sid
-        message = "Redis session engine error: get: %s"
+        message = "Redis session engine error at get"
         @redis.get qualified, (error, data, trailings...) ->
             logger.error message.red, error if error
             return callback error if error
