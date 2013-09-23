@@ -84,7 +84,7 @@ module.exports.Api = class Api extends service.Service
         throw new Error missing unless method of this
         variables = [tokens.resource, tokens.domain]
         headers = @upstreamAsync "headers", _.identity
-        partial = _.partialRight headers, request, response
+        partial = _.partial headers, request, response
         response.on "header", -> partial variables...
         prestreamer = @upstreamAsync "preprocess", =>
             this[method](request, response, variables...)
