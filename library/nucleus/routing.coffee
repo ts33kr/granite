@@ -65,7 +65,8 @@ module.exports.Router = class Router extends Archetype
             logger.info attaching.blue, inspected
             @emit "register", routable, @kernel
             (@registry ?= []).unshift routable
-            return callback routable
+            return unless _.isFunction callback
+            return callback routable, this
         register @kernel, this; @
 
     # Unregister the supplied service instance from the kernel router.
@@ -86,8 +87,9 @@ module.exports.Router = class Router extends Archetype
         unregister = routable.upstreamAsync "unregister", =>
             @emit "unregister", @routable, @kernel
             logger.info removing.yellow, inspected
-            @registry.splice index, 1
-            return callback routable
+            @registry.splice index, 1 # delete
+            return unless _.isFunction callback
+            return callback routable, this
         unregister @kernel, this; @
 
     # The method implements a middleware (for Connect) that looks
