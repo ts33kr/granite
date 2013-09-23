@@ -136,8 +136,7 @@ module.exports.params = (kernel) ->
 # just captures some rudimentary data, such as timestamp and UUID.
 module.exports.capture = (kernel) ->
     (request, response, next) ->
-        sent = request.headersSent
-        request.uuid = uuid.v1()
-        request.date = new Date
-        request.kernel = kernel
-        next() unless sent
+        assert _.isDate request.date = new Date
+        assert _.isObject request.kernel = kernel
+        assert _.isString request.uuid = uuid.v1()
+        next() unless request.headersSent
