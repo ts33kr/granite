@@ -143,12 +143,14 @@ module.exports.Duplex = class Duplex extends Preflight
     @covering: (method, socket, context) -> (parameters..., callback) ->
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
+        assert session = socket?.handshake?.session
         guarded = @constructor.guarded? method, socket
         assert _.isFunction g = guarded.run.bind guarded
+        s = (f) => session.save -> f.apply this, arguments
         execute = (a...) => g => method.apply this, i(a)
-        respond = (a...) => g => callback.apply this, o(a)
+        respond = (a...) => g => s => callback.apply this, o(a)
         respond.socket = socket; respond.context = context
-        respond.session = socket?.handshake?.session
+        respond.session = session; socket.session = session
         return execute parameters..., respond
 
     # This server side method is called on the context prior to the
