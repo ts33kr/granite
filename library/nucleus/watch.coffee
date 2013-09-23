@@ -41,6 +41,7 @@ extendz = require "./extends"
 routing = require "./routing"
 service = require "./service"
 
+{Zombie} = require "./zombie"
 {Archetype} = require "./archetype"
 
 # Watcher is responsible for automatic discovery and hot loading of
@@ -95,6 +96,7 @@ module.exports.Watcher = class Watcher extends Archetype
         cached = resolved of require.cache
         entrypoint = require.main.filename
         return if resolved is entrypoint
+        return unless @ensureSafety resolved
         delete require.cache[resolved] if cached
         go = => @reviewServices resolved
         relative = paths.relative process.cwd(), path
@@ -120,6 +122,21 @@ module.exports.Watcher = class Watcher extends Archetype
         predicate = (s) -> originate(s) is absolute
         previous = _.filter registry, predicate
         router.unregister prev for prev in previous
+
+    # The responsibility of this method is to determine whether it is
+    # safe to reload the resolved module. Currently, the only type of
+    # modules that are not safe to reload are the ones that do export
+    # zombie services. They won't be reloaded and a warning is emited.
+    ensureSafety: (resolved) ->
+        cached = require.cache[resolved]
+        services = @collectServices cached
+        isZombie = (s) -> s.inherits Zombie
+        zombies = _.any services, isZombie
+        assert _.isString cwd = process.cwd()
+        relative = paths.relative cwd, resolved
+        message = "Zombies at #{relative.underline}"
+        logger.warn message.grey if zombies
+        return yes unless zombies
 
     # Given the freshly resolved module, require it and then run the
     # collector on it to find all services it may be defining. Then
