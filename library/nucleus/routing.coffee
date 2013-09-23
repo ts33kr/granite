@@ -73,6 +73,8 @@ module.exports.Router = class Router extends Archetype
     # modify the router register, ergo does write access to kernel.
     # It will also call hooks on the service, notifying unregister.
     unregister: (routable) ->
+        noClass = "broken routable: #{routable}"
+        assert routable?.constructor?, noClass
         identify = routable.constructor.identify()
         inspected = identify.toString().underline
         noRegistry = "Could not access the registry"
