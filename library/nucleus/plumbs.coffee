@@ -115,7 +115,7 @@ module.exports.redirect = (kernel) ->
             response.setHeader "Content-Length", 0
             response.writeHead relocated, message
             response.end undefined
-            next() unless request.headersSent
+        next() unless request.headersSent
 
 # This middleware is a little handy utility that merges the set
 # of parameters, specifically the ones transferred via query or
