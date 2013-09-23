@@ -92,7 +92,7 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.layout = library: "library", config: "config"
     @defaults.session.key = "granite.session.identification"
     @defaults.assets = dirs: [], opts: {}
-    @defaults.watch = dirs: [], force: yes
+    @defaults.watch = dirs: [], force: no
     @defaults.socket = "log level": 0
     @defaults.env.preserve = ["pub"]
 
@@ -112,6 +112,6 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.layout = library: "library", config: "config"
     @defaults.session.key = "granite.session.identification"
     @defaults.assets = dirs: [], opts: {}
-    @defaults.watch = dirs: [], force: yes
+    @defaults.watch = dirs: [], force: no
     @defaults.socket = "log level": 0
     @defaults.env.preserve = ["pub"]
