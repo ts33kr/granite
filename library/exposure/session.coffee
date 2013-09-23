@@ -53,6 +53,12 @@ module.exports.RedisStorage = class RedisStorage extends Zombie
     # Also, the compounds for the composition system belong here.
     @compose RedisClient
 
+    # The dirty way of inheriting the prototypal properties of the
+    # abstract session store engine found in the standard Connect
+    # shipment. This is necessary in order to inherit the default
+    # implementations of some generic, engine agnostic methods.
+    _.extend @prototype, connect.session.Store.prototype
+
     # Part of the session engine interface contract implemenetation.
     # This method is supposed to be called when a session engine asks
     # the storage to destroy a session with the specified session ID.
