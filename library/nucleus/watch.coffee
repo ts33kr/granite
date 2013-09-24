@@ -192,10 +192,11 @@ module.exports.Watcher = class Watcher extends Archetype
         dependents = _.filter dependents, originate
         return unless dependents.length > 0
         @forcedHotSwappingInProgress = dependents
+        origins = _.unique _.map(dependents, originate)
         message = "Forced watch enabled, swapping services: %s"
         logger.warn message.grey, dependents.length
         change = @hotSwappingChange.bind this
-        change originate dep for dep in dependents
+        change origin for origin in origins
         delete @forcedHotSwappingInProgress
 
     # Given the required module, scan the `exports` object that it
