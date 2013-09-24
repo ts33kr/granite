@@ -169,7 +169,8 @@ module.exports.Watcher = class Watcher extends Archetype
         collides = "use either register or unregister"
         missingOperation = "specify an operation to do"
         sequential = (f) => @queue = async.queue f, 1
-        return sequential (operation, callback) =>
+        throttle = (f) -> _.debounce f, 50 # 50 millisec
+        return sequential throttle (operation, callback) =>
             acknowledge = -> callback.apply this
             applicate = (i) -> register i, acknowledge
             opService = operation.service or undefined
