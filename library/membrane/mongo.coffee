@@ -38,13 +38,14 @@ url = require "url"
 _ = require "lodash"
 mongodb = require "mongodb"
 {Barebones} = require "./skeleton"
+{Service} = require "../nucleus/service"
 
 # This is an ABC service intended to be used only as a compund. It
 # provides the ready to use Mongo client to any service that composits
 # this service in. The initialization is performed only once. If the
 # configuration environment does not contains the necessary information
 # then this service will not attempt to setup a Mongo client at all.
-module.exports.MongoClient = class MongoClient extends Barebones
+module.exports.MongoClient = class MongoClient extends Service
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
