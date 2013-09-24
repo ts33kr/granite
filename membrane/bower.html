@@ -58,14 +58,26 @@ is per service and automatically will be included in <code>prelude</code>.</p></
         <span class="k">return</span> <span class="vi">@bowerings = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span>
             <span class="nv">options: </span><span class="nx">options</span>
             <span class="nv">target: </span><span class="nx">target</span>
-            <span class="nv">entry: </span><span class="nx">entry</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to registering the service
+            <span class="nv">entry: </span><span class="nx">entry</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the bower sink directory name. If no args
+supplied the method will return the automatically deduced the
+bower sink. If you supply an argument the method will set it
+as a bower sink and later will return it, unless overriden by
+the global configuration. See the implementation for the info.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@bowerSink: </span><span class="nf">(sink) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">hash = </span><span class="nx">crypto</span><span class="p">.</span><span class="nx">createHash</span> <span class="s">&quot;md5&quot;</span>
+        <span class="nv">id = </span><span class="nx">hash</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">@identify</span><span class="p">()).</span><span class="nx">digest</span> <span class="s">&quot;hex&quot;</span>
+        <span class="nv">automatic = </span><span class="o">=&gt;</span> <span class="nx">global</span> <span class="o">or</span> <span class="nx">@$bowerSink</span> <span class="o">or</span> <span class="nx">id</span>
+        <span class="nv">global = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;bower:global_sink_dir&quot;</span>
+        <span class="k">return</span> <span class="nx">automatic</span><span class="p">()</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">sink</span><span class="p">),</span> <span class="s">&quot;has to be a string&quot;</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">sink</span><span class="p">),</span> <span class="s">&quot;got empty sink&quot;</span>
+        <span class="k">return</span> <span class="vi">@$bowerSink = </span><span class="nx">sink</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to registering the service
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
 Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">register: </span><span class="nf">(kernel, router, next) -&gt;</span>
         <span class="nv">hash = </span><span class="nx">crypto</span><span class="p">.</span><span class="nx">createHash</span> <span class="s">&quot;md5&quot;</span>
         <span class="nx">hash</span><span class="p">.</span><span class="nx">update</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
-        <span class="nv">id = </span><span class="nx">hash</span><span class="p">.</span><span class="nx">digest</span><span class="p">(</span><span class="s">&quot;hex&quot;</span><span class="p">).</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">id = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">bowerSink</span><span class="p">()</span>
         <span class="nv">bowerings = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">bowerings</span> <span class="o">?=</span> <span class="p">[]</span>
         <span class="nv">options = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">bowerings</span><span class="p">,</span> <span class="nf">(b) -&gt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">options</span><span class="p">)</span>
         <span class="nv">options = </span><span class="nx">_</span><span class="p">.</span><span class="nx">merge</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">({}),</span> <span class="nx">options</span><span class="p">...</span>

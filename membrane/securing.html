@@ -51,12 +51,11 @@ mainly is used to exclude or account for abstract classes.</p></div></div><div c
 to be used for matching HTTP requests against this service.
 Typically an HTTP pathname pattern and a domain name pattern.
 Try not to put constraints on the domain, unless necessary.
-Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@compose</span> <span class="nx">RedisClient</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called after invoking the API method
-implementation. Please refer to this prototype signature for
+Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@compose</span> <span class="nx">RedisClient</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called once the Connect middleware writes
+off the headers. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">postprocess: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span>
-        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">response</span><span class="p">.</span><span class="nx">headersSent</span>
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">headers: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span>
         <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">is</span> <span class="mi">200</span>
         <span class="nv">md5 = </span><span class="nf">-&gt;</span> <span class="nx">require</span><span class="p">(</span><span class="s">&quot;crypto&quot;</span><span class="p">).</span><span class="nx">createHash</span><span class="p">(</span><span class="s">&quot;md5&quot;</span><span class="p">)</span>
         <span class="nv">key = </span><span class="nf">(x) -&gt;</span> <span class="s">&quot;securing:rduplex:token:dynamic:</span><span class="si">#{</span><span class="nx">x</span><span class="si">}</span><span class="s">&quot;</span>
@@ -76,7 +75,7 @@ you wish to decline, just don't call <code>next</code> and close socket.</p></di
         <span class="nv">key = </span><span class="nf">(x) -&gt;</span> <span class="s">&quot;securing:rduplex:token:dynamic:</span><span class="si">#{</span><span class="nx">x</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nv">gen = </span><span class="nf">(u) -&gt;</span> <span class="nx">md5</span><span class="p">().</span><span class="nx">update</span><span class="p">(</span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">@uuid</span><span class="si">}</span><span class="s">-</span><span class="si">#{</span><span class="nx">u</span><span class="si">}</span><span class="s">&quot;</span><span class="p">).</span><span class="nx">digest</span><span class="p">(</span><span class="s">&quot;hex&quot;</span><span class="p">)</span>
         <span class="nv">internal = </span><span class="nf">(e) -&gt;</span> <span class="s">&quot;internal Redis error: </span><span class="si">#{</span><span class="nx">e</span><span class="si">}</span><span class="s">&quot;</span>
-        <span class="nv">noUuid = </span><span class="s">&quot;the context has not UUID attached&quot;</span>
+        <span class="nv">noUuid = </span><span class="s">&quot;the context has no UUID attached&quot;</span>
         <span class="nx">assert</span> <span class="nv">uuid = </span><span class="nx">binder</span><span class="p">.</span><span class="nx">uuid</span><span class="p">.</span><span class="nx">request</span><span class="p">,</span> <span class="nx">noUuid</span>
         <span class="nx">@redis</span><span class="p">.</span><span class="nx">get</span> <span class="nx">key</span><span class="p">(</span><span class="nx">uuid</span><span class="p">),</span> <span class="nf">(error, value) =&gt;</span>
             <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">error</span><span class="p">),</span> <span class="nx">internal</span> <span class="nx">error</span>

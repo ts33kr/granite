@@ -39,21 +39,18 @@
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 
 <span class="p">{</span><span class="nx">Marshal</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./marshal&quot;</span>
-<span class="p">{</span><span class="nx">BowerSupport</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./bower&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This abstract base class service is an extension of the Screenplay
-family that does some further environment initialization and set
+<span class="p">{</span><span class="nx">BowerSupport</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./bower&quot;</span>
+
+<span class="p">{</span><span class="nx">Extending</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/extends&quot;</span>
+<span class="p">{</span><span class="nx">Composition</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/compose&quot;</span>
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/archetype&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This abstract base class service is an extension of the Screenplay
+family that provides some tools for further initialization and set
 up. These preparations will be nececessary no matter what sort of
 Screenplay functionality you are going to implement. Currently the
-purpose of preflight is drawing in the remoted and Bower packages.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Preflight = </span><span class="k">class</span> <span class="nx">Preflight</span> <span class="k">extends</span> <span class="nx">BowerSupport</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+purpose of preflight is drawing in the remoted and Bower packages.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.RToolkit = </span><span class="k">class</span> <span class="nx">RToolkit</span> <span class="k">extends</span> <span class="nx">BowerSupport</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
-mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block here defines a set of Bower dependencies that are
-going to be necessary no matter what sort of functionality is
-is going to be implemented. Most of these libraries required
-by the internal implementations of the various subcomponents.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@bower</span> <span class="s">&quot;async&quot;</span><span class="p">,</span> <span class="s">&quot;lib/async.js&quot;</span>
-    <span class="nx">@bower</span> <span class="s">&quot;eventemitter2&quot;</span>
-    <span class="nx">@bower</span> <span class="s">&quot;bootstrap</span><span class="err">#</span><span class="s">3&quot;</span>
-    <span class="nx">@bower</span> <span class="s">&quot;lodash&quot;</span>
-    <span class="nx">@bower</span> <span class="s">&quot;chai&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A directive to mark the certain remote class or object to be
+mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A directive to mark the certain remote class or object to be
 included in the <code>Screenplay</code> context that is going to be emited
 and deployed on the client site. Basically, use this to bring
 in all the remote classes that you need to the remote call site.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@remote: </span><span class="nf">(subject) -&gt;</span>
@@ -68,7 +65,26 @@ This is the place where you would be importing the dependencies.</p></div></div>
         <span class="nv">inline = </span><span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="o">or</span> <span class="nf">-&gt;</span>
         <span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="o">`</span><span class="nv">assert = </span><span class="nx">chai</span><span class="p">.</span><span class="nx">assert</span><span class="o">`</span>
         <span class="nv">remotes = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">remotes</span> <span class="o">or</span> <span class="p">[]</span>
-        <span class="nv">remotes = </span><span class="nx">remotes</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">Marshal</span>
         <span class="k">for</span> <span class="nx">remote</span> <span class="k">in</span> <span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">remotes</span>
             <span class="nx">@inject</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">remote</span>
-        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span></div></div></div></div></body></html>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This abstract base class service is an extension of the Screenplay
+family that does some further environment initialization and set
+up. These preparations will be nececessary no matter what sort of
+Screenplay functionality you are going to implement. Currently the
+purpose of preflight is drawing in the remoted and Bower packages.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Preflight = </span><span class="k">class</span> <span class="nx">Preflight</span> <span class="k">extends</span> <span class="nx">RToolkit</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block here defines a set of Bower dependencies that are
+going to be necessary no matter what sort of functionality is
+is going to be implemented. Most of these libraries required
+by the internal implementations of the various subcomponents.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@bower</span> <span class="s">&quot;async&quot;</span><span class="p">,</span> <span class="s">&quot;lib/async.js&quot;</span>
+    <span class="nx">@bower</span> <span class="s">&quot;eventemitter2&quot;</span>
+    <span class="nx">@bower</span> <span class="s">&quot;bootstrap</span><span class="err">#</span><span class="s">3&quot;</span>
+    <span class="nx">@bower</span> <span class="s">&quot;lodash&quot;</span>
+    <span class="nx">@bower</span> <span class="s">&quot;chai&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block here defines a set of remote dependencies that are
+going to be necessary no matter what sort of functionality is
+is going to be implemented. Most of these libraries required
+by the internal implementations of the various subcomponents.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@remote</span> <span class="nx">Composition</span>
+    <span class="nx">@remote</span> <span class="nx">Extending</span>
+    <span class="nx">@remote</span> <span class="nx">Archetype</span>
+    <span class="nx">@remote</span> <span class="nx">Marshal</span></div></div></div></div></body></html>
