@@ -29,6 +29,7 @@ connect = require "connect"
 logger = require "winston"
 colors = require "colors"
 assert = require "assert"
+async = require "async"
 nconf = require "nconf"
 paths = require "path"
 https = require "https"
@@ -145,16 +146,37 @@ module.exports.Watcher = class Watcher extends Archetype
     reviewServices: (resolved) ->
         cached = require.cache[resolved]
         services = @collectServices cached
+        assert queue = @obtainOperationsQueue()
         registry = (router = @kernel.router)?.registry or []
         originate = (s) -> s.constructor.origin?.id
         predicate = (s) -> originate(s) is resolved
         previous = _.filter registry, predicate
-        router.unregister prev for prev in previous
-        srv.origin = cached for srv in services
-        register = @kernel.router.register
-        register = register.bind @kernel.router
-        s.spawn @kernel, register for s in services
-        @attemptForceHotswap cached
+        _.each services, (s) -> s.origin = cached
+        queue.push _.map(previous, (s) -> instance: s)
+        queue.push _.map(services, (s) -> service: s)
+        @attemptForceHotswap cached; return this
+
+    # Obtain an operations queue of this watcher instance. This queue
+    # is responsible for processing either a service registration or
+    # a service unregistration. The queueing mechanism is necessary in
+    # order to make sure of correct sequencing of all the operations.
+    # It aids is avoiding the race conditions during modules changes.
+    obtainOperationsQueue: ->
+        assert router = @kernel.router
+        return @queue if _.isObject @queue
+        register = router.register.bind router
+        unregister = router.unregister.bind router
+        collides = "use either register or unregister"
+        missingOperation = "specify an operation to do"
+        @queue = async.queue (operation, callback) =>
+            acknowledge = -> callback.apply this
+            applicate = (i) -> register i, acknowledge
+            opService = operation.service or undefined
+            opInstance = operation.instance or undefined
+            assert opService or opInstance, missingOperation
+            assert not (opService and opInstance), collides
+            unregister opInstance, acknowledge if opInstance
+            opService.spawn @kernel, applicate if opService
 
     # If enabled by the scoping configuration, this method will try
     # to hotswap and reload all modules and services that have been
@@ -185,29 +207,13 @@ module.exports.Watcher = class Watcher extends Archetype
         exports = _.values(required.exports or {})
         hasProto = (s) -> _.isObject(s) and s.prototype
         isService = (s) -> try s.inherits service.Service
-        isFinal = (s) -> not s.abstract()
         isTyped = (s) -> hasProto(s) and isService(s)
+        isFinal = (s) -> not s.abstract()
         unscoped = _.filter globals, isTyped
         services = _.filter exports, isTyped
         services = _.merge services, unscoped
         services = _.filter services, isFinal
-        _.unique services
-
-    # Directory tracking routine keeps inventory of all directories
-    # that have been added to the watcher. Besides that it is called
-    # upon an addition of a new directory to ensure that the directory
-    # does not intersect with any directories that already present.
-    directoryTracking: (directory) ->
-        tracked = @tracked ?= []
-        pattern = /^(?:\.{2}\/?)+$/
-        resolved = paths.resolve directory
-        return undefined if resolved in tracked
-        relA = (p) -> paths.relative(p, resolved)
-        relB = (p) -> paths.relative(resolved, p)
-        matches = (f) -> (p) -> pattern.test f(p)
-        return no if _.any tracked, matches(relA)
-        return no if _.any tracked, matches(relB)
-        tracked.push resolved.toString()
+        return _.unique services
 
     # Watch the specified directory for addition and changing of
     # the files, looking for modules with services there and then
@@ -228,3 +234,19 @@ module.exports.Watcher = class Watcher extends Archetype
         watcher.on "unlink", @hotSwappingUnlink.bind @
         watcher.on "change", @hotSwappingChange.bind @
         watcher.on "add", @hotSwappingAdd.bind @
+
+    # Directory tracking routine keeps inventory of all directories
+    # that have been added to the watcher. Besides that it is called
+    # upon an addition of a new directory to ensure that the directory
+    # does not intersect with any directories that already present.
+    directoryTracking: (directory) ->
+        tracked = @tracked ?= []
+        pattern = /^(?:\.{2}\/?)+$/
+        resolved = paths.resolve directory
+        return undefined if resolved in tracked
+        relA = (p) -> paths.relative(p, resolved)
+        relB = (p) -> paths.relative(resolved, p)
+        matches = (f) -> (p) -> pattern.test f(p)
+        return no if _.any tracked, matches(relA)
+        return no if _.any tracked, matches(relB)
+        tracked.push resolved.toString()
