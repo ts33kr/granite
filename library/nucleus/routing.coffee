@@ -59,7 +59,8 @@ module.exports.Router = class Router extends Archetype
         passProcess = _.isFunction(process) and process.length is 3
         throw new Error goneMatches unless passMatches
         throw new Error goneProcess unless passProcess
-        return this if routable in (@registry or [])
+        duplicate = "the #{inspected} service already there"
+        assert not (routable in (@registry or [])), duplicate
         register = routable.upstreamAsync "register", =>
             attaching = "Attaching %s service instance"
             logger.info attaching.blue, inspected
@@ -83,7 +84,7 @@ module.exports.Router = class Router extends Archetype
         removing = "Removing %s service instance"
         assert _.isArray @registry, noRegistry
         index = _.indexOf @registry, routable
-        assert index >= 0, "service #{inspected} is missing"
+        assert index >= 0, "missing service: #{inspected}"
         unregister = routable.upstreamAsync "unregister", =>
             @emit "unregister", @routable, @kernel
             logger.info removing.yellow, inspected
