@@ -69,6 +69,21 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
             target: target
             entry: entry
 
+    # Either get or set the bower sink directory name. If no args
+    # supplied the method will return the automatically deduced the
+    # bower sink. If you supply an argument the method will set it
+    # as a bower sink and later will return it, unless overriden by
+    # the global configuration. See the implementation for the info.
+    @bowerSink: (sink) ->
+        assert hash = crypto.createHash "md5"
+        id = hash.update(@identify()).digest "hex"
+        automatic = => global or @$bowerSink or id
+        global = nconf.get "bower:global_sink_dir"
+        return automatic() if arguments.length is 0
+        assert _.isString(sink), "has to be a string"
+        assert not _.isEmpty(sink), "got empty sink"
+        return @$bowerSink = sink.toString()
+
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
@@ -77,7 +92,7 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     register: (kernel, router, next) ->
         hash = crypto.createHash "md5"
         hash.update @constructor.identify()
-        id = hash.digest("hex").toString()
+        assert id = @constructor.bowerSink()
         bowerings = @constructor.bowerings ?= []
         options = _.map(bowerings, (b) -> b.options)
         options = _.merge Object.create({}), options...
