@@ -168,7 +168,8 @@ module.exports.Watcher = class Watcher extends Archetype
         unregister = router.unregister.bind router
         collides = "use either register or unregister"
         missingOperation = "specify an operation to do"
-        @queue = async.queue (operation, callback) =>
+        sequential = (f) => @queue = async.queue f, 1
+        return sequential (operation, callback) =>
             acknowledge = -> callback.apply this
             applicate = (i) -> register i, acknowledge
             opService = operation.service or undefined
