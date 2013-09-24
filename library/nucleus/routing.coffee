@@ -83,7 +83,7 @@ module.exports.Router = class Router extends Archetype
         removing = "Removing %s service instance"
         assert _.isArray @registry, noRegistry
         index = _.indexOf @registry, routable
-        assert index >= 0, "service never registered"
+        return callback routable, this unless index >= 0
         unregister = routable.upstreamAsync "unregister", =>
             @emit "unregister", @routable, @kernel
             logger.info removing.yellow, inspected
