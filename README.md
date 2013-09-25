@@ -32,3 +32,22 @@ Granite makes hard emphasis on the decomposed objective architecture
 in order to provide enterprise level design and make the factor of
 the reusable code sky high. It also embeds in or provides support for
 the community standard sort of toolkits, such as NPM, Bower, Cakefile.
+
+##Disclaimer
+Before considering using Granite framework, you should be well aware
+of some of the specifics regarding its usage. The first and foremost
+is the fact that Granite design and architecture is fluctuating at
+a very rapid rate. In order to achieve the clean and effective design
+we change different aspects of the architecture and experimentally
+verify the viability of one or another approach. For this very reason
+the framework is not covered by any tests at the time of writing this.
+But rest assured, once the architecture is solid enough, framework
+will be covered with all sorts of test cases that ensure its internal
+integrity. One other thing to consider is that you must be prepared to
+traverse the framework code in order to discover functionality and a
+way of usage. The entire code base is 100% documented. But materials
+targeted towards the end users, such as user guide or manual are not
+there just yet. So you have to be ready to go digging deep into code.
+What should be also mentioned is that framework is under the active
+development and we would appreciate the feedback very much. So you
+can always can on a friendly support ready to give you a hand with it!
