@@ -75,6 +75,8 @@ module.exports.Descriptor = class Descriptor extends stubs.WithHooks
         services = substitution if substitution?
         assert _.isArray(services), "invalid services"
         logger.debug "Collecting API documentation"
+        conformant = (s) -> s.objectOf Descriptor
+        services = _.filter services, conformant
         _.map services, (service) => do (service) =>
             unsupported = service.unsupported
             supported = service.constructor.SUPPORTED
