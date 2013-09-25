@@ -37,8 +37,8 @@ url = require "url"
 
 _ = require "lodash"
 api = require "../nucleus/api"
-stubs = require "../nucleus/stubs"
 tools = require "../nucleus/tools"
+{Stubs} = require "../nucleus/stubs"
 {Document} = require "./document"
 
 # This is an abstract base class API stub service. Its purpose is
@@ -46,7 +46,7 @@ tools = require "../nucleus/tools"
 # the services using the built it documentation mechanisn. This class
 # provide not only function for definition but also for retrieval of
 # the documentation on either the per-service or all-at-once basis.
-module.exports.Descriptor = class Descriptor extends stubs.WithHooks
+module.exports.Descriptor = class Descriptor extends Stubs
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

@@ -33,7 +33,7 @@ logger = require "winston"
 
 extendz = require "./../nucleus/extends"
 compose = require "./../nucleus/compose"
-{WithHooks} = require "./../nucleus/stubs"
+{Stubs} = require "./../nucleus/stubs"
 {Descriptor} = require "./describe"
 
 # This is an abstract base class for every service in the system
@@ -41,7 +41,7 @@ compose = require "./../nucleus/compose"
 # to some arbitrary resource, determined by HTTP path and guarded
 # by the domain matching. This is the crucial piece of framework.
 # It supports strictly methods defined in the HTTP specification.
-module.exports.Barebones = class Barebones extends WithHooks
+module.exports.Barebones = class Barebones extends Stubs
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

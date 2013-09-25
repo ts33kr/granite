@@ -30,7 +30,7 @@ colors = require "colors"
 logger = require "winston"
 
 _ = require "lodash"
-api = require "./api"
+{Api} = require "./api"
 extendz = require "./extends"
 routing = require "./routing"
 service = require "./service"
@@ -39,57 +39,9 @@ service = require "./service"
 # the HTTP specification and covered by the base implementation
 # stubbed with default implementations. By default, the methods
 # will throw the 405, method not allowed HTTP error status code.
-# The methods have implementations, but marked as unsupported.
-module.exports.Restful = class Restful extends api.Api
-
-    # This is a marker that indicates to some internal subsystems
-    # that this class has to be considered abstract and therefore
-    # can not be treated as a complete class implementation. This
-    # mainly is used to exclude or account for abstract classes.
-    @abstract yes
-
-    # This method should generally be used to obtain HTTP methods that
-    # are allowed on this resources. This is not the only possible way
-    # of implementing this method, because it usually can have a lot of
-    # different interpretations other than the one in the HTTP spec.
-    OPTIONS: @prototype.unsupported
-
-    # Alter the contents of the resources at the established path. It
-    # usually means partial replacing contents with the new contents.
-    # This HTTP method nicely maps to UPDATE method of the storages.
-    # Use this method to partially replace the contents of resources.
-    PATCH: @prototype.unsupported
-
-    # Delete the contents of the resources at the establushed path. It
-    # generally should destroy the contents of the resource for good.
-    # Be sure to provide enough protection for your API for destructive
-    # HTTP methods like this one. Apply it to indicate destruction.
-    DELETE: @prototype.unsupported
-
-    # Append the contents to the resources at the established path. It
-    # usually means adding new content in addition to the old one. This
-    # HTTP method nicely maps to INSERT method of the storage engines.
-    # Use this method to successively append new contents to resources.
-    POST: @prototype.unsupported
-
-    # Alter the contents of the resources at the established path. It
-    # usually means replacing the old contents with the new contents.
-    # This HTTP method nicely maps to UPDATE method of the storages.
-    # Use this method to repetidely replace the contents of resources.
-    PUT: @prototype.unsupported
-
-    # Get the contents of the resources at the established path. It
-    # is a good idea for this HTTP method to be idempotent. As the
-    # rule, this method does not have to alter any contents or data
-    # of the resource. Use for unobtrusive retrieval of resources.
-    GET: @prototype.unsupported
-
-# This abstract base class is an intermediary in the chain of other
-# ABC classes that eventually comprise the hierarchy that yields a
-# ready to use ABC to an end user. This one contains prototypes of
-# the hooks that are called within the service during the operations.
-# Please refer to each signature for more information on functioning.
-module.exports.WithHooks = class WithHooks extends Restful
+# The methods have implementations, but marked as the unsupported.
+# The ABC also provides stubbed implementation for the API hooks.
+module.exports.Stubs = class Stubs extends Api
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -145,3 +97,39 @@ module.exports.WithHooks = class WithHooks extends Restful
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     postpushing: (response, content, next) -> next()
+
+    # Get the contents of the resources at the established path. It
+    # is a good idea for this HTTP method to be idempotent. As the
+    # rule, this method does not have to alter any contents or data
+    # of the resource. Use for unobtrusive retrieval of resources.
+    GET: @prototype.unsupported
+
+    # This method should generally be used to obtain HTTP methods that
+    # are allowed on this resources. This is not the only possible way
+    # of implementing this method, because it usually can have a lot of
+    # different interpretations other than the one in the HTTP spec.
+    OPTIONS: @prototype.unsupported
+
+    # Alter the contents of the resources at the established path. It
+    # usually means partial replacing contents with the new contents.
+    # This HTTP method nicely maps to UPDATE method of the storages.
+    # Use this method to partially replace the contents of resources.
+    PATCH: @prototype.unsupported
+
+    # Delete the contents of the resources at the establushed path. It
+    # generally should destroy the contents of the resource for good.
+    # Be sure to provide enough protection for your API for destructive
+    # HTTP methods like this one. Apply it to indicate destruction.
+    DELETE: @prototype.unsupported
+
+    # Append the contents to the resources at the established path. It
+    # usually means adding new content in addition to the old one. This
+    # HTTP method nicely maps to INSERT method of the storage engines.
+    # Use this method to successively append new contents to resources.
+    POST: @prototype.unsupported
+
+    # Alter the contents of the resources at the established path. It
+    # usually means replacing the old contents with the new contents.
+    # This HTTP method nicely maps to UPDATE method of the storages.
+    # Use this method to repetidely replace the contents of resources.
+    PUT: @prototype.unsupported
