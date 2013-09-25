@@ -93,10 +93,10 @@ module.exports.Descriptor = class Descriptor extends Stubs
     # process such documentation and do with it whatever is necessary.
     # This approach gives unique ability to build self documented APIs.
     @describe: (method, descriptor) ->
-        noMethod = "The #{method} is not a valid method"
-        noDescriptor = "The #{descriptor} is not a descriptor"
-        assert _.isFunction(method), noMethod
+        noMethod = "no valid method is supplied"
+        noDescriptor = "got no valid descriptor"
         assert _.isFunction(descriptor), noDescriptor
+        assert _.isFunction(method), noMethod
         previous = method.document?.descriptor
         method.document ?= new Document
         method.document.descriptor = ->
