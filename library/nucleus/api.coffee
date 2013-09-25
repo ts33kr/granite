@@ -34,7 +34,7 @@ _ = require "lodash"
 tools = require "./tools"
 extendz = require "./extends"
 routing = require "./routing"
-service = require "./service"
+{Service} = require "./service"
 {STATUS_CODES} = require "http"
 
 # This is an abstract base class for every service in the system
@@ -42,7 +42,7 @@ service = require "./service"
 # to some arbitrary resource, determined by HTTP path and guarded
 # by the domain matching. This is the crucial piece of framework.
 # It supports strictly methods defined in the HTTP specification.
-module.exports.Api = class Api extends service.Service
+module.exports.Api = class Api extends Service
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
