@@ -98,29 +98,23 @@ module.exports.Stubs = class Stubs extends Api
     # Please be sure invoke the `next` arg to proceed, if relevant.
     postpushing: (response, content, next) -> next()
 
-    # Get the contents of the resources at the established path. It
-    # is a good idea for this HTTP method to be idempotent. As the
-    # rule, this method does not have to alter any contents or data
-    # of the resource. Use for unobtrusive retrieval of resources.
-    GET: @prototype.unsupported
-
     # This method should generally be used to obtain HTTP methods that
     # are allowed on this resources. This is not the only possible way
     # of implementing this method, because it usually can have a lot of
     # different interpretations other than the one in the HTTP spec.
     OPTIONS: @prototype.unsupported
 
-    # Alter the contents of the resources at the established path. It
-    # usually means partial replacing contents with the new contents.
-    # This HTTP method nicely maps to UPDATE method of the storages.
-    # Use this method to partially replace the contents of resources.
-    PATCH: @prototype.unsupported
-
     # Delete the contents of the resources at the establushed path. It
     # generally should destroy the contents of the resource for good.
     # Be sure to provide enough protection for your API for destructive
     # HTTP methods like this one. Apply it to indicate destruction.
     DELETE: @prototype.unsupported
+
+    # Alter the contents of the resources at the established path. It
+    # usually means partial replacing contents with the new contents.
+    # This HTTP method nicely maps to UPDATE method of the storages.
+    # Use this method to partially replace the contents of resources.
+    PATCH: @prototype.unsupported
 
     # Append the contents to the resources at the established path. It
     # usually means adding new content in addition to the old one. This
@@ -133,3 +127,9 @@ module.exports.Stubs = class Stubs extends Api
     # This HTTP method nicely maps to UPDATE method of the storages.
     # Use this method to repetidely replace the contents of resources.
     PUT: @prototype.unsupported
+
+    # Get the contents of the resources at the established path. It
+    # is a good idea for this HTTP method to be idempotent. As the
+    # rule, this method does not have to alter any contents or data
+    # of the resource. Use for unobtrusive retrieval of resources.
+    GET: @prototype.unsupported
