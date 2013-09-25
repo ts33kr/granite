@@ -58,6 +58,7 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
         collected = @collectDescriptions()
         @push response, _.map collected, (record) ->
             constructor = record.service.constructor
+            qualified: record.service.qualified()
             location: record.service.location()
             identify: constructor.identify()
             patterns: _.map constructor.resources, "source"
@@ -75,7 +76,6 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
                 inputs: document.inputs()
                 github: document.github()
                 notes: document.notes()
-                leads: document.leads()
                 method: method
 
     # This block describes certain method of abrbitrary service. The

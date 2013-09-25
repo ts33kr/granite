@@ -36,7 +36,6 @@ http = require "http"
 util = require "util"
 url = require "url"
 
-tools = require "../nucleus/tools"
 {Stubs} = require "../nucleus/stubs"
 {Document} = require "./document"
 
@@ -85,8 +84,7 @@ module.exports.Descriptor = class Descriptor extends Stubs
             filtered = _.filter supported, implemented
             methods = _.object filtered, _.map(filtered, doc)
             args = (method) => [method, service, @kernel]
-            url = tools.urlWithHost no, service.location()
-            d.leads url for m, d of methods when not d.leads()
+            assert not _.isEmpty link = service.qualified()
             doc.descriptor? args(m)... for m, doc of methods
             return service: service, methods: methods
 

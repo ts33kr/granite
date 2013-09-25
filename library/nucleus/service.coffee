@@ -31,6 +31,7 @@ util = require "util"
 url = require "url"
 
 _ = require "lodash"
+tools = require "./tools"
 extendz = require "./extends"
 routing = require "./routing"
 scoping = require "./scoping"
@@ -69,6 +70,13 @@ module.exports.Service = class Service extends Archetype
     # refer to the original constructor method for more information.
     location: -> @constructor.location arguments...
 
+    # This method is a tool for obtaining a fully qualified path to
+    # access to the resource, according to the HTTP specification.
+    # This includes details such as host, port, path and alike. The
+    # method knows how to disambiguate between SSL and non SSL paths.
+    # Refer to the original constructor method for more information.
+    qualified: -> @constructor.qualified arguments...
+
     # A hook that will be called prior to instantiating the service
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
@@ -104,10 +112,25 @@ module.exports.Service = class Service extends Archetype
             callback? service, kernel
         instance kernel, service; service
 
+    # This method is a tool for obtaining a fully qualified path to
+    # access to the resource, according to the HTTP specification.
+    # This includes details such as host, port, path and alike. The
+    # method knows how to disambiguate between SSL and non SSL paths.
+    # Do not confuse it with `location` method that deals locations.
+    @qualified: ->
+        int = "internal error getting qualified"
+        noLocation = "the service has no location"
+        securing = require "../membrane/securing"
+        assert not _.isEmpty(@location()), noLocation
+        isProtected = this.inherits securing.OnlySsl
+        link = tools.urlWithHost isProtected, @location()
+        assert not _.isEmpty(link), int; return link
+
     # Either obtain or set the HTTP location of the current service.
     # If not location has been set, but the one is requested then
     # the deduced default is returned. Default location is the first
     # resource regular expression pattern being unescaped to string.
+    # Do not confuse it with `qualified` method that deals with URL.
     @location: (location) ->
         current = => @$location or automatic
         automatic = _.head(@resources)?.unescape()

@@ -53,17 +53,6 @@ module.exports.Document = class Document extends Archetype
         @emit "notes", arguments...
         @$notes = notes.toString()
 
-    # Either get or set the example of the method that is being
-    # described by this document. If you do not supply example
-    # this method will return you one, assuming it was set before.
-    # Example is a URL with query that shows example invocation.
-    leads: (leads) ->
-        return @$leads if arguments.length is 0
-        noLeads = "The leads is not a string"
-        assert _.isString(leads), noLeads
-        @emit "leads", arguments...
-        @$leads = leads.toString()
-
     # Either get or set the inputs of the method that is being
     # described by this document. If you do not supply inputs
     # this method will return you one, assuming it was set before.
