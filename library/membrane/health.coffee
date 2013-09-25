@@ -77,6 +77,7 @@ module.exports.Healthcare = class Healthcare extends Service
     # that is actually invoked to determine if a service is healthy
     # or not. If any of the classes in the inheritance hierarchy
     # defines any heartbeats, those will be inherited down a chain.
+    # If an estimate throws an exception the hearbeat is a failure.
     @heartbeat: (summary, estimate) ->
         noSummary = "no heartbeat summary given"
         noEstimate = "received no estimate function"
