@@ -23,6 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+_ = require "lodash"
 asciify = require "asciify"
 connect = require "connect"
 assert = require "assert"
@@ -35,8 +36,6 @@ http = require "http"
 util = require "util"
 url = require "url"
 
-_ = require "lodash"
-api = require "../nucleus/api"
 tools = require "../nucleus/tools"
 {Stubs} = require "../nucleus/stubs"
 {Document} = require "./document"
