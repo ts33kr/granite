@@ -86,7 +86,7 @@ module.exports.Descriptor = class Descriptor extends Stubs
             methods = _.object filtered, _.map(filtered, doc)
             args = (method) => [method, service, @kernel]
             url = tools.urlWithHost no, service.location()
-            doc.leads url for m, doc of methods when not doc.leads()
+            d.leads url for m, d of methods when not d.leads()
             doc.descriptor? args(m)... for m, doc of methods
             return service: service, methods: methods
 
