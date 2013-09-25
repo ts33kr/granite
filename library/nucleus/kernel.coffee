@@ -239,35 +239,6 @@ module.exports.Generic = class Generic extends Archetype
         @secureSocket.on "connection", -> newSocket "HTTPS"
         @serverSocket.on "connection", -> newSocket "HTTP"
 
-    # This method sets up the necessary internal toolkits, such as
-    # the determined scope and the router, which is then are wired
-    # in with the located and instantiated services. Please refer
-    # to the implementation on how and what is being done exactly.
-    setupRoutableServices: ->
-        tag = nconf.get "NODE_ENV"
-        missing = "No NODE_ENV variable found"
-        assert _.isString(tag), missing
-        @scope = scoping.Scope.lookupOrFail tag
-        @scope.incorporate this
-        @router = new routing.Router this
-        @middleware = @router.middleware
-        @middleware = @middleware.bind @router
-
-    # Setup a set of appropriate Connect middlewares that will take
-    # care of serving static directory content for all configured
-    # assets directory, using the options drawed from configuration.
-    # You should override the method to tweak the creation process.
-    connectStaticAssets: ->
-        envs = nconf.get "env:dirs"
-        dirs = nconf.get "assets:dirs"
-        opts = nconf.get "assets:opts"
-        pub = -> _.find envs, (dir) -> dir is "pub"
-        assert _.isString(pub()), "no pub environment"
-        assert _.isObject(opts), "no assets options"
-        assert _.isArray(dirs), "no assets directories"
-        @serveStaticDirectory d, opts for d in dirs
-        @serveStaticDirectory pub()
-
     # Setup the Connect middleware framework along with the default
     # pipeline of middlewares necessary for the Granite framework to
     # operate correctly. You are encouraged to override this method
@@ -289,3 +260,32 @@ module.exports.Generic = class Generic extends Archetype
         @connect.use @sender = plumbs.sender this
         @connect.use @logger = plumbs.logger this
         @connect.use @middleware
+
+    # Setup a set of appropriate Connect middlewares that will take
+    # care of serving static directory content for all configured
+    # assets directory, using the options drawed from configuration.
+    # You should override the method to tweak the creation process.
+    connectStaticAssets: ->
+        envs = nconf.get "env:dirs"
+        dirs = nconf.get "assets:dirs"
+        opts = nconf.get "assets:opts"
+        pub = -> _.find envs, (dir) -> dir is "pub"
+        assert _.isString(pub()), "no pub environment"
+        assert _.isObject(opts), "no assets options"
+        assert _.isArray(dirs), "no assets directories"
+        @serveStaticDirectory d, opts for d in dirs
+        @serveStaticDirectory pub()
+
+    # This method sets up the necessary internal toolkits, such as
+    # the determined scope and the router, which is then are wired
+    # in with the located and instantiated services. Please refer
+    # to the implementation on how and what is being done exactly.
+    setupRoutableServices: ->
+        tag = nconf.get "NODE_ENV"
+        missing = "No NODE_ENV variable found"
+        assert _.isString(tag), missing
+        @scope = scoping.Scope.lookupOrFail tag
+        @scope.incorporate this
+        @router = new routing.Router this
+        @middleware = @router.middleware
+        @middleware = @middleware.bind @router
