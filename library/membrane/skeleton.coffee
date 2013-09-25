@@ -34,7 +34,9 @@ logger = require "winston"
 extendz = require "./../nucleus/extends"
 compose = require "./../nucleus/compose"
 {Stubs} = require "./../nucleus/stubs"
+
 {Descriptor} = require "./describe"
+{Healthcare} = require "./health"
 
 # This is an abstract base class for every service in the system
 # and in the end user application that provides a REST interface
@@ -55,6 +57,7 @@ module.exports.Barebones = class Barebones extends Stubs
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
     @compose Descriptor
+    @compose Healthcare
 
     # This method should generally be used to obtain HTTP methods that
     # are allowed on this resources. This is not the only possible way
