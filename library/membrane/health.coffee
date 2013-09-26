@@ -53,6 +53,22 @@ module.exports.Healthcare = class Healthcare extends Service
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
+    # This method wraps a vanilla supplied heartbeat estimate with
+    # a special wrapper. This wrapper provides a smater callback to
+    # the estimate as compared to the default one in `async`. Please
+    # refer to the implementation for the information on a callback.
+    # Implementation directly affects the contents of the result map.
+    @heartrate: (bound) -> (callback) ->
+        internalError = "heartbeat internal error"
+        wrongWiring = "received no valid callback"
+        assert _.isFunction(bound), internalError
+        assert _.isFunction(callback), wrongWiring
+        accept = -> callback undefined, yes
+        return bound accept, (message) ->
+            noMessage = "got no rejection message"
+            assert _.isString(message), noMessage
+            return callback undefined, message
+
     # Run a healthcare check on the service instance. This method
     # retrieves all the heartbeats of this service and its hierarchy
     # run them in parallel, asynchronously. Once done, a callback
@@ -60,7 +76,8 @@ module.exports.Healthcare = class Healthcare extends Service
     # to a summary and a value to a success or failure. Also, if any
     # error happens in any of the hertbeats, it reports to callback.
     healthcare: (callback) ->
-        bind = (method) => method.bind this
+        adapt = (f) => @constructor.heartrate f
+        bind = (method) => adapt method.bind this
         heartbeats = @constructor.heartbeat()
         indexed = _.indexBy heartbeats, "summary"
         id = try @constructor.identify().underline
@@ -84,7 +101,7 @@ module.exports.Healthcare = class Healthcare extends Service
         wrongArgs = "should accept at least 1 argument"
         return @$heartbeat if arguments.length is 0
         assert not _.isEmpty(summary), noSummary
-        assert isFunction(estimate), noEstimate
+        assert _.isFunction(estimate), noEstimate
         assert estimate.length >= 1, wrongArgs
         @$heartbeat = (@$heartbeat or []).concat
             summary: summary.toString()
