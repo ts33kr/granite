@@ -49,6 +49,7 @@ of the resource. Use for unobtrusive retrieval of resources.</p></div></div><div
         <span class="nv">collected = </span><span class="nx">@collectDescriptions</span><span class="p">()</span>
         <span class="nx">@push</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">collected</span><span class="p">,</span> <span class="nf">(record) -&gt;</span>
             <span class="nv">constructor = </span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">constructor</span>
+            <span class="nv">qualified: </span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">qualified</span><span class="p">()</span>
             <span class="nv">location: </span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">location</span><span class="p">()</span>
             <span class="nv">identify: </span><span class="nx">constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
             <span class="nv">patterns: </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">constructor</span><span class="p">.</span><span class="nx">resources</span><span class="p">,</span> <span class="s">&quot;source&quot;</span>
@@ -66,7 +67,6 @@ of the resource. Use for unobtrusive retrieval of resources.</p></div></div><div
                 <span class="nv">inputs: </span><span class="nb">document</span><span class="p">.</span><span class="nx">inputs</span><span class="p">()</span>
                 <span class="nv">github: </span><span class="nb">document</span><span class="p">.</span><span class="nx">github</span><span class="p">()</span>
                 <span class="nv">notes: </span><span class="nb">document</span><span class="p">.</span><span class="nx">notes</span><span class="p">()</span>
-                <span class="nv">leads: </span><span class="nb">document</span><span class="p">.</span><span class="nx">leads</span><span class="p">()</span>
                 <span class="nv">method: </span><span class="nx">method</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block describes certain method of abrbitrary service. The
 exact process of how it is being documented depends on how the
 documented function is implemented. Please refer to <code>Document</code>

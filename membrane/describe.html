@@ -23,6 +23,7 @@
 <span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="cm">###</span>
 
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
@@ -35,15 +36,12 @@
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 <span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
 
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
-<span class="nv">api = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/api&quot;</span>
-<span class="nv">stubs = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/stubs&quot;</span>
-<span class="nv">tools = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/tools&quot;</span>
+<span class="p">{</span><span class="nx">Stubs</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/stubs&quot;</span>
 <span class="p">{</span><span class="nx">Document</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./document&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class API stub service. Its purpose is
 providing the boilerplate for documentation and speicification of
 the services using the built it documentation mechanisn. This class
 provide not only function for definition but also for retrieval of
-the documentation on either the per-service or all-at-once basis.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Descriptor = </span><span class="k">class</span> <span class="nx">Descriptor</span> <span class="k">extends</span> <span class="nx">stubs</span><span class="p">.</span><span class="nx">WithHooks</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+the documentation on either the per-service or all-at-once basis.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Descriptor = </span><span class="k">class</span> <span class="nx">Descriptor</span> <span class="k">extends</span> <span class="nx">Stubs</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Define a set of aliases that allow for extremely convenient
@@ -54,8 +52,8 @@ routine on the targeted REST methods. Prefer using these.</p></div></div><div cl
     <span class="vi">@DELETE = </span><span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">DELETE</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
     <span class="vi">@PATCH = </span><span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">PATCH</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
     <span class="vi">@POST = </span><span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">POST</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-    <span class="vi">@GET = </span><span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">GET</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-    <span class="vi">@PUT = </span><span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">PUT</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Traverse all of the services that are registered with the router
+    <span class="vi">@PUT = </span><span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">PUT</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+    <span class="vi">@GET = </span><span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">GET</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Traverse all of the services that are registered with the router
 and collect the documentation for each method, then given this
 information, build a hierarhical tree object of all the methods
 and the services that implement them and return to the invoker.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">collectDescriptions: </span><span class="nf">(substitution) -&gt;</span>
@@ -63,8 +61,10 @@ and the services that implement them and return to the invoker.</p></div></div><
         <span class="nv">services = </span><span class="nx">substitution</span> <span class="k">if</span> <span class="nx">substitution</span><span class="o">?</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">services</span><span class="p">),</span> <span class="s">&quot;invalid services&quot;</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="s">&quot;Collecting API documentation&quot;</span>
+        <span class="nv">conformant = </span><span class="nf">(s) -&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">objectOf</span> <span class="nx">Descriptor</span>
+        <span class="nv">services = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">services</span><span class="p">,</span> <span class="nx">conformant</span>
         <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">services</span><span class="p">,</span> <span class="nf">(service) =&gt;</span> <span class="nx">do</span> <span class="nf">(service) =&gt;</span>
-            <span class="nv">unsupported = </span><span class="nx">service</span><span class="p">.</span><span class="nx">unsupported</span>
+            <span class="nx">assert</span> <span class="nv">unsupported = </span><span class="nx">service</span><span class="p">.</span><span class="nx">unsupported</span>
             <span class="nv">supported = </span><span class="nx">service</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">SUPPORTED</span>
             <span class="nv">implemented = </span><span class="nf">(m) -&gt;</span> <span class="nx">service</span><span class="p">[</span><span class="nx">m</span><span class="p">]</span> <span class="o">isnt</span> <span class="nx">unsupported</span>
             <span class="nv">fix = </span><span class="nf">(m) =&gt;</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">describe</span> <span class="nx">service</span><span class="p">[</span><span class="nx">m</span><span class="p">],</span> <span class="nf">-&gt;</span>
@@ -72,17 +72,16 @@ and the services that implement them and return to the invoker.</p></div></div><
             <span class="nv">filtered = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">supported</span><span class="p">,</span> <span class="nx">implemented</span>
             <span class="nv">methods = </span><span class="nx">_</span><span class="p">.</span><span class="nx">object</span> <span class="nx">filtered</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">filtered</span><span class="p">,</span> <span class="nx">doc</span><span class="p">)</span>
             <span class="nv">args = </span><span class="nf">(method) =&gt;</span> <span class="p">[</span><span class="nx">method</span><span class="p">,</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">@kernel</span><span class="p">]</span>
-            <span class="nv">url = </span><span class="nx">tools</span><span class="p">.</span><span class="nx">urlWithHost</span> <span class="kc">no</span><span class="p">,</span> <span class="nx">service</span><span class="p">.</span><span class="nx">location</span><span class="p">()</span>
-            <span class="nx">doc</span><span class="p">.</span><span class="nx">leads</span> <span class="nx">url</span> <span class="k">for</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">doc</span> <span class="k">of</span> <span class="nx">methods</span> <span class="k">when</span> <span class="o">not</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">leads</span><span class="p">()</span>
+            <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">link = </span><span class="nx">service</span><span class="p">.</span><span class="nx">qualified</span><span class="p">()</span>
             <span class="nx">doc</span><span class="p">.</span><span class="nx">descriptor</span><span class="o">?</span> <span class="nx">args</span><span class="p">(</span><span class="nx">m</span><span class="p">)...</span> <span class="k">for</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">doc</span> <span class="k">of</span> <span class="nx">methods</span>
             <span class="k">return</span> <span class="nv">service: </span><span class="nx">service</span><span class="p">,</span> <span class="nv">methods: </span><span class="nx">methods</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Describe the supplied method of arbitrary service, in a structured
 and expected way, so that it can later be used to programmatically
 process such documentation and do with it whatever is necessary.
 This approach gives unique ability to build self documented APIs.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@describe: </span><span class="nf">(method, descriptor) -&gt;</span>
-        <span class="nv">noMethod = </span><span class="s">&quot;The </span><span class="si">#{</span><span class="nx">method</span><span class="si">}</span><span class="s"> is not a valid method&quot;</span>
-        <span class="nv">noDescriptor = </span><span class="s">&quot;The </span><span class="si">#{</span><span class="nx">descriptor</span><span class="si">}</span><span class="s"> is not a descriptor&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">method</span><span class="p">),</span> <span class="nx">noMethod</span>
+        <span class="nv">noMethod = </span><span class="s">&quot;no valid method is supplied&quot;</span>
+        <span class="nv">noDescriptor = </span><span class="s">&quot;got no valid descriptor&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">descriptor</span><span class="p">),</span> <span class="nx">noDescriptor</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">method</span><span class="p">),</span> <span class="nx">noMethod</span>
         <span class="nv">previous = </span><span class="nx">method</span><span class="p">.</span><span class="nb">document</span><span class="o">?</span><span class="p">.</span><span class="nx">descriptor</span>
         <span class="nx">method</span><span class="p">.</span><span class="nb">document</span> <span class="o">?=</span> <span class="k">new</span> <span class="nx">Document</span>
         <span class="nv">method.document.descriptor = </span><span class="nf">-&gt;</span>

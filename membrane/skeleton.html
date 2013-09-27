@@ -33,19 +33,22 @@
 
 <span class="nv">extendz = </span><span class="nx">require</span> <span class="s">&quot;./../nucleus/extends&quot;</span>
 <span class="nv">compose = </span><span class="nx">require</span> <span class="s">&quot;./../nucleus/compose&quot;</span>
-<span class="p">{</span><span class="nx">WithHooks</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./../nucleus/stubs&quot;</span>
-<span class="p">{</span><span class="nx">Descriptor</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./describe&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class for every service in the system
+<span class="p">{</span><span class="nx">Stubs</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./../nucleus/stubs&quot;</span>
+
+<span class="p">{</span><span class="nx">Descriptor</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./describe&quot;</span>
+<span class="p">{</span><span class="nx">Healthcare</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./health&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class for every service in the system
 and in the end user application that provides a REST interface
 to some arbitrary resource, determined by HTTP path and guarded
 by the domain matching. This is the crucial piece of framework.
-It supports strictly methods defined in the HTTP specification.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Barebones = </span><span class="k">class</span> <span class="nx">Barebones</span> <span class="k">extends</span> <span class="nx">WithHooks</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+It supports strictly methods defined in the HTTP specification.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Barebones = </span><span class="k">class</span> <span class="nx">Barebones</span> <span class="k">extends</span> <span class="nx">Stubs</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>These invocations establish the parameters which are going
 to be used for matching HTTP requests against this service.
 Typically an HTTP pathname pattern and a domain name pattern.
 Try not to put constraints on the domain, unless necessary.
-Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@compose</span> <span class="nx">Descriptor</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should generally be used to obtain HTTP methods that
+Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@compose</span> <span class="nx">Descriptor</span>
+    <span class="nx">@compose</span> <span class="nx">Healthcare</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should generally be used to obtain HTTP methods that
 are allowed on this resources. This is not the only possible way
 of implementing this method, because it usually can have a lot of
 different interpretations other than the one in the HTTP spec.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">OPTIONS: </span><span class="nf">(request, response) -&gt;</span>

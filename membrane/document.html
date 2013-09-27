@@ -45,15 +45,7 @@ Notes are warning/beware messages about the implementation.</p></div></div><div 
         <span class="nv">noNotes = </span><span class="s">&quot;The notes is not a string&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">notes</span><span class="p">),</span> <span class="nx">noNotes</span>
         <span class="nx">@emit</span> <span class="s">&quot;notes&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="vi">@$notes = </span><span class="nx">notes</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the example of the method that is being
-described by this document. If you do not supply example
-this method will return you one, assuming it was set before.
-Example is a URL with query that shows example invocation.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">leads: </span><span class="nf">(leads) -&gt;</span>
-        <span class="k">return</span> <span class="nx">@$leads</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
-        <span class="nv">noLeads = </span><span class="s">&quot;The leads is not a string&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">leads</span><span class="p">),</span> <span class="nx">noLeads</span>
-        <span class="nx">@emit</span> <span class="s">&quot;leads&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="vi">@$leads = </span><span class="nx">leads</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the inputs of the method that is being
+        <span class="vi">@$notes = </span><span class="nx">notes</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the inputs of the method that is being
 described by this document. If you do not supply inputs
 this method will return you one, assuming it was set before.
 Inputs is a description of the body that method expects.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">inputs: </span><span class="nf">(inputs) -&gt;</span>

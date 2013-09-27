@@ -198,30 +198,7 @@ it just sets it up. Please refer to the Socket.IO docs for info.</p></div></div>
         <span class="vi">@secureSocket = </span><span class="nx">socket</span><span class="p">.</span><span class="nx">listen</span> <span class="nx">@secure</span><span class="p">,</span> <span class="nx">sconfig</span>
         <span class="vi">@serverSocket = </span><span class="nx">socket</span><span class="p">.</span><span class="nx">listen</span> <span class="nx">@server</span><span class="p">,</span> <span class="nx">sconfig</span>
         <span class="nx">@secureSocket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connection&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">newSocket</span> <span class="s">&quot;HTTPS&quot;</span>
-        <span class="nx">@serverSocket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connection&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">newSocket</span> <span class="s">&quot;HTTP&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method sets up the necessary internal toolkits, such as
-the determined scope and the router, which is then are wired
-in with the located and instantiated services. Please refer
-to the implementation on how and what is being done exactly.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupRoutableServices: </span><span class="nf">-&gt;</span>
-        <span class="nv">tag = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;NODE_ENV&quot;</span>
-        <span class="nv">missing = </span><span class="s">&quot;No NODE_ENV variable found&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">tag</span><span class="p">),</span> <span class="nx">missing</span>
-        <span class="vi">@scope = </span><span class="nx">scoping</span><span class="p">.</span><span class="nx">Scope</span><span class="p">.</span><span class="nx">lookupOrFail</span> <span class="nx">tag</span>
-        <span class="nx">@scope</span><span class="p">.</span><span class="nx">incorporate</span> <span class="k">this</span>
-        <span class="vi">@router = </span><span class="k">new</span> <span class="nx">routing</span><span class="p">.</span><span class="nx">Router</span> <span class="k">this</span>
-        <span class="vi">@middleware = </span><span class="nx">@router</span><span class="p">.</span><span class="nx">middleware</span>
-        <span class="vi">@middleware = </span><span class="nx">@middleware</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@router</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup a set of appropriate Connect middlewares that will take
-care of serving static directory content for all configured
-assets directory, using the options drawed from configuration.
-You should override the method to tweak the creation process.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">connectStaticAssets: </span><span class="nf">-&gt;</span>
-        <span class="nv">envs = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;env:dirs&quot;</span>
-        <span class="nv">dirs = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;assets:dirs&quot;</span>
-        <span class="nv">opts = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;assets:opts&quot;</span>
-        <span class="nv">pub = </span><span class="nf">-&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">envs</span><span class="p">,</span> <span class="nf">(dir) -&gt;</span> <span class="nx">dir</span> <span class="o">is</span> <span class="s">&quot;pub&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">pub</span><span class="p">()),</span> <span class="s">&quot;no pub environment&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">opts</span><span class="p">),</span> <span class="s">&quot;no assets options&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">dirs</span><span class="p">),</span> <span class="s">&quot;no assets directories&quot;</span>
-        <span class="nx">@serveStaticDirectory</span> <span class="nx">d</span><span class="p">,</span> <span class="nx">opts</span> <span class="k">for</span> <span class="nx">d</span> <span class="k">in</span> <span class="nx">dirs</span>
-        <span class="nx">@serveStaticDirectory</span> <span class="nx">pub</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup the Connect middleware framework along with the default
+        <span class="nx">@serverSocket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connection&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">newSocket</span> <span class="s">&quot;HTTP&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup the Connect middleware framework along with the default
 pipeline of middlewares necessary for the Granite framework to
 operate correctly. You are encouraged to override this method
 to provide a Connect setup procedure to your own liking, etc.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupConnectPipeline: </span><span class="nf">-&gt;</span>
@@ -240,4 +217,27 @@ to provide a Connect setup procedure to your own liking, etc.</p></div></div><di
         <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@accepts = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">accepts</span> <span class="k">this</span>
         <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@sender = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">sender</span> <span class="k">this</span>
         <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@logger = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">logger</span> <span class="k">this</span>
-        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">@middleware</span></div></div></div></div></body></html>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">@middleware</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup a set of appropriate Connect middlewares that will take
+care of serving static directory content for all configured
+assets directory, using the options drawed from configuration.
+You should override the method to tweak the creation process.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">connectStaticAssets: </span><span class="nf">-&gt;</span>
+        <span class="nv">envs = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;env:dirs&quot;</span>
+        <span class="nv">dirs = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;assets:dirs&quot;</span>
+        <span class="nv">opts = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;assets:opts&quot;</span>
+        <span class="nv">pub = </span><span class="nf">-&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">envs</span><span class="p">,</span> <span class="nf">(dir) -&gt;</span> <span class="nx">dir</span> <span class="o">is</span> <span class="s">&quot;pub&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">pub</span><span class="p">()),</span> <span class="s">&quot;no pub environment&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">opts</span><span class="p">),</span> <span class="s">&quot;no assets options&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">dirs</span><span class="p">),</span> <span class="s">&quot;no assets directories&quot;</span>
+        <span class="nx">@serveStaticDirectory</span> <span class="nx">d</span><span class="p">,</span> <span class="nx">opts</span> <span class="k">for</span> <span class="nx">d</span> <span class="k">in</span> <span class="nx">dirs</span>
+        <span class="nx">@serveStaticDirectory</span> <span class="nx">pub</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method sets up the necessary internal toolkits, such as
+the determined scope and the router, which is then are wired
+in with the located and instantiated services. Please refer
+to the implementation on how and what is being done exactly.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupRoutableServices: </span><span class="nf">-&gt;</span>
+        <span class="nv">tag = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;NODE_ENV&quot;</span>
+        <span class="nv">missing = </span><span class="s">&quot;No NODE_ENV variable found&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">tag</span><span class="p">),</span> <span class="nx">missing</span>
+        <span class="vi">@scope = </span><span class="nx">scoping</span><span class="p">.</span><span class="nx">Scope</span><span class="p">.</span><span class="nx">lookupOrFail</span> <span class="nx">tag</span>
+        <span class="nx">@scope</span><span class="p">.</span><span class="nx">incorporate</span> <span class="k">this</span>
+        <span class="vi">@router = </span><span class="k">new</span> <span class="nx">routing</span><span class="p">.</span><span class="nx">Router</span> <span class="k">this</span>
+        <span class="vi">@middleware = </span><span class="nx">@router</span><span class="p">.</span><span class="nx">middleware</span>
+        <span class="vi">@middleware = </span><span class="nx">@middleware</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@router</span></div></div></div></div></body></html>

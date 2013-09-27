@@ -37,11 +37,12 @@
 
 <span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">mongodb = </span><span class="nx">require</span> <span class="s">&quot;mongodb&quot;</span>
-<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an ABC service intended to be used only as a compund. It
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
+<span class="p">{</span><span class="nx">Service</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/service&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an ABC service intended to be used only as a compund. It
 provides the ready to use Mongo client to any service that composits
 this service in. The initialization is performed only once. If the
 configuration environment does not contains the necessary information
-then this service will not attempt to setup a Mongo client at all.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.MongoClient = </span><span class="k">class</span> <span class="nx">MongoClient</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+then this service will not attempt to setup a Mongo client at all.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.MongoClient = </span><span class="k">class</span> <span class="nx">MongoClient</span> <span class="k">extends</span> <span class="nx">Service</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to unregistering the service
