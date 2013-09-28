@@ -41,14 +41,16 @@ util = require "util"
 # service documentation, as they scanned and found in the current
 # kernel instance. It exposes the data in a structured hierarchy
 # encoded with JSON. Please refer to the implementation for info.
-module.exports.ApiDoc = class ApiDoc extends Barebones
+# In addition to the documentation it also exposes a complement
+# set of service related data, such as health status and so on.
+module.exports.Publisher = class Publisher extends Barebones
 
     # These invocations establish the parameters which are going
     # to be used for matching HTTP requests against this service.
     # Typically an HTTP pathname pattern and a domain name pattern.
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
-    @resource "/api/doc"
+    @resource "/api/publish"
 
     # Get the contents of the resources at the established path. It
     # is a good idea for this HTTP method to be idempotent. As the
@@ -83,9 +85,9 @@ module.exports.ApiDoc = class ApiDoc extends Barebones
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
     @GET (method, service, kernel) ->
-        @relevant "ts33kr.github.io/granite/exposure/apidoc.html"
+        @relevant "ts33kr.github.io/granite/exposure/publish.html"
         @relevant "ts33kr.github.io/granite/membrane/document.html"
-        @github "ts33kr", "granite", "library/exposure/apidoc.coffee"
+        @github "ts33kr", "granite", "library/exposure/publish.coffee"
         @synopsis "Get inventory of all APIs available in the system"
         @outputs "An array of objects, each describes a service"
         @markings framework: "critical", stable: "positive"
