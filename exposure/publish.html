@@ -1,0 +1,123 @@
+<!DOCTYPE html><html lang="en"><head><title>exposure/publish</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/publish"><meta name="groc-project-path" content="library/exposure/publish.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/publish.coffee">library/exposure/publish.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">request = </span><span class="nx">require</span> <span class="s">&quot;request&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span>
+<span class="p">{</span><span class="nx">Healthcare</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/health&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This service exposes the entiry hierarchical structure of the
+service documentation, as they scanned and found in the current
+kernel instance. It exposes the data in a structured hierarchy
+encoded with JSON. Please refer to the implementation for info.
+In addition to the documentation it also exposes a complement
+set of service related data, such as health status and so on.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Publish = </span><span class="k">class</span> <span class="nx">Publish</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>These invocations establish the parameters which are going
+to be used for matching HTTP requests against this service.
+Typically an HTTP pathname pattern and a domain name pattern.
+Try not to put constraints on the domain, unless necessary.
+Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@resource</span> <span class="s">&quot;/api/publish&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Establish a heartbeat monitor. A hearbit monitor is a method
+that tests whether some arbitrarty server functonality does
+what it is supposed to be. The heartbeats are all executed and
+kept on the server. A service may define any number of beats.
+The hearbeat implementation cycle is never exposed to clients.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@heartbeat</span> <span class="s">&quot;yields a consistent structure&quot;</span><span class="p">,</span> <span class="nf">(accept, reject) -&gt;</span>
+        <span class="nx">request</span><span class="p">.</span><span class="nx">get</span> <span class="nx">@qualified</span><span class="p">(),</span> <span class="nf">(error, response, body) =&gt;</span>
+            <span class="nv">mirror = </span><span class="nf">(obj) =&gt;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">location</span> <span class="o">is</span> <span class="nx">@location</span><span class="p">()</span>
+            <span class="nv">method = </span><span class="nf">(obj) =&gt;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">method</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="o">is</span> <span class="s">&quot;GET&quot;</span>
+            <span class="nv">body = </span><span class="k">try</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">body</span> <span class="k">catch</span> <span class="nx">error</span> <span class="k">then</span> <span class="kc">undefined</span>
+            <span class="k">return</span> <span class="nx">reject</span> <span class="s">&quot;wrong code&quot;</span> <span class="k">unless</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">is</span> <span class="mi">200</span>
+            <span class="k">return</span> <span class="nx">reject</span> <span class="s">&quot;wrong body&quot;</span> <span class="k">unless</span> <span class="nx">body</span> <span class="o">and</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">body</span>
+            <span class="k">return</span> <span class="nx">reject</span> <span class="s">&quot;no service&quot;</span> <span class="k">unless</span> <span class="nv">id = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">body</span><span class="p">,</span> <span class="nx">mirror</span>
+            <span class="k">return</span> <span class="nx">reject</span> <span class="s">&quot;no GET&quot;</span> <span class="k">unless</span> <span class="nv">get = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">id</span><span class="p">.</span><span class="nx">methods</span><span class="p">,</span> <span class="nx">method</span>
+            <span class="k">return</span> <span class="nx">reject</span> <span class="s">&quot;no healthcare&quot;</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">id</span><span class="p">.</span><span class="nx">healthcare</span>
+            <span class="k">return</span> <span class="nx">reject</span> <span class="s">&quot;no relevants&quot;</span> <span class="k">unless</span> <span class="nx">get</span><span class="p">.</span><span class="nx">relevant</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">2</span>
+            <span class="k">return</span> <span class="nx">reject</span> <span class="s">&quot;no markings&quot;</span> <span class="k">unless</span> <span class="nx">get</span><span class="p">.</span><span class="nx">markings</span><span class="p">.</span><span class="nx">framework</span><span class="o">?</span>
+            <span class="k">return</span> <span class="nx">reject</span> <span class="s">&quot;no githubs&quot;</span> <span class="k">unless</span> <span class="nx">get</span><span class="p">.</span><span class="nx">github</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="nx">reject</span> <span class="s">&quot;no synopsis&quot;</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">get</span><span class="p">.</span><span class="nx">synopsis</span>
+            <span class="k">return</span> <span class="nx">reject</span> <span class="s">&quot;no outputs&quot;</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">get</span><span class="p">.</span><span class="nx">outputs</span>
+            <span class="k">return</span> <span class="nx">reject</span> <span class="s">&quot;no version&quot;</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">get</span><span class="p">.</span><span class="nx">version</span>
+            <span class="k">return</span> <span class="nx">accept</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to invoking the API method
+implementation. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">preprocess: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span>
+        <span class="nv">descriptions = </span><span class="nx">@collectDescriptions</span><span class="p">()</span>
+        <span class="nv">internalError = </span><span class="s">&quot;unexpected publishing error&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">request.records = </span><span class="nx">descriptions</span>
+        <span class="nv">remote = </span><span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s">&quot;user-agent&quot;</span><span class="p">]</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">remote</span> <span class="o">and</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">remote</span>
+        <span class="nv">getters = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">descriptions</span><span class="p">,</span> <span class="nf">(record) =&gt;</span> <span class="nf">(callback) =&gt;</span>
+            <span class="nv">conforms = </span><span class="nf">-&gt;</span> <span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">objectOf</span> <span class="nx">Healthcare</span>
+            <span class="k">return</span> <span class="nx">callback</span><span class="p">()</span> <span class="k">unless</span> <span class="p">(</span><span class="k">try</span> <span class="nx">conforms</span><span class="p">())</span> <span class="o">is</span> <span class="kc">yes</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="o">?</span><span class="p">.</span><span class="nx">healthcare</span>
+            <span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">healthcare</span> <span class="nf">(error, measures) -&gt;</span>
+                <span class="nx">assert</span><span class="p">.</span><span class="nx">ifError</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">internalError</span>
+                <span class="nx">assert</span> <span class="nv">record.healthcare = </span><span class="nx">measures</span>
+                <span class="k">return</span> <span class="nx">callback</span> <span class="kc">undefined</span>
+        <span class="k">return</span> <span class="nx">async</span><span class="p">.</span><span class="nx">parallel</span> <span class="nx">getters</span><span class="p">,</span> <span class="nx">next</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Get the contents of the resources at the established path. It
+is a good idea for this HTTP method to be idempotent. As the
+rule, this method does not have to alter any contents or data
+of the resource. Use for unobtrusive retrieval of resources.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">GET: </span><span class="nf">(request, response) -&gt;</span>
+        <span class="nx">@push</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">request</span><span class="p">.</span><span class="nx">records</span><span class="p">,</span> <span class="nf">(record) -&gt;</span>
+            <span class="nv">constructor = </span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">constructor</span>
+            <span class="nv">healthcare: </span><span class="nx">record</span><span class="p">.</span><span class="nx">healthcare</span> <span class="o">or</span> <span class="p">{}</span>
+            <span class="nv">qualified: </span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">qualified</span><span class="p">()</span>
+            <span class="nv">location: </span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">location</span><span class="p">()</span>
+            <span class="nv">identify: </span><span class="nx">constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
+            <span class="nv">patterns: </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">constructor</span><span class="p">.</span><span class="nx">resources</span><span class="p">,</span> <span class="s">&quot;source&quot;</span>
+            <span class="nv">methods: </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">record</span><span class="p">.</span><span class="nx">methods</span><span class="p">,</span> <span class="nf">(document, method) -&gt;</span>
+                <span class="nv">relevant: </span><span class="nb">document</span><span class="p">.</span><span class="nx">relevant</span><span class="p">()</span>
+                <span class="nv">markings: </span><span class="nb">document</span><span class="p">.</span><span class="nx">markings</span><span class="p">()</span>
+                <span class="nv">argument: </span><span class="nb">document</span><span class="p">.</span><span class="nx">argument</span><span class="p">()</span>
+                <span class="nv">synopsis: </span><span class="nb">document</span><span class="p">.</span><span class="nx">synopsis</span><span class="p">()</span>
+                <span class="nv">produces: </span><span class="nb">document</span><span class="p">.</span><span class="nx">produces</span><span class="p">()</span>
+                <span class="nv">consumes: </span><span class="nb">document</span><span class="p">.</span><span class="nx">consumes</span><span class="p">()</span>
+                <span class="nv">version: </span><span class="nb">document</span><span class="p">.</span><span class="nx">version</span><span class="p">()</span>
+                <span class="nv">failure: </span><span class="nb">document</span><span class="p">.</span><span class="nx">failure</span><span class="p">()</span>
+                <span class="nv">outputs: </span><span class="nb">document</span><span class="p">.</span><span class="nx">outputs</span><span class="p">()</span>
+                <span class="nv">schemas: </span><span class="nb">document</span><span class="p">.</span><span class="nx">schemas</span><span class="p">()</span>
+                <span class="nv">inputs: </span><span class="nb">document</span><span class="p">.</span><span class="nx">inputs</span><span class="p">()</span>
+                <span class="nv">github: </span><span class="nb">document</span><span class="p">.</span><span class="nx">github</span><span class="p">()</span>
+                <span class="nv">notes: </span><span class="nb">document</span><span class="p">.</span><span class="nx">notes</span><span class="p">()</span>
+                <span class="nv">method: </span><span class="nx">method</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block describes certain method of abrbitrary service. The
+exact process of how it is being documented depends on how the
+documented function is implemented. Please refer to <code>Document</code>
+class and its module implementation for more information on it.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@GET</span> <span class="nf">(method, service, kernel) -&gt;</span>
+        <span class="nx">@relevant</span> <span class="s">&quot;ts33kr.github.io/granite/exposure/publish.html&quot;</span>
+        <span class="nx">@relevant</span> <span class="s">&quot;ts33kr.github.io/granite/membrane/document.html&quot;</span>
+        <span class="nx">@github</span> <span class="s">&quot;ts33kr&quot;</span><span class="p">,</span> <span class="s">&quot;granite&quot;</span><span class="p">,</span> <span class="s">&quot;library/exposure/publish.coffee&quot;</span>
+        <span class="nx">@synopsis</span> <span class="s">&quot;Get inventory of all APIs available in the system&quot;</span>
+        <span class="nx">@outputs</span> <span class="s">&quot;An array of objects, each describes a service&quot;</span>
+        <span class="nx">@markings</span> <span class="nv">framework: </span><span class="s">&quot;critical&quot;</span><span class="p">,</span> <span class="nv">stable: </span><span class="s">&quot;positive&quot;</span>
+        <span class="nx">@version</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">package</span><span class="p">.</span><span class="nx">version</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nx">@produces</span> <span class="s">&quot;application/json&quot;</span></div></div></div></div></body></html>

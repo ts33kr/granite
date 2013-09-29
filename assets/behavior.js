@@ -79,10 +79,10 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "singleLineComment": ["#"],
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/apidoc.coffee",
-            "projectPath": "library/exposure/apidoc.coffee",
-            "targetPath": "exposure/apidoc",
-            "title": "apidoc"
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/publish.coffee",
+            "projectPath": "library/exposure/publish.coffee",
+            "targetPath": "exposure/publish",
+            "title": "publish"
           },
           "depth": 2,
           "outline": []

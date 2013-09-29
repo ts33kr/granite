@@ -142,7 +142,7 @@ The markings should be an object of <code>marking: level</code> values.</p></div
         <span class="k">return</span> <span class="nx">@$markings</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
         <span class="nv">noMarkings = </span><span class="s">&quot;the markings should be a object&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">markings</span><span class="p">),</span> <span class="nx">noMarkings</span>
-        <span class="p">(</span><span class="nx">@$markings</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">markings</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="p">(</span><span class="nx">@$markings</span> <span class="o">?=</span> <span class="p">{}),</span> <span class="nx">markings</span>
         <span class="nx">@emit</span> <span class="s">&quot;markings&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the schemas information of the method that
 is being described by this document. If you do no supply any
 arguments this method will return already described failures.
