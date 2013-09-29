@@ -207,7 +207,7 @@ module.exports.Watcher = class Watcher extends Archetype
     # should be used only by the watcher internals, not directly.
     collectServices: (required) ->
         globals = _.values(required or {})
-        exports = _.values(required.exports or {})
+        exports = _.values(required?.exports or {})
         hasProto = (s) -> _.isObject(s) and s.prototype
         isService = (s) -> try s.inherits service.Service
         isTyped = (s) -> hasProto(s) and isService(s)
