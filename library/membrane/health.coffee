@@ -61,10 +61,12 @@ module.exports.Healthcare = class Healthcare extends Service
     @heartrate: (bound) -> (callback) ->
         internalError = "heartbeat internal error"
         wrongWiring = "received no valid callback"
+        generic = "the health status is rejected"
         assert _.isFunction(bound), internalError
         assert _.isFunction(callback), wrongWiring
         accept = -> callback undefined, yes
         return bound accept, (message) ->
+            message = generic unless message?
             noMessage = "got no rejection message"
             assert _.isString(message), noMessage
             return callback undefined, message
