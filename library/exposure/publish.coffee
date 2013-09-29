@@ -67,7 +67,7 @@ module.exports.Publish = class Publish extends Barebones
             return reject "wrong code" unless response.statusCode is 200
             return reject "wrong body" unless body and _.isArray body
             return reject "no service" unless id = _.find body, mirror
-            return reject "got no GET" unless get = _.find id.methods, method
+            return reject "no GET" unless get = _.find id.methods, method
             return reject "no relevants" unless get.relevant.length is 2
             return reject "no markings" unless get.markings.framework?
             return reject "no githubs" unless get.github.length is 1
