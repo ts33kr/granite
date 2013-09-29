@@ -63,7 +63,7 @@ module.exports.Publish = class Publish extends Barebones
         request.get @qualified(), (error, response, body) =>
             mirror = (obj) => obj.location is @location()
             method = (obj) => obj.method.toString() is "GET"
-            body = try JSON.parse body catch error then null
+            check.try "broken body", -> body = JSON.parse body
             check.for "wrong code", response.statusCode is 200
             check.for "wrong body", body and _.isArray body
             check.for "no service", id = _.find body, mirror

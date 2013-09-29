@@ -70,7 +70,8 @@ module.exports.Healthcare = class Healthcare extends Service
         invert = (res, err) -> callback err, res
         assert check = Object.create new Object
         check.not = (m, c) -> throw new Error m if c
-        check.for = (m, c) -> throw new Error unless c
+        check.for = (m, c) -> throw new Error m unless c
+        check.try = (m, f) -> try f() catch e then @not m, e
         guardian.on "error", (e) -> invert e.message
         return guard -> bound check, accept, (message) ->
             message = generic unless message?
