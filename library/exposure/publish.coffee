@@ -68,13 +68,13 @@ module.exports.Publish = class Publish extends Barebones
             check.for "wrong body", body and _.isArray body
             check.for "no service", id = _.find body, mirror
             check.for "no GET", get = _.find id.methods, method
+            check.not "missing outputs", _.isEmpty get.outputs
+            check.not "missing version", _.isEmpty get.version
+            check.not "missing synopsis", _.isEmpty get.synopsis
             check.for "no healthcare", _.isObject id.healthcare
             check.for "no relevants", get.relevant.length is 2
             check.for "no markings", get.markings.framework?
             check.for "no githubs", get.github.length is 1
-            check.not "no synopsis", _.isEmpty get.synopsis
-            check.not "no outputs", _.isEmpty get.outputs
-            check.not "no version", _.isEmpty get.version
             return accept()
 
     # A hook that will be called prior to invoking the API method
