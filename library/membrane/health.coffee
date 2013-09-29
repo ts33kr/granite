@@ -65,7 +65,14 @@ module.exports.Healthcare = class Healthcare extends Service
         assert _.isFunction(bound), internalError
         assert _.isFunction(callback), wrongWiring
         accept = -> callback undefined, yes
-        return bound accept, (message) ->
+        guardian = require("domain").create()
+        guard = (method) -> guardian.run method
+        invert = (res, err) -> callback err, res
+        assert check = Object.create new Object
+        check.not = (m, c) -> throw new Error m if c
+        check.for = (m, c) -> throw new Error unless c
+        guardian.on "error", (e) -> invert e.message
+        return guard -> bound check, accept, (message) ->
             message = generic unless message?
             noMessage = "got no rejection message"
             assert _.isString(message), noMessage

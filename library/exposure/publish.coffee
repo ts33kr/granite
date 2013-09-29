@@ -59,22 +59,22 @@ module.exports.Publish = class Publish extends Barebones
     # what it is supposed to be. The heartbeats are all executed and
     # kept on the server. A service may define any number of beats.
     # The hearbeat implementation cycle is never exposed to clients.
-    @heartbeat "yields a consistent structure", (accept, reject) ->
+    @heartbeat "yields a consistent structure", (check, accept) ->
         request.get @qualified(), (error, response, body) =>
             mirror = (obj) => obj.location is @location()
             method = (obj) => obj.method.toString() is "GET"
-            body = try JSON.parse body catch error then undefined
-            return reject "wrong code" unless response.statusCode is 200
-            return reject "wrong body" unless body and _.isArray body
-            return reject "no service" unless id = _.find body, mirror
-            return reject "no GET" unless get = _.find id.methods, method
-            return reject "no healthcare" unless _.isObject id.healthcare
-            return reject "no relevants" unless get.relevant.length is 2
-            return reject "no markings" unless get.markings.framework?
-            return reject "no githubs" unless get.github.length is 1
-            return reject "no synopsis" if _.isEmpty get.synopsis
-            return reject "no outputs" if _.isEmpty get.outputs
-            return reject "no version" if _.isEmpty get.version
+            body = try JSON.parse body catch error then null
+            check.for "wrong code", response.statusCode is 200
+            check.for "wrong body", body and _.isArray body
+            check.for "no service", id = _.find body, mirror
+            check.for "no GET", get = _.find id.methods, method
+            check.for "no healthcare", _.isObject id.healthcare
+            check.for "no relevants", get.relevant.length is 2
+            check.for "no markings", get.markings.framework?
+            check.for "no githubs", get.github.length is 1
+            check.not "no synopsis", _.isEmpty get.synopsis
+            check.not "no outputs", _.isEmpty get.outputs
+            check.not "no version", _.isEmpty get.version
             return accept()
 
     # A hook that will be called prior to invoking the API method
