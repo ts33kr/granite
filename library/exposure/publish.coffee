@@ -27,15 +27,17 @@ _ = require "lodash"
 assert = require "assert"
 asciify = require "asciify"
 connect = require "connect"
+request = require "request"
 logger = require "winston"
-events = require "eventemitter2"
 colors = require "colors"
+async = require "async"
 nconf = require "nconf"
 https = require "https"
 http = require "http"
 util = require "util"
 
 {Barebones} = require "../membrane/skeleton"
+{Healthcare} = require "../membrane/health"
 
 # This service exposes the entiry hierarchical structure of the
 # service documentation, as they scanned and found in the current
@@ -52,14 +54,57 @@ module.exports.Publish = class Publish extends Barebones
     # Also, the compounds for the composition system belong here.
     @resource "/api/publish"
 
+    # Establish a heartbeat monitor. A hearbit monitor is a method
+    # that tests whether some arbitrarty server functonality does
+    # what it is supposed to be. The heartbeats are all executed and
+    # kept on the server. A service may define any number of beats.
+    # The hearbeat implementation cycle is never exposed to clients.
+    @heartbeat "yields a consistent structure", (accept, reject) ->
+        request.get @qualified(), (error, response, body) =>
+            mirror = (obj) => obj.location is @location()
+            method = (obj) => obj.method.toString() is "GET"
+            body = try JSON.parse body catch error then undefined
+            return reject "wrong code" unless response.statusCode is 200
+            return reject "wrong body" unless body and _.isArray body
+            return reject "no service" unless id = _.find body, mirror
+            return reject "got no GET" unless get = _.find id.methods, method
+            return reject "no relevants" unless get.relevant.length is 2
+            return reject "no markings" unless get.markings.framework?
+            return reject "no githubs" unless get.github.length is 1
+            return reject "no synopsis" if _.isEmpty get.synopsis
+            return reject "no outputs" if _.isEmpty get.outputs
+            return reject "no version" if _.isEmpty get.version
+            return accept()
+
+    # A hook that will be called prior to invoking the API method
+    # implementation. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    preprocess: (request, response, resource, domain, next) ->
+        descriptions = @collectDescriptions()
+        internalError = "unexpected publishing error"
+        assert _.isObject request.records = descriptions
+        remote = request.headers["user-agent"] or null
+        return next() unless remote and _.isString remote
+        getters = _.map descriptions, (record) => (callback) =>
+            conforms = -> record.service.objectOf Healthcare
+            return callback() unless (try conforms()) is yes
+            assert _.isFunction record.service?.healthcare
+            record.service.healthcare (error, measures) ->
+                assert.ifError error, internalError
+                assert record.healthcare = measures
+                return callback undefined
+        return async.parallel getters, next
+
     # Get the contents of the resources at the established path. It
     # is a good idea for this HTTP method to be idempotent. As the
     # rule, this method does not have to alter any contents or data
     # of the resource. Use for unobtrusive retrieval of resources.
     GET: (request, response) ->
-        collected = @collectDescriptions()
-        @push response, _.map collected, (record) ->
+        @push response, _.map request.records, (record) ->
             constructor = record.service.constructor
+            healthcare: record.healthcare or {}
             qualified: record.service.qualified()
             location: record.service.location()
             identify: constructor.identify()

@@ -178,7 +178,7 @@ module.exports.Document = class Document extends Archetype
         return @$markings if arguments.length is 0
         noMarkings = "the markings should be a object"
         assert _.isObject(markings), noMarkings
-        (@$markings ?= []).push markings
+        _.extend (@$markings ?= {}), markings
         @emit "markings", arguments...
 
     # Either get or set the schemas information of the method that
