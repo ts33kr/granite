@@ -29,7 +29,7 @@
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
+<span class="nv">platform = </span><span class="nx">require</span> <span class="s">&quot;platform&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
 <span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
@@ -59,7 +59,17 @@ data. It is automatically connected by the kernel instance.</p></div></div><div 
     <span class="nv">options.store = </span><span class="nx">RedisStorage</span><span class="p">.</span><span class="nx">obtain</span><span class="p">()</span> <span class="k">if</span> <span class="nx">redis</span>
     <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">options</span><span class="p">),</span> <span class="nx">noSession</span>
     <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">useRedis</span><span class="p">.</span><span class="nx">blue</span> <span class="k">if</span> <span class="nx">redis</span>
-    <span class="k">return</span> <span class="nx">connect</span><span class="p">.</span><span class="nx">session</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A middleware that adds a <code>send</code> method to the response object.
+    <span class="k">return</span> <span class="nx">connect</span><span class="p">.</span><span class="nx">session</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware uses an external library to parse the incoming
+user agent identification string into a platform description
+object. If the user agent string is absent from the requesting
+entity then the platform will not be defined on request object.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.platform = </span><span class="nf">(kernel) -&gt;</span>
+    <span class="nf">(request, response, next) -&gt;</span>
+        <span class="nv">noParser = </span><span class="s">&quot;platform parsing library failure&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">platform</span><span class="o">?</span><span class="p">.</span><span class="nx">parse</span><span class="p">),</span> <span class="nx">noParser</span>
+        <span class="nv">agent = </span><span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s">&quot;user-agent&quot;</span><span class="p">]</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">agent</span> <span class="o">or</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">agent</span>
+        <span class="nv">request.platform = </span><span class="k">try</span> <span class="nx">platform</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">agent</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headersSent</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A middleware that adds a <code>send</code> method to the response object.
 This allows for automatic setting of <code>Content-Type</code> headers
 based on the content that is being sent away. Use this method
 rather than writing and ending the request in a direct way.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.sender = </span><span class="nf">(kernel) -&gt;</span>

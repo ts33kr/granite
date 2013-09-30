@@ -26,7 +26,8 @@
 <span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
-<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
 
@@ -45,7 +46,25 @@ can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An array of HTTP methods (also called verbs) supported by the
 this abstract base class. The array of methods is strictly
 limited by the HTTP specification by default. You can though
-override it and provie support for more methods, up to you.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@SUPPORTED = </span><span class="p">[</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="s">&quot;PUT&quot;</span><span class="p">,</span> <span class="s">&quot;POST&quot;</span><span class="p">,</span> <span class="s">&quot;DELETE&quot;</span><span class="p">,</span> <span class="s">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="s">&quot;PATCH&quot;</span><span class="p">]</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method is intended for indicating to a client that the
+override it and provie support for more methods, up to you.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@SUPPORTED = </span><span class="p">[</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="s">&quot;PUT&quot;</span><span class="p">,</span> <span class="s">&quot;POST&quot;</span><span class="p">,</span> <span class="s">&quot;DELETE&quot;</span><span class="p">,</span> <span class="s">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="s">&quot;PATCH&quot;</span><span class="p">]</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Impose a conditional limitation on the service. The limiation
+will be invoked when a router is determining whether a service
+matches the condition or not. The limitation has to either do
+accept or decline. Do this by calling <code>decide</code> with a boolean!
+Especially useful for service with the same resource but with
+different conditions, such as mobile only and desktop only.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@condition: </span><span class="nf">(synopsis, limitation) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$condition</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">limitation = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span>
+        <span class="nv">generic = </span><span class="s">&quot;service condition: </span><span class="si">#{</span><span class="nx">limitation</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">synopsis = </span><span class="nx">generic</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">synopsis</span>
+        <span class="nv">noLimitation = </span><span class="s">&quot;a limitation has to be function&quot;</span>
+        <span class="nv">wrongSignature = </span><span class="s">&quot;malformed limitation signature&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">synopsis</span><span class="p">),</span> <span class="s">&quot;got no synopsis&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">limitation</span><span class="p">),</span> <span class="nx">noLimitation</span>
+        <span class="nx">assert</span> <span class="nx">limitation</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">3</span><span class="p">,</span> <span class="nx">wrongSignature</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nv">inherted = </span><span class="nx">@$condition</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="vi">@$condition = </span><span class="nx">inherted</span><span class="p">.</span><span class="nx">concat</span>
+            <span class="nv">limitation: </span><span class="nx">limitation</span>
+            <span class="nv">synopsis: </span><span class="nx">synopsis</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method is intended for indicating to a client that the
 method that has been used to make the request is not supported
 by this service of the internals that are comprising service.
 Can be used from the outside, but generally should not be done.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">unsupported: </span><span class="nf">(request, response, next) -&gt;</span>
@@ -57,7 +76,22 @@ Can be used from the outside, but generally should not be done.</p></div></div><
         <span class="nv">descriptor = error: </span><span class="nx">message</span><span class="p">,</span> <span class="nv">code: </span><span class="nx">methodNotAllowed</span>
         <span class="nx">@emit</span> <span class="s">&quot;unsupported&quot;</span><span class="p">,</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">next</span>
         <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">send</span> <span class="nx">descriptor</span> <span class="k">if</span> <span class="nx">doesJson</span>
-        <span class="nx">response</span><span class="p">.</span><span class="nx">send</span> <span class="nx">message</span><span class="p">;</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Process the already macted HTTP request according to the REST
+        <span class="nx">response</span><span class="p">.</span><span class="nx">send</span> <span class="nx">message</span><span class="p">;</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method determines whether the supplied HTTP request
+matches this service. This is determined by examining the
+domain/host and the path, in accordance with the patterns
+that were used for configuring the class of this service.
+It is async, so be sure to call the <code>decide</code> with boolean!</p></div></div><div class="code"><div class="wrapper">    <span class="nv">matches: </span><span class="nf">(request, response, decide) -&gt;</span>
+        <span class="nv">conditions = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">condition</span><span class="o">?</span><span class="p">()</span>
+        <span class="nv">conditions = </span><span class="p">[]</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">conditions</span>
+        <span class="nv">identify = </span><span class="nx">@constructor</span><span class="o">?</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nv">p = </span><span class="nf">(i, c) -&gt;</span> <span class="nx">i</span><span class="p">.</span><span class="nx">limitation</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">c</span>
+        <span class="nv">fails = </span><span class="s">&quot;service </span><span class="si">#{</span><span class="nx">identify</span><span class="si">}</span><span class="s"> fails some conditions&quot;</span>
+        <span class="k">super</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nf">(decision) =&gt;</span>
+            <span class="k">return</span> <span class="nx">decide</span> <span class="kc">no</span> <span class="k">unless</span> <span class="nx">decision</span>
+            <span class="nx">async</span><span class="p">.</span><span class="nx">every</span> <span class="nx">conditions</span><span class="p">,</span> <span class="nx">p</span><span class="p">,</span> <span class="nf">(confirms) -&gt;</span>
+                <span class="k">return</span> <span class="nx">decide</span> <span class="kc">yes</span> <span class="k">if</span> <span class="nx">confirms</span>
+                <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">fails</span><span class="p">.</span><span class="nx">yellow</span>
+                <span class="nx">decide</span> <span class="kc">no</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Process the already macted HTTP request according to the REST
 specification. That is, see if the request method conforms to
 to the RFC, and if so, dispatch it onto corresponding method
 defined in the subclass of this abstract base class. Default

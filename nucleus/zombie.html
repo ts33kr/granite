@@ -46,11 +46,12 @@ can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method determines whether the supplied HTTP request
 matches this service. This is determined by examining the
 domain/host and the path, in accordance with the patterns
-that were used for configuring the class of this service.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">matches: </span><span class="nf">(request, response, next) -&gt;</span> <span class="kc">no</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should process the already matched HTTP request.
+that were used for configuring the class of this service.
+It is async, so be sure to call the <code>decide</code> with boolean!</p></div></div><div class="code"><div class="wrapper">    <span class="nv">matches: </span><span class="nf">(request, response, decide) -&gt;</span> <span class="nx">decide</span> <span class="kc">no</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should process the already matched HTTP request.
 But since this is an abstract base class, this implementation
 only extracts the domain and pathname captured groups, and
 returns them to the caller. Override it to do some real job.
-The captured groups may be used by the overrider or ditched.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">process: </span><span class="nf">(request, response, next) -&gt;</span> <span class="kc">no</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Obtain an instance of this zombie services. This method does
+The captured groups may be used by the overrider or ditched.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">process: </span><span class="nf">(request, response, next) -&gt;</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Obtain an instance of this zombie services. This method does
 implement the singleton behavior pattern. Beware however that
 although you will always get an instance handle from this method
 although there is no guarantee that this handle is initialized!</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@obtain: </span><span class="nf">(kernel, callback) -&gt;</span>

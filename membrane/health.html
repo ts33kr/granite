@@ -52,10 +52,20 @@ refer to the implementation for the information on a callback.
 Implementation directly affects the contents of the result map.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@heartrate: </span><span class="nf">(bound) -&gt;</span> <span class="nf">(callback) -&gt;</span>
         <span class="nv">internalError = </span><span class="s">&quot;heartbeat internal error&quot;</span>
         <span class="nv">wrongWiring = </span><span class="s">&quot;received no valid callback&quot;</span>
+        <span class="nv">generic = </span><span class="s">&quot;the health status is rejected&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">bound</span><span class="p">),</span> <span class="nx">internalError</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">callback</span><span class="p">),</span> <span class="nx">wrongWiring</span>
         <span class="nv">accept = </span><span class="nf">-&gt;</span> <span class="nx">callback</span> <span class="kc">undefined</span><span class="p">,</span> <span class="kc">yes</span>
-        <span class="k">return</span> <span class="nx">bound</span> <span class="nx">accept</span><span class="p">,</span> <span class="nf">(message) -&gt;</span>
+        <span class="nv">guardian = </span><span class="nx">require</span><span class="p">(</span><span class="s">&quot;domain&quot;</span><span class="p">).</span><span class="nx">create</span><span class="p">()</span>
+        <span class="nv">guard = </span><span class="nf">(method) -&gt;</span> <span class="nx">guardian</span><span class="p">.</span><span class="nx">run</span> <span class="nx">method</span>
+        <span class="nv">invert = </span><span class="nf">(res, err) -&gt;</span> <span class="nx">callback</span> <span class="nx">err</span><span class="p">,</span> <span class="nx">res</span>
+        <span class="nx">assert</span> <span class="nv">check = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">create</span> <span class="k">new</span> <span class="nb">Object</span>
+        <span class="nv">check.not = </span><span class="nf">(m, c) -&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">m</span> <span class="k">if</span> <span class="nx">c</span>
+        <span class="nv">check.for = </span><span class="nf">(m, c) -&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">m</span> <span class="k">unless</span> <span class="nx">c</span>
+        <span class="nv">check.try = </span><span class="nf">(m, f) -&gt;</span> <span class="k">try</span> <span class="nx">f</span><span class="p">()</span> <span class="k">catch</span> <span class="nx">e</span> <span class="k">then</span> <span class="nx">@</span><span class="o">not</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">e</span>
+        <span class="nx">guardian</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="nf">(e) -&gt;</span> <span class="nx">invert</span> <span class="nx">e</span><span class="p">.</span><span class="nx">message</span>
+        <span class="k">return</span> <span class="nx">guard</span> <span class="nf">-&gt;</span> <span class="nx">bound</span> <span class="nx">check</span><span class="p">,</span> <span class="nx">accept</span><span class="p">,</span> <span class="nf">(message) -&gt;</span>
+            <span class="nv">message = </span><span class="nx">generic</span> <span class="k">unless</span> <span class="nx">message</span><span class="o">?</span>
             <span class="nv">noMessage = </span><span class="s">&quot;got no rejection message&quot;</span>
             <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">message</span><span class="p">),</span> <span class="nx">noMessage</span>
             <span class="k">return</span> <span class="nx">callback</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">message</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Run a healthcare check on the service instance. This method
@@ -73,9 +83,9 @@ error happens in any of the hertbeats, it reports to callback.</p></div></div><d
         <span class="nv">transformed = </span><span class="nx">_</span><span class="p">.</span><span class="nx">transform</span> <span class="nx">indexed</span><span class="p">,</span> <span class="nx">transform</span>
         <span class="nv">message = </span><span class="s">&quot;healthcare error at %s service: %s&quot;</span>
         <span class="nx">async</span><span class="p">.</span><span class="nx">parallel</span> <span class="nx">transformed</span><span class="p">,</span> <span class="nf">(error, map) -&gt;</span>
+            <span class="k">return</span> <span class="nx">callback</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">map</span> <span class="k">unless</span> <span class="nx">error</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">error</span>
-            <span class="k">return</span> <span class="nx">callback</span> <span class="nx">error</span> <span class="k">if</span> <span class="nx">error</span><span class="o">?</span>
-            <span class="k">return</span> <span class="nx">callback</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">map</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Define a new heartbeat monitor in the service hierarchy. It
+            <span class="nx">callback</span> <span class="nx">error</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Define a new heartbeat monitor in the service hierarchy. It
 consists of a heartbeat descriptor and an estimation function
 that is actually invoked to determine if a service is healthy
 or not. If any of the classes in the inheritance hierarchy

@@ -27,6 +27,7 @@
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 
 <span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./archetype&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A simple yet solid HTTP request router. This is designed to map
@@ -36,7 +37,25 @@ is up to the handlers that implement the corresponding methods.
 This router just provides the infrastructure and boilerplating.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Router = </span><span class="k">class</span> <span class="nx">Router</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Every router has to have a public constructor that accepts
 the kernel instance as a parameter. You can override it as
 you see fit, but be sure to invoke the super constructor and
-it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Try registering a new routable object. The method checks for
+it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The method implements a middleware (for Connect) that looks
+up the relevant routable and dispatches the request to the
+routable. If no corresponding routable is found, the method
+transfers the control to the pre-installed, default routable.
+A set of tests are performed to ensure the logical integrity.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">middleware: </span><span class="nf">(request, response, next) -&gt;</span>
+        <span class="nv">incoming = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">.</span><span class="nx">underline</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">p = </span><span class="nf">(i, c) -&gt;</span> <span class="nx">i</span><span class="p">.</span><span class="nx">matches</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">c</span>
+        <span class="nv">archetypes = </span><span class="nx">arguments</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArguments</span> <span class="nx">arguments</span>
+        <span class="nx">async</span><span class="p">.</span><span class="nx">detectSeries</span> <span class="nx">@registry</span><span class="p">,</span> <span class="nx">p</span><span class="p">,</span> <span class="nf">(recognized) =&gt;</span>
+            <span class="nv">missing = </span><span class="s">&quot;Request %s does not match any service&quot;</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">missing</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">incoming</span> <span class="k">unless</span> <span class="nx">recognized</span><span class="o">?</span>
+            <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">recognized</span>
+            <span class="nv">constructor = </span><span class="nx">recognized</span><span class="p">.</span><span class="nx">constructor</span>
+            <span class="nv">identify = </span><span class="nx">constructor</span><span class="o">?</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span><span class="o">?</span><span class="p">.</span><span class="nx">underline</span>
+            <span class="nx">@emit</span> <span class="s">&quot;recognized&quot;</span><span class="p">,</span> <span class="nx">recognized</span><span class="p">,</span> <span class="nx">archetypes</span><span class="p">...</span>
+            <span class="nv">matching = </span><span class="s">&quot;Request %s matches %s service&quot;</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">matching</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">incoming</span><span class="p">,</span> <span class="nx">identify</span>
+            <span class="k">return</span> <span class="nv">results = </span><span class="nx">recognized</span><span class="p">.</span><span class="nx">process</span> <span class="nx">archetypes</span><span class="p">...</span>
+            <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">response</span><span class="p">.</span><span class="nx">headerSent</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Try registering a new routable object. The method checks for
 the object to be of the correct type, basically making sure
 that it is capable of doing the routing functionality code.
 If something is wrong, this method will throw an exception.
@@ -79,22 +98,4 @@ It will also call hooks on the service, notifying unregister.</p></div></div><di
             <span class="nx">@registry</span><span class="p">.</span><span class="nx">splice</span> <span class="nx">index</span><span class="p">,</span> <span class="mi">1</span> <span class="c1"># delete</span>
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">callback</span>
             <span class="k">return</span> <span class="nx">callback</span> <span class="nx">routable</span><span class="p">,</span> <span class="k">this</span>
-        <span class="nx">unregister</span> <span class="nx">@kernel</span><span class="p">,</span> <span class="k">this</span><span class="p">;</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The method implements a middleware (for Connect) that looks
-up the relevant routable and dispatches the request to the
-routable. If no corresponding routable is found, the method
-transfers the control to the pre-installed, default routable.
-A set of tests are performed to ensure the logical integrity.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">middleware: </span><span class="nf">(request, response, next) -&gt;</span>
-        <span class="nv">incoming = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">.</span><span class="nx">underline</span><span class="si">}</span><span class="s">&quot;</span>
-        <span class="nv">args = </span><span class="nx">a</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArguments</span> <span class="nv">a = </span><span class="nx">arguments</span>
-        <span class="nv">predicate = </span><span class="nf">(routable) -&gt;</span> <span class="nx">routable</span><span class="p">.</span><span class="nx">matches</span> <span class="nx">args</span><span class="p">...</span>
-        <span class="nv">recognized = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">@registry</span> <span class="o">or</span> <span class="p">[],</span>  <span class="nx">predicate</span>
-        <span class="nv">missing = </span><span class="s">&quot;Request %s does not match any service&quot;</span>
-        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">missing</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">incoming</span> <span class="k">unless</span> <span class="nx">recognized</span><span class="o">?</span>
-        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">recognized</span>
-        <span class="nv">constructor = </span><span class="nx">recognized</span><span class="p">.</span><span class="nx">constructor</span>
-        <span class="nv">identify = </span><span class="nx">constructor</span><span class="o">?</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span><span class="o">?</span><span class="p">.</span><span class="nx">underline</span>
-        <span class="nx">@emit</span> <span class="s">&quot;recognized&quot;</span><span class="p">,</span> <span class="nx">recognized</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="nv">matching = </span><span class="s">&quot;Request %s matches %s service&quot;</span>
-        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">matching</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">incoming</span><span class="p">,</span> <span class="nx">identify</span>
-        <span class="k">return</span> <span class="nv">results = </span><span class="nx">recognized</span><span class="p">.</span><span class="nx">process</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">response</span><span class="p">.</span><span class="nx">headerSent</span></div></div></div></div></body></html>
+        <span class="nx">unregister</span> <span class="nx">@kernel</span><span class="p">,</span> <span class="k">this</span><span class="p">;</span> <span class="nx">@</span></div></div></div></div></body></html>
