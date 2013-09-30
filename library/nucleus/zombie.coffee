@@ -63,7 +63,7 @@ module.exports.Zombie = class Zombie extends Service
     # only extracts the domain and pathname captured groups, and
     # returns them to the caller. Override it to do some real job.
     # The captured groups may be used by the overrider or ditched.
-    process: (request, response, next) -> no
+    process: (request, response, next) -> undefined
 
     # Obtain an instance of this zombie services. This method does
     # implement the singleton behavior pattern. Beware however that
