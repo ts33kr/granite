@@ -123,28 +123,27 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # of deploying the context onto the call (client) site. It also
     # includes merging all the remoted defined in the services with a
     # context object, which is defered to be done on the client site.
-    deployContext: (context) ->
+    deployContext: (context, symbol) ->
         assert _.isObject context
         prepared = JSON.stringify context
         runtime = "(#{coffee}).apply(this)"
-        installer = "var context = #{prepared}"
+        installer = "#{symbol} = #{prepared}"
         em = -> _.extend @, EventEmitter2.prototype
         applicator = "(#{em}).apply(context)"
         _.forIn this, (value, key, object) ->
             return unless _.isObject value.remote
             return unless src = value.remote.source
-            set = "context.%s = (#{src})()"
+            set = "#{symbol}.%s = (#{src})()"
             installer += "\r\n#{format set, key}\r\n"
         context.sources.unshift applicator
         context.sources.unshift installer
         context.sources.unshift runtime
-        return context
 
     # Issue the autocalls into the context. Traverse the hierarchy
     # from top to bottom (the ordering is important) and issue an
     # autocall for each remote/external method that is marked with
     # an autocall decorator and therefore must be called on site.
-    issueAutocalls: (context) ->
+    issueAutocalls: (context, symbol) ->
         hierarchy = @constructor?.hierarchy?()
         noHierarchy = "could not scan the hierarchy"
         assert _.isArray(hierarchy), noHierarchy
@@ -154,9 +153,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
                 return unless _.isObject value.remote
                 return unless value.remote.autocall?.length?
                 params = JSON.stringify value.remote.autocall
-                template = "context.#{key}.apply(context, %s)"
+                template = "#{symbol}.#{key}.apply(context, %s)"
                 context.sources.push format(template, params)
-        return context
 
     # An internal routine that is called on the context object prior
     # to flushing it down to the client. This method gathers all the
@@ -182,8 +180,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
         context.inline = (f) -> pusher "(#{f}).apply(this)"
         context.doctype = "<!DOCTYPE html>"
         prelude = @upstreamAsync "prelude", =>
-            context = @deployContext context
-            context = @issueAutocalls context
+            @deployContext context, "context"
+            @issueAutocalls context, "context"
             context = @compressSources context
             compiled = @compileContext context
             length = compiled.length or undefined
