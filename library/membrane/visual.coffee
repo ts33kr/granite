@@ -129,7 +129,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         runtime = "(#{coffee}).apply(this)"
         installer = "#{symbol} = #{prepared}"
         em = -> _.extend @, EventEmitter2.prototype
-        applicator = "(#{em}).apply(context)"
+        applicator = "(#{em}).apply(#{symbol})"
         _.forIn this, (value, key, object) ->
             return unless _.isObject value.remote
             return unless src = value.remote.source
@@ -153,7 +153,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
                 return unless _.isObject value.remote
                 return unless value.remote.autocall?.length?
                 params = JSON.stringify value.remote.autocall
-                template = "#{symbol}.#{key}.apply(context, %s)"
+                template = "#{symbol}.#{key}.apply(#{symbol}, %s)"
                 context.sources.push format(template, params)
 
     # An internal routine that is called on the context object prior
@@ -180,8 +180,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
         context.inline = (f) -> pusher "(#{f}).apply(this)"
         context.doctype = "<!DOCTYPE html>"
         prelude = @upstreamAsync "prelude", =>
-            @deployContext context, "context"
-            @issueAutocalls context, "context"
+            @deployContext context, "service"
+            @issueAutocalls context, "service"
             context = @compressSources context
             compiled = @compileContext context
             length = compiled.length or undefined
