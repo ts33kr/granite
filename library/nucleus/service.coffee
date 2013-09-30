@@ -200,11 +200,11 @@ module.exports.Service = class Service extends Archetype
     # The captured groups may be used by the overrider or ditched.
     process: (request, response, next) ->
         gdomain = null; gresource = null
-        pathname = url.parse(request.url).pathname
-        hostname = _.first request.headers.host.split ":"
         wildcard = @constructor.WILDCARD
         resources = @constructor.resources or []
         domains = @constructor.domains or [wildcard]
+        pathname = url.parse(request.url).pathname
+        hostname = _.first request.headers.host.split ":"
         pdomain = (p) -> gdomain = hostname.match p
         presource = (p) -> gresource = pathname.match p
         pdomain = _.find domains, pdomain
