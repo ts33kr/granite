@@ -50,7 +50,7 @@ module.exports.Composition = remote -> class Composition extends Object
     # mapped over each node of the linear hierarchy of the class that
     # invokes the composition functionality to obtain a shadow of the
     # original class that can be later modified to modify hierarchy.
-    @cloner = module?.exports?.cloner = (subject) ->
+    cloner = module?.exports?.cloner = (subject) ->
         isClass = _.isObject subject?.__super__
         noClass = "The #{subject} is not a class"
         throw new Error noClass unless isClass
@@ -119,7 +119,7 @@ module.exports.Composition = remote -> class Composition extends Object
     # between the foreign and common peers in the inheritance chain. Do
     # refer to the implementation for the understanding of what happens.
     Object.defineProperty Object::, "compose",
-        enumerable: no, value: (compound, shader=@cloner, silent=yes) ->
+        enumerable: no, value: (compound, shader=cloner, silent=yes) ->
             current = this.hierarchy()
             foreign = compound.hierarchy()
             identify = compound.identify()
