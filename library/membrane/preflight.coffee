@@ -98,6 +98,7 @@ module.exports.Preflight = class Preflight extends RToolkit
     # going to be necessary no matter what sort of functionality is
     # is going to be implemented. Most of these libraries required
     # by the internal implementations of the various subcomponents.
+    @bower "platform", "platform.js"
     @bower "async", "lib/async.js"
     @bower "eventemitter2"
     @bower "bootstrap#3"
