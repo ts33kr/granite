@@ -174,25 +174,6 @@ module.exports.Service = class Service extends Archetype
         @domains = (@domains or []).concat pattern
         logger.debug associate.grey, identify; @
 
-    # This method determines whether the supplied HTTP request
-    # matches this service. This is determined by examining the
-    # domain/host and the path, in accordance with the patterns
-    # that were used for configuring the class of this service.
-    # It is async, so be sure to call the `decide` with boolean!
-    matches: (request, response, decide) ->
-        wildcard = @constructor.WILDCARD
-        resources = @constructor.resources or []
-        domains = @constructor.domains or [wildcard]
-        pathname = url.parse(request.url).pathname
-        hostname = _.first request.headers.host.split ":"
-        pdomain = (pattern) -> pattern.test hostname
-        presource = (pattern) -> pattern.test pathname
-        domainOk = _.some domains, pdomain
-        resourceOk = _.some resources, presource
-        matches = domainOk and resourceOk
-        @emit "matches", matches, arguments...
-        return decide domainOk and resourceOk
-
     # This method should process the already matched HTTP request.
     # But since this is an abstract base class, this implementation
     # only extracts the domain and pathname captured groups, and
@@ -213,3 +194,22 @@ module.exports.Service = class Service extends Archetype
         assert gresource isnt null, "missing resource"
         @emit "process", gdomain, gresource, arguments...
         return domain: gdomain, resource: gresource
+
+    # This method determines whether the supplied HTTP request
+    # matches this service. This is determined by examining the
+    # domain/host and the path, in accordance with the patterns
+    # that were used for configuring the class of this service.
+    # It is async, so be sure to call the `decide` with boolean!
+    matches: (request, response, decide) ->
+        wildcard = @constructor.WILDCARD
+        resources = @constructor.resources or []
+        domains = @constructor.domains or [wildcard]
+        pathname = url.parse(request.url).pathname
+        hostname = _.first request.headers.host.split ":"
+        pdomain = (pattern) -> pattern.test hostname
+        presource = (pattern) -> pattern.test pathname
+        domainOk = _.some domains, pdomain
+        resourceOk = _.some resources, presource
+        matches = domainOk and resourceOk
+        @emit "matches", matches, arguments...
+        return decide domainOk and resourceOk
