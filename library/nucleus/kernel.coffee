@@ -252,6 +252,7 @@ module.exports.Generic = class Generic extends Archetype
         @connect.use @bodyParser = connect.bodyParser()
         @connect.use @cookieParser = connect.cookieParser()
         @connect.use @xSessionId = plumbs.xSessionId this
+        @connect.use @platform = plumbs.platform this
         @connect.use @capture = plumbs.capture this
         @connect.use @params = plumbs.params this
         @connect.use @redirect = plumbs.redirect this

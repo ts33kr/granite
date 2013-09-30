@@ -29,7 +29,7 @@ uuid = require "node-uuid"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
-events = require "eventemitter2"
+platform = require "platform"
 colors = require "colors"
 nconf = require "nconf"
 https = require "https"
@@ -66,6 +66,19 @@ module.exports.session = (kernel) ->
     assert _.isObject(options), noSession
     logger.info useRedis.blue if redis
     return connect.session options
+
+# This middleware uses an external library to parse the incoming
+# user agent identification string into a platform description
+# object. If the user agent string is absent from the requesting
+# entity then the platform will not be defined on request object.
+module.exports.platform = (kernel) ->
+    (request, response, next) ->
+        noParser = "platform parsing library failure"
+        assert _.isFunction(platform?.parse), noParser
+        agent = request.headers["user-agent"] or null
+        return next() if not agent or _.isEmpty agent
+        request.platform = try platform.parse agent
+        return next() unless request.headersSent
 
 # A middleware that adds a `send` method to the response object.
 # This allows for automatic setting of `Content-Type` headers
