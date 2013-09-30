@@ -53,17 +53,17 @@ module.exports.Router = class Router extends Archetype
     middleware: (request, response, next) ->
         incoming = "#{request.url.underline}"
         p = (i, c) -> i.matches request, response, c
-        archetypes = arguments if _.isArguments arguments
+        signature = arguments if _.isArguments arguments
         async.detectSeries @registry, p, (recognized) =>
             missing = "Request %s does not match any service"
             logger.debug missing.grey, incoming unless recognized?
             return next() unless _.isObject recognized
             constructor = recognized.constructor
             identify = constructor?.identify()?.underline
-            @emit "recognized", recognized, archetypes...
+            @emit "recognized", recognized, signature...
             matching = "Request %s matches %s service"
             logger.debug matching.grey, incoming, identify
-            return results = recognized.process archetypes...
+            return results = recognized.process signature...
             next() unless response.headerSent
 
     # Try registering a new routable object. The method checks for
