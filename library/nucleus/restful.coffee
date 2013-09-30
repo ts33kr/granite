@@ -26,7 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 url = require "url"
 http = require "http"
 util = require "util"
-events = require "eventemitter2"
+async = require "async"
+assert = require "assert"
 colors = require "colors"
 logger = require "winston"
 
@@ -56,6 +57,27 @@ module.exports.Restful = class Restful extends Service
     # override it and provie support for more methods, up to you.
     @SUPPORTED = ["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"]
 
+    # Impose a conditional limitation on the service. The limiation
+    # will be invoked when a router is determining whether a service
+    # matches the condition or not. The limitation has to either do
+    # accept or decline. Do this by calling `decide` with a boolean!
+    # Especially useful for service with the same resource but with
+    # different conditions, such as mobile only and desktop only.
+    @condition: (synopsis, limitation) ->
+        return @$condition if arguments.length is 0
+        limitation = _.find arguments, _.isFunction
+        generic = "service condition: #{limitation}"
+        synopsis = generic unless _.isString synopsis
+        noLimitation = "a limitation has to be function"
+        wrongSignature = "malformed limitation signature"
+        assert _.isString(synopsis), "got no synopsis"
+        assert _.isFunction(limitation), noLimitation
+        assert limitation.length is 3, wrongSignature
+        assert _.isArray inherted = @$condition or []
+        @$condition = inherted.concat
+            limitation: limitation
+            synopsis: synopsis
+
     # This method is intended for indicating to a client that the
     # method that has been used to make the request is not supported
     # by this service of the internals that are comprising service.
@@ -70,6 +92,24 @@ module.exports.Restful = class Restful extends Service
         @emit "unsupported", request, response, next
         return response.send descriptor if doesJson
         response.send message; this
+
+    # This method determines whether the supplied HTTP request
+    # matches this service. This is determined by examining the
+    # domain/host and the path, in accordance with the patterns
+    # that were used for configuring the class of this service.
+    # It is async, so be sure to call the `decide` with boolean!
+    matches: (request, response, decide) ->
+        conditions = @constructor.condition?()
+        conditions = [] unless _.isArray conditions
+        identify = @constructor?.identify().underline
+        p = (i, c) -> i.limitation request, response, c
+        fails = "service #{identify} fails some conditions"
+        super request, response, (decision) =>
+            return decide no unless decision
+            async.every conditions, p, (confirms) ->
+                return decide yes if confirms
+                logger.debug fails.yellow
+                decide no; return this
 
     # Process the already macted HTTP request according to the REST
     # specification. That is, see if the request method conforms to
