@@ -95,9 +95,9 @@ module.exports.Healthcare = class Healthcare extends Service
         transformed = _.transform indexed, transform
         message = "healthcare error at %s service: %s"
         async.parallel transformed, (error, map) ->
+            return callback null, map unless error
             logger.debug message.red, id, error
-            return callback error if error?
-            return callback undefined, map
+            callback error; return this
 
     # Define a new heartbeat monitor in the service hierarchy. It
     # consists of a heartbeat descriptor and an estimation function
