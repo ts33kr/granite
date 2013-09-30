@@ -86,8 +86,7 @@ module.exports.Publish = class Publish extends Barebones
         descriptions = @collectDescriptions()
         internalError = "unexpected publishing error"
         assert _.isObject request.records = descriptions
-        remote = request.headers["user-agent"] or null
-        return next() unless remote and _.isString remote
+        return next() unless _.isObject request.platform
         getters = _.map descriptions, (record) => (callback) =>
             conforms = -> record.service.objectOf Healthcare
             return callback() unless (try conforms()) is yes
