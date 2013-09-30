@@ -27,6 +27,7 @@ _ = require "lodash"
 logger = require "winston"
 colors = require "colors"
 assert = require "assert"
+async = require "async"
 util = require "util"
 
 {Archetype} = require "./archetype"
@@ -43,6 +44,27 @@ module.exports.Router = class Router extends Archetype
     # you see fit, but be sure to invoke the super constructor and
     # it is highly advised to store the kernel instance in object.
     constructor: (@kernel) ->
+
+    # The method implements a middleware (for Connect) that looks
+    # up the relevant routable and dispatches the request to the
+    # routable. If no corresponding routable is found, the method
+    # transfers the control to the pre-installed, default routable.
+    # A set of tests are performed to ensure the logical integrity.
+    middleware: (request, response, next) ->
+        incoming = "#{request.url.underline}"
+        p = (i, c) -> i.matches request, response, c
+        archetypes = arguments if _.isArguments arguments
+        async.detectSeries @registry, p, (recognized) =>
+            missing = "Request %s does not match any service"
+            logger.debug missing.grey, incoming unless recognized?
+            return next() unless _.isObject recognized
+            constructor = recognized.constructor
+            identify = constructor?.identify()?.underline
+            @emit "recognized", recognized, archetypes...
+            matching = "Request %s matches %s service"
+            logger.debug matching.grey, incoming, identify
+            return results = recognized.process archetypes...
+            next() unless response.headerSent
 
     # Try registering a new routable object. The method checks for
     # the object to be of the correct type, basically making sure
@@ -92,24 +114,3 @@ module.exports.Router = class Router extends Archetype
             return unless _.isFunction callback
             return callback routable, this
         unregister @kernel, this; @
-
-    # The method implements a middleware (for Connect) that looks
-    # up the relevant routable and dispatches the request to the
-    # routable. If no corresponding routable is found, the method
-    # transfers the control to the pre-installed, default routable.
-    # A set of tests are performed to ensure the logical integrity.
-    middleware: (request, response, next) ->
-        incoming = "#{request.url.underline}"
-        args = a if _.isArguments a = arguments
-        predicate = (routable) -> routable.matches args...
-        recognized = _.find @registry or [],  predicate
-        missing = "Request %s does not match any service"
-        logger.debug missing.grey, incoming unless recognized?
-        return next() unless _.isObject recognized
-        constructor = recognized.constructor
-        identify = constructor?.identify()?.underline
-        @emit "recognized", recognized, arguments...
-        matching = "Request %s matches %s service"
-        logger.debug matching.grey, incoming, identify
-        return results = recognized.process arguments...
-        next() unless response.headerSent

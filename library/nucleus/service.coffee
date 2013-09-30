@@ -27,6 +27,7 @@ assert = require "assert"
 logger = require "winston"
 uuid = require "node-uuid"
 colors = require "colors"
+async = require "async"
 util = require "util"
 url = require "url"
 
@@ -177,9 +178,8 @@ module.exports.Service = class Service extends Archetype
     # matches this service. This is determined by examining the
     # domain/host and the path, in accordance with the patterns
     # that were used for configuring the class of this service.
-    matches: (request, response, next) ->
-        return no unless request.url?
-        return no unless request.headers.host?
+    # It is async, so be sure to call the `decide` with boolean!
+    matches: (request, response, decide) ->
         wildcard = @constructor.WILDCARD
         resources = @constructor.resources or []
         domains = @constructor.domains or [wildcard]
@@ -191,7 +191,7 @@ module.exports.Service = class Service extends Archetype
         resourceOk = _.some resources, presource
         matches = domainOk and resourceOk
         @emit "matches", matches, arguments...
-        return domainOk and resourceOk
+        return decide domainOk and resourceOk
 
     # This method should process the already matched HTTP request.
     # But since this is an abstract base class, this implementation

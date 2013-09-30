@@ -55,7 +55,8 @@ module.exports.Zombie = class Zombie extends Service
     # matches this service. This is determined by examining the
     # domain/host and the path, in accordance with the patterns
     # that were used for configuring the class of this service.
-    matches: (request, response, next) -> no
+    # It is async, so be sure to call the `decide` with boolean!
+    matches: (request, response, decide) -> decide no
 
     # This method should process the already matched HTTP request.
     # But since this is an abstract base class, this implementation
