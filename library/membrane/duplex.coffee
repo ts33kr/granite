@@ -174,7 +174,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # instance at the server site. This implementation that uses the
     # `upstreamAsync` mechanism to invoke the `connected` method at all
     # peers of the inheritance hierarchy. Refer to the method for info.
-    channelOpened: @provider (context, callback) ->
+    trampoline: @provider (context, callback) ->
         identify = @constructor.identify?()
         isocket = "Notified from socket %s"
         message = "Inbound duplex connection at %s"
@@ -190,7 +190,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # client end of the Socket.IO channel and creates wrapper around
     # all the providers residing in the current service implementation.
     # Refer to other `Duplex` methods for understanding what goes on.
-    openChannel: @autocall ->
+    bootloader: @autocall ->
         foreign = (value) -> _.isObject value.socket
         try @socket = io.connect @duplex catch error
             message = "blew up Socket.IO: #{error.message}"
@@ -209,7 +209,7 @@ module.exports.Duplex = class Duplex extends Preflight
             assert @consumeProviders; @consumeProviders @socket
             open = "notified the service of an opened channel"
             confirm = => console.log open; @emit "booted"
-            @channelOpened _.omit(@, foreign), confirm
+            @trampoline _.omit(@, foreign), confirm
 
     # An external routine that will be invoked once a both way duplex
     # channel is established at the client site. This will normally
