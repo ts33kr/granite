@@ -162,7 +162,10 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # one blob using the library called UglifyJS2. See it for info.
     compressSources: (context) ->
         sources = _.toArray context.sources
+        scripts = _.toArray context.scripts
         emptySources = "the JS sources are empty"
+        assert context.scripts = _.unique scripts
+        assert _.isArray sources = _.unique sources
         assert not _.isEmpty(sources), emptySources
         assert minify = require("uglify-js").minify
         minified = minify sources, fromString: yes
