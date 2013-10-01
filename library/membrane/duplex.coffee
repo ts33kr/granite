@@ -191,24 +191,25 @@ module.exports.Duplex = class Duplex extends Preflight
     # all the providers residing in the current service implementation.
     # Refer to other `Duplex` methods for understanding what goes on.
     openChannel: @autocall ->
+        foreign = (value) -> _.isObject value.socket
         try @socket = io.connect @duplex catch error
             message = "blew up Socket.IO: #{error.message}"
             error.message = message.toString(); throw error
         failed = "failed to create Socket.IO connection"
-        assert _.isFunction(@socket.emit), failed
+        connecting = "attmpting the Socket.IO connection"
         p = "an exception happend at the server provider"
         c = "an error were raised during socket connection"
-        connecting = "attmpting the Socket.IO connection"
+        assert _.isFunction(@socket.emit), failed
         @socket.on "error", (e) -> console.error c, e
         @socket.on "exception", (e) -> console.error p, e
         @socket.on "connecting", -> console.log connecting
         @socket.on "connect_failed", (e) -> console.error c, e
         osc = (listener) => @socket.on "connect", listener
-        osc => @socket.emit "screening", _.omit(@, "socket"), =>
+        osc => @socket.emit "screening", _.omit(@, foreign), =>
             assert @consumeProviders; @consumeProviders @socket
             open = "notified the service of an opened channel"
             confirm = => console.log open; @emit "booted"
-            @channelOpened _.omit(@, "socket"), confirm
+            @channelOpened _.omit(@, foreign), confirm
 
     # An external routine that will be invoked once a both way duplex
     # channel is established at the client site. This will normally
