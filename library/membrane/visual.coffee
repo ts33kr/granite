@@ -172,15 +172,15 @@ module.exports.Screenplay = class Screenplay extends Barebones
         minified = minify sources, fromString: yes
         context.sources = [minified.code]; context
 
-    # Get the contents of the resources at the established path. It
-    # is a good idea for this HTTP method to be idempotent. As the
-    # rule, this method does not have to alter any contents or data
-    # of the resource. Use for unobtrusive retrieval of resources.
-    GET: (request, response) ->
+    # Assemble a new remoting context for the current service. This
+    # creates a proper empty context that conforms to the necessary
+    # restrictions. Then it runs the internal machinery to fill the
+    # context with the service and request related data and events.
+    assembleContext: (symbol, request, receive) ->
         noPrelude = "no prelude method detected"
         assert _.isFunction(@prelude), noPrelude
-        symbol = "service".toString().toLowerCase()
-        context = scripts: [], sources: [], styles: [], sheets: []
+        context = new Object scripts: [], sources: []
+        assert _.extend context, styles: [], sheets: []
         pusher = context.sources.push.bind context.sources
         context.inline = (f) -> pusher "(#{f}).apply(this)"
         context.doctype = "<!DOCTYPE html>"
@@ -189,9 +189,19 @@ module.exports.Screenplay = class Screenplay extends Barebones
             @issueAutocalls context, symbol
             context = @compressSources context
             compiled = @compileContext context
+            return receive context, compiled
+        return prelude symbol, context, request
+
+    # Get the contents of the resources at the established path. It
+    # is a good idea for this HTTP method to be idempotent. As the
+    # rule, this method does not have to alter any contents or data
+    # of the resource. Use for unobtrusive retrieval of resources.
+    GET: (request, response) ->
+        symbol = "service".toString().toLowerCase()
+        assert _.isArray args = [symbol, request]
+        @assembleContext args..., (context, compiled) ->
             length = compiled.length or undefined
             response.setHeader "Content-Length", length
             response.setHeader "Content-Type", "text/html"
             response.writeHead 200, STATUS_CODES[200]
             response.end compiled.toString()
-        return prelude symbol, context, request
