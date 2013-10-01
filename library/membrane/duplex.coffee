@@ -197,8 +197,14 @@ module.exports.Duplex = class Duplex extends Preflight
         failed = "failed to create Socket.IO connection"
         assert _.isFunction(@socket.emit), failed
         p = "an exception happend at the server provider"
+        c = "an error were raised during socket connection"
+        connecting = "attmpting the Socket.IO connection"
+        @socket.on "error", (e) -> console.error c, e
         @socket.on "exception", (e) -> console.error p, e
-        @socket.emit "screening", _.omit(@, "socket"), (ack) =>
+        @socket.on "connecting", -> console.log connecting
+        @socket.on "connect_failed", (e) -> console.error c, e
+        osc = (listener) => @socket.on "connect", listener
+        osc => @socket.emit "screening", _.omit(@, "socket"), =>
             assert @consumeProviders; @consumeProviders @socket
             open = "notified the service of an opened channel"
             confirm = => console.log open; @emit "booted"
