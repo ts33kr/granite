@@ -73,7 +73,7 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
     # context being compiled and flushed down to the client site. The
     # method is wired in an asynchronous way for greater functionality.
     # This is the place where you would be importing the dependencies.
-    prelude: (context, request, next) ->
+    prelude: (symbol, context, request, next) ->
         inline = context.inline or ->
         inline -> `assert = chai.assert`
         remotes = @constructor.remotes or []

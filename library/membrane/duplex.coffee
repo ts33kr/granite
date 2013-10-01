@@ -157,7 +157,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # context being compiled and flushed down to the client site. The
     # method is wired in an synchronous way for greater functionality.
     # This is the place where you would be importing the dependencies.
-    prelude: (context, request, next) ->
+    prelude: (symbol, context, request, next) ->
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
         context.scripts.push "/socket.io/socket.io.js"

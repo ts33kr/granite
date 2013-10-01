@@ -76,7 +76,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # context being compiled and flushed down to the client site. The
     # method is wired in an synchronous way for greater functionality.
     # This is the place where you would be importing the dependencies.
-    prelude: (context, request, next) ->
+    prelude: (symbol, context, request, next) ->
         context.service = @constructor.identify()
         context.session = request.session
         context.uuid = request: request.uuid
@@ -179,13 +179,14 @@ module.exports.Screenplay = class Screenplay extends Barebones
     GET: (request, response) ->
         noPrelude = "no prelude method detected"
         assert _.isFunction(@prelude), noPrelude
+        symbol = "service".toString().toLowerCase()
         context = scripts: [], sources: [], styles: [], sheets: []
         pusher = context.sources.push.bind context.sources
         context.inline = (f) -> pusher "(#{f}).apply(this)"
         context.doctype = "<!DOCTYPE html>"
         prelude = @upstreamAsync "prelude", =>
-            @deployContext context, "service"
-            @issueAutocalls context, "service"
+            @deployContext context, symbol
+            @issueAutocalls context, symbol
             context = @compressSources context
             compiled = @compileContext context
             length = compiled.length or undefined
@@ -193,4 +194,4 @@ module.exports.Screenplay = class Screenplay extends Barebones
             response.setHeader "Content-Type", "text/html"
             response.writeHead 200, STATUS_CODES[200]
             response.end compiled.toString()
-        return prelude context, request
+        return prelude symbol, context, request
