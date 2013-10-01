@@ -208,7 +208,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # channel is established at the client site. This will normally
     # unroll and set up all the providers that were deployed by the
     # server site in the transferred context. Refer to the server
-    # method called `deployProviders` for more information on it.
+    # method called `publishProviders` for more information on it.
     consumeProviders: external (socket) ->
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
