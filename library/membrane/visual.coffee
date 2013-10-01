@@ -124,8 +124,9 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # includes merging all the remoted defined in the services with a
     # context object, which is defered to be done on the client site.
     deployContext: (context, symbol) ->
-        assert _.isObject context
-        prepared = JSON.stringify context
+        assert _.isObject(context), "malformed context"
+        excess = ["scripts", "sources", "sheets", "styles"]
+        prepared = JSON.stringify _.omit(context, excess)
         runtime = "(#{coffee}).apply(this)"
         installer = "#{symbol} = #{prepared}"
         em = -> _.extend @, EventEmitter2.prototype
