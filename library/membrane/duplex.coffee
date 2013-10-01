@@ -236,7 +236,7 @@ module.exports.Duplex = class Duplex extends Preflight
                 sentence = @upstreamAsync "sentence", =>
                     bound.call this, args..., callback
                 sentence socket, name, value, args
-            return next()
+        return next()
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
