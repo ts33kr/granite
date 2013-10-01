@@ -250,9 +250,9 @@ module.exports.Duplex = class Duplex extends Preflight
         assert pure, "location is not pure enough"
         context.authorization @authorization.bind(@)
         context.on "connection", (socket) =>
-            socket.on "screening", (binder, next) =>
+            socket.on "screening", (binder, ack) =>
                 screening = @upstreamAsync "screening", =>
-                    @publishProviders context, socket, next
+                    @publishProviders context, socket, ack
                 screening context, socket, binder
         return next()
 
