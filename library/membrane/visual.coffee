@@ -116,11 +116,12 @@ module.exports.Screenplay = class Screenplay extends Barebones
         style = (s) -> "<style type=\x22#{x}\x22>#{s}</style>\n"
         template = "%s<html><head>%s</head><body></body></html>"
         scripts = _.map(context.scripts, script).join String()
+        changes = _.map(context.changes, source).join String()
         sources = _.map(context.sources, source).join String()
         sheets = _.map(context.sheets, sheet).join String()
         styles = _.map(context.styles, style).join String()
-        joined = sheets + styles + scripts + sources
-        format template, context.doctype, joined
+        joined = sheets + styles + scripts + changes + sources
+        return format template, context.doctype, joined
 
     # This is an internal routine that performs a very important task
     # of deploying the context onto the call (client) site. It also
@@ -130,20 +131,21 @@ module.exports.Screenplay = class Screenplay extends Barebones
         assert _.isObject(context), "malformed context"
         excess = ["scripts", "sources", "sheets", "styles"]
         excess.push "caching" if _.isObject context.caching
+        excess.push "changes" if _.isArray context.changes
         prepared = JSON.stringify _.omit(context, excess)
-        runtime = "(#{coffee}).apply(this)"
-        installer = "#{symbol} = #{prepared}"
+        installer = "#{symbol} = #{prepared}".toString()
+        runtime = "(#{coffee}).apply(this)".toString()
         em = -> _.extend @, EventEmitter2.prototype
         applicator = "(#{em}).apply(#{symbol})"
         _.forIn this, (value, key, object) =>
             return unless _.isObject value.remote
             return unless src = value.remote.source
             return if (value is @constructor) is yes
-            set = "#{symbol}.%s = (#{src})()"
-            installer += "\r\n#{format set, key}\r\n"
-        context.sources.unshift applicator
-        context.sources.unshift installer
-        context.sources.unshift runtime
+            set = "#{symbol}.#{key} = (#{src})()"
+            context.sources.push "\r\n#{set}\r\n"
+        context.changes.unshift applicator
+        context.changes.unshift installer
+        context.changes.unshift runtime
 
     # Issue the autocalls into the context. Traverse the hierarchy
     # from top to bottom (the ordering is important) and issue an
@@ -187,7 +189,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
         noPrelude = "no prelude method detected"
         assert _.isFunction(@prelude), noPrelude
         context = new Object scripts: [], sources: []
-        assert _.extend context, styles: [], sheets: []
+        append = -> _.extend context, arguments...
+        append styles: [], sheets: [], changes: []
         assert _.isObject(context.caching = ecc) if ecc
         pusher = context.sources.push.bind context.sources
         context.inline = (f) -> pusher "(#{f}).apply(this)"

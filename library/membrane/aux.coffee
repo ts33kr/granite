@@ -60,16 +60,16 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # This is the place where you would be importing the dependencies.
     prelude: (symbol, context, request, next) ->
         assert auxiliaries = @constructor.aux() or {}
-        context.compression = no; routines = undefined
-        mapper = (f) -> routines = _.map auxiliaries, f
-        mapper (value, key, collection) -> (callback) ->
+        mapper = (closure) -> _.map auxiliaries, closure
+        routines = mapper (value, key) -> (callback) ->
             assert _.isObject singleton = value.obtain()
             assert _.isObject ecc = context.caching ?= {}
             assert _.isString qualified = "#{symbol}.#{key}"
             assembler = singleton.assembleContext.bind singleton
-            assembler qualified, request, no, ecc, (assembled) ->
-                assert context.sources.push assembled.sources...
+            assembler qualified, request, yes, ecc, (assembled) ->
                 assert context.scripts.push assembled.scripts...
+                assert context.changes.push assembled.changes...
+                assert context.sources.push assembled.sources...
                 return callback undefined
         return async.series routines, next
 
