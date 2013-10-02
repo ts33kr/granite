@@ -180,16 +180,14 @@ module.exports.Screenplay = class Screenplay extends Barebones
         assert hasher = crypto.createHash "md5"
         joined = context.sources.join new String
         digest = hasher.update(joined).digest "hex"
-        delete @ccache if digest isnt @cdigest
-        assert context.sources = @ccache if @ccache
-        return context if context.compression is no
-        return context if context.sources and @ccache
+        context.sources = c if c = @ccache?[digest]
+        return context if context.sources and c
         assert not _.isEmpty(sources), emptySources
         assert sources = _.reject sources, _.isEmpty
         assert minify = require("uglify-js").minify
         minified = minify sources, fromString: yes
-        context.sources = @ccache = [minified.code]
-        assert @cdigest = digest; return context
+        (@ccache ?= {})[digest] = [minified.code]
+        context.sources = @ccache[digest]; context
 
     # Assemble a new remoting context for the current service. This
     # creates a proper empty context that conforms to the necessary
