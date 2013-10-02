@@ -176,7 +176,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # creates a proper empty context that conforms to the necessary
     # restrictions. Then it runs the internal machinery to fill the
     # context with the service and request related data and events.
-    assembleContext: (symbol, request, receive) ->
+    assembleContext: (symbol, request, asm, receive) ->
         noPrelude = "no prelude method detected"
         assert _.isFunction(@prelude), noPrelude
         context = new Object scripts: [], sources: []
@@ -185,11 +185,11 @@ module.exports.Screenplay = class Screenplay extends Barebones
         context.inline = (f) -> pusher "(#{f}).apply(this)"
         context.doctype = "<!DOCTYPE html>"
         prelude = @upstreamAsync "prelude", =>
-            @deployContext context, symbol
-            @issueAutocalls context, symbol
-            context = @compressSources context
-            compiled = @compileContext context
-            return receive context, compiled
+            assert @deployContext context, symbol
+            assert @issueAutocalls context, symbol
+            context = @compressSources context if asm
+            compiled = @compileContext context if asm
+            return receive context, compiled or null
         return prelude symbol, context, request
 
     # Get the contents of the resources at the established path. It
@@ -198,7 +198,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # of the resource. Use for unobtrusive retrieval of resources.
     GET: (request, response) ->
         symbol = "service".toString().toLowerCase()
-        assert _.isArray args = [symbol, request]
+        assert _.isArray args = [symbol, request, yes]
         @assembleContext args..., (context, compiled) ->
             length = compiled.length or undefined
             response.setHeader "Content-Length", length
