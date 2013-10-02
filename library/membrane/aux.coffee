@@ -68,7 +68,6 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
             assert _.isString qualified = "#{symbol}.#{key}"
             assembler = singleton.assembleContext.bind singleton
             assembler qualified, request, no, ecc, (assembled) ->
-                assert _.isObject context[key] = assembled
                 assert context.sources.push assembled.sources...
                 assert context.scripts.push assembled.scripts...
                 return callback undefined
