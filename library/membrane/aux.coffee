@@ -39,14 +39,14 @@ url = require "url"
 
 {Zombie} = require "../nucleus/zombie"
 {Duplex} = require "../membrane/duplex"
-{Screenplay} = require "./visual"
+{Preflight} = require "./preflight"
 
 # This definition stands for the compound that provides support
 # for auxiliary services. These services reside within the conext
 # of the parent services, restricted to the context of their own.
 # This compound handles the wiring of these services within the
 # intestines of the parent service that includes this component.
-module.exports.Auxiliaries = class Auxiliaries extends Screenplay
+module.exports.Auxiliaries = class Auxiliaries extends Preflight
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -63,8 +63,8 @@ module.exports.Auxiliaries = class Auxiliaries extends Screenplay
         context.compression = no; routines = undefined
         mapper = (f) -> routines = _.map auxiliaries, f
         mapper (value, key, collection) -> (callback) ->
-            assert _.isObject ecc = context.caching = {}
             assert _.isObject singleton = value.obtain()
+            assert _.isObject ecc = context.caching ?= {}
             assert _.isString qualified = "#{symbol}.#{key}"
             assembler = singleton.assembleContext.bind singleton
             assembler qualified, request, no, ecc, (assembled) ->
@@ -118,4 +118,4 @@ module.exports.Auxiliary = class Auxiliary extends Zombie
     # Typically an HTTP pathname pattern and a domain name pattern.
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
-    @compose Duplex
+    @compose Preflight
