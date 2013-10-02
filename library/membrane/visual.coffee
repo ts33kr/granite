@@ -175,6 +175,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         emptySources = "the JS sources are empty"
         u = (v) -> v.match(RegExp "^(.+)/(.+)$")[2]
         assert context.scripts = _.unique scripts, u
+        assert context.styles = _.unique styles, u
         assert _.isArray sources = _.unique sources
         assert hasher = crypto.createHash "md5"
         joined = context.sources.join new String
