@@ -170,6 +170,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # JS sources in the context and minifies & compresses those into
     # one blob using the library called UglifyJS2. See it for info.
     compressSources: (context) ->
+        compression = "visual:compression"
         sources = _.toArray context.sources
         scripts = _.toArray context.scripts
         emptySources = "the JS sources are empty"
@@ -177,6 +178,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         context.styles = _.unique context.styles, u
         assert context.scripts = _.unique scripts, u
         assert _.isArray sources = _.unique sources
+        return context unless nconf.get compression
         assert hasher = crypto.createHash "md5"
         joined = context.sources.join new String
         digest = hasher.update(joined).digest "hex"
