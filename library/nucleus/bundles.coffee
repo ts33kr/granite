@@ -53,6 +53,7 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @defaults.session.key = "granite.session.identification"
     @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: no
+    @defaults.visual = compression: yes
     @defaults.socket = "log level": 0
     @defaults.env.preserve = ["pub"]
 
@@ -73,6 +74,7 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @defaults.session.key = "granite.session.identification"
     @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: no
+    @defaults.visual = compression: yes
     @defaults.socket = "log level": 0
     @defaults.env.preserve = ["pub"]
 
@@ -93,6 +95,7 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.session.key = "granite.session.identification"
     @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: yes
+    @defaults.visual = compression: yes
     @defaults.socket = "log level": 0
     @defaults.env.preserve = ["pub"]
 
@@ -113,5 +116,6 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.session.key = "granite.session.identification"
     @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: yes
+    @defaults.visual = compression: yes
     @defaults.socket = "log level": 0
     @defaults.env.preserve = ["pub"]
