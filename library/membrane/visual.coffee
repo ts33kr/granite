@@ -133,9 +133,10 @@ module.exports.Screenplay = class Screenplay extends Barebones
         installer = "#{symbol} = #{prepared}"
         em = -> _.extend @, EventEmitter2.prototype
         applicator = "(#{em}).apply(#{symbol})"
-        _.forIn this, (value, key, object) ->
+        _.forIn this, (value, key, object) =>
             return unless _.isObject value.remote
             return unless src = value.remote.source
+            return if (value is @constructor) is yes
             set = "#{symbol}.%s = (#{src})()"
             installer += "\r\n#{format set, key}\r\n"
         context.sources.unshift applicator
