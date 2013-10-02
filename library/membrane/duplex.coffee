@@ -196,7 +196,7 @@ module.exports.Duplex = class Duplex extends Preflight
             message = "blew up Socket.IO: #{error.message}"
             error.message = message.toString(); throw error
         failed = "failed to create Socket.IO connection"
-        connecting = "attmpting the Socket.IO connection"
+        connecting = "attmpting connection at #{@location}"
         p = "an exception happend at the server provider"
         c = "an error were raised during socket connection"
         assert _.isFunction(@socket.emit), failed
@@ -207,7 +207,7 @@ module.exports.Duplex = class Duplex extends Preflight
         osc = (listener) => @socket.on "connect", listener
         osc => @socket.emit "screening", _.omit(@, foreign), =>
             assert @consumeProviders; @consumeProviders @socket
-            open = "notified the service of an opened channel"
+            open = "successfully bootloaded at #{@location}"
             confirm = => console.log open; @emit "booted"
             @trampoline _.omit(@, foreign), confirm
 
@@ -220,7 +220,8 @@ module.exports.Duplex = class Duplex extends Preflight
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
         for provider in @providers then do (provider) =>
-            console.log "register context provider: #{provider}"
+            msg = "#{provider} at #{@location}"
+            console.log "register context provider: #{msg}"
             this[provider] = (parameters..., callback) ->
                 noCallback = "#{callback} is not a callback"
                 assert _.isFunction(callback), noCallback
