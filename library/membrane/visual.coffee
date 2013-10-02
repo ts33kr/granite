@@ -30,6 +30,7 @@ logger = require "winston"
 events = require "eventemitter2"
 assert = require "assert"
 colors = require "colors"
+crypto = require "crypto"
 nconf = require "nconf"
 https = require "https"
 http = require "http"
@@ -174,12 +175,19 @@ module.exports.Screenplay = class Screenplay extends Barebones
         emptySources = "the JS sources are empty"
         assert context.scripts = _.unique scripts
         assert _.isArray sources = _.unique sources
+        assert hasher = crypto.createHash "md5"
+        joined = context.sources.join new String
+        digest = hasher.update(joined).digest "hex"
+        delete @ccache if digest isnt @cdigest
+        assert context.sources = @ccache if @ccache
         return context if context.compression is no
+        return context if context.sources and @ccache
         assert not _.isEmpty(sources), emptySources
         assert sources = _.reject sources, _.isEmpty
         assert minify = require("uglify-js").minify
         minified = minify sources, fromString: yes
-        context.sources = [minified.code]; context
+        context.sources = @ccache = [minified.code]
+        assert @cdigest = digest; return context
 
     # Assemble a new remoting context for the current service. This
     # creates a proper empty context that conforms to the necessary
