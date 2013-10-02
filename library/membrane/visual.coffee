@@ -175,6 +175,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         scripts = _.toArray context.scripts
         emptySources = "the JS sources are empty"
         u = (v) -> v.match(RegExp "^(.+)/(.+)$")[2]
+        context.sheets = _.unique context.sheets
         context.styles = _.unique context.styles, u
         assert context.scripts = _.unique scripts, u
         assert _.isArray sources = _.unique sources
