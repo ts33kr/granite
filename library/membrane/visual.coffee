@@ -174,6 +174,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         assert _.isArray sources = _.unique sources
         return context if context.compression is no
         assert not _.isEmpty(sources), emptySources
+        assert sources = _.reject sources, _.isEmpty
         assert minify = require("uglify-js").minify
         minified = minify sources, fromString: yes
         context.sources = [minified.code]; context
