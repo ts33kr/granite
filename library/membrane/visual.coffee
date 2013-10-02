@@ -144,9 +144,9 @@ module.exports.Screenplay = class Screenplay extends Barebones
             return if (value is @constructor) is yes
             set = "#{symbol}.#{key} = (#{src})()"
             context.sources.push "\r\n#{set}\r\n"
-        context.changes.unshift applicator
+        context.sources.unshift applicator
         context.changes.unshift installer
-        context.changes.unshift runtime
+        context.sources.unshift runtime
 
     # Issue the autocalls into the context. Traverse the hierarchy
     # from top to bottom (the ordering is important) and issue an
