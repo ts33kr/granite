@@ -107,15 +107,15 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # implementation for greater understanding of what it does exactly.
     compileContext: (context) ->
         [x, c, j] = ["text/css", "stylesheet", "text/javascript"]
-        sheet = (s) -> "<link rel=\x22#{c}\x22 href=\x22#{s}\x22>"
-        style = (s) -> "<style type=\x22#{x}\x22>#{s}</style>"
         script = (s) -> "<script src=\x22#{s}\x22></script>"
+        style = (s) -> "<style type=\x22#{x}\x22>#{s}</style>"
+        sheet = (s) -> "<link rel=\x22#{c}\x22 href=\x22#{s}\x22>"
         source = (s) -> "<script type=\x22#{j}\x22>#{s}</script>"
         template = "%s<html><head>%s</head><body></body></html>"
-        sheets = _.map(context.sheets, sheet).join new String
-        styles = _.map(context.styles, style).join new String
-        scripts = _.map(context.scripts, script).join new String
-        sources = _.map(context.sources, source).join new String
+        scripts = _.map(context.scripts, script).join String()
+        sources = _.map(context.sources, source).join String()
+        sheets = _.map(context.sheets, sheet).join String()
+        styles = _.map(context.styles, style).join String()
         joined = sheets + styles + scripts + sources
         format template, context.doctype, joined
 
