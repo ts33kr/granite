@@ -42,20 +42,22 @@ util = require "util"
 # foreign environments under the specified or inherited symbol.
 # Please refer to the implementation for greater understanding!
 # The method knows how to recursively compile class hierarchies.
-compiler = module.exports.compiler = (symbol) ->
+compiler = module.exports.compiler = (caching, symbol) ->
     noSymbol = "symbol must be non empty"
     @symbol = symbol unless _.isEmpty symbol
     assert not _.isEmpty(@symbol), noSymbol
+    return new String if @symbol of caching
     f = => "var #{@symbol} = (#{@source})()"
     return f() unless _.isObject @compiled
     hierarchy = try @compiled.hierarchy?()
     assert _.isArray(hierarchy), "no hierarchy"
     hasRemote = (x) ->_.isObject x.remote
-    compilation = (x) -> x.remote.compile()
+    compilation = (x) -> x.remote.compile caching
     areRemote = _.filter hierarchy, hasRemote
     compiled = _.map areRemote, compilation
     bases = compiled.reverse().join EOL + EOL
-    return "#{bases}#{EOL + EOL}#{f()}"
+    assembled = "#{bases}#{EOL + EOL}#{f()}"
+    return caching[@symbol] = assembled
 
 # A decorator style of routine that is used to capture the
 # source code of classes, functions and other first class

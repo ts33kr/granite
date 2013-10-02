@@ -91,9 +91,10 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # JavaScript sources passed in as the remote objects. Please refer
     # to the implementation and the class for more information on it.
     inject: (context, subject, symbol) ->
+        caching = context.caching ?= new Object
         scripts = -> context.scripts.push subject
         sources = -> context.sources.push compile()
-        compile = -> subject.remote?.compile? symbol
+        compile = -> subject.remote.compile caching, symbol
         invalid = "not a remote object and not a link"
         assert _.isObject(context), "got invalid context"
         compilable = _.isFunction subject.remote?.compile
@@ -108,9 +109,9 @@ module.exports.Screenplay = class Screenplay extends Barebones
     compileContext: (context) ->
         [x, c, j] = ["text/css", "stylesheet", "text/javascript"]
         script = (s) -> "<script src=\x22#{s}\x22></script>"
-        style = (s) -> "<style type=\x22#{x}\x22>#{s}</style>"
         sheet = (s) -> "<link rel=\x22#{c}\x22 href=\x22#{s}\x22>"
-        source = (s) -> "<script type=\x22#{j}\x22>#{s}</script>"
+        source = (s) -> "<script type=\x22#{j}\x22>#{s}</script>\n"
+        style = (s) -> "<style type=\x22#{x}\x22>#{s}</style>\n"
         template = "%s<html><head>%s</head><body></body></html>"
         scripts = _.map(context.scripts, script).join String()
         sources = _.map(context.sources, source).join String()
@@ -126,6 +127,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     deployContext: (context, symbol) ->
         assert _.isObject(context), "malformed context"
         excess = ["scripts", "sources", "sheets", "styles"]
+        excess.push "caching" if _.isObject context.caching
         prepared = JSON.stringify _.omit(context, excess)
         runtime = "(#{coffee}).apply(this)"
         installer = "#{symbol} = #{prepared}"
