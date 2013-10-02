@@ -82,6 +82,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         context.uuid = request: request.uuid
         context.headers = request.headers
         context.params = request.params
+        context.qualified = @qualified()
         context.location = @location()
         context.uuid.service = @uuid
         context.url = request.url
