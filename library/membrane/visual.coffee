@@ -136,6 +136,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         excess = ["scripts", "sources", "sheets", "styles"]
         excess.push "caching" if _.isObject context.caching
         excess.push "changes" if _.isArray context.changes
+        excess.push "invokes" if _.isArray context.invokes
         prepared = JSON.stringify _.omit(context, excess)
         installer = "#{symbol} = #{prepared}".toString()
         runtime = "(#{coffee}).apply(this)".toString()
