@@ -169,7 +169,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # to flushing it down to the client. This method gathers all the
     # JS sources in the context and minifies & compresses those into
     # one blob using the library called UglifyJS2. See it for info.
-    compressSources: (context) ->
+    # Method also does some optimizations, such as scripts unifying.
+    compressContext: (context) ->
         compression = "visual:compression"
         sources = _.toArray context.sources
         scripts = _.toArray context.scripts
@@ -209,7 +210,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         prelude = @upstreamAsync "prelude", =>
             assert @deployContext context, symbol
             assert @inlineAutocalls context, symbol
-            context = @compressSources context if asm
+            context = @compressContext context if asm
             compiled = @compileContext context if asm
             return receive context, compiled or null
         return prelude symbol, context, request
