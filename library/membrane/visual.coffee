@@ -64,14 +64,16 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # that need to be automaticalled called, once everything is set
     # on the client site and before the entrypoint gets executed. It
     # is a get idea to place generic or setup code in the autocalls.
-    @autocall: (parameters..., method) ->
+    # Refer to `inlineAutocalls` method for params interpretation.
+    @autocall: (parameters, method) ->
         isRemote = _.isObject method?.remote
-        notFunction = "no function is passed in"
-        assert _.isFunction(method), notFunction
+        notFunction = "no function is passed"
+        method = _.find arguments, _.isFunction
         method = external method unless isRemote
-        parameters = [] unless _.isArray parameters
+        assert _.isFunction(method), notFunction
+        parameters = {} unless _.isObject parameters
         method.remote.autocall = parameters
-        return method
+        assert parameters; return method
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
@@ -119,10 +121,11 @@ module.exports.Screenplay = class Screenplay extends Barebones
         scripts = _.map(context.scripts, script).join String()
         changes = _.map(context.changes, source).join String()
         sources = _.map(context.sources, source).join String()
+        invokes = _.map(context.invokes, source).join String()
         sheets = _.map(context.sheets, sheet).join String()
         styles = _.map(context.styles, style).join String()
         joined = sheets + styles + scripts + changes + sources
-        return format template, context.doctype, joined
+        format template, context.doctype, joined + invokes
 
     # This is an internal routine that performs a very important task
     # of deploying the context onto the call (client) site. It also
@@ -159,11 +162,13 @@ module.exports.Screenplay = class Screenplay extends Barebones
         hierarchy.push @constructor if hierarchy
         for peer in hierarchy then do (peer, hierarchy) ->
             _.forOwn peer.prototype, (value, key, object) ->
-                return unless _.isObject value.remote
-                return unless value.remote.autocall?.length?
+                return unless value?.remote?.autocall?
                 params = JSON.stringify value.remote.autocall
-                template = "#{symbol}.#{key}.apply(#{symbol}, %s)"
-                context.sources.push format(template, params)
+                template = "#{symbol}.#{key}.call(#{symbol}, %s)"
+                assert formatted = format template, params
+                uns = -> context.invokes.unshift formatted
+                return uns() if value.remote.autocall.unshift
+                return context.invokes.push formatted
 
     # An internal routine that is called on the context object prior
     # to flushing it down to the client. This method gathers all the
@@ -202,7 +207,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         assert _.isFunction(@prelude), noPrelude
         context = new Object scripts: [], sources: []
         append = -> _.extend context, arguments...
-        append styles: [], sheets: [], changes: []
+        append styles: [], sheets: [], changes: [], invokes: []
         assert _.isObject(context.caching = ecc) if ecc
         pusher = context.sources.push.bind context.sources
         context.inline = (f) -> pusher "(#{f}).apply(this)"
