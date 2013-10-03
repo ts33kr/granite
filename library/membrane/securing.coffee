@@ -93,7 +93,7 @@ module.exports.RDuplex = class RDuplex extends Duplex
         noUuid = "the context has no UUID attached"
         assert uuid = binder.uuid.request, noUuid
         @redis.get key(uuid), (error, value) =>
-            assert not _.isObject(error), internal error
+            assert.ifError error, internal error
             @redis.del key(uuid), (error, number) =>
                 return next() if gen(uuid) is value
                 return socket.disconnect()
