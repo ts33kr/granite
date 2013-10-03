@@ -118,8 +118,8 @@ module.exports.Composition = remote -> class Composition extends Object
     # This method integrated the supplied compound class in the tear in
     # between the foreign and common peers in the inheritance chain. Do
     # refer to the implementation for the understanding of what happens.
-    Object.defineProperty Object::, "compose",
-        enumerable: no, value: (compound, shader=cloner, silent=yes) ->
+    Object.defineProperty Object::, "compose", enumerable: no, value:
+        (compound, shader=cloner, silent=yes) ->
             current = this.hierarchy()
             foreign = compound.hierarchy()
             identify = compound.identify()
