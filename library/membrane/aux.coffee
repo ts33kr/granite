@@ -61,8 +61,6 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     prelude: (symbol, context, request, next) ->
         assert auxiliaries = @constructor.aux() or {}
         mapper = (closure) -> _.map auxiliaries, closure
-        q = (k) -> symbol: k, qualified: "#{symbol}.#{k}"
-        context.auxiliaries = mapper (v, k, c) -> q k, v
         routines = mapper (value, key) -> (callback) ->
             assert _.isObject singleton = value.obtain()
             assert _.isObject ecc = context.caching ?= {}
