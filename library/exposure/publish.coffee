@@ -53,6 +53,7 @@ module.exports.Publish = class Publish extends Barebones
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
     @resource "/api/publish"
+    @documentation yes
 
     # Establish a heartbeat monitor. A hearbit monitor is a method
     # that tests whether some arbitrarty server functonality does

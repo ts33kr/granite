@@ -64,6 +64,18 @@ module.exports.Descriptor = class Descriptor extends Stubs
     @PUT = -> @describe @prototype.PUT, arguments...
     @GET = -> @describe @prototype.GET, arguments...
 
+    # This method allows to configure the service with respect to
+    # choosing to be documented or not. If the documentation is
+    # enabled on the service, the description system will gather
+    # its documentation and publish it via a doc system publisher.
+    # The specific documentation settings will not be inherited!
+    @documentation: (boolean) ->
+        isDocumentation = @$documentation is this
+        return isDocumentation unless boolean?
+        assert _.isBoolean(boolean), "invalid flag"
+        return @$documentation = this if boolean
+        delete @$documentation; @$documentation is @
+
     # Traverse all of the services that are registered with the router
     # and collect the documentation for each method, then given this
     # information, build a hierarhical tree object of all the methods
@@ -72,21 +84,30 @@ module.exports.Descriptor = class Descriptor extends Stubs
         services = @kernel?.router?.registry
         services = substitution if substitution?
         assert _.isArray(services), "invalid services"
-        logger.debug "Collecting API documentation"
-        conformant = (s) -> s.objectOf Descriptor
+        publishing = (s) -> s.constructor.documentation()
+        conformant = (s) -> try s.objectOf Descriptor
         services = _.filter services, conformant
-        _.map services, (service) => do (service) =>
-            assert unsupported = service.unsupported
-            supported = service.constructor.SUPPORTED
-            implemented = (m) -> service[m] isnt unsupported
-            fix = (m) => @constructor.describe service[m], ->
-            doc = (m) => (service[m].document or fix(m)).blankSlate()
-            filtered = _.filter supported, implemented
-            methods = _.object filtered, _.map(filtered, doc)
-            args = (method) => [method, service, @kernel]
-            assert not _.isEmpty link = service.qualified()
-            doc.descriptor? args(m)... for m, doc of methods
-            return service: service, methods: methods
+        services = _.filter services, publishing
+        logger.debug "Collecting API documentation"
+        _.map services, @documentService.bind this
+
+    # Part of the internal descriptor system implementation. This
+    # method is invoked for each of the collected service that are
+    # determined to be eligable to publishing their documentation.
+    # It basically extracts the documentation out of the service,
+    # does the necessary initializations on it and return the doc.
+    documentService: (service) ->
+        assert unsupported = service.unsupported
+        supported = service.constructor.SUPPORTED
+        implemented = (m) -> service[m] isnt unsupported
+        fix = (m) => @constructor.describe service[m], ->
+        doc = (m) => (service[m].document or fix(m)).blankSlate()
+        filtered = _.filter supported, implemented
+        methods = _.object filtered, _.map(filtered, doc)
+        args = (method) => [method, service, @kernel]
+        assert not _.isEmpty link = service.qualified()
+        doc.descriptor? args(m)... for m, doc of methods
+        return service: service, methods: methods
 
     # Describe the supplied method of arbitrary service, in a structured
     # and expected way, so that it can later be used to programmatically
@@ -97,11 +118,7 @@ module.exports.Descriptor = class Descriptor extends Stubs
         noDescriptor = "got no valid descriptor"
         assert _.isFunction(descriptor), noDescriptor
         assert _.isFunction(method), noMethod
-        previous = method.document?.descriptor
         method.document ?= new Document
-        method.document.descriptor = ->
-            previous?.apply this, arguments
-            descriptor.apply this, arguments
         method.document.blankSlate = ->
             document = new Document
             document.descriptor = @descriptor
