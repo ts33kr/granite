@@ -101,6 +101,8 @@ module.exports.Extending = remote -> class Extending extends Object
         enumerable: no, value: (boolean) ->
             isAbstract = @$abstract is this
             return isAbstract unless boolean?
+            wrong = "has to be a boolean value"
+            assert _.isBoolean(boolean), wrong
             return @$abstract = this if boolean
             delete @$abstract; @$abstract is @
 
