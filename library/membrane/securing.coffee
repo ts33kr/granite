@@ -71,7 +71,7 @@ module.exports.RDuplex = class RDuplex extends Duplex
         return next() unless response.statusCode is 200
         sha1 = -> require("crypto").createHash "sha1"
         key = (x) -> "securing:rduplex:token:dynamic:#{x}"
-        gen = (u) -> sha1().update("#{@uuid}-#{u}").digest("hex")
+        gen = (x) -> sha1().update("#{@uuid}-#{x}").digest("hex")
         internal = (e) -> "internal Redis error: #{e}"
         noUuid = "the request has not UUID attached"
         assert _.isString(u = request.uuid), noUuid
@@ -88,7 +88,7 @@ module.exports.RDuplex = class RDuplex extends Duplex
     screening: (context, socket, binder, next) ->
         sha1 = -> require("crypto").createHash "sha1"
         key = (x) -> "securing:rduplex:token:dynamic:#{x}"
-        gen = (u) -> sha1().update("#{@uuid}-#{u}").digest("hex")
+        gen = (x) -> sha1().update("#{@uuid}-#{x}").digest("hex")
         internal = (e) -> "internal Redis error: #{e}"
         noUuid = "the context has no UUID attached"
         assert uuid = binder.uuid.request, noUuid
