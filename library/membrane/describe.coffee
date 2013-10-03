@@ -72,7 +72,8 @@ module.exports.Descriptor = class Descriptor extends Stubs
     @documentation: (boolean) ->
         isDocumentation = @$documentation is this
         return isDocumentation unless boolean?
-        assert _.isBoolean(boolean), "invalid flag"
+        invalidFlag = "the flag has to be boolean"
+        assert _.isBoolean(boolean), invalidFlag
         return @$documentation = this if boolean
         delete @$documentation; @$documentation is @
 
