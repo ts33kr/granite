@@ -152,7 +152,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # from top to bottom (the ordering is important) and issue an
     # autocall for each remote/external method that is marked with
     # an autocall decorator and therefore must be called on site.
-    issueAutocalls: (context, symbol) ->
+    inlineAutocalls: (context, symbol) ->
         hierarchy = @constructor?.hierarchy?()
         noHierarchy = "could not scan the hierarchy"
         assert _.isArray(hierarchy), noHierarchy
@@ -208,7 +208,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         context.doctype = "<!DOCTYPE html>"
         prelude = @upstreamAsync "prelude", =>
             assert @deployContext context, symbol
-            assert @issueAutocalls context, symbol
+            assert @inlineAutocalls context, symbol
             context = @compressSources context if asm
             compiled = @compileContext context if asm
             return receive context, compiled or null
