@@ -74,7 +74,7 @@ module.exports.RDuplex = class RDuplex extends Duplex
         gen = (u) -> md5().update("#{@uuid}-#{u}").digest("hex")
         internal = (e) -> "internal Redis error: #{e}"
         noUuid = "the request has not UUID attached"
-        assert _.isString u = request.uuid, noUuid
+        assert _.isString(u = request.uuid), noUuid
         @redis.setex key(u), 60, gen(u), (error) ->
             success = not _.isObject error
             assert success, internal error
