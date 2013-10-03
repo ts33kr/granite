@@ -69,9 +69,9 @@ module.exports.RDuplex = class RDuplex extends Duplex
     # Please be sure invoke the `next` arg to proceed, if relevant.
     headers: (request, response, resource, domain, next) ->
         return next() unless response.statusCode is 200
-        md5 = -> require("crypto").createHash("md5")
+        sha1 = -> require("crypto").createHash "sha1"
         key = (x) -> "securing:rduplex:token:dynamic:#{x}"
-        gen = (u) -> md5().update("#{@uuid}-#{u}").digest("hex")
+        gen = (u) -> sha1().update("#{@uuid}-#{u}").digest("hex")
         internal = (e) -> "internal Redis error: #{e}"
         noUuid = "the request has not UUID attached"
         assert _.isString(u = request.uuid), noUuid
@@ -86,9 +86,9 @@ module.exports.RDuplex = class RDuplex extends Duplex
     # place to implementation various schemes for authorization. If
     # you wish to decline, just don't call `next` and close socket.
     screening: (context, socket, binder, next) ->
-        md5 = -> require("crypto").createHash("md5")
+        sha1 = -> require("crypto").createHash "sha1"
         key = (x) -> "securing:rduplex:token:dynamic:#{x}"
-        gen = (u) -> md5().update("#{@uuid}-#{u}").digest("hex")
+        gen = (u) -> sha1().update("#{@uuid}-#{u}").digest("hex")
         internal = (e) -> "internal Redis error: #{e}"
         noUuid = "the context has no UUID attached"
         assert uuid = binder.uuid.request, noUuid
