@@ -120,20 +120,21 @@ module.exports.Composition = remote -> class Composition extends Object
     # refer to the implementation for the understanding of what happens.
     Object.defineProperty Object::, "compose", enumerable: no, value:
         (compound, shader=cloner, silent=yes) ->
-            current = this.hierarchy()
-            foreign = compound.hierarchy()
-            identify = compound.identify()
+            assert current = this.hierarchy()
+            assert foreign = compound.hierarchy()
+            assert identify = compound.identify()
             cmp = (e) -> (c) -> c.similarWith e
+            common = (x) -> _.any foreign, cmp x
+            culrpit = (s) -> not _.any commons, cmp s
             present = _.any current, cmp compound
             duplicate = "duplicate #{identify} compound"
             notAbstract = "the #{identify} is not abstract"
+            orphans = "no common base classes in hierarchy"
             assert not present or silent, duplicate
             assert compound.abstract?(), notAbstract
             return undefined if present and silent
-            culrpit = (shape) -> not _.any commons, cmp shape
-            commons = _.filter current, (x) -> _.any foreign, cmp x
-            orphans = "no common base classes in hierarchy"
-            throw new Error orphans if _.isEmpty commons
+            commons = _.filter current, common
+            assert not _.isEmpty(commons), orphans
             differentiated = _.take current, culrpit
             alternative = _.map differentiated, shader
             compound.composition? this, current, foreign
