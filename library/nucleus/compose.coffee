@@ -154,7 +154,8 @@ module.exports.Composition = remote -> class Composition extends Object
             target = _.head outstanding; h.unshift this
             assert left = h[_.indexOf(h, target) - 1]
             assert right = h[_.indexOf(h, target) + 1]
-            assert not left.watermark, "original peer"
+            follows = (not left.watermark) or (left is @)
+            assert follows, "original: #{left.identify()}"
             left.rebased right; @refactoring trigger
 
     # Scan the supplied class and return an entire inheritance hierarchy
