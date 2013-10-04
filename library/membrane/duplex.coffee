@@ -196,13 +196,15 @@ module.exports.Duplex = class Duplex extends Preflight
             error.message = message.toString(); throw error
         foreign = (v, k) => v.socket or k in (@externals or [])
         failed = "failed to establish the Socket.IO connection"
-        connecting = "attmpting connection at #{@location}"
+        connecting = "attempting connection at #{@location}"
+        disconnect = "lost socket connection at #{@location}"
         p = "an exception happend at the server provider"
         c = "an error were raised during socket connection"
         assert _.isFunction(@socket.emit), failed
         @socket.on "error", (e) -> console.error c, e
         @socket.on "exception", (e) -> console.error p, e
         @socket.on "connecting", -> console.log connecting
+        @socket.on "disconnect", -> console.error disconnect
         @socket.on "connect_failed", (e) -> console.error c, e
         osc = (listener) => @socket.on "connect", listener
         osc => @socket.emit "screening", _.omit(@, foreign), =>
