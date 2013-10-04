@@ -143,7 +143,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         em = -> _.extend @, EventEmitter2.prototype
         applicator = "(#{em}).apply(#{symbol})"
         _.forIn this, (value, key, object) =>
-            return unless _.isObject value.remote
+            return unless _.isObject value?.remote
             return unless src = value.remote.source
             return if (value is @constructor) is yes
             set = "#{symbol}.#{key} = (#{src})()"
