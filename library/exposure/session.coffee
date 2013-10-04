@@ -66,6 +66,7 @@ module.exports.RedisStorage = class RedisStorage extends Zombie
     destory: (sid, callback) ->
         qualified = @namespaced sid
         message = "Redis session engine error at destroy"
+        assert _.isObject(@redis), "no Redis client yet"
         @redis.del qualified, (error, trailings...) ->
             logger.error message.red, error if error
             return callback error if error
@@ -81,6 +82,7 @@ module.exports.RedisStorage = class RedisStorage extends Zombie
         expire = session?.cookie?.maxAge / 1000 | 0
         expire = 86400 unless expire and expire > 0
         message = "Redis session engine error at set"
+        assert _.isObject(@redis), "no Redis client yet"
         @redis.setex qualified, expire, encoded, (error) ->
             logger.error message.red, error if error
             return callback error if error
@@ -93,6 +95,7 @@ module.exports.RedisStorage = class RedisStorage extends Zombie
     get: (sid, callback) ->
         qualified = @namespaced sid
         message = "Redis session engine error at get"
+        assert _.isObject(@redis), "no Redis client yet"
         @redis.get qualified, (error, data, trailings...) ->
             logger.error message.red, error if error
             return callback error if error
