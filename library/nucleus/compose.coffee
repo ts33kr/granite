@@ -154,7 +154,7 @@ module.exports.Composition = remote -> class Composition extends Object
             target = _.head outstanding; h.unshift this
             assert left = h[_.indexOf(h, target) - 1]
             assert right = h[_.indexOf(h, target) + 1]
-            shadow = (not left.watermark) or (left is @)
+            shadow = left.watermark or (left is this)
             assert shadow, "original: #{left.identify()}"
             left.rebased right; @refactoring trigger
 
