@@ -43,6 +43,7 @@ util = require "util"
 module.exports.coffee = `function () {
     __slice = [].slice
     __hasProp = {}.hasOwnProperty
+    __indexOf = [].indexOf || _.indexOf
     __extends = function(child, parent) {
         for (var key in parent) {
             if (__hasProp.call(parent, key))
