@@ -152,11 +152,11 @@ module.exports.Composition = remote -> class Composition extends Object
             return null if unique.length is h.length
             assert outstanding = _.difference h, unique
             target = _.head outstanding; h.unshift this
-            assert left = h[_.indexOf(h, target) - 1]
-            assert right = h[_.indexOf(h, target) + 1]
-            shadow = left.watermark or (left is this)
-            assert shadow, "original: #{left.identify()}"
-            left.rebased right; @refactoring trigger
+            assert left = -> h[_.indexOf(h, target) - 1]
+            assert right = -> h[_.indexOf(h, target) + 1]
+            shadow = left().watermark or (left() is this)
+            assert shadow, "original: #{left().identify()}"
+            left().rebased right(); @refactoring trigger
 
     # Scan the supplied class and return an entire inheritance hierarchy
     # of classes. The hierarchy is represented as an array of prototypes
