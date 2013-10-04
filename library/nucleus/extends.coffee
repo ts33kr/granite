@@ -74,11 +74,13 @@ module.exports.Extending = remote -> class Extending extends Object
     # method. If nothing found, the methods falls back to some default.
     Object.defineProperty Object::, "identify",
         enumerable: no, value: (identificator) ->
+            shadowed = _.isObject @watermark
             set = => @$identify = identificator
             return set() if _.isString identificator
             return @$identify if _.isString @$identify
-            return @nick if _.isString @nick
-            return @name if _.isString @name
+            return @nick unless _.isEmpty @nick
+            return @name unless _.isEmpty @name
+            return @watermark.name if shadowed
             return @identify typeof this
 
     # This method is a stub that must be called in the abstract methods
