@@ -208,7 +208,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
         assert _.isFunction(@prelude), noPrelude
         context = new Object scripts: [], sources: []
         append = -> _.extend context, arguments...
-        append styles: [], sheets: [], changes: [], invokes: []
+        append styles: [], sheets: [], changes: []
+        append externals: [], invokes: [], cargo: []
         assert _.isObject(context.caching = ecc) if ecc
         pusher = context.sources.push.bind context.sources
         context.inline = (f) -> pusher "(#{f}).apply(this)"

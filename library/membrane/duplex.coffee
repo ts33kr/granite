@@ -194,7 +194,7 @@ module.exports.Duplex = class Duplex extends Preflight
         try @socket = io.connect @duplex catch error
             message = "blew up Socket.IO: #{error.message}"
             error.message = message.toString(); throw error
-        foreign = (v, k) => v.socket? or try k in @auxiliaries
+        foreign = (v, k) => v.socket or k in (@externals or [])
         failed = "failed to establish the Socket.IO connection"
         connecting = "attmpting connection at #{@location}"
         p = "an exception happend at the server provider"

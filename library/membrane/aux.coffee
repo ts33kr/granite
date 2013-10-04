@@ -60,7 +60,7 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # This is the place where you would be importing the dependencies.
     prelude: (symbol, context, request, next) ->
         assert auxiliaries = @constructor.aux() or {}
-        assert context.auxiliaries = _.keys auxiliaries
+        context.externals.push _.keys(auxiliaries)...
         mapper = (closure) -> _.map auxiliaries, closure
         routines = mapper (value, key) -> (callback) ->
             assert _.isObject singleton = value.obtain()
