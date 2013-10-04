@@ -119,30 +119,43 @@ module.exports.Composition = remote -> class Composition extends Object
     # This method integrated the supplied compound class in the tear in
     # between the foreign and common peers in the inheritance chain. Do
     # refer to the implementation for the understanding of what happens.
-    Object.defineProperty Object::, "compose", enumerable: no, value:
-        (compound, shader=cloner, silent=yes) ->
-            assert current = this.hierarchy()
+    Object.defineProperty Object::, "compose",
+        enumerable: no, value: (compound, shader=cloner) ->
             assert foreign = compound.hierarchy()
             assert identify = compound.identify()
             cmp = (e) -> (c) -> c.similarWith e
             common = (x) -> _.any foreign, cmp x
             culrpit = (s) -> not _.any commons, cmp s
-            present = _.any current, cmp compound
-            duplicate = "duplicate #{identify} compound"
             notAbstract = "the #{identify} is not abstract"
             orphans = "no common base classes in hierarchy"
-            assert not present or silent, duplicate
             assert compound.abstract?(), notAbstract
-            return undefined if present and silent
-            commons = _.filter current, common
+            commons = _.filter @hierarchy(), common
             assert not _.isEmpty(commons), orphans
-            differentiated = _.take current, culrpit
+            differentiated = _.take @hierarchy(), culrpit
             alternative = _.map differentiated, shader
-            compound.composition? this, current, foreign
+            compound.composition? this, @hierarchy(), foreign
             return @rebased compound if _.isEmpty alternative
             tails = alternative.pop().rebased compound
             rebased = (acc, cls) -> cls.rebased acc; cls
             @rebased _.foldr alternative, rebased, tails
+            return @refactoring compound
+
+    # An important complementary part of the dynamic recomposition
+    # system. The refactoring procedure is a recursive algorithm that
+    # is executed after each composition invocation to refactor the
+    # inheritance tree. The refactoring in this case is getting rid
+    # of the indirectly or directly duplicated peers from the tree.
+    Object.defineProperty Object::, "refactoring",
+        enumerable: no, value: (trigger) ->
+            cmp = (peer) -> peer.watermark or peer
+            unique = _.unique h = @hierarchy(), cmp
+            return null if unique.length is h.length
+            assert outstanding = _.difference h, unique
+            target = _.head outstanding; h.unshift this
+            assert left = h[_.indexOf(h, target) - 1]
+            assert right = h[_.indexOf(h, target) + 1]
+            assert not left.watermark, "original peer"
+            left.rebased right; @refactoring trigger
 
     # Scan the supplied class and return an entire inheritance hierarchy
     # of classes. The hierarchy is represented as an array of prototypes
