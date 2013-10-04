@@ -196,22 +196,31 @@ module.exports.Duplex = class Duplex extends Preflight
             error.message = message.toString(); throw error
         foreign = (v, k) => v.socket or k in (@externals or [])
         failed = "failed to establish the Socket.IO connection"
-        connecting = "attempting connection at #{@location}"
-        disconnect = "lost socket connection at #{@location}"
-        p = "an exception happend at the server provider"
-        c = "an error were raised during socket connection"
-        assert _.isFunction(@socket.emit), failed
-        @socket.on "error", (e) -> console.error c, e
-        @socket.on "exception", (e) -> console.error p, e
-        @socket.on "connecting", -> console.log connecting
-        @socket.on "disconnect", -> console.error disconnect
-        @socket.on "connect_failed", (e) -> console.error c, e
+        assert _.isFunction(@socket.emit), failed; @feedback()
         osc = (listener) => @socket.on "connect", listener
         osc => @socket.emit "screening", _.omit(@, foreign), =>
             assert @consumeProviders; @consumeProviders @socket
             open = "successfully bootloaded at #{@location}"
             confirm = => console.log open; @emit "booted"
             @trampoline _.omit(@, foreign), confirm
+
+    # An externally exposed method that is a part of the bootloader
+    # implementation. It sets up the communication feedback mechanism
+    # of a Socket.IO handle. Basically installs a bunch of handlers
+    # that intercept specific events and log the output to a console.
+    # Can be overriden to provide more meaningful feedback handlers.
+    feedback: external ->
+        p = "an exception happend at the server provider"
+        c = "an error were raised during socket connection"
+        connecting = "attempting connection at #{@location}"
+        disconnect = "lost socket connection at #{@location}"
+        reconnecting = "attempting to reconnect at #{@location}"
+        @socket.on "reconnecting", -> console.log reconnecting
+        @socket.on "connect_failed", (e) -> console.error c, e
+        @socket.on "disconnect", -> console.error disconnect
+        @socket.on "connecting", -> console.log connecting
+        @socket.on "exception", (e) -> console.error p, e
+        @socket.on "error", (e) -> console.error c, e
 
     # An external routine that will be invoked once a both way duplex
     # channel is established at the client site. This will normally
