@@ -146,7 +146,7 @@ module.exports.Composition = remote -> class Composition extends Object
     # inheritance tree. The refactoring in this case is getting rid
     # of the indirectly or directly duplicated peers from the tree.
     Object.defineProperty Object::, "refactoring",
-        enumerable: no, value: (trigger) ->
+        enumerable: no, value: (trigger, shader=cloner) ->
             cmp = (peer) -> peer.watermark or peer
             unique = _.unique h = @hierarchy(), cmp
             return null if unique.length is h.length
@@ -154,6 +154,10 @@ module.exports.Composition = remote -> class Composition extends Object
             target = _.head outstanding; h.unshift this
             assert left = -> h[_.indexOf(h, target) - 1]
             assert right = -> h[_.indexOf(h, target) + 1]
+            rebased = (acc, c) -> shader(c).rebased acc
+            prefix = _.take _.rest(h), _.indexOf(h, left())
+            @rebased _.foldr prefix, rebased, target
+            assert (h = this.hierarchy()).unshift this
             shadow = left().watermark or (left() is this)
             assert shadow, "original: #{left().identify()}"
             left().rebased right(); @refactoring trigger
