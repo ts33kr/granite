@@ -51,9 +51,8 @@ module.exports.Composition = remote -> class Composition extends Object
     # invokes the composition functionality to obtain a shadow of the
     # original class that can be later modified to modify hierarchy.
     cloner = module?.exports?.cloner = (subject) ->
-        isClass = _.isObject subject?.__super__
-        noClass = "The #{subject} is not a class"
-        throw new Error noClass unless isClass
+        noClass = "the #{subject} is not a class"
+        assert _.isObject(subject?.__super__), noClass
         return subject if _.isObject subject.watermark
         snapshot = _.cloneDeep subject, d = (value) ->
             return unless _.isFunction value
@@ -175,7 +174,7 @@ module.exports.Composition = remote -> class Composition extends Object
             throw new Error noClass unless isClass
             baseclass.rebasement? this, force
             p = (k) => force is yes or not this[k]?
-            this[k] = v for own k, v of baseclass when p(k)
+            this[k] = v for k, v of baseclass when p k
             original = this.prototype or {}; r = this
             `function ctor() {this.constructor = r}`
             ctor.prototype = baseclass.prototype
