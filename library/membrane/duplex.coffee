@@ -191,10 +191,10 @@ module.exports.Duplex = class Duplex extends Preflight
     # all the providers residing in the current service implementation.
     # Refer to other `Duplex` methods for understanding what goes on.
     bootloader: @autocall ->
-        foreign = (value) -> _.isObject value.socket
         try @socket = io.connect @duplex catch error
             message = "blew up Socket.IO: #{error.message}"
             error.message = message.toString(); throw error
+        foreign = (v, k) => v.socket? or k in @auxiliaries
         failed = "failed to create Socket.IO connection"
         connecting = "attmpting connection at #{@location}"
         p = "an exception happend at the server provider"

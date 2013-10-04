@@ -53,14 +53,16 @@ module.exports.Composition = remote -> class Composition extends Object
     cloner = module?.exports?.cloner = (subject) ->
         noClass = "the #{subject} is not a class"
         assert _.isObject(subject?.__super__), noClass
-        return subject if _.isObject subject.watermark
+        subject = subject.watermark if subject.watermark
         snapshot = _.cloneDeep subject, d = (value) ->
             return unless _.isFunction value
             func = -> value.apply this, arguments
             func.name = value.name or "<anonymous>"
             _.extend func.prototype, value.prototype
             func.constructor = value.constructor; func
-        snapshot.watermark = subject; snapshot
+        w = get: -> assert not subject.watermark; subject
+        Object.defineProperty snapshot, "watermark", w
+        assert snapshot.watermark; return snapshot
 
     # A unique functionality built around the composition system. It
     # allows for an asynchronous way of calling a stream of methods,
