@@ -107,7 +107,7 @@ module.exports.Service = class Service extends Archetype
         noKernel = "got no valid kernel"
         assert _.isObject kernel, noKernel
         service = new this arguments...
-        assert upstream = service.upstreamAsync
+        upstream = service.upstreamAsync
         upstream = upstream.bind service
         instance = upstream "instance", ->
             callback? service, kernel
