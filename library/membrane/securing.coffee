@@ -70,15 +70,16 @@ module.exports.RDuplex = class RDuplex extends Duplex
     headers: (request, response, resource, domain, next) ->
         return next() unless response.statusCode is 200
         sha1 = -> require("crypto").createHash "sha1"
-        key = (x) -> "securing:rduplex:token:dyn:#{@uuid}:#{x}"
-        gen = (x) -> sha1().update("#{@uuid}:#{x}").digest "hex"
+        key = (x) -> "securing:rduplex:token:#{x}"
+        gen = (x) -> sha1().update(x).digest "hex"
         internal = (e) -> "internal Redis error: #{e}"
-        noUuid = "the request has not UUID attached"
+        noUuid = "the request has no UUID attached"
         assert _.isString(u = request.uuid), noUuid
-        @redis.setex key(u), 60, gen(u), (error) ->
-            success = not _.isObject error
-            assert success, internal error
-            return next()
+        @redis.incr gen(key(u)), (error, value) ->
+            assert.ifError error, internal error
+            @redis.expire gen(key(u)), 60, (error) ->
+                assert.ifError error, internal error
+                assert value >= 1; return next()
 
     # A usable hook that gets asynchronously invoked once a new
     # channel (socket) gets past the prescreening hook and is rated
@@ -87,16 +88,16 @@ module.exports.RDuplex = class RDuplex extends Duplex
     # you wish to decline, just don't call `next` and close socket.
     screening: (context, socket, binder, next) ->
         sha1 = -> require("crypto").createHash "sha1"
-        key = (x) -> "securing:rduplex:token:dyn:#{@uuid}:#{x}"
-        gen = (x) -> sha1().update("#{@uuid}:#{x}").digest "hex"
+        key = (x) -> "securing:rduplex:token:#{x}"
+        gen = (x) -> sha1().update(x).digest "hex"
         internal = (e) -> "internal Redis error: #{e}"
-        noUuid = "the context has no UUID attached"
+        noUuid = "the request has no UUID attached"
         assert uuid = binder.uuid.request, noUuid
-        @redis.get key(uuid), (error, value) =>
+        @redis.decr gen(key(uuid)), (error, value) ->
             assert.ifError error, internal error
-            @redis.del key(uuid), (error, number) =>
-                return next() if gen(uuid) is value
-                return socket.disconnect()
+            return socket.disconnect() if value < 0
+            return next() if value and value >= 1
+            @redis.del gen(key(uuid)), -> next()
 
 # This is an abstract base class API stub service. Its purpose is
 # providing the boilerplate for ensuring that the connection is
