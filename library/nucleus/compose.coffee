@@ -79,7 +79,8 @@ module.exports.Composition = remote -> class Composition extends Object
             methods = _.filter threads, _.isFunction
             prepped = _.unique methods.reverse()
             applied = _.map prepped, applicator
-            async.series applied, callback
+            bounded = callback?.bind(this) or ->
+            async.series applied, bounded
 
     # A method for comparing different classes for equality. Be careful
     # as this method is very loose in terms of comparison and its main
