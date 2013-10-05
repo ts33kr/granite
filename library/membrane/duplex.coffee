@@ -238,8 +238,9 @@ module.exports.Duplex = class Duplex extends Preflight
             this[provider] = (parameters..., callback) ->
                 noCallback = "#{callback} is not a callback"
                 assert _.isFunction(callback), noCallback
+                assert mangled = "#{@location}/#{provider}"
                 deliver = => callback.apply this, i(arguments)
-                socket.emit provider, o(parameters)..., deliver
+                socket.emit mangled, o(parameters)..., deliver
 
     # After a both ways duplex channel has been established between
     # the client site and the server side, this method will be invoked
@@ -253,7 +254,8 @@ module.exports.Duplex = class Duplex extends Preflight
             return unless _.isFunction providing
             assert _.isFunction(value), internal
             bound = providing socket, context
-            socket.on name, (args..., callback) =>
+            assert mangled = "#{@location()}/#{name}"
+            socket.on mangled, (args..., callback) =>
                 sentence = @upstreamAsync "sentence", =>
                     bound.call this, args..., callback
                 sentence socket, name, value, args
