@@ -128,7 +128,8 @@ module.exports.Duplex = class Duplex extends Preflight
     @provider: (method) ->
         noMethod = "a #{method} is not a function"
         invalidArgs = "has to have at least 1 parameter"
-        applicator = _.partial @covering, method
+        assert bound = this.covering.bind this
+        applicator = _.partial bound, method
         assert _.isFunction(method), noMethod
         assert method.length >= 1, invalidArgs
         method.provider = Object.create {}
@@ -140,18 +141,19 @@ module.exports.Duplex = class Duplex extends Preflight
     # around the provider invocation procedure. This wrapping is of
     # protective nature. It also exposes some goodies for the provider.
     # Such as Socket.IO handle, session if available and the context.
-    @covering: (method, socket, context) -> (parameters..., callback) ->
+    @covering: (method, socket, context) ->
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
         assert session = socket?.handshake?.session
-        guarded = @constructor.guarded? method, socket
+        assert _.isObject guarded = @guarded method, socket
         assert _.isFunction g = guarded.run.bind guarded
         s = (f) => session.save -> f.apply this, arguments
-        execute = (a...) => g => method.apply this, i(a)
-        respond = (a...) => g => s => callback.apply this, o(a)
-        respond.socket = socket; respond.context = context
-        respond.session = session; socket.session = session
-        return execute parameters..., respond
+        assert context; return (parameters..., callback) ->
+            execute = (a...) => g => method.apply this, i(a)
+            respond = (a...) => g => s => callback.apply this, o(a)
+            respond.socket = socket; respond.context = context
+            respond.session = session; socket.session = session
+            return execute parameters..., respond
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
