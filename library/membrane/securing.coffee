@@ -75,7 +75,7 @@ module.exports.RDuplex = class RDuplex extends Duplex
         internal = (e) -> "internal Redis error: #{e}"
         noUuid = "the request has no UUID attached"
         assert _.isString(u = request.uuid), noUuid
-        @redis.incr gen(key(u)), (error, value) ->
+        @redis.incr gen(key(u)), (error, value) =>
             assert.ifError error, internal error
             @redis.expire gen(key(u)), 60, (error) ->
                 assert.ifError error, internal error
@@ -93,7 +93,7 @@ module.exports.RDuplex = class RDuplex extends Duplex
         internal = (e) -> "internal Redis error: #{e}"
         noUuid = "the request has no UUID attached"
         assert uuid = binder.uuid.request, noUuid
-        @redis.decr gen(key(uuid)), (error, value) ->
+        @redis.decr gen(key(uuid)), (error, value) =>
             assert.ifError error, internal error
             return socket.disconnect() if value < 0
             return next() if value and value >= 1
