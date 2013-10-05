@@ -101,7 +101,8 @@ module.exports.RDuplex = class RDuplex extends Duplex
 # This is an abstract base class API stub service. Its purpose is
 # providing the boilerplate for ensuring that the connection is
 # going through the HTTPS channel. If a request is not going via
-# SSL transport then redirect the current request to such one.
+# SSL transport then redirect the current request to such one. Be
+# aware that this compund will be effective for all HTTP methods.
 module.exports.OnlySsl = class OnlySsl extends Barebones
 
     # This is a marker that indicates to some internal subsystems
