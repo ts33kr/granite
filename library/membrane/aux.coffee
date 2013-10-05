@@ -54,6 +54,26 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
+    # A hook that will be called once the Connect middleware writes
+    # off the headers. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    headers: (request, response, resource, domain, next) ->
+        assert auxiliaries = @constructor.aux() or {}
+        mapper = (closure) -> _.map auxiliaries, closure
+        hosting = try @constructor.identify().underline
+        routines = mapper (value, key) -> (callback) ->
+            assert _.isObject singleton = value.obtain()
+            message = "Cascading headers from %s to %s @ %s"
+            headers = singleton.upstreamAsync "headers", ->
+                identity = value.identify().underline
+                template = [hosting, identity, key]
+                logger.debug message.grey, template...
+                assert singleton is this; callback()
+            headers request, response, resource, domain
+        return async.series routines, next
+
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
     # method is wired in an synchronous way for greater functionality.
