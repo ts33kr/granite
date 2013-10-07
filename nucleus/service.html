@@ -77,7 +77,7 @@ new suitable services to register. This works asynchronously!</p></div></div><di
         <span class="nv">noKernel = </span><span class="s">&quot;got no valid kernel&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">noKernel</span>
         <span class="nv">service = </span><span class="k">new</span> <span class="k">this</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="nx">assert</span> <span class="nv">upstream = </span><span class="nx">service</span><span class="p">.</span><span class="nx">upstreamAsync</span>
+        <span class="nv">upstream = </span><span class="nx">service</span><span class="p">.</span><span class="nx">upstreamAsync</span>
         <span class="nv">upstream = </span><span class="nx">upstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">service</span>
         <span class="nv">instance = </span><span class="nx">upstream</span> <span class="s">&quot;instance&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
             <span class="nx">callback</span><span class="o">?</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">kernel</span>
@@ -130,7 +130,25 @@ Use this to configure what domains should match with service.</p></div></div><di
         <span class="nv">notRegexp = </span><span class="s">&quot;The </span><span class="si">#{</span><span class="nx">inspected</span><span class="si">}</span><span class="s"> is not a valid regexp&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isRegExp</span><span class="p">(</span><span class="nx">pattern</span><span class="p">)</span> <span class="o">and</span> <span class="nx">pattern</span><span class="p">.</span><span class="nx">source</span><span class="p">,</span> <span class="nx">notRegexp</span>
         <span class="vi">@domains = </span><span class="p">(</span><span class="nx">@domains</span> <span class="o">or</span> <span class="p">[]).</span><span class="nx">concat</span> <span class="nx">pattern</span>
-        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">associate</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">identify</span><span class="p">;</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method determines whether the supplied HTTP request
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">associate</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">identify</span><span class="p">;</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should process the already matched HTTP request.
+But since this is an abstract base class, this implementation
+only extracts the domain and pathname captured groups, and
+returns them to the caller. Override it to do some real job.
+The captured groups may be used by the overrider or ditched.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">process: </span><span class="nf">(request, response, next) -&gt;</span>
+        <span class="nv">gdomain = </span><span class="kc">null</span><span class="p">;</span> <span class="nv">gresource = </span><span class="kc">null</span>
+        <span class="nv">wildcard = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">WILDCARD</span>
+        <span class="nv">resources = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">resources</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">domains = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">domains</span> <span class="o">or</span> <span class="p">[</span><span class="nx">wildcard</span><span class="p">]</span>
+        <span class="nv">pathname = </span><span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">pathname</span>
+        <span class="nv">hostname = </span><span class="nx">_</span><span class="p">.</span><span class="nx">first</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span><span class="p">.</span><span class="nx">split</span> <span class="s">&quot;:&quot;</span>
+        <span class="nv">pdomain = </span><span class="nf">(p) -&gt;</span> <span class="nv">gdomain = </span><span class="nx">hostname</span><span class="p">.</span><span class="nx">match</span> <span class="nx">p</span>
+        <span class="nv">presource = </span><span class="nf">(p) -&gt;</span> <span class="nv">gresource = </span><span class="nx">pathname</span><span class="p">.</span><span class="nx">match</span> <span class="nx">p</span>
+        <span class="nv">pdomain = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">domains</span><span class="p">,</span> <span class="nx">pdomain</span>
+        <span class="nv">presource = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">resources</span><span class="p">,</span> <span class="nx">presource</span>
+        <span class="nx">assert</span> <span class="nx">gdomain</span> <span class="o">isnt</span> <span class="kc">null</span><span class="p">,</span> <span class="s">&quot;missing domain&quot;</span>
+        <span class="nx">assert</span> <span class="nx">gresource</span> <span class="o">isnt</span> <span class="kc">null</span><span class="p">,</span> <span class="s">&quot;missing resource&quot;</span>
+        <span class="nx">@emit</span> <span class="s">&quot;process&quot;</span><span class="p">,</span> <span class="nx">gdomain</span><span class="p">,</span> <span class="nx">gresource</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="k">return</span> <span class="nv">domain: </span><span class="nx">gdomain</span><span class="p">,</span> <span class="nv">resource: </span><span class="nx">gresource</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method determines whether the supplied HTTP request
 matches this service. This is determined by examining the
 domain/host and the path, in accordance with the patterns
 that were used for configuring the class of this service.
@@ -146,22 +164,4 @@ It is async, so be sure to call the <code>decide</code> with boolean!</p></div><
         <span class="nv">resourceOk = </span><span class="nx">_</span><span class="p">.</span><span class="nx">some</span> <span class="nx">resources</span><span class="p">,</span> <span class="nx">presource</span>
         <span class="nv">matches = </span><span class="nx">domainOk</span> <span class="o">and</span> <span class="nx">resourceOk</span>
         <span class="nx">@emit</span> <span class="s">&quot;matches&quot;</span><span class="p">,</span> <span class="nx">matches</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="k">return</span> <span class="nx">decide</span> <span class="nx">domainOk</span> <span class="o">and</span> <span class="nx">resourceOk</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should process the already matched HTTP request.
-But since this is an abstract base class, this implementation
-only extracts the domain and pathname captured groups, and
-returns them to the caller. Override it to do some real job.
-The captured groups may be used by the overrider or ditched.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">process: </span><span class="nf">(request, response, next) -&gt;</span>
-        <span class="nv">gdomain = </span><span class="kc">null</span><span class="p">;</span> <span class="nv">gresource = </span><span class="kc">null</span>
-        <span class="nv">pathname = </span><span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">pathname</span>
-        <span class="nv">hostname = </span><span class="nx">_</span><span class="p">.</span><span class="nx">first</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span><span class="p">.</span><span class="nx">split</span> <span class="s">&quot;:&quot;</span>
-        <span class="nv">wildcard = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">WILDCARD</span>
-        <span class="nv">resources = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">resources</span> <span class="o">or</span> <span class="p">[]</span>
-        <span class="nv">domains = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">domains</span> <span class="o">or</span> <span class="p">[</span><span class="nx">wildcard</span><span class="p">]</span>
-        <span class="nv">pdomain = </span><span class="nf">(p) -&gt;</span> <span class="nv">gdomain = </span><span class="nx">hostname</span><span class="p">.</span><span class="nx">match</span> <span class="nx">p</span>
-        <span class="nv">presource = </span><span class="nf">(p) -&gt;</span> <span class="nv">gresource = </span><span class="nx">pathname</span><span class="p">.</span><span class="nx">match</span> <span class="nx">p</span>
-        <span class="nv">pdomain = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">domains</span><span class="p">,</span> <span class="nx">pdomain</span>
-        <span class="nv">presource = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">resources</span><span class="p">,</span> <span class="nx">presource</span>
-        <span class="nx">assert</span> <span class="nx">gdomain</span> <span class="o">isnt</span> <span class="kc">null</span><span class="p">,</span> <span class="s">&quot;missing domain&quot;</span>
-        <span class="nx">assert</span> <span class="nx">gresource</span> <span class="o">isnt</span> <span class="kc">null</span><span class="p">,</span> <span class="s">&quot;missing resource&quot;</span>
-        <span class="nx">@emit</span> <span class="s">&quot;process&quot;</span><span class="p">,</span> <span class="nx">gdomain</span><span class="p">,</span> <span class="nx">gresource</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="k">return</span> <span class="nv">domain: </span><span class="nx">gdomain</span><span class="p">,</span> <span class="nv">resource: </span><span class="nx">gresource</span></div></div></div></div></body></html>
+        <span class="k">return</span> <span class="nx">decide</span> <span class="nx">domainOk</span> <span class="o">and</span> <span class="nx">resourceOk</span></div></div></div></div></body></html>

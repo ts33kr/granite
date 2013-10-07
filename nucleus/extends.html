@@ -62,11 +62,13 @@ setting up the object identifification tag. This tag is usually a
 class or function name, nick or an arbitraty name set with this
 method. If nothing found, the methods falls back to some default.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nb">Object</span><span class="o">::</span><span class="p">,</span> <span class="s">&quot;identify&quot;</span><span class="p">,</span>
         <span class="nv">enumerable: </span><span class="kc">no</span><span class="p">,</span> <span class="nv">value: </span><span class="nf">(identificator) -&gt;</span>
+            <span class="nv">shadowed = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">@watermark</span>
             <span class="nv">set = </span><span class="o">=&gt;</span> <span class="vi">@$identify = </span><span class="nx">identificator</span>
             <span class="k">return</span> <span class="nx">set</span><span class="p">()</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">identificator</span>
             <span class="k">return</span> <span class="nx">@$identify</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">@$identify</span>
-            <span class="k">return</span> <span class="nx">@nick</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">@nick</span>
-            <span class="k">return</span> <span class="nx">@name</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">@name</span>
+            <span class="k">return</span> <span class="nx">@nick</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">@nick</span>
+            <span class="k">return</span> <span class="nx">@name</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">@name</span>
+            <span class="k">return</span> <span class="nx">@watermark</span><span class="p">.</span><span class="nx">name</span> <span class="k">if</span> <span class="nx">shadowed</span>
             <span class="k">return</span> <span class="nx">@identify</span> <span class="k">typeof</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method is a stub that must be called in the abstract methods
 who do not have any implementation. When called, this method will
 spit out the relevant error about the caller method. It would say
@@ -83,6 +85,8 @@ Use this method rather than directly setting and check for markers.</p></div></d
         <span class="nv">enumerable: </span><span class="kc">no</span><span class="p">,</span> <span class="nv">value: </span><span class="nf">(boolean) -&gt;</span>
             <span class="nv">isAbstract = </span><span class="nx">@$abstract</span> <span class="o">is</span> <span class="k">this</span>
             <span class="k">return</span> <span class="nx">isAbstract</span> <span class="k">unless</span> <span class="nx">boolean</span><span class="o">?</span>
+            <span class="nv">wrong = </span><span class="s">&quot;has to be a boolean value&quot;</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isBoolean</span><span class="p">(</span><span class="nx">boolean</span><span class="p">),</span> <span class="nx">wrong</span>
             <span class="k">return</span> <span class="vi">@$abstract = </span><span class="k">this</span> <span class="k">if</span> <span class="nx">boolean</span>
             <span class="k">delete</span> <span class="nx">@$abstract</span><span class="p">;</span> <span class="nx">@$abstract</span> <span class="o">is</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Determine if the object that is bound to this invocation is a
 subclass of the supplied archetype class (as argument). Of course

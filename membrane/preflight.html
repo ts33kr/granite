@@ -61,7 +61,7 @@ in all the remote classes that you need to the remote call site.</p></div></div>
         <span class="vi">@remotes = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">subject</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This server side method is called on the context prior to the
 context being compiled and flushed down to the client site. The
 method is wired in an asynchronous way for greater functionality.
-This is the place where you would be importing the dependencies.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(context, request, next) -&gt;</span>
+This is the place where you would be importing the dependencies.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(symbol, context, request, next) -&gt;</span>
         <span class="nv">inline = </span><span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="o">or</span> <span class="nf">-&gt;</span>
         <span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="o">`</span><span class="nv">assert = </span><span class="nx">chai</span><span class="p">.</span><span class="nx">assert</span><span class="o">`</span>
         <span class="nv">remotes = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">remotes</span> <span class="o">or</span> <span class="p">[]</span>

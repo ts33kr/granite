@@ -46,9 +46,9 @@ The format is takes from the <code>NConf</code> config or the default <code>dev<
     <span class="nv">level = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">levelKey</span><span class="p">)</span> <span class="o">or</span> <span class="s">&quot;debug&quot;</span>
     <span class="nv">filter = </span><span class="nf">(string) -&gt;</span> <span class="nx">string</span><span class="p">.</span><span class="nx">replace</span> <span class="s">&quot;\n&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span>
     <span class="nv">writer = </span><span class="nf">(data) -&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">log</span> <span class="nx">level</span><span class="p">,</span> <span class="nx">filter</span> <span class="nx">data</span>
-    <span class="nv">options = stream: write: </span><span class="nx">writer</span>
-    <span class="nv">options.format = </span><span class="nx">format</span>
-    <span class="nx">connect</span><span class="p">.</span><span class="nx">logger</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware is really a wrapper around the <code>Connect</code> session
+    <span class="nx">assert</span> <span class="nv">options = stream: write: </span><span class="nx">writer</span>
+    <span class="nx">assert</span> <span class="nv">options.format = </span><span class="nx">format</span>
+    <span class="k">return</span> <span class="nx">connect</span><span class="p">.</span><span class="nx">logger</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware is really a wrapper around the <code>Connect</code> session
 middleware. The reason it wraps it is to automatically configure
 the session storage using the kernel and scoping configuration
 data. It is automatically connected by the kernel instance.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.session = </span><span class="nf">(kernel) -&gt;</span>
@@ -59,7 +59,23 @@ data. It is automatically connected by the kernel instance.</p></div></div><div 
     <span class="nv">options.store = </span><span class="nx">RedisStorage</span><span class="p">.</span><span class="nx">obtain</span><span class="p">()</span> <span class="k">if</span> <span class="nx">redis</span>
     <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">options</span><span class="p">),</span> <span class="nx">noSession</span>
     <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">useRedis</span><span class="p">.</span><span class="nx">blue</span> <span class="k">if</span> <span class="nx">redis</span>
-    <span class="k">return</span> <span class="nx">connect</span><span class="p">.</span><span class="nx">session</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware uses an external library to parse the incoming
+    <span class="k">return</span> <span class="nx">connect</span><span class="p">.</span><span class="nx">session</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware is a wrapper around the <code>toobusy</code> module providing
+the functinality that helps to prevent the server shutting down due
+to the excessive load. This is done via monitoring of the event loop
+polling and rating the loop lag time. If it's too big, the request
+will not be processed, but simply dropped. This is a config wrapper.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.threshold = </span><span class="nf">(kernel) -&gt;</span>
+    <span class="nv">options = </span><span class="k">try</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;threshold&quot;</span>
+    <span class="nv">wrongReason = </span><span class="s">&quot;got no threshold reason&quot;</span>
+    <span class="nv">wrongLag = </span><span class="s">&quot;no valid lag time specified&quot;</span>
+    <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">lag</span><span class="p">),</span> <span class="nx">wrongLag</span>
+    <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">reason</span><span class="p">),</span> <span class="nx">wrongReason</span>
+    <span class="p">(</span><span class="nv">busy = </span><span class="nx">require</span> <span class="s">&quot;toobusy&quot;</span><span class="p">).</span><span class="nx">maxLag</span> <span class="nx">options</span><span class="p">.</span><span class="nx">lag</span>
+    <span class="nv">message = </span><span class="s">&quot;Setting threshold maximum lag to %s&quot;</span>
+    <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">message</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">options</span><span class="p">.</span><span class="nx">lag</span><span class="si">}</span><span class="s">ms&quot;</span>
+    <span class="k">return</span> <span class="nf">(request, response, next) -&gt;</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">busy</span><span class="p">()</span> <span class="o">is</span> <span class="kc">yes</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="mi">503</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">reason</span>
+        <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware uses an external library to parse the incoming
 user agent identification string into a platform description
 object. If the user agent string is absent from the requesting
 entity then the platform will not be defined on request object.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.platform = </span><span class="nf">(kernel) -&gt;</span>

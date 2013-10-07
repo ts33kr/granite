@@ -125,7 +125,7 @@ refer to the <code>prelude</code> implementation in this class for the info.</p>
             <span class="nx">context</span><span class="p">.</span><span class="nx">scripts</span><span class="p">.</span><span class="nx">push</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">file</span><span class="si">}</span><span class="s">/</span><span class="si">#{</span><span class="nx">entry</span><span class="si">}</span><span class="s">&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This server side method is called on the context prior to the
 context being compiled and flushed down to the client site. The
 method is wired in an asynchronous way for greater functionality.
-This is the place where you would be importing the dependencies.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(context, request, next) -&gt;</span>
+This is the place where you would be importing the dependencies.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(symbol, context, request, next) -&gt;</span>
         <span class="nv">list = </span><span class="nx">bower</span><span class="p">.</span><span class="nx">commands</span><span class="p">.</span><span class="nx">list</span>
         <span class="nv">bowerings = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">bowerings</span> <span class="o">?=</span> <span class="p">[]</span>
         <span class="nx">cached</span> <span class="nx">context</span> <span class="k">if</span> <span class="nv">cached = </span><span class="nx">bowerings</span><span class="p">.</span><span class="nx">cached</span>
