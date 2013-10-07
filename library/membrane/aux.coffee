@@ -134,7 +134,7 @@ module.exports.Auxiliary = class Auxiliary extends Zombie
     # Typically an HTTP pathname pattern and a domain name pattern.
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
-    @location: -> "/#{@uuid ?= uuid.v4()}/#{@identify()}"
+    @location: -> "/#{@reference()}/#{@identify()}"
 
     # These invocations establish the parameters which are going
     # to be used for matching HTTP requests against this service.

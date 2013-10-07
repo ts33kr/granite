@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 assert = require "assert"
 logger = require "winston"
 uuid = require "node-uuid"
+crypto = require "crypto"
 colors = require "colors"
 async = require "async"
 util = require "util"
@@ -119,6 +120,21 @@ module.exports.Service = class Service extends Archetype
         instance = upstream "instance", ->
             callback? service, kernel
         instance kernel, service; service
+
+    # This method provides a handy, convenient tool for obtainting a
+    # stringified identificator tag (a reference) for a service class.
+    # This tag is supposed to be something between machine and human
+    # readable. Typically, this is a short hash function, such as an
+    # MD5 hash represented (stringified) with HEX digesting mechanism.
+    @reference: ->
+        installed = _.isString @$reference
+        return @$reference if installed is yes
+        noOrigin = "#{identify()} has no origin"
+        assert hasher = crypto.createHash "md5"
+        assert location = @origin.id, noOrigin
+        assert factor = "#{location}:#{@identify()}"
+        digest = hasher.update(factor).digest "hex"
+        assert digest; return @$reference = digest
 
     # This method is a tool for obtaining a fully qualified path to
     # access to the resource, according to the HTTP specification.
