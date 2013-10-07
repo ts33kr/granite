@@ -78,7 +78,6 @@ module.exports.Extending = remote -> class Extending extends Object
             set = => @$identify = identificator
             return set() if _.isString identificator
             return @$identify if _.isString @$identify
-            return @nick unless _.isEmpty @nick
             return @name unless _.isEmpty @name
             return @watermark.name if shadowed
             return @identify typeof this
