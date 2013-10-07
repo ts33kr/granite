@@ -71,13 +71,13 @@ module.exports.Generic = class Generic extends Archetype
     serveStaticDirectory: (directory, options) ->
         cwd = process.cwd().toString()
         solved = paths.relative cwd, directory
-        serving = "serving %s as static assets dir"
         notExist = "assets dir %s does not exist"
+        serving = "Serving %s as static assets dir"
         fail = -> logger.warn notExist, solved.underline
         return fail() unless fs.existsSync directory
         middleware = connect.static directory, options
         logger.info serving.cyan, solved.underline
-        @connect.use middleware
+        return @connect.use middleware
 
     # An embedded system for adding ad-hoc configuration routines.
     # Supply the reasoning and the routine and this method will add
@@ -246,6 +246,8 @@ module.exports.Generic = class Generic extends Archetype
     setupConnectPipeline: ->
         @connect = connect()
         @connectStaticAssets()
+        threshold = plumbs.threshold this
+        @connect.use @threshold = threshold
         @connect.use @query = connect.query()
         @connect.use @favicon = connect.favicon()
         @connect.use @compress = connect.compress()

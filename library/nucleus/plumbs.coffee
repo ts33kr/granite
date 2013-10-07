@@ -67,6 +67,25 @@ module.exports.session = (kernel) ->
     logger.info useRedis.blue if redis
     return connect.session options
 
+# This middleware is a wrapper around the `toobusy` module providing
+# the functinality that helps to prevent the server shutting down due
+# to the excessive load. This is done via monitoring of the event loop
+# polling and rating the loop lag time. If it's too big, the request
+# will not be processed, but simply dropped. This is a config wrapper.
+module.exports.threshold = (kernel) ->
+    options = try nconf.get "threshold"
+    wrongReason = "got no threshold reason"
+    wrongLag = "no valid lag time specified"
+    assert _.isNumber(options?.lag), wrongLag
+    assert _.isString(options?.reason), wrongReason
+    (busy = require "toobusy").maxLag options.lag
+    message = "Setting threshold maximum lag to %s"
+    logger.info message.magenta, "#{options.lag}ms"
+    return (request, response, next) ->
+        return next() unless busy() is yes
+        response.writeHead 503, options.reason
+        return response.end()
+
 # This middleware uses an external library to parse the incoming
 # user agent identification string into a platform description
 # object. If the user agent string is absent from the requesting
