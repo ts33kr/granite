@@ -49,9 +49,9 @@ module.exports.logger = (kernel) ->
     level = nconf.get(levelKey) or "debug"
     filter = (string) -> string.replace "\n", ""
     writer = (data) -> logger.log level, filter data
-    options = stream: write: writer
-    options.format = format
-    connect.logger options
+    assert options = stream: write: writer
+    assert options.format = format
+    return connect.logger options
 
 # This middleware is really a wrapper around the `Connect` session
 # middleware. The reason it wraps it is to automatically configure
