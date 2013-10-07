@@ -120,7 +120,8 @@ module.exports.Descriptor = class Descriptor extends Stubs
         assert _.isFunction(descriptor), noDescriptor
         assert _.isFunction(method), noMethod
         method.document ?= new Document
-        method.document.blankSlate = ->
+        method.document.descriptor = descriptor
+        assert method.document.blankSlate = ->
             document = new Document
             document.descriptor = @descriptor
             document.blankSlate = @blankSlate
