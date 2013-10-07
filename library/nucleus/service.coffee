@@ -99,6 +99,13 @@ module.exports.Service = class Service extends Archetype
     # Please be sure invoke the `next` arg to proceed, if relevant.
     unregister: (kernel, router, next) -> next()
 
+    # A hook that will be called prior to firing up the processing
+    # of the service. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    ignition: (request, response, next) -> next()
+
     # An important method whose responsibility is to create a new
     # instance of the service, which is later will be registered in
     # the router. This is invoked by the watcher when it discovers

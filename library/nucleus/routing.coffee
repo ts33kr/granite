@@ -63,8 +63,10 @@ module.exports.Router = class Router extends Archetype
             @emit "recognized", recognized, signature...
             matching = "Request %s matches %s service"
             logger.debug matching.grey, incoming, identify
-            return recognized.process signature...
-            next() unless response.headerSent
+            ignite = recognized.upstreamAsync "ignition", ->
+                return recognized.process signature...
+                next() unless response.headerSent
+            return ignite request, response
 
     # Try registering a new routable object. The method checks for
     # the object to be of the correct type, basically making sure
