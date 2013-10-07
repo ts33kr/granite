@@ -83,7 +83,7 @@ module.exports.Publish = class Publish extends Barebones
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     preprocess: (request, response, resource, domain, next) ->
-        descriptions = @collectDescriptions()
+        assert descriptions = @collectDescriptions()
         internalError = "unexpected publishing error"
         assert _.isObject request.records = descriptions
         return next() unless _.isObject request.platform
