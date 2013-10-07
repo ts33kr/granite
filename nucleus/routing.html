@@ -54,8 +54,10 @@ A set of tests are performed to ensure the logical integrity.</p></div></div><di
             <span class="nx">@emit</span> <span class="s">&quot;recognized&quot;</span><span class="p">,</span> <span class="nx">recognized</span><span class="p">,</span> <span class="nx">signature</span><span class="p">...</span>
             <span class="nv">matching = </span><span class="s">&quot;Request %s matches %s service&quot;</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">matching</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">incoming</span><span class="p">,</span> <span class="nx">identify</span>
-            <span class="k">return</span> <span class="nv">results = </span><span class="nx">recognized</span><span class="p">.</span><span class="nx">process</span> <span class="nx">signature</span><span class="p">...</span>
-            <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">response</span><span class="p">.</span><span class="nx">headerSent</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Try registering a new routable object. The method checks for
+            <span class="nv">ignite = </span><span class="nx">recognized</span><span class="p">.</span><span class="nx">upstreamAsync</span> <span class="s">&quot;ignition&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+                <span class="k">return</span> <span class="nx">recognized</span><span class="p">.</span><span class="nx">process</span> <span class="nx">signature</span><span class="p">...</span>
+                <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">response</span><span class="p">.</span><span class="nx">headerSent</span>
+            <span class="k">return</span> <span class="nx">ignite</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Try registering a new routable object. The method checks for
 the object to be of the correct type, basically making sure
 that it is capable of doing the routing functionality code.
 If something is wrong, this method will throw an exception.
@@ -78,7 +80,7 @@ The method is idempotent, ergo no duplication of routables.</p></div></div><div 
             <span class="p">(</span><span class="nx">@registry</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">unshift</span> <span class="nx">routable</span>
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">callback</span>
             <span class="k">return</span> <span class="nx">callback</span> <span class="nx">routable</span><span class="p">,</span> <span class="k">this</span>
-        <span class="nx">register</span> <span class="nx">@kernel</span><span class="p">,</span> <span class="k">this</span><span class="p">;</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Unregister the supplied service instance from the kernel router.
+        <span class="nx">register</span> <span class="nx">@kernel</span><span class="p">,</span> <span class="k">this</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Unregister the supplied service instance from the kernel router.
 You should call this method only after the service has been
 previously registered with the kernel router. This method does
 modify the router register, ergo does write access to kernel.
@@ -98,4 +100,4 @@ It will also call hooks on the service, notifying unregister.</p></div></div><di
             <span class="nx">@registry</span><span class="p">.</span><span class="nx">splice</span> <span class="nx">index</span><span class="p">,</span> <span class="mi">1</span> <span class="c1"># delete</span>
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">callback</span>
             <span class="k">return</span> <span class="nx">callback</span> <span class="nx">routable</span><span class="p">,</span> <span class="k">this</span>
-        <span class="nx">unregister</span> <span class="nx">@kernel</span><span class="p">,</span> <span class="k">this</span><span class="p">;</span> <span class="nx">@</span></div></div></div></div></body></html>
+        <span class="nx">unregister</span> <span class="nx">@kernel</span><span class="p">,</span> <span class="k">this</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@</span></div></div></div></div></body></html>
