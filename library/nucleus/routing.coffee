@@ -90,7 +90,7 @@ module.exports.Router = class Router extends Archetype
             (@registry ?= []).unshift routable
             return unless _.isFunction callback
             return callback routable, this
-        register @kernel, this; @
+        register @kernel, this; return @
 
     # Unregister the supplied service instance from the kernel router.
     # You should call this method only after the service has been
@@ -113,4 +113,4 @@ module.exports.Router = class Router extends Archetype
             @registry.splice index, 1 # delete
             return unless _.isFunction callback
             return callback routable, this
-        unregister @kernel, this; @
+        unregister @kernel, this; return @
