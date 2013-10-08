@@ -53,12 +53,6 @@ module.exports.Service = class Service extends Archetype
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
-    # Here follows a set of definitions that predefine the usual
-    # suspects in establishing the matching patterns. Basically,
-    # a number of convenient shorthands for wildcard patterns.
-    # Use them when you need to wildcard or do a wide match.
-    @INDEX = /^\/$/; @WILDCARD = /^.+$/
-
     # Every service has to have a public constructor that accepts
     # the kernel instance as a parameter. You can override it as
     # you see fit, but be sure to invoke the super constructor and
@@ -204,9 +198,8 @@ module.exports.Service = class Service extends Archetype
     # The captured groups may be used by the overrider or ditched.
     process: (request, response, next) ->
         gdomain = null; gresource = null
-        wildcard = @constructor.WILDCARD
         resources = @constructor.resources or []
-        domains = @constructor.domains or [wildcard]
+        domains = @constructor.domains or [/^.+$/]
         pathname = url.parse(request.url).pathname
         hostname = _.first request.headers.host.split ":"
         pdomain = (p) -> gdomain = hostname.match p
@@ -224,9 +217,8 @@ module.exports.Service = class Service extends Archetype
     # that were used for configuring the class of this service.
     # It is async, so be sure to call the `decide` with boolean!
     matches: (request, response, decide) ->
-        wildcard = @constructor.WILDCARD
         resources = @constructor.resources or []
-        domains = @constructor.domains or [wildcard]
+        domains = @constructor.domains or [/^.+$/]
         pathname = url.parse(request.url).pathname
         hostname = _.first request.headers.host.split ":"
         pdomain = (pattern) -> pattern.test hostname
