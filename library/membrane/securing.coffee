@@ -112,12 +112,12 @@ module.exports.OnlySsl = class OnlySsl extends Barebones
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
-    # A hook that will be called prior to invoking the API method
-    # implementation. Please refer to this prototype signature for
+    # A hook that will be called prior to firing up the processing
+    # of the service. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
-    preprocess: (request, response, resource, domain, next) ->
+    ignition: (request, response, next) ->
         connection = request?.connection
         encrypted = connection?.encrypted
         return next() if _.isObject encrypted
