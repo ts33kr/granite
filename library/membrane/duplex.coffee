@@ -69,7 +69,7 @@ module.exports.Duplex = class Duplex extends Preflight
     connected: (context, socket, next) -> next()
 
     # A usable hook that gets asynchronously invoked once a new
-    # channel (socket) gets past the prescreening hook and is rated
+    # channel (socket) gets past authorization phase and is rated
     # to be good to go through the screening process. This is good
     # place to implementation various schemes for authorization. If
     # you wish to decline, just don't call `next` and close socket.
