@@ -82,7 +82,7 @@ module.exports.Access = class Access extends Barebones
             return callback format error if error
             p = get: -> return entity or undefined
             Object.defineProperty container, key, p
-            callback undefined; return this
+            assert container[key]?; callback()
 
     # Authenticate supplied entity as the authorized entity against
     # the session found in the specified session container. Session
