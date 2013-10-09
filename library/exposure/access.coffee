@@ -72,16 +72,16 @@ module.exports.Access = class Access extends Barebones
     # defined the appropriate getter property on supplied container.
     # If the entity or session does not exist, nothing gets defined.
     dereference: (container, callback) ->
-        skey = "x-authenticate-entity"; ckey = "entity"
+        sid = "x-authenticate-entity"; key = "entity"
         return callback() unless session = container.session
-        return callback() unless content = session[skey]
-        delete container[ekey] if _.has container, ekey
+        return callback() unless content = session[sid]
+        delete container[key] if _.has container, key
         @ressurectEntity ?= (xc, xn) -> xn null, xc
         @ressurectEntity content, (error, entity) ->
             format = (e) -> "ressurection error: #{e}"
             return callback format error if error
             p = get: -> return entity or undefined
-            Object.defineProperty container, ekey, p
+            Object.defineProperty container, key, p
             callback undefined; return this
 
     # Authenticate supplied entity as the authorized entity against
