@@ -68,6 +68,17 @@ module.exports.Extending = remote -> class Extending extends Object
         string = @source.replace /\\\//g, "/"
         return string.replace /[\$\^]/g, ""
 
+    # Collect all the matches of the regular expression against of the
+    # supplied string. This method basically gathers all the matches that
+    # sequentially matches against the input string and packs them into
+    # an array which is handed to the invoker. Be sure to set the G flag.
+    RegExp::collect = (string) ->
+        matches = new Array undefined
+        noString = "got no string supplied"
+        assert _.isString(string), noString
+        matches.push m while m = @exec string
+        assert matches; return matches
+
     # This extension provides a convenient interface for looking up and
     # setting up the object identifification tag. This tag is usually a
     # class or function name, nick or an arbitraty name set with this
