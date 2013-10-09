@@ -35,6 +35,9 @@ http = require "http"
 util = require "util"
 url = require "url"
 
+extendz = require "./extends"
+compose = require "./compose"
+
 {remote} = require "../membrane/remote"
 {EventEmitter2} = require "eventemitter2"
 
