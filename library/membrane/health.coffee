@@ -58,26 +58,39 @@ module.exports.Healthcare = class Healthcare extends Service
     # the estimate as compared to the default one in `async`. Please
     # refer to the implementation for the information on a callback.
     # Implementation directly affects the contents of the result map.
-    @heartrate: (bound) -> (callback) ->
+    @heartrate: (bound) -> (callback) =>
         internalError = "heartbeat internal error"
         wrongWiring = "received no valid callback"
-        generic = "the health status is rejected"
         assert _.isFunction(bound), internalError
         assert _.isFunction(callback), wrongWiring
-        accept = -> callback undefined, yes
-        guardian = require("domain").create()
-        guard = (method) -> guardian.run method
-        invert = (res, err) -> callback err, res
-        assert check = Object.create new Object
+        assert guardian = require("domain").create()
+        accept = -> callback undefined, success: yes
+        guard = (heartbeat) -> guardian.run heartbeat
+        assert check = Object.create new Object()
         check.not = (m, c) -> throw new Error m if c
         check.for = (m, c) -> throw new Error m unless c
         check.try = (m, f) -> try f() catch e then @not m, e
-        guardian.on "error", (e) -> invert e.message
-        return guard -> bound check, accept, (message) ->
-            message = generic unless message?
-            noMessage = "got no rejection message"
-            assert _.isString(message), noMessage
-            return callback undefined, message
+        guardian.on "error", (e) => @healthreport e, callback
+        guard -> bound check, accept, (m) -> check.for m
+
+    # An internal complementary part of the healthcare system. It is
+    # used to create an appropriate healthcare report when heartbeat
+    # fails gracefully to ensure the health status. This method does
+    # include information such as originating file and line number.
+    # Please refer to the implementation regarding extracted info.
+    @healthreport: (error, callback) ->
+        descriptor = new Object success: no
+        assert stack = require("callsite")()
+        generic = "the health status has been rejected"
+        noFrame = "no correct stack trace frame is found"
+        pattern = /\s+at\s(.+)\s\((.+):(\d+):(\d+),.+\)/g
+        descriptor.message = error.message or generic
+        assert frames = pattern.collect error.stack
+        assert not _.isEmpty(target = frames[2]), noFrame
+        assert not _.isEmpty descriptor.file = target[2]
+        assert not _.isEmpty descriptor.line = target[3]
+        assert not _.isEmpty descriptor.cols = target[4]
+        return callback undefined, descriptor
 
     # Run a healthcare check on the service instance. This method
     # retrieves all the heartbeats of this service and its hierarchy
@@ -88,9 +101,9 @@ module.exports.Healthcare = class Healthcare extends Service
     healthcare: (callback) ->
         adapt = (f) => @constructor.heartrate f
         bind = (method) => adapt method.bind this
-        heartbeats = @constructor.heartbeat()
-        indexed = _.indexBy heartbeats, "summary"
-        id = try @constructor.identify().underline
+        assert heartbeats = @constructor.heartbeat()
+        assert indexed = _.indexBy heartbeats, "summary"
+        assert id = try @constructor.identify().underline
         transform = (a, v, k) -> a[k] = bind v.estimate
         transformed = _.transform indexed, transform
         message = "healthcare error at %s service: %s"
