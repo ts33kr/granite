@@ -172,7 +172,7 @@ module.exports.Service = class Service extends Archetype
         notRegexp = "The #{inspected} is not a valid regexp"
         assert _.isRegExp(pattern) and pattern.source, notRegexp
         @resources = (@resources or []).concat pattern
-        logger.debug associate.grey, identify; @
+        logger.debug associate.grey, identify; this
 
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted domain patterns.
@@ -189,7 +189,7 @@ module.exports.Service = class Service extends Archetype
         notRegexp = "The #{inspected} is not a valid regexp"
         assert _.isRegExp(pattern) and pattern.source, notRegexp
         @domains = (@domains or []).concat pattern
-        logger.debug associate.grey, identify; @
+        logger.debug associate.grey, identify; this
 
     # This method should process the already matched HTTP request.
     # But since this is an abstract base class, this implementation
