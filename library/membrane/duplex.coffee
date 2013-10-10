@@ -108,7 +108,7 @@ module.exports.Duplex = class Duplex extends Preflight
                 return accept ns, no unless session
                 upstream = @upstreamAsync "handshake", ->
                     return accept undefined, yes
-                return upstream handshake, context
+                return upstream context, handshake
 
     # An internal, static method that is used to obtain gurading
     # domains for each of the declared server site providers. Please
@@ -161,8 +161,8 @@ module.exports.Duplex = class Duplex extends Preflight
             execute = (a...) => g => method.apply this, i(a)
             respond = (a...) => g => s => callback.apply this, o(a)
             respond.socket = socket; respond.context = context
-            try respond[k] = v for own k, v of socket.handshake
-            try socket[k] = v for own k, v of socket.handshake
+            _.extend respond, socket.handshake or new Object
+            _.extend socket, socket.handshake or new Object
             return execute parameters..., respond
 
     # This server side method is called on the context prior to the
