@@ -69,6 +69,13 @@ module.exports.Duplex = class Duplex extends Preflight
     connected: (context, socket, next) -> next()
 
     # A usable hook that gets asynchronously invoked once a new
+    # socket connection is going to be setup during the handshake.
+    # The method gets a set of parameters that maybe be useful to
+    # have by the actual implementation. Please remember thet the
+    # method is asynchronously wired, so be sure to call `next`.
+    handshake: (context, handshake, next) -> next()
+
+    # A usable hook that gets asynchronously invoked once a new
     # channel (socket) gets past authorization phase and is rated
     # to be good to go through the screening process. This is good
     # place to implementation various schemes for authorization. If
@@ -87,19 +94,21 @@ module.exports.Duplex = class Duplex extends Preflight
     # during the handshake phase. This method checks that handshake
     # contains correct session requsities and restores the session!
     # The session can normally be used as you would use req session.
-    authorization: (handshake, accept) ->
+    authorization: (context) => (handshake, accept) ->
         assert _.isFunction session = @kernel.session
         assert _.isFunction cookies = @kernel.cookieParser
         handshake.originalUrl = handshake.url or "/"
         Response = class RDummy extends EventEmitter2
         Response::setHeader = (name, value) -> undefined
         Response::end = (data, encoding) -> undefined
-        cookies handshake, response = new Response, ->
-            session handshake, response, ->
+        cookies handshake, response = new Response, =>
+            session handshake, response, =>
                 session = handshake.session
                 ns = new Error "no session found"
                 return accept ns, no unless session
-                return accept undefined, yes
+                upstream = @upstreamAsync "handshake", ->
+                    return accept undefined, yes
+                return upstream handshake, context
 
     # An internal, static method that is used to obtain gurading
     # domains for each of the declared server site providers. Please
@@ -271,7 +280,8 @@ module.exports.Duplex = class Duplex extends Preflight
         context = kernel.secureSocket.of @location()
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
-        context.authorization @authorization.bind(@)
+        assert applied = @authorization context
+        context.authorization applied.bind this
         context.on "connection", (socket) =>
             socket.on "screening", (binder, ack) =>
                 screening = @upstreamAsync "screening", =>
