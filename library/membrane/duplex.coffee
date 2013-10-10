@@ -250,6 +250,7 @@ module.exports.Duplex = class Duplex extends Preflight
                 noCallback = "#{callback} is not a callback"
                 assert _.isFunction(callback), noCallback
                 assert mangled = "#{@location}/#{provider}"
+                mangled += "/#{nsp}" if _.isString nsp = @nsp
                 deliver = => callback.apply this, i(arguments)
                 socket.emit mangled, o(parameters)..., deliver
 
@@ -258,7 +259,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # in order to attach all of the providers founds in this service
     # to the opened channel. Refer to the `register` implementation
     # for more information on when, where and how this is happening.
-    publishProviders: (context, socket, next) ->
+    publishProviders: (context, binder, socket, next) ->
         _.forIn this, (value, name, service) =>
             internal = "the #{value} is not function"
             providing = value?.providing or null
@@ -266,6 +267,7 @@ module.exports.Duplex = class Duplex extends Preflight
             assert _.isFunction(value), internal
             bound = providing socket, context
             assert mangled = "#{@location()}/#{name}"
+            mangled += "/#{nsp}" if nsp = binder.nsp
             socket.on mangled, (args..., callback) =>
                 sentence = @upstreamAsync "sentence", =>
                     bound.call this, args..., callback
@@ -287,7 +289,8 @@ module.exports.Duplex = class Duplex extends Preflight
         context.on "connection", (socket) =>
             socket.on "screening", (binder, ack) =>
                 screening = @upstreamAsync "screening", =>
-                    @publishProviders context, socket, ack
+                    bonding = [context, binder, socket, ack]
+                    @publishProviders.apply this, bonding
                 screening context, socket, binder
         return next()
 
