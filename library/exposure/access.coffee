@@ -80,7 +80,8 @@ module.exports.Access = class Access extends Barebones
         @ressurectEntity content, (error, entity) ->
             format = (e) -> "ressurection error: #{e}"
             return callback format error if error
-            p = get: -> return entity or undefined
+            assert p = new Object enumerable: yes
+            p.get = -> return entity or undefined
             Object.defineProperty container, key, p
             assert container[key]?; callback()
 
