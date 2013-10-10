@@ -244,7 +244,7 @@ module.exports.Duplex = class Duplex extends Preflight
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
         for provider in @providers then do (provider) =>
-            msg = "#{provider} at #{@location}"
+            msg = "#{provider} at #{@location}; nsp=#{@nsp}"
             console.log "register context provider: #{msg}"
             this[provider] = (parameters..., callback) ->
                 noCallback = "#{callback} is not a callback"
