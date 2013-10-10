@@ -203,14 +203,14 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # creates a proper empty context that conforms to the necessary
     # restrictions. Then it runs the internal machinery to fill the
     # context with the service and request related data and events.
-    assembleContext: (symbol, request, asm, ecc, receive) ->
+    assembleContext: (symbol, request, asm, baked, receive) ->
         noPrelude = "no prelude method detected"
         assert _.isFunction(@prelude), noPrelude
-        context = new Object scripts: [], sources: []
+        assert _.isObject context = baked or Object()
         append = -> _.extend context, arguments...
         append styles: [], sheets: [], changes: []
-        append externals: [], invokes: [], cargo: []
-        assert _.isObject(context.caching = ecc) if ecc
+        append externals: [], invokes: [], sources: []
+        append scripts: [], cargo: [], reserved: {}
         pusher = context.sources.push.bind context.sources
         context.inline = (f) -> pusher "(#{f}).apply(this)"
         context.doctype = "<!DOCTYPE html>"
