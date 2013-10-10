@@ -27,7 +27,6 @@ _ = require "lodash"
 assert = require "assert"
 asciify = require "asciify"
 connect = require "connect"
-request = require "request"
 logger = require "winston"
 colors = require "colors"
 async = require "async"
@@ -52,27 +51,6 @@ module.exports.Access = class Access extends Barebones
     # mainly is used to exclude or account for abstract classes.
     @abstract yes
 
-    # A usable hook that gets asynchronously invoked once a new
-    # socket connection is going to be setup during the handshake.
-    # The method gets a set of parameters that maybe be useful to
-    # have by the actual implementation. Please remember thet the
-    # method is asynchronously wired, so be sure to call `next`.
-    handshake: (context, hso, next) -> @dereference hso, next
-
-    # A hook that will be called prior to firing up the processing
-    # of the service. Please refer to this prototype signature for
-    # information on the parameters it accepts. Beware, this hook
-    # is asynchronously wired in, so consult with `async` package.
-    # Please be sure invoke the `next` arg to proceed, if relevant.
-    ignition: (req, response, next) -> @dereference req, next
-
-    # A usable hook that gets asynchronously invoked once a sentence
-    # comes through an opened channel. This happens every time when
-    # a client tries to invoke a server site provider method. This
-    # is a good place to validate if an invocation is legitimate or
-    # not. If you do not invoke `next` then the call won't happen!
-    sentence: (sob, trail..., next) -> @dereference sob, next
-
     # Dereference the potentially existent entity from the session
     # into the supplied container, where the session is residing. It
     # basically retrieves the hibernated entity, ressurects it and
@@ -85,9 +63,10 @@ module.exports.Access = class Access extends Barebones
         delete container[key] if _.has container, key
         @ressurectEntity ?= (xc, xn) -> xn null, xc
         @ressurectEntity content, (error, entity) ->
-            format = (e) -> "ressurection error: #{e}"
-            return callback format error if error
-            assert p = new Object enumerable: yes
+            format = (m) -> "ressurection error: #{m}"
+            masked = format error.message if error
+            return callback Error masked if error
+            p = enumerable: yes, configurable: yes
             p.get = -> return entity or undefined
             Object.defineProperty container, key, p
             assert container[key]?; callback()
@@ -111,3 +90,39 @@ module.exports.Access = class Access extends Barebones
             session.cookie.maxAge = 2628000000 if rme
             session.save => @dereference container, ->
                 return callback undefined, content
+
+    # A hook that will be called prior to firing up the processing
+    # of the service. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    ignition: (request, response, next) ->
+        assert _.isString id = @constructor.identify()
+        format = (m) -> "ingition access error: #{m}"
+        logger.debug "Ingition dereferencing at #{id}"
+        success = "Got valid ignition entity at #{id}"
+        try @dereference request, (error, supply) ->
+            succeeded = _.isObject request.entity
+            logger.debug success.green if succeeded
+            return next undefined if _.isEmpty error
+            assert message = error.message or error
+            logger.error format(message).red
+            return next error
+
+    # A usable hook that gets asynchronously invoked once a new
+    # socket connection is going to be setup during the handshake.
+    # The method gets a set of parameters that maybe be useful to
+    # have by the actual implementation. Please remember thet the
+    # method is asynchronously wired, so be sure to call `next`.
+    handshake: (context, handshake, next) ->
+        assert _.isString id = @constructor.identify()
+        format = (m) -> "handshake access error: #{m}"
+        logger.debug "Handshake dereferencing at #{id}"
+        success = "Got valid handshake entity at #{id}"
+        try @dereference handshake, (error, supply) ->
+            succeeded = _.isObject handshake.entity
+            logger.debug success.green if succeeded
+            return next undefined if _.isEmpty error
+            assert message = error.message or error
+            logger.error format(message).red
+            return next error
