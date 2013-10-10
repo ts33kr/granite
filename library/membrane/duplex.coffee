@@ -161,8 +161,8 @@ module.exports.Duplex = class Duplex extends Preflight
             execute = (a...) => g => method.apply this, i(a)
             respond = (a...) => g => s => callback.apply this, o(a)
             respond.socket = socket; respond.context = context
-            _.extend respond, socket.handshake or new Object
-            _.extend socket, socket.handshake or new Object
+            try respond[k] = v for own k, v of socket.handshake
+            try socket[k] = v for own k, v of socket.handshake
             return execute parameters..., respond
 
     # This server side method is called on the context prior to the
