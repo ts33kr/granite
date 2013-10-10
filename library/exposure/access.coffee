@@ -90,7 +90,7 @@ module.exports.Access = class Access extends Barebones
     # container could be either a request or duplex socket or other
     # member that has the session storage installed under `session`.
     # The method also saves the session once it has authenticated.
-    authenticate: (container, entity, callback) ->
+    authenticate: (container, entity, rme, callback) ->
         noSave = "the session has not save function"
         noSession = "container has no session object"
         assert session = container?.session, noSession
@@ -101,5 +101,6 @@ module.exports.Access = class Access extends Barebones
             assert not _.isEmpty(content), "no content"
             session["x-authenticate-entity"] = content
             assert _.isFunction(session.save), noSave
+            session.cookie.maxAge = 2628000000 if rme
             session.save => @dereference container, ->
                 return callback undefined, content
