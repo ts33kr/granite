@@ -100,5 +100,5 @@ module.exports.Access = class Access extends Barebones
             assert not _.isEmpty(content), "no content"
             session["x-authenticate-entity"] = content
             assert _.isFunction(session.save), noSave
-            session.save -> @derefernce container, ->
+            session.save => @dereference container, ->
                 return callback undefined, content
