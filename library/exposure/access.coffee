@@ -53,18 +53,18 @@ module.exports.Access = class Access extends Barebones
     @abstract yes
 
     # A usable hook that gets asynchronously invoked once a new
-    # channel (socket) gets connected and acknowledges by the server.
+    # socket connection is going to be setup during the handshake.
     # The method gets a set of parameters that maybe be useful to
     # have by the actual implementation. Please remember thet the
     # method is asynchronously wired, so be sure to call `next`.
-    connected: (context, socket, next) -> @derefence socket, next
+    handshake: (context, hso, next) -> @dereference hso, next
 
     # A hook that will be called prior to firing up the processing
     # of the service. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
-    ignition: (request, response, next) -> @derefence request, next
+    ignition: (req, response, next) -> @dereference req, next
 
     # Dereference the potentially existent entity from the session
     # into the supplied container, where the session is residing. It
