@@ -66,6 +66,13 @@ module.exports.Access = class Access extends Barebones
     # Please be sure invoke the `next` arg to proceed, if relevant.
     ignition: (req, response, next) -> @dereference req, next
 
+    # A usable hook that gets asynchronously invoked once a sentence
+    # comes through an opened channel. This happens every time when
+    # a client tries to invoke a server site provider method. This
+    # is a good place to validate if an invocation is legitimate or
+    # not. If you do not invoke `next` then the call won't happen!
+    sentence: (sob, trail..., next) -> @dereference sob, next
+
     # Dereference the potentially existent entity from the session
     # into the supplied container, where the session is residing. It
     # basically retrieves the hibernated entity, ressurects it and
