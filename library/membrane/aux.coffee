@@ -87,7 +87,8 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
             assert _.isObject ecc = context.caching ?= {}
             assert _.isString qualified = "#{symbol}.#{key}"
             assembler = singleton.assembleContext.bind singleton
-            assembler qualified, request, yes, ecc, (assembled) ->
+            baked = new Object nsp: key, caching: context.caching
+            assembler qualified, request, yes, baked, (assembled) ->
                 assert context.scripts.push assembled.scripts...
                 assert context.changes.push assembled.changes...
                 assert context.sources.push assembled.sources...
