@@ -63,17 +63,26 @@ module.exports.Router = class Router extends Archetype
             @emit "recognized", recognized, signature...
             matching = "Request %s matches %s service"
             logger.debug matching.grey, incoming, identify
-            ignite = recognized.upstreamAsync "ignition", ->
-                assert domain = require("domain").create()
-                processor = recognized.process.bind recognized
-                polished = => processor.apply this, signature
-                domain.add eem for eem in [request, response]
-                domain.add recognized; domain.on "error", (error) =>
-                    rescue = recognized.upstreamAsync "rescuing", ->
-                        return next() unless response.headersSent
-                    return rescue error, request, response
-                domain.run -> process.nextTick polished
-            return ignite request, response
+            return @streamline recognized, signature...
+
+    # Streamlining happens once the requested has been matches with
+    # a service that is going to handle it. This method launches the
+    # pipeline of the necessary prerequisites and subroutines to hand
+    # the request off to the service for processing it. Normally it
+    # should not be used outside of the router (middleware) coding.
+    streamline: (recognized, request, response, next) ->
+        assert signature = _.rest arguments or Array()
+        ignite = recognized.upstreamAsync "ignition", ->
+            assert domain = require("domain").create()
+            processor = recognized.process.bind recognized
+            polished = => processor.apply this, signature
+            domain.add eem for eem in [request, response]
+            domain.add recognized; domain.on "error", (error) =>
+                rescue = recognized.upstreamAsync "rescuing", ->
+                    return next() unless response.headersSent
+                return rescue error, request, response
+            domain.run -> process.nextTick polished
+        return ignite request, response
 
     # Try registering a new routable object. The method checks for
     # the object to be of the correct type, basically making sure
