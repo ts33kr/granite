@@ -283,11 +283,11 @@ module.exports.Generic = class Generic extends Archetype
     # in with the located and instantiated services. Please refer
     # to the implementation on how and what is being done exactly.
     setupRoutableServices: ->
-        tag = nconf.get "NODE_ENV"
+        tag = nconf.get "NODE_ENV" or null
         missing = "No NODE_ENV variable found"
-        assert _.isString(tag), missing
+        assert not _.isEmpty(tag), missing
         @scope = scoping.Scope.lookupOrFail tag
         assert @scope.incorporate this
         @router = new routing.Router this
-        @middleware = @router.middleware
+        assert @middleware = @router.middleware
         @middleware = @middleware.bind @router
