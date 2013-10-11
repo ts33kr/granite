@@ -87,8 +87,8 @@ module.exports.Generic = class Generic extends Archetype
     @configure: (explain, routine) ->
         level = (e) -> logger.info "Configuring: %s", e.bold
         decor = (o) -> (a...) -> level o.explain; o.routine a...
-        if arguments.length is 0 and _.isArray @$configure
-            return async.series _.map @$configure, decor
+        run = arguments.length is 0 and _.isArray @$configure
+        return async.series _.map @$configure, decor if run
         return if not @$configure and not arguments.length
         assert _.isFunction(routine), "invalid config routine"
         assert _.isString(explain), "no explanation given"
