@@ -80,7 +80,7 @@ module.exports.Composition = remote -> class Composition extends Object
             prepped = _.unique methods.reverse()
             applied = _.map prepped, applicator
             bounded = callback?.bind(this) or ->
-            async.series applied, bounded
+            return async.series applied, bounded
 
     # A method for comparing different classes for equality. Be careful
     # as this method is very loose in terms of comparison and its main
