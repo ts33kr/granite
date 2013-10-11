@@ -73,16 +73,16 @@ module.exports.Watcher = class Watcher extends Archetype
         extension = paths.extname absolute
         return unless extension in modules
         resolved = require.resolve absolute
-        entrypoint = require.main.filename
-        go = => @reviewServices resolved
-        return if resolved is entrypoint
+        go = => return @reviewServices resolved
+        return if resolved is require.main.filename
+        fails = "Exception in module at #{path}:\r\n%s"
         relative = paths.relative process.cwd(), path
-        logger.info "Addition at %s".cyan, relative.underline
+        addition = "Adding module found at %s".cyan
+        logger.info addition, relative.underline
         return go() if resolved of require.cache
         try require resolved; go() catch error
-            message = "Exception in module at #{path}:\r\n%s"
-            logger.warn message.red, error.stack
-            @hotSwappingUnlink path
+            logger.warn fails.red, error.stack
+            return @hotSwappingUnlink path
 
     # This method will be invoked by the file system watcher on
     # the event when modules are either being changed in the dir.
@@ -95,17 +95,17 @@ module.exports.Watcher = class Watcher extends Archetype
         return unless extension in modules
         resolved = require.resolve absolute
         cached = resolved of require.cache
-        entrypoint = require.main.filename
-        return if resolved is entrypoint
         return unless @ensureSafety resolved
+        go = => return @reviewServices resolved
         delete require.cache[resolved] if cached
-        go = => @reviewServices resolved
+        return if resolved is require.main.filename
+        fails = "Exception in module at #{path}:\r\n%s"
         relative = paths.relative process.cwd(), path
-        logger.info "Changing at %s".cyan, relative.underline
+        changing = "Changing module found at %s".cyan
+        logger.info changing, relative.underline
         try require resolved; go() catch error
-            message = "Exception in module at #{path}:\r\n%s"
-            logger.warn message.red, error.stack
-            @hotSwappingUnlink path
+            logger.warn fails.red, error.stack
+            return @hotSwappingUnlink path
 
     # This method will be invoked by the file system watcher on
     # the event when modules are either being removed from dir.
@@ -117,7 +117,8 @@ module.exports.Watcher = class Watcher extends Archetype
         extension = paths.extname absolute
         return unless extension in modules
         relative = paths.relative process.cwd(), path
-        logger.info "Unlinking at %s".cyan, relative.underline
+        unlink = "Unlinking module found at %s".cyan
+        logger.info unlink, relative.underline
         registry = (router = @kernel.router)?.registry or []
         originate = (s) -> s.constructor.origin?.filename
         predicate = (s) -> originate(s) is absolute
@@ -147,7 +148,7 @@ module.exports.Watcher = class Watcher extends Archetype
         cached = require.cache[resolved]
         services = @collectServices cached
         assert queue = @obtainOperationsQueue()
-        registry = (router = @kernel.router)?.registry or []
+        registry = @kernel.router.registry or []
         originate = (s) -> s.constructor.origin?.id
         predicate = (s) -> originate(s) is resolved
         previous = _.filter registry, predicate
@@ -195,7 +196,7 @@ module.exports.Watcher = class Watcher extends Archetype
         return unless dependents.length > 0
         @forcedHotSwappingInProgress = dependents
         origins = _.unique _.map(dependents, originate)
-        message = "Forced watch enabled, swapping services: %s"
+        message = "Forced watch enabled, swapping: %s"
         logger.warn message.grey, dependents.length
         change = @hotSwappingChange.bind this
         change origin for origin in origins
@@ -211,7 +212,7 @@ module.exports.Watcher = class Watcher extends Archetype
         hasProto = (s) -> _.isObject(s) and s.prototype
         isService = (s) -> try s.inherits service.Service
         isTyped = (s) -> hasProto(s) and isService(s)
-        isFinal = (s) -> not s.abstract()
+        isFinal = (s) -> try not s.abstract()
         unscoped = _.filter globals, isTyped
         services = _.filter exports, isTyped
         services = _.merge services, unscoped
