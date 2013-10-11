@@ -88,6 +88,7 @@ module.exports.Access = class Access extends Barebones
             session["x-authenticate-entity"] = content
             assert _.isFunction(session.save), noSave
             session.cookie.maxAge = 2628000000 if rme
+            assert session.random = _.random 1, 0, yes
             session.save => @dereference container, ->
                 return callback undefined, content
 
