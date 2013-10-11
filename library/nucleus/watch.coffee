@@ -116,13 +116,13 @@ module.exports.Watcher = class Watcher extends Archetype
         modules = @constructor.EXTENSIONS
         extension = paths.extname absolute
         return unless extension in modules
-        relative = paths.relative process.cwd(), path
         unlink = "Unlinking module found at %s".cyan
-        logger.info unlink, relative.underline
+        relative = paths.relative process.cwd(), path
+        logger.info unlink, relative.toString().underline
         registry = (router = @kernel.router)?.registry or []
         originate = (s) -> s.constructor.origin?.filename
         predicate = (s) -> originate(s) is absolute
-        previous = _.filter registry, predicate
+        try previous = _.filter registry, predicate
         router.unregister prev for prev in previous
 
     # The responsibility of this method is to determine whether it is
