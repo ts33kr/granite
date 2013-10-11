@@ -79,6 +79,7 @@ module.exports.Access = class Access extends Barebones
     authenticate: (container, entity, rme, callback) ->
         noSave = "the session has not save function"
         noSession = "container has no session object"
+        message = "Persisted the entity against session"
         assert session = container?.session, noSession
         assert _.isObject(entity), "malformed entity"
         @hibernateEntity ?= (xe, xn) -> xn null, xe
@@ -88,7 +89,8 @@ module.exports.Access = class Access extends Barebones
             session["x-authenticate-entity"] = content
             assert _.isFunction(session.save), noSave
             session.cookie.maxAge = 2628000000 if rme
-            assert session.random = _.random 1, 0, yes
+            assert session.random = _.random 0, 1, yes
+            logger.debug message.blue; session.touch()
             session.save => @dereference container, ->
                 return callback undefined, content
 
