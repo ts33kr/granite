@@ -27,7 +27,6 @@ _ = require "lodash"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
-domain = require "domain"
 assert = require "assert"
 colors = require "colors"
 nconf = require "nconf"
@@ -123,8 +122,8 @@ module.exports.Duplex = class Duplex extends Preflight
     # the domains and error handling itself. This method is generally
     # used only once per the domain declaration. See `provider`.
     @guarded: (method, socket) ->
-        guarded = domain.create()
         identify = @identify().underline
+        guarded = require("domain").create()
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
         location = "Breakpoint at @#{method}#%s"
