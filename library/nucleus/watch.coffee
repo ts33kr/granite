@@ -77,7 +77,7 @@ module.exports.Watcher = class Watcher extends Archetype
         return if resolved is require.main.filename
         fails = "Exception in module at #{path}:\r\n%s"
         relative = paths.relative process.cwd(), path
-        addition = "Adding module found at %s".cyan
+        addition = "Add module at %s".cyan.toString()
         logger.info addition, relative.underline
         return go() if resolved of require.cache
         try require resolved; go() catch error
@@ -101,7 +101,7 @@ module.exports.Watcher = class Watcher extends Archetype
         return if resolved is require.main.filename
         fails = "Exception in module at #{path}:\r\n%s"
         relative = paths.relative process.cwd(), path
-        changing = "Changing module found at %s".cyan
+        changing = "Change module at %s".cyan.toString()
         logger.info changing, relative.underline
         try require resolved; go() catch error
             logger.warn fails.red, error.stack
@@ -116,7 +116,7 @@ module.exports.Watcher = class Watcher extends Archetype
         modules = @constructor.EXTENSIONS
         extension = paths.extname absolute
         return unless extension in modules
-        unlink = "Unlinking module found at %s".cyan
+        unlink = "Unlink module at %s".cyan.toString()
         relative = paths.relative process.cwd(), path
         logger.info unlink, relative.toString().underline
         registry = (router = @kernel.router)?.registry or []
