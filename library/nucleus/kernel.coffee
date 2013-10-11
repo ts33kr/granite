@@ -101,17 +101,17 @@ module.exports.Generic = class Generic extends Archetype
     # boot it up, using the hostname and port parameters from config.
     # Please use this static method instead of manually launching up.
     @bootstrap: -> new this ->
-        @setupRoutableServices()
-        @setupConnectPipeline()
-        @setupListeningServers()
-        @setupSocketServers()
-        @setupHotloadWatcher()
         @broker = new content.JsonBroker this
         message = "Booted up the kernel instance"
         sigint = "Received the SIGINT (interrupt signal)"
         sigterm = "Received the SIGTERM (terminate signal)"
         process.on "SIGINT", => @shutdownKernel sigint
         process.on "SIGTERM", => @shutdownKernel sigterm
+        assert @setupRoutableServices()
+        assert @setupConnectPipeline()
+        assert @setupListeningServers()
+        assert @setupSocketServers()
+        assert @setupHotloadWatcher()
         @constructor.configure()
         logger.info message.red
 
