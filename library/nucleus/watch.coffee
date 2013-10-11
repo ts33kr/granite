@@ -193,7 +193,7 @@ module.exports.Watcher = class Watcher extends Archetype
         predicate = (s) -> originate(s) isnt cached.id
         dependents = _.filter registry, predicate
         dependents = _.filter dependents, originate
-        return unless dependents.length > 0
+        return if dependents and _.isEmpty dependents
         @forcedHotSwappingInProgress = dependents
         origins = _.unique _.map(dependents, originate)
         message = "Forced watch enabled, swapping: %s"
