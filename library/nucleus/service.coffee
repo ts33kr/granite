@@ -29,6 +29,8 @@ uuid = require "node-uuid"
 crypto = require "crypto"
 colors = require "colors"
 async = require "async"
+nconf = require "nconf"
+http = require "http"
 util = require "util"
 url = require "url"
 
@@ -38,6 +40,7 @@ extendz = require "./extends"
 routing = require "./routing"
 scoping = require "./scoping"
 
+{format} = require "util"
 {Archetype} = require "./archetype"
 
 # This is an abstract base class for every kind of service in this
@@ -190,6 +193,24 @@ module.exports.Service = class Service extends Archetype
         assert _.isRegExp(pattern) and pattern.source, notRegexp
         @domains = (@domains or []).concat pattern
         logger.debug associate.grey, identify; this
+
+    # This method handles the rescuing of the request/response pair
+    # when some error happens during the processing of the request
+    # under this service. This method is able to to deliver content
+    # as the response if it is desirable. If not, the request will
+    # simply be reject with Node.js/Connect. Beware about `next`!
+    rescuing: (error, request, response, next) ->
+        expose = "failures:exposeExceptions"
+        assert plain = @constructor.identify()
+        identify = @constructor.identify().underline
+        template = "Exception while processing at %s: %s"
+        logger.error template.red, identify, error.stack
+        @emit "failure", this, error, request, response
+        return next() unless nconf.get(expose) is yes
+        response.setHeader "Content-Type", "text/plain"
+        response.writeHead 500, http.STATUS_CODES[500]
+        render = format template, plain, error.stack
+        response.end render; return next undefined
 
     # This method should process the already matched HTTP request.
     # But since this is an abstract base class, this implementation

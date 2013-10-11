@@ -51,21 +51,28 @@ module.exports.Router = class Router extends Archetype
     # transfers the control to the pre-installed, default routable.
     # A set of tests are performed to ensure the logical integrity.
     middleware: (request, response, next) ->
-        incoming = "#{request.url.underline}"
+        assert incoming = "#{request.url.underline}"
         p = (i, c) -> i.matches request, response, c
         signature = arguments if _.isArguments arguments
         async.detectSeries @registry, p, (recognized) =>
             missing = "Request %s does not match any service"
             logger.debug missing.grey, incoming unless recognized?
-            return next() unless _.isObject recognized
-            constructor = recognized.constructor
+            return next undefined unless _.isObject recognized
+            assert constructor = recognized.constructor
             identify = constructor?.identify()?.underline
             @emit "recognized", recognized, signature...
             matching = "Request %s matches %s service"
             logger.debug matching.grey, incoming, identify
             ignite = recognized.upstreamAsync "ignition", ->
-                return recognized.process signature...
-                next() unless response.headerSent
+                assert domain = require("domain").create()
+                processor = recognized.process.bind recognized
+                polished = => processor.apply this, signature
+                domain.add eem for eem in [request, response]
+                domain.add recognized; domain.on "error", (error) =>
+                    rescue = recognized.upstreamAsync "rescuing", ->
+                        return next() unless response.headersSent
+                    return rescue error, request, response
+                domain.run -> process.nextTick polished
             return ignite request, response
 
     # Try registering a new routable object. The method checks for
