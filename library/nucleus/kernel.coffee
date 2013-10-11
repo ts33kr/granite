@@ -85,14 +85,14 @@ module.exports.Generic = class Generic extends Archetype
     # the kernel boots up. With no arguments it launches the stack.
     # This is a convenient way of running additions config routines.
     @configure: (explain, routine) ->
-        if arguments.length is 0
-            return unless _.isArray @$configure
-            level = (e) -> logger.info "Configuring: %s", e
-            fix = (o) -> (a...) -> level o.explain; o.routine a...
-            return async.series _.map(@$configure, fix)
+        level = (e) -> logger.info "Configuring: %s", e.bold
+        decor = (o) -> (a...) -> level o.explain; o.routine a...
+        if arguments.length is 0 and _.isArray @$configure
+            return async.series _.map @$configure, decor
+        return if not @$configure and not arguments.length
         assert _.isFunction(routine), "invalid config routine"
         assert _.isString(explain), "no explanation given"
-        (@$configure ?= []).push
+        assert (@$configure ?= []).push
             explain: explain
             routine: routine
 
