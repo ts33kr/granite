@@ -68,6 +68,13 @@ module.exports.Duplex = class Duplex extends Preflight
     # method is asynchronously wired, so be sure to call `next`.
     connected: (context, socket, next) -> next()
 
+    # A usable hook that gets asynchronously invoked once a socket
+    # gets disconnected after it has passes through the connection.
+    # The method gets a set of parameters that maybe be useful to
+    # have by the actual implementation. Please remember thet the
+    # method is asynchronously wired, so be sure to call `next`.
+    disengage: (context, socket, next) -> next()
+
     # A usable hook that gets asynchronously invoked once a new
     # socket connection is going to be setup during the handshake.
     # The method gets a set of parameters that maybe be useful to
@@ -195,8 +202,12 @@ module.exports.Duplex = class Duplex extends Preflight
         logger.debug message.magenta, identify.underline
         logger.debug request.magenta, context.url.underline
         logger.debug isocket.magenta, callback.socket.id
+        callback.socket.on "disconnect", (error) =>
+            assert.ifError error, "broken disconnect"
+            assert disengage = @upstreamAsync "disengage"
+            return disengage context, callback.socket
         connected = @upstreamAsync "connected", callback
-        connected context, callback.socket; this
+        connected context, callback.socket; return this
 
     # This is an external method that will be automatically executed
     # on the client site by the duplex implementation. It sets up a
