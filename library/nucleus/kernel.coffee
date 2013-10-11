@@ -120,10 +120,9 @@ module.exports.Generic = class Generic extends Archetype
     # the purpose of setting up the configurations will never be
     # changed, such as the kernel self identification tokens.
     constructor: (initializer) ->
-        nconf.env().argv()
-        @setupLoggingFacade()
-        @package = @constructor.PACKAGE
-        branding = [@package.name, "smisome1"]
+        nconf.env().argv(); @setupLoggingFacade()
+        assert @package = @constructor.PACKAGE or {}
+        assert branding = [@package.name, "smisome1"]
         types = [@package.version, @package.codename]
         asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
@@ -131,7 +130,7 @@ module.exports.Generic = class Generic extends Archetype
             using = "Using %s class as the kernel type"
             logger.info identify.underline, types...
             logger.info using, @constructor.name.bold
-            initializer?.apply this
+            return initializer?.apply this
 
     # Shutdown the kernel instance. This includes shutting down both
     # HTTP and HTTPS server that may be running, stopping the router
