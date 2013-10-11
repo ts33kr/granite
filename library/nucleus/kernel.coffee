@@ -162,7 +162,7 @@ module.exports.Generic = class Generic extends Archetype
         watch = @watcher.watchDirectory.bind @watcher
         watch directory for directory in subjects
         watch paths.resolve __dirname, "../exposure"
-        watch library.toString(); this
+        watch library.toString(); return this
 
     # The utilitary method that is being called by either the kernel
     # or scope implementation to establish the desirable facade for
@@ -221,7 +221,7 @@ module.exports.Generic = class Generic extends Archetype
         @server = http.createServer @connect
         @server?.listen server.port, hostname
         @server.on "connection", (socket) ->
-            socket.setNoDelay yes
+            return socket.setNoDelay yes
 
     # Setup and attach Socket.IO handlers to each of the servers.
     # That is HTTP and HTTPS servers that are running and listening
@@ -261,22 +261,22 @@ module.exports.Generic = class Generic extends Archetype
         @connect.use @accepts = plumbs.accepts this
         @connect.use @sender = plumbs.sender this
         @connect.use @logger = plumbs.logger this
-        @connect.use @middleware
+        return @connect.use @middleware
 
     # Setup a set of appropriate Connect middlewares that will take
     # care of serving static directory content for all configured
     # assets directory, using the options drawed from configuration.
     # You should override the method to tweak the creation process.
     connectStaticAssets: ->
-        envs = nconf.get "env:dirs"
-        dirs = nconf.get "assets:dirs"
-        opts = nconf.get "assets:opts"
+        envs = nconf.get "env:dirs" or Array()
+        dirs = nconf.get "assets:dirs" or Array()
+        opts = nconf.get "assets:opts" or Object()
         pub = -> _.find envs, (dir) -> dir is "pub"
         assert _.isString(pub()), "no pub environment"
         assert _.isObject(opts), "no assets options"
         assert _.isArray(dirs), "no assets directories"
         @serveStaticDirectory d, opts for d in dirs
-        @serveStaticDirectory pub()
+        return @serveStaticDirectory pub()
 
     # This method sets up the necessary internal toolkits, such as
     # the determined scope and the router, which is then are wired
@@ -287,7 +287,7 @@ module.exports.Generic = class Generic extends Archetype
         missing = "No NODE_ENV variable found"
         assert _.isString(tag), missing
         @scope = scoping.Scope.lookupOrFail tag
-        @scope.incorporate this
+        assert @scope.incorporate this
         @router = new routing.Router this
         @middleware = @router.middleware
         @middleware = @middleware.bind @router
