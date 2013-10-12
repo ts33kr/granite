@@ -80,8 +80,8 @@ module.exports.Zombie = class Zombie extends Service
         instantiated = => _.has @, "instance"
         return @instance if instantiated()
         internal = "an internal zombie error"
-        @instance = new this arguments...
-        assert instantiated(), internal
+        assert @instance = new this arguments...
+        assert instantiated() is yes, internal
         assert upstream = @instance.upstreamAsync
         upstream = upstream.bind @instance
         singleton = upstream "singleton", ->
