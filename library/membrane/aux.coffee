@@ -40,6 +40,7 @@ url = require "url"
 {Zombie} = require "../nucleus/zombie"
 {Duplex} = require "../membrane/duplex"
 {Preflight} = require "./preflight"
+{Screenplay} = require "./visual"
 
 # This definition stands for the compound that provides support
 # for auxiliary services. These services reside within the conext
@@ -109,37 +110,14 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
         assert _.isObject(definition), noDefinition
         assert @$aux = _.clone(@$aux or new Object)
         _.each definition, (value, key, collection) =>
-            notAux = "not an auxiliary: #{value}"
+            notZombie = "not a zombie child: #{value}"
+            notScreen = "has no visual core: #{value}"
             wrongValue = "got invalid value: #{value}"
             wrongKey = "invalid key supplied: #{key}"
             assert _.isObject(value), wrongValue
             assert not _.isEmpty(key), wrongKey
-            assert value.inherits(Auxiliary), notAux
+            isScreen = value.inherits(Screenplay)
+            isZombie = value.inherits(Zombie)
+            assert isScreen is yes, notScreen
+            assert isZombie is yes, notZombie
             return assert @$aux[key] = value
-
-# An abstract base class for all the auxiliary service definitions.
-# An auxiliary service base class is a chimera that extends from the
-# `Zombie` service in addition to the end user service: one of those
-# implementations. Be careful to consider that auxiliary services do
-# inherit the zombie behavior with all the respectful consequences.
-module.exports.Auxiliary = class Auxiliary extends Zombie
-
-    # This is a marker that indicates to some internal subsystems
-    # that this class has to be considered abstract and therefore
-    # can not be treated as a complete class implementation. This
-    # mainly is used to exclude or account for abstract classes.
-    @abstract yes
-
-    # These invocations establish the parameters which are going
-    # to be used for matching HTTP requests against this service.
-    # Typically an HTTP pathname pattern and a domain name pattern.
-    # Try not to put constraints on the domain, unless necessary.
-    # Also, the compounds for the composition system belong here.
-    @location: -> "/#{@reference()}/#{@identify()}"
-
-    # These invocations establish the parameters which are going
-    # to be used for matching HTTP requests against this service.
-    # Typically an HTTP pathname pattern and a domain name pattern.
-    # Try not to put constraints on the domain, unless necessary.
-    # Also, the compounds for the composition system belong here.
-    @compose Preflight
