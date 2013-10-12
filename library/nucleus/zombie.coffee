@@ -83,8 +83,8 @@ module.exports.Zombie = class Zombie extends Service
         assert @instance = new this arguments...
         assert instantiated() is yes, internal
         assert upstream = @instance.upstreamAsync
-        upstream = upstream.bind @instance
-        singleton = upstream "singleton", ->
+        assert upstream = upstream.bind @instance
+        assert singleton = upstream "singleton", ->
             callback? @instance, kernel
         singleton kernel, @instance; @instance
 
@@ -99,7 +99,7 @@ module.exports.Zombie = class Zombie extends Service
         constructor = service.constructor or ->
         constructor.apply service, arguments
         assert upstream = service.upstreamAsync
-        upstream = upstream.bind service
-        instance = upstream "instance", ->
+        assert upstream = upstream.bind service
+        assert instance = upstream "instance", ->
             callback? service, kernel
         instance kernel, service; service
