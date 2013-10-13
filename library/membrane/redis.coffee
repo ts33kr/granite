@@ -60,10 +60,11 @@ module.exports.RedisClient = class RedisClient extends Service
     # Please be sure invoke the `next` arg to proceed, if relevant.
     unregister: (kernel, router, next) ->
         return next() unless _.isObject kernel.redis
-        {host, port, options} = kernel.redis
+        {host, port, options} = kernel.redis or Object()
         message = "Disconnecting from Redis at %s:%s"
         logger.info message.cyan.underline, host, port
-        kernel.redis.end(); delete kernel.redis; next()
+        kernel.redis.end(); delete kernel.redis
+        return next undefined
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
@@ -71,17 +72,17 @@ module.exports.RedisClient = class RedisClient extends Service
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     register: (kernel, router, next) ->
-        config = nconf.get "redis"
+        config = nconf.get "redis" or null
         return next() unless _.isObject config
         return next() if _.isObject kernel.redis
-        {host, port, options} = config
+        {host, port, options} = config or Object()
         assert _.isString(host), "invalid Redis host"
         assert _.isNumber(port), "invalid Redis port"
         assert _.isObject(options), "invalid Redis options"
-        message = "Connecting to Redis at %s:%s"
+        message = "Connecting to Redis at %s:%s".toString()
         logger.info message.cyan.underline, host, port
         kernel.redis = redisio.createClient port, host, options
-        assert _.isObject kernel.redis; next()
+        assert _.isObject kernel.redis; return next undefined
 
     # A hook that will be called prior to instantiating the service
     # implementation. Please refer to this prototype signature for
@@ -89,9 +90,11 @@ module.exports.RedisClient = class RedisClient extends Service
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     instance: (kernel, service, next) ->
-        Object.defineProperty service, "redis", get: ->
+        return next undefined if _.has service, "redis"
+        define = -> Object.defineProperty arguments...
+        mkp = (prop) -> define service, "redis", prop
+        mkp enumerable: yes, configurable: no, get: ->
             redis = @kernel.redis or undefined
-            noRedis = "kernel has no Redis client"
-            assert _.isObject(redis), noRedis
-            return redis
-        return next()
+            noRedis = "a kernel has no Redis client"
+            assert _.isObject(redis), noRedis; redis
+        return next undefined

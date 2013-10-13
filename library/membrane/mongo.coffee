@@ -100,7 +100,8 @@ module.exports.MongoClient = class MongoClient extends Service
     # Please be sure invoke the `next` arg to proceed, if relevant.
     instance: (kernel, service, next) ->
         return next undefined if _.has service, "mongo"
-        mkp = (x) -> Object.defineProperty service, "mongo"
+        define = -> Object.defineProperty arguments...
+        mkp = (prop) -> define service, "mongo", prop
         mkp enumerable: yes, configurable: no, get: ->
             mongo = @kernel.mongo or undefined
             noMongo = "a kernel has no Mongo client"
