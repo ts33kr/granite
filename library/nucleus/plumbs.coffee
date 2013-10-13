@@ -48,7 +48,7 @@ module.exports.logger = (kernel) ->
     format = nconf.get(formatKey) or "dev"
     level = nconf.get(levelKey) or "debug"
     filter = (string) -> string.replace "\n", ""
-    writer = (data) -> logger.log level, filter data
+    writer = (d) -> logger.log level, filter d
     assert options = stream: write: writer
     assert options.format = format
     return connect.logger options
@@ -187,4 +187,4 @@ module.exports.capture = (kernel) ->
         assert _.isDate request.date = new Date
         assert _.isObject request.kernel = kernel
         assert _.isString request.uuid = uuid.v1()
-        next() unless request.headersSent
+        return next() unless request.headersSent
