@@ -234,8 +234,9 @@ module.exports.Duplex = class Duplex extends Preflight
     # that intercept specific events and log the output to a console.
     # Can be overriden to provide more meaningful feedback handlers.
     feedback: external ->
+        i = "please see browser console for information"
         p = "an exception happend at the server provider"
-        c = "an error were raised during socket connection"
+        c = "error raised during socket connection, #{i}"
         connecting = "attempting connection at #{@location}"
         disconnect = "lost socket connection at #{@location}"
         reconnecting = "attempting to reconnect at #{@location}"
