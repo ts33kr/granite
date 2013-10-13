@@ -48,21 +48,24 @@ module.exports.Marshal = remote -> class Marshal extends Archetype
     # environment. Typically you would use this on the parameter
     # list from a remote function. It performs deep deserialization
     # of objects from the plain JavaScript objects to be recovered.
-    @deserialize: (sequence) -> _.toArray _.cloneDeep sequence, ->
+    @deserialize: (sequence) ->
         possibleError = (o) -> o.message? and o.stack?
-        value = _.head arguments or undefined
-        return value unless _.isObject value
-        return unless possibleError(value) is yes
-        error = new Error value.message
-        error.stack = value.stack; error
+        return _.toArray _.cloneDeep sequence, -> do ->
+            value = _.head arguments or undefined
+            return value unless _.isObject value
+            return unless possibleError(value) is yes
+            assert error = new Error value.message
+            return error.stack = value.stack; error
 
     # Prepare the sequence of values to be transferred to another
     # environment. Typically you would use this on the parameter
     # list for a remote function. It performs deep serialization
     # of objects into the plain JavaScript objects to be passed.
-    @serialize: (sequence) -> _.toArray _.cloneDeep sequence, ->
+    @serialize: (sequence) ->
         possibleError = (o) -> o.message? and o.stack?
-        value = _.head arguments or undefined
-        return value unless _.isObject value
-        return unless possibleError(value) is yes
-        message: value.message, stack: value.stack
+        return _.toArray _.cloneDeep sequence, -> do ->
+            value = _.head arguments or undefined
+            return value unless _.isObject value
+            return unless possibleError(value) is yes
+            assert value.stack = value.stack.toString()
+            message: value.message, stack: value.stack
