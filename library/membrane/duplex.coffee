@@ -187,7 +187,7 @@ module.exports.Duplex = class Duplex extends Preflight
             providing = value?.providing or null
             return unless _.isFunction providing
             context.providers.push name
-        return next()
+        return next undefined
 
     # An internal provider that gets automatically invoked once client
     # establishes a protected Socket.IO channel back to the service
@@ -285,7 +285,7 @@ module.exports.Duplex = class Duplex extends Preflight
                 sentence = @upstreamAsync "sentence", =>
                     bound.call this, args..., callback
                 sentence socket, name, value, args
-        return next()
+        return next undefined
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
@@ -305,7 +305,7 @@ module.exports.Duplex = class Duplex extends Preflight
                     bonding = [context, binder, socket, ack]
                     @publishProviders.apply this, bonding
                 screening context, socket, binder
-        return next()
+        return next undefined
 
     # A hook that will be called prior to unregistering the service
     # implementation. Please refer to this prototype signature for
@@ -318,4 +318,4 @@ module.exports.Duplex = class Duplex extends Preflight
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
         context.removeAllListeners "connection"
-        return next()
+        return next undefined
