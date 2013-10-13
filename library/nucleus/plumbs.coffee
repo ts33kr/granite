@@ -84,7 +84,7 @@ module.exports.threshold = (kernel) ->
     return (request, response, next) ->
         return next() unless busy() is yes
         response.writeHead 503, options.reason
-        return response.end()
+        return response.end options.reason
 
 # This middleware uses an external library to parse the incoming
 # user agent identification string into a platform description
@@ -130,7 +130,7 @@ module.exports.accepts = (kernel) ->
             strings = _.filter mimes, (x) ->_.isString x
             strings = _.map strings, patternize
             merged = _.merge regexps, strings
-            _.find merged, handles
+            return _.find merged, handles
         next() unless request.headersSent
 
 # A middeware that makes possible external specification of session
@@ -162,7 +162,7 @@ module.exports.redirect = (kernel) ->
             response.setHeader "Location", url
             response.setHeader "Content-Length", 0
             response.writeHead relocated, message
-            response.end undefined
+            return response.end undefined
         next() unless request.headersSent
 
 # This middleware is a little handy utility that merges the set
