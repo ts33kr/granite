@@ -166,10 +166,14 @@ module.exports.Screenplay = class Screenplay extends Barebones
                 return unless value?.remote?.autocall?
                 params = JSON.stringify value.remote.autocall
                 template = "#{symbol}.#{key}.call(#{symbol}, %s)"
-                assert formatted = format template, params
+                formatted = Object.create String.prototype
+                formatted.valueOf = -> format template, params
+                formatted.priority = value.remote.autocall.z
                 uns = -> context.invokes.unshift formatted
                 return uns() if value.remote.autocall.unshift
                 return context.invokes.push formatted
+        sorter = (invoke) -> return invoke.priority or 0
+        context.invokes = _.sortBy context.invokes, sorter
 
     # An internal routine that is called on the context object prior
     # to flushing it down to the client. This method gathers all the
