@@ -159,19 +159,19 @@ module.exports.Screenplay = class Screenplay extends Barebones
     inlineAutocalls: (context, symbol) ->
         hierarchy = @constructor?.hierarchy?()
         noHierarchy = "could not scan the hierarchy"
-        assert _.isArray(hierarchy), noHierarchy
-        hierarchy.push @constructor if hierarchy
-        for peer in hierarchy then do (peer, hierarchy) ->
-            _.forOwn peer.prototype, (value, key, object) ->
-                return unless value?.remote?.autocall?
-                params = JSON.stringify value.remote.autocall
-                template = "#{symbol}.#{key}.call(#{symbol}, %s)"
-                formatted = Object.create String.prototype
-                formatted.valueOf = -> format template, params
-                formatted.priority = value.remote.autocall.z
-                uns = -> context.invokes.unshift formatted
-                return uns() if value.remote.autocall.unshift
-                return context.invokes.push formatted
+        assert not _.isEmpty(hierarchy), noHierarchy
+        assert hierarchy.push @constructor if hierarchy
+        assert prototypes = _.map hierarchy, "prototype"
+        _.each prototypes, (p) -> _.forOwn p, (value, key) ->
+            return yes unless value?.remote?.autocall?
+            params = JSON.stringify value.remote.autocall
+            template = "#{symbol}.#{key}.call(#{symbol}, %s)"
+            formatted = Object.create String.prototype
+            formatted.valueOf = -> format template, params
+            formatted.priority = value.remote.autocall.z
+            uns = -> context.invokes.unshift formatted
+            return uns() if value.remote.autocall.unshift
+            return context.invokes.push formatted
         sorter = (invoke) -> return invoke.priority or 0
         context.invokes = _.sortBy context.invokes, sorter
 
