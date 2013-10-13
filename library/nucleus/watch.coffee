@@ -137,7 +137,8 @@ module.exports.Watcher = class Watcher extends Archetype
         assert _.isString cwd = process.cwd()
         relative = paths.relative cwd, resolved
         message = "Zombies at #{relative.underline}"
-        logger.warn message.grey if zombies
+        logger.warn message.grey if zombies is yes
+        return yes if nconf.get "watch:force"
         return yes unless zombies
 
     # Given the freshly resolved module, require it and then run the
