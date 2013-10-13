@@ -64,7 +64,8 @@ module.exports.MongoClient = class MongoClient extends Service
         {host, port, options} = database.serverConfig
         message = "Disconnecting from Mongo at %s:%s"
         logger.info message.cyan.underline, host, port
-        kernel.mongo.close(); delete kernel.mongo; next()
+        kernel.mongo.close(); delete kernel.mongo
+        return next undefined
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
@@ -72,10 +73,10 @@ module.exports.MongoClient = class MongoClient extends Service
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     register: (kernel, router, next) ->
-        config = nconf.get "mongo"
+        config = nconf.get("mongo") or null
         return next() unless _.isObject config
         return next() if _.isObject kernel.mongo
-        {host, port, options} = config
+        {host, port, options} = config or Object()
         assert _.isString(host), "invalid Mongo host"
         assert _.isNumber(port), "invalid Mongo port"
         assert _.isObject(options), "invalid Mongo options"
@@ -83,14 +84,14 @@ module.exports.MongoClient = class MongoClient extends Service
         logger.info message.cyan.underline, host, port
         server = new mongodb.Server host, port, options
         kernel.mongo = new mongodb.MongoClient server
-        kernel.mongo.open (error, client) ->
+        return kernel.mongo.open (error, client) ->
             assert.ifError error, "failed to connect: #{error}"
             assert.ok _.isObject kernel.mongo = client
             scope = _.isString database = config.database
             message = "Setting the MongoDB database: %s"
             kernel.mongo = client.db database if scope
             logger.info message.magenta, database if scope
-            return next()
+            return next undefined
 
     # A hook that will be called prior to instantiating the service
     # implementation. Please refer to this prototype signature for
@@ -98,9 +99,10 @@ module.exports.MongoClient = class MongoClient extends Service
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     instance: (kernel, service, next) ->
-        Object.defineProperty service, "mongo", get: ->
+        return next undefined if _.has service, "mongo"
+        mkp = (x) -> Object.defineProperty service, "mongo"
+        mkp enumerable: yes, configurable: no, get: ->
             mongo = @kernel.mongo or undefined
-            noMongo = "kernel has no Mongo client"
-            assert _.isObject(mongo), noMongo
-            return mongo
-        return next()
+            noMongo = "a kernel has no Mongo client"
+            assert _.isObject(mongo), noMongo; mongo
+        return next undefined
