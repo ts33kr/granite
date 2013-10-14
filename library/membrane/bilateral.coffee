@@ -108,7 +108,6 @@ module.exports.Bilateral = class Bilateral extends Duplex
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
         uplinking = "Uplink %s at #{@location}, nsp=%s"
-        ack = "Ack an uplink %s at #{@location}, nsp=%s"
         _.forIn this, (value, reference, context) =>
             return unless reference of (@uplinks or {})
             assert mangled = "#{@location}/#{reference}"
@@ -116,7 +115,7 @@ module.exports.Bilateral = class Bilateral extends Duplex
             @socket.on mangled, (args..., callback) =>
                 args.push c unless _.isFunction c = callback
                 callback = null unless _.isFunction callback
-                console.log uplinking, reference, nsp
+                logger.info uplinking, reference, nsp
                 assert args; return value i(args)..., =>
                     return c(o(arguments)...) if c = callback
                     id = @socket.sacks = (@socket.sacks ?= 0) + 1

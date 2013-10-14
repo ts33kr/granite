@@ -75,8 +75,9 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
     # This is the place where you would be importing the dependencies.
     # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
-        inline = context.inline or ->
-        inline -> `assert = chai.assert`
+        context.inline -> `assert = chai.assert`
+        context.inline -> `assert(logger = log)`
+        context.inline -> try logger.enableAll()
         remotes = @constructor.remotes or []
         for remote in _.unique remotes
             @inject context, remote
@@ -103,6 +104,7 @@ module.exports.Preflight = class Preflight extends RToolkit
     @bower "async", "lib/async.js"
     @bower "eventemitter2"
     @bower "bootstrap#3"
+    @bower "loglevel"
     @bower "lodash"
     @bower "chai"
 
