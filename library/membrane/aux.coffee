@@ -79,6 +79,7 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # context being compiled and flushed down to the client site. The
     # method is wired in an synchronous way for greater functionality.
     # This is the place where you would be importing the dependencies.
+    # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
         assert auxiliaries = @constructor.aux() or {}
         context.externals.push _.keys(auxiliaries)...

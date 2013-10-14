@@ -149,6 +149,7 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     # context being compiled and flushed down to the client site. The
     # method is wired in an asynchronous way for greater functionality.
     # This is the place where you would be importing the dependencies.
+    # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
         list = bower.commands.list
         bowerings = @constructor.bowerings ?= []
