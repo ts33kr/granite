@@ -157,7 +157,6 @@ module.exports.Duplex = class Duplex extends Preflight
     # protective nature. It also exposes some goodies for the provider.
     # Such as Socket.IO handle, session if available and the context.
     @covering: (method, socket, context, binder) ->
-        assert socket.handshake.binder = binder
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
         socket.on "disconnect", -> try guarded.dispose()
@@ -172,6 +171,7 @@ module.exports.Duplex = class Duplex extends Preflight
             respond.socket = socket; respond.context = context
             _.extend respond, socket.handshake or new Object
             _.extend socket, socket.handshake or new Object
+            assert respond.binder = socket.binder = binder
             return execute parameters..., respond
 
     # This server side method is called on the context prior to the
