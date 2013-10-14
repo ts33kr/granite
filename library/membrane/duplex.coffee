@@ -156,7 +156,8 @@ module.exports.Duplex = class Duplex extends Preflight
     # around the provider invocation procedure. This wrapping is of
     # protective nature. It also exposes some goodies for the provider.
     # Such as Socket.IO handle, session if available and the context.
-    @covering: (method, socket, context) ->
+    @covering: (method, socket, context, binder) ->
+        assert socket.handshake.binder = binder
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
         socket.on "disconnect", -> try guarded.dispose()
@@ -165,7 +166,7 @@ module.exports.Duplex = class Duplex extends Preflight
         assert _.isObject guarded = @guarded method, socket
         assert _.isFunction g = guarded.run.bind guarded
         s = (f) => session.save -> f.apply this, arguments
-        assert context; return (parameters..., callback) ->
+        assert binder; return (parameters..., callback) ->
             execute = (a...) => g => method.apply this, i(a)
             respond = (a...) => g => s => callback.apply this, o(a)
             respond.socket = socket; respond.context = context
@@ -278,7 +279,7 @@ module.exports.Duplex = class Duplex extends Preflight
             providing = value?.providing or null
             return unless _.isFunction providing
             assert _.isFunction(value), internal
-            bound = providing socket, context
+            bound = providing socket, context, binder
             assert mangled = "#{@location()}/#{name}"
             mangled += "/#{nsp}" if nsp = binder.nsp
             socket.on mangled, (args..., callback) =>
