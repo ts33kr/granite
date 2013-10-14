@@ -98,7 +98,7 @@ module.exports.Bilateral = class Bilateral extends Duplex
         assert overwrapping.remote = externalized.remote
         assert overwrapping.remote.source; overwrapping
 
-    # This is a client site, bilaterate bootloader that gets fired
+    # This is a client site, bilateral bootloader that gets fired
     # on the client automatically (with `autocall`) and detects all
     # the uplinks. Once detected, each uplink gets published onto a
     # socket channel that makes it available for the invocation by
@@ -123,10 +123,10 @@ module.exports.Bilateral = class Bilateral extends Duplex
                     _.extend packet, ackId: id, args: o(arguments)
                     assert packet.ackId; @socket.packet packet
 
-    # This is a complementary part of the bilaterate implementation.
+    # This is a complementary part of the bilateral implementation.
     # It is invoked to produce a server side agent that is aware of
     # the protocol for calling the specific uplink exported by the
-    # client site. Please refer to `bilaterate` method for more info.
+    # client site. Please refer to `bilateral` method for more info.
     # This method should not normally be used outside of the class.
     createLinkage: (socket, name, directives) ->
         assert identify = @constructor.identify()
