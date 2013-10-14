@@ -108,12 +108,6 @@ module.exports.Bilateral = class Bilateral extends Duplex
         assert _.isFunction i = Marshal.deserialize
         uplinking = "Uplink %s at #{@location}, nsp=%s"
         ack = "Ack an uplink %s at #{@location}, nsp=%s"
-        responder = (socket, mangled, callback) -> ->
-            return c(o(arguments)...) if c = callback
-            id = socket.sacks = (socket.sacks ?= 0) + 1
-            packet = type: "ack", name: mangled, ack: "data"
-            _.extend packet, ackId: id, args: o(arguments)
-            assert packet.ackId; socket.packet packet
         _.forIn this, (value, reference, context) =>
             return unless reference of (@uplinks or {})
             assert mangled = "#{@location}/#{reference}"
@@ -121,9 +115,13 @@ module.exports.Bilateral = class Bilateral extends Duplex
             @socket.on mangled, (args..., callback) =>
                 args.push c unless _.isFunction c = callback
                 callback = null unless _.isFunction callback
-                reply = responder @socket, mangled, callback
                 console.log uplinking, reference, nsp
-                return value i(args)..., reply
+                assert args; return value i(args)..., =>
+                    return c(o(arguments)...) if c = callback
+                    id = @socket.sacks = (@socket.sacks ?= 0) + 1
+                    packet = type: "ack", name: mangled, ack: "data"
+                    _.extend packet, ackId: id, args: o(arguments)
+                    assert packet.ackId; @socket.packet packet
 
     # This is a complementary part of the bilateral implementation.
     # It is invoked to produce a server side agent that is aware of
@@ -138,17 +136,14 @@ module.exports.Bilateral = class Bilateral extends Duplex
         notify = "incorrect callback for the uplink"
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
-        uploader = (socket, callback, ptr) -> ->
-            predicate = (ack, key) -> ack is ptr()
-            key = _.findKey socket.acks, predicate
-            assert key, "ack"; delete socket.acks[key]
-            logger.debug responded.cyan, name.bold
-            return callback.apply this, i(arguments)
         return (parameters..., callback=(->)) =>
             assert _.isFunction(callback), notify
             assert mangled = "#{@location()}/#{name}"
             assert binder = socket.binder, noBinder
             mangled += "/#{nsp}" if nsp = binder.nsp
             logger.debug uplinking.cyan, name.bold
-            ack = uploader socket, callback, -> ack
-            socket.emit mangled, o(parameters)..., ack
+            socket.emit mangled, o(parameters)..., a = =>
+                key = _.findKey socket.acks, (x) -> x is a
+                assert key, "ack"; delete socket.acks[key]
+                logger.debug responded.cyan, name.bold
+                return callback.apply this, i(arguments)
