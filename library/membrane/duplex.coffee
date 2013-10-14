@@ -178,6 +178,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # context being compiled and flushed down to the client site. The
     # method is wired in an synchronous way for greater functionality.
     # This is the place where you would be importing the dependencies.
+    # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
