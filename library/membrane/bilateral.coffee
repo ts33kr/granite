@@ -114,11 +114,11 @@ module.exports.Bilateral = class Bilateral extends Duplex
             mangled += "/#{nsp}" if _.isString nsp = @nsp
             assert value; return @socket.on mangled, =>
                 logger.info uplinking, reference, nsp
-                return value i(arguments)..., (parameters...) =>
+                return value i(arguments)..., (params...) =>
                     id = @socket.sacks = (@socket.sacks ?= 0) + 1
-                    packet = type: "ack", name: mangled, ack: "data"
-                    _.extend packet, ackId: id, args: o(parameters)
-                    assert packet.ackId; @socket.packet packet
+                    ack = type: "ack", name: mangled, ack: "data"
+                    assert _.extend ack, ackId: id, args: o(params)
+                    assert ack.ackId > 0; @socket.packet ack
 
     # This is a complementary part of the bilateral implementation.
     # It is invoked to produce a server side agent that is aware of
