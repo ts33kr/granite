@@ -112,15 +112,12 @@ module.exports.Bilateral = class Bilateral extends Duplex
             return unless reference of (@uplinks or {})
             assert mangled = "#{@location}/#{reference}"
             mangled += "/#{nsp}" if _.isString nsp = @nsp
-            @socket.on mangled, (args..., callback) =>
-                args.push c unless _.isFunction c = callback
-                callback = null unless _.isFunction callback
+            assert value; return @socket.on mangled, =>
                 logger.info uplinking, reference, nsp
-                assert args; return value i(args)..., =>
-                    return c(o(arguments)...) if c = callback
+                return value i(arguments)..., (parameters...) =>
                     id = @socket.sacks = (@socket.sacks ?= 0) + 1
                     packet = type: "ack", name: mangled, ack: "data"
-                    _.extend packet, ackId: id, args: o(arguments)
+                    _.extend packet, ackId: id, args: o(parameters)
                     assert packet.ackId; @socket.packet packet
 
     # This is a complementary part of the bilateral implementation.
