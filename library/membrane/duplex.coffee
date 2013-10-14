@@ -228,7 +228,7 @@ module.exports.Duplex = class Duplex extends Preflight
         osc => @socket.emit "screening", _.omit(@, foreign), =>
             assert @consumeProviders; @consumeProviders @socket
             open = "successfully bootloaded at #{@location}"
-            confirm = => console.log open; @emit "booted"
+            confirm = => logger.info open; @emit "booted"
             @trampoline _.omit(@, foreign), confirm
 
     # An externally exposed method that is a part of the bootloader
@@ -243,12 +243,12 @@ module.exports.Duplex = class Duplex extends Preflight
         connecting = "attempting connection at #{@location}"
         disconnect = "lost socket connection at #{@location}"
         reconnecting = "attempting to reconnect at #{@location}"
-        @socket.on "reconnecting", -> console.log reconnecting
-        @socket.on "connect_failed", (e) -> console.error c, e
-        @socket.on "disconnect", -> console.error disconnect
-        @socket.on "connecting", -> console.log connecting
-        @socket.on "exception", (e) -> console.error p, e
-        @socket.on "error", (e) -> console.error c, e
+        @socket.on "reconnecting", -> logger.info reconnecting
+        @socket.on "connect_failed", (e) -> logger.error c, e
+        @socket.on "disconnect", -> logger.error disconnect
+        @socket.on "connecting", -> logger.info connecting
+        @socket.on "exception", (e) -> logger.error p, e
+        @socket.on "error", (e) -> logger.error c, e
 
     # An external routine that will be invoked once a both way duplex
     # channel is established at the client site. This will normally
@@ -260,7 +260,7 @@ module.exports.Duplex = class Duplex extends Preflight
         assert _.isFunction i = Marshal.deserialize
         for provider in @providers then do (provider) =>
             msg = "#{provider} at #{@location}; nsp=#{@nsp}"
-            console.log "register context provider: #{msg}"
+            logger.info "register context provider: #{msg}"
             this[provider] = (parameters..., callback) ->
                 noCallback = "#{callback} is not a callback"
                 assert _.isFunction(callback), noCallback
