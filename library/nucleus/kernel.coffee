@@ -125,8 +125,8 @@ module.exports.Generic = class Generic extends Archetype
     @makeKernelSetup: (options) -> ->
         @broker = new content.JsonBroker this
         assert _.isObject(options), "no options"
-        message = "Booted up the kernel instance"
         manifest = "Using %s as instance identica"
+        message = "Booted up framework kernel instance"
         sigint = "Received the SIGINT (interrupt signal)"
         sigterm = "Received the SIGTERM (terminate signal)"
         process.on "SIGINT", => @shutdownKernel sigint
