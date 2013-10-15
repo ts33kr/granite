@@ -131,7 +131,7 @@ module.exports.Generic = class Generic extends Archetype
         sigterm = "Received the SIGTERM (terminate signal)"
         process.on "SIGINT", => @shutdownKernel sigint
         process.on "SIGTERM", => @shutdownKernel sigterm
-        assert @setupRoutableEnvirovnment()
+        assert _.isObject @setupScaffolding()
         this.constructor.configure().apply this
         assert not _.isEmpty @setupConnectPipeline()
         assert not _.isEmpty @setupListeningServers()
@@ -309,7 +309,7 @@ module.exports.Generic = class Generic extends Archetype
     # the determined scope and the router, which is then are wired
     # in with the located and instantiated services. Please refer
     # to the implementation on how and what is being done exactly.
-    setupRoutableEnvirovnment: ->
+    setupScaffolding: ->
         tag = nconf.get "NODE_ENV" or null
         missing = "No NODE_ENV variable found"
         assert not _.isEmpty(tag), missing
