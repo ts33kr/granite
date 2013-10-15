@@ -156,7 +156,7 @@ module.exports.Generic = class Generic extends Archetype
             using = "Using %s class as the kernel type"
             logger.info identify.underline, types...
             logger.info using, @constructor.name.bold
-            return initializer?.apply this
+            initializer?.apply this; @emit "ready"
 
     # Shutdown the kernel instance. This includes shutting down both
     # HTTP and HTTPS server that may be running, stopping the router
