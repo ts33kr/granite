@@ -77,7 +77,7 @@ module.exports.Generic = class Generic extends Archetype
         return fail() unless fs.existsSync directory
         middleware = connect.static directory, options
         logger.info serving.cyan, solved.underline
-        return @connect.use middleware
+        @connect.use middleware; return this
 
     # An embedded system for adding ad-hoc configuration routines.
     # Supply the reasoning and the routine and this method will add
@@ -208,7 +208,7 @@ module.exports.Generic = class Generic extends Archetype
         rsecure = "Running HTTPS server at %s:%s".magenta
         logger.info rsecure, hostname, secure.port
         @secure = https.createServer options, @connect
-        @secure?.listen secure.port, hostname
+        @secure?.listen secure.port, hostname; this
 
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
@@ -262,7 +262,7 @@ module.exports.Generic = class Generic extends Archetype
         @connect.use @accepts = plumbs.accepts this
         @connect.use @sender = plumbs.sender this
         @connect.use @logger = plumbs.logger this
-        return @connect.use @middleware
+        @connect.use @middleware; return this
 
     # Setup a set of appropriate Connect middlewares that will take
     # care of serving static directory content for all configured
@@ -277,7 +277,7 @@ module.exports.Generic = class Generic extends Archetype
         assert _.isObject(opts), "no assets options"
         assert _.isArray(dirs), "no assets directories"
         @serveStaticDirectory d, opts for d in dirs
-        return @serveStaticDirectory pub()
+        @serveStaticDirectory pub(); return this
 
     # This method sets up the necessary internal toolkits, such as
     # the determined scope and the router, which is then are wired
