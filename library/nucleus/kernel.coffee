@@ -64,6 +64,13 @@ module.exports.Generic = class Generic extends Archetype
     # modified kernels that are custom to arbitrary applications.
     @PACKAGE = require "#{__dirname}/../../package"
 
+    # Create a new instance of the kernel, run all the prerequisites
+    # that are necessary, do the configuration on the kernel, then
+    # boot it up, using the hostname and port parameters from config.
+    # Please use this static method instead of manually launching up.
+    # Refer to the static method `makeKernelSetup` for information.
+    @bootstrap: (options={}) -> new this @makeKernelSetup options
+
     # Create and wire in an appropriate Connext middleware that will
     # serve the specified directory as the directory with a static
     # content. That is, it will expose it to the world (not list it).
@@ -96,11 +103,12 @@ module.exports.Generic = class Generic extends Archetype
             explain: explain
             routine: routine
 
-    # Create a new instance of the kernel, run all the prerequisites
-    # that are necessary, do the configuration on the kernel, then
-    # boot it up, using the hostname and port parameters from config.
-    # Please use this static method instead of manually launching up.
-    @bootstrap: (options={}) -> return new this ->
+    # The complementary part of the kernel launching protocol. It is
+    # invoked by the bootstrapping routine to do the actual kernel
+    # launch. If you are going to override the bootstrap procedures
+    # then override this static method, rather than the `bootstrap`.
+    # Be careful about the relations between methods when overriding.
+    @makeKernelSetup: (options) -> ->
         @broker = new content.JsonBroker this
         assert _.isObject(options), "no options"
         message = "Booted up the kernel instance"
