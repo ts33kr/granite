@@ -140,7 +140,7 @@ module.exports.Generic = class Generic extends Archetype
     shutdownKernel: (reason) ->
         util.puts require("os").EOL
         logger.warn reason.toString().red
-        try @router.shutdownRouter?()
+        try @router.shutdownRouter?() catch
         snapshot = _.clone(@router.registry or [])
         @router.unregister srv for srv in snapshot
         try @server.close(); try @secure.close()
