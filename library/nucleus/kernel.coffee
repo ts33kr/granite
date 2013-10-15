@@ -71,6 +71,20 @@ module.exports.Generic = class Generic extends Archetype
     # Refer to the static method `makeKernelSetup` for information.
     @bootstrap: (options={}) -> new this @makeKernelSetup options
 
+    # Either get or set an identica token. This token is application
+    # identification string of a free form, but usually formed by a
+    # app name plus a verion after the at sign. If no arguments are
+    # supplied, the method will get identica, otherwise - attempt to
+    # set one. If there is no identica - it asks the configuration.
+    identica: (identica) ->
+        cns = "identica:compiled".toString()
+        automatic = -> @$identica or nconf.get cns
+        return automatic() if arguments.length is 0
+        noIdentica = "the identica is not a string"
+        assert _.isString(identica), noIdentica
+        assert @$identica = identica.toString()
+        return @emit "identica", arguments...
+
     # Create and wire in an appropriate Connext middleware that will
     # serve the specified directory as the directory with a static
     # content. That is, it will expose it to the world (not list it).
@@ -112,6 +126,7 @@ module.exports.Generic = class Generic extends Archetype
         @broker = new content.JsonBroker this
         assert _.isObject(options), "no options"
         message = "Booted up the kernel instance"
+        identica = "Using %s as application identica"
         sigint = "Received the SIGINT (interrupt signal)"
         sigterm = "Received the SIGTERM (terminate signal)"
         process.on "SIGINT", => @shutdownKernel sigint
@@ -122,7 +137,8 @@ module.exports.Generic = class Generic extends Archetype
         assert not _.isEmpty @setupSocketServers()
         assert not _.isEmpty @setupHotloadWatcher()
         @constructor.configure.apply @constructor
-        logger.info message.red; this
+        logger.info identica, @identica().bold
+        logger.info message.red; return this
 
     # The public constructor of the kernel instrances. Generally
     # you should neither use it directly, not override. It serves
