@@ -142,7 +142,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # that this compound sets up: a half duplex web sockets channel.
     @provider: (method) ->
         noMethod = "a #{method} is not a function"
-        invalidArgs = "has to have at least 1 parameter"
+        invalidArgs = "has to have at least 1 arg"
         assert bound = this.covering.bind this
         applicator = _.partial bound, method
         assert _.isFunction(method), noMethod
