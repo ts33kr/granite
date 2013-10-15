@@ -82,22 +82,22 @@ module.exports.Bilateral = class Bilateral extends Duplex
     # channel. This is a client site counterpart of the providers. A
     # function that is supplied as an implementation is automatocally
     # externalized and transferred (by the `Screenplay`) to a client.
-    @uplink: (directives, implementation) ->
-        invalidFunc = "supply a function for the uplink"
-        implementation = _.find arguments, _.isFunction
+    @uplink: (directives, implement) ->
+        invalidFunc = "no function for the uplink"
+        implement = _.find arguments, _.isFunction
         directives = {} unless _.isPlainObject directives
-        assert _.isFunction(implementation), invalidFunc
-        p = @prototype; overwrapping = (container) ->
-            name = _.findKey p, (x) -> x is overwrapping
+        assert _.isFunction(implement), invalidFunc
+        p = @prototype; overwrap = (container) ->
+            name = _.findKey p, (x) -> x is overwrap
             assert socket = container.socket or container
             assert socket._events?, "no container/socket"
             return @createLinkage socket, name, directives
-        remoted = _.isObject(implementation.remote or null)
-        ext = if remoted then implementation else undefined
-        assert externalized = ext or external implementation
-        assert overwrapping.uplink = directives: directives
-        assert overwrapping.remote = externalized.remote
-        assert overwrapping.remote.source; overwrapping
+        remoted = _.isObject(implement.remote or null)
+        ext = if remoted then implement else undefined
+        assert externalized = ext or external implement
+        assert overwrap.uplink = directives: directives
+        assert overwrap.remote = externalized.remote
+        assert overwrap.remote.source; overwrap
 
     # This is a client site, bilateral bootloader that gets fired
     # on the client automatically (with `autocall`) and detects all
