@@ -89,10 +89,10 @@ module.exports.Generic = class Generic extends Archetype
         decor = (o) -> (a...) -> level o.explain; o.routine a...
         run = arguments.length is 0 and _.isArray @$configure
         return async.series _.map @$configure, decor if run
-        return if not @$configure and not arguments.length
+        return yes if not @$configure and not arguments.length
         assert _.isFunction(routine), "invalid config routine"
         assert _.isString(explain), "no explanation given"
-        assert (@$configure ?= []).push
+        assert (@$configure ?= []).push new Object
             explain: explain
             routine: routine
 
@@ -108,13 +108,13 @@ module.exports.Generic = class Generic extends Archetype
         sigterm = "Received the SIGTERM (terminate signal)"
         process.on "SIGINT", => @shutdownKernel sigint
         process.on "SIGTERM", => @shutdownKernel sigterm
-        assert @setupRoutableServices()
-        assert @setupConnectPipeline()
-        assert @setupListeningServers()
-        assert @setupSocketServers()
-        assert @setupHotloadWatcher()
-        @constructor.configure()
-        logger.info message.red
+        assert not _.isEmpty @setupRoutableServices()
+        assert not _.isEmpty @setupConnectPipeline()
+        assert not _.isEmpty @setupListeningServers()
+        assert not _.isEmpty @setupSocketServers()
+        assert not _.isEmpty @setupHotloadWatcher()
+        assert @constructor.configure()
+        logger.info message.red; this
 
     # The public constructor of the kernel instrances. Generally
     # you should neither use it directly, not override. It serves
@@ -292,3 +292,4 @@ module.exports.Generic = class Generic extends Archetype
         @router = new routing.Router this
         assert @middleware = @router.middleware
         @middleware = @middleware.bind @router
+        assert _.isFunction @middleware; this
