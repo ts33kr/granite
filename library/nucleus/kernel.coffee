@@ -103,19 +103,19 @@ module.exports.Generic = class Generic extends Archetype
     # An embedded system for adding ad-hoc configuration routines.
     # Supply the reasoning and the routine and this method will add
     # that routine to the configuration stack, to be launched once
-    # the kernel boots up. With no arguments it launches the stack.
+    # the kernel boots up. With no arguments it returns the launcher.
     # This is a convenient way of running additions config routines.
     @configure: (explain, routine) ->
-        level = (e) -> logger.info "Configuring: %s", e.bold
-        decor = (o) -> (a...) -> level o.explain; o.routine a...
+        log = (o) -> logger.info "Configuring: %s", o.explain.bold
+        func = (t) -> (o) -> (a...) -> log o; o.routine.apply t, a
         run = arguments.length is 0 and _.isArray @$configure
-        return async.series _.map @$configure, decor if run
-        return no if not @$configure and not arguments.length
+        assert _.isArray $configure = @$configure or new Array
+        return (-> async.series _.map $configure, func @) if run
+        return (->) if not @$configure and not arguments.length
         assert _.isFunction(routine), "invalid config routine"
         assert _.isString(explain), "no explanation given"
         assert (@$configure ?= []).push new Object
-            explain: explain
-            routine: routine
+            explain: explain, routine: routine
 
     # The complementary part of the kernel launching protocol. It is
     # invoked by the bootstrapping routine to do the actual kernel
@@ -136,7 +136,7 @@ module.exports.Generic = class Generic extends Archetype
         assert not _.isEmpty @setupListeningServers()
         assert not _.isEmpty @setupSocketServers()
         assert not _.isEmpty @setupHotloadWatcher()
-        @constructor.configure.apply @constructor
+        this.constructor.configure().apply this
         assert identica = @constructor.identica()
         logger.info manifest, identica.bold
         logger.info message.red; return @
