@@ -78,12 +78,12 @@ module.exports.Generic = class Generic extends Archetype
     # set one. If there is no identica - it asks the configuration.
     @identica: (identica) ->
         cns = "identica:compiled".toString()
-        automatic = -> @$identica or nconf.get cns
+        automatic = => @$identica or nconf.get cns
         return automatic() if arguments.length is 0
         noIdentica = "the identica is not a string"
         assert _.isString(identica), noIdentica
         assert @$identica = identica.toString()
-        return @emit "identica", arguments...
+        return @emit? "identica", arguments...
 
     # Create and wire in an appropriate Connext middleware that will
     # serve the specified directory as the directory with a static
