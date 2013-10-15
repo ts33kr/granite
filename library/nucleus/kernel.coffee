@@ -100,8 +100,9 @@ module.exports.Generic = class Generic extends Archetype
     # that are necessary, do the configuration on the kernel, then
     # boot it up, using the hostname and port parameters from config.
     # Please use this static method instead of manually launching up.
-    @bootstrap: -> new this ->
+    @bootstrap: (options={}) -> return new this ->
         @broker = new content.JsonBroker this
+        assert _.isObject(options), "no options"
         message = "Booted up the kernel instance"
         sigint = "Received the SIGINT (interrupt signal)"
         sigterm = "Received the SIGTERM (terminate signal)"
