@@ -5,10 +5,17 @@
     "main": "index.coffee",
 
     "description": "A rock solid Node.js web framework",
-    "keywords": ["web", "framework", "http", "rest", "json"],
     "bugs": "http://github.com/ts33kr/granite/issues",
     "homepage": "http://ts33kr.github.io/granite",
     "license": "Simplified BSD-3",
+
+    "keywords": [
+        "web", "framework", "http",
+        "rest", "json", "ui", "ux",
+        "enterprise", "full-stack",
+        "interactive", "real-time",
+        "socket", "websocket", "io"
+    ],
 
     "repository": {
         "type": "git",
