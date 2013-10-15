@@ -96,7 +96,7 @@ module.exports.Generic = class Generic extends Archetype
         decor = (o) -> (a...) -> level o.explain; o.routine a...
         run = arguments.length is 0 and _.isArray @$configure
         return async.series _.map @$configure, decor if run
-        return yes if not @$configure and not arguments.length
+        return no if not @$configure and not arguments.length
         assert _.isFunction(routine), "invalid config routine"
         assert _.isString(explain), "no explanation given"
         assert (@$configure ?= []).push new Object
@@ -121,7 +121,7 @@ module.exports.Generic = class Generic extends Archetype
         assert not _.isEmpty @setupListeningServers()
         assert not _.isEmpty @setupSocketServers()
         assert not _.isEmpty @setupHotloadWatcher()
-        assert @constructor.configure()
+        @constructor.configure.apply @constructor
         logger.info message.red; this
 
     # The public constructor of the kernel instrances. Generally
