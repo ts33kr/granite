@@ -35,13 +35,13 @@ util = require "util"
 url = require "url"
 
 _ = require "lodash"
-tools = require "./tools"
 extendz = require "./extends"
 routing = require "./routing"
 scoping = require "./scoping"
 
 {format} = require "util"
 {Archetype} = require "./archetype"
+{urlOfServer} = require "./tools"
 
 # This is an abstract base class for every kind of service in this
 # framework and the end user application. It provides the matching
@@ -144,7 +144,7 @@ module.exports.Service = class Service extends Archetype
         securing = require "../membrane/securing"
         assert not _.isEmpty(@location()), noLocation
         isProtected = this.inherits securing.OnlySsl
-        link = tools.urlWithHost isProtected, @location()
+        link = urlOfServer isProtected, @location()
         assert not _.isEmpty(link), int; return link
 
     # Either obtain or set the HTTP location of the current service.

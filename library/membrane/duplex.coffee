@@ -34,7 +34,6 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-tools = require "./../nucleus/tools"
 plumbs = require "./../nucleus/plumbs"
 extendz = require "./../nucleus/extends"
 compose = require "./../nucleus/compose"
@@ -42,6 +41,7 @@ compose = require "./../nucleus/compose"
 {format} = require "util"
 {STATUS_CODES} = require "http"
 {EventEmitter2} = require "eventemitter2"
+{urlOfServer} = require "./../nucleus/tools"
 {remote, external} = require "./remote"
 {Barebones} = require "./skeleton"
 {Preflight} = require "./preflight"
@@ -183,7 +183,7 @@ module.exports.Duplex = class Duplex extends Preflight
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
         context.scripts.push "/socket.io/socket.io.js"
-        context.duplex = tools.urlWithHost yes, @location()
+        context.duplex = urlOfServer yes, @location()
         context.providers = new Array
         _.forIn this, (value, name, service) =>
             providing = value?.providing or null

@@ -121,7 +121,7 @@ module.exports.OnlySsl = class OnlySsl extends Barebones
         connection = request?.connection
         encrypted = connection?.encrypted
         return next() if _.isObject encrypted
-        protectedUrl = tools.urlWithHost yes
+        protectedUrl = tools.urlOfServer yes
         current = url.parse protectedUrl
         current.pathname = request.url
         current.query = request.params

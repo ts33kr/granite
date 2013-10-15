@@ -39,7 +39,8 @@ util = require "util"
 # that are in use by the current kernel and the servers. It may
 # be very useful for automatic generation of correct URLs and all
 # other content that requires the specific reference to the host.
-module.exports.urlWithHost = (ssl, parts, params, segment) ->
+# This uses the hostname and port of the immediate server object.
+module.exports.urlOfServer = (ssl, parts, params, segment) ->
     params = query.stringify params if params?
     parts = parts.join "/" if _.isArray parts
     assert server = nconf.get "server:http"
