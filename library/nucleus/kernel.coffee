@@ -76,7 +76,7 @@ module.exports.Generic = class Generic extends Archetype
     # app name plus a verion after the at sign. If no arguments are
     # supplied, the method will get identica, otherwise - attempt to
     # set one. If there is no identica - it asks the configuration.
-    identica: (identica) ->
+    @identica: (identica) ->
         cns = "identica:compiled".toString()
         automatic = -> @$identica or nconf.get cns
         return automatic() if arguments.length is 0
@@ -126,7 +126,7 @@ module.exports.Generic = class Generic extends Archetype
         @broker = new content.JsonBroker this
         assert _.isObject(options), "no options"
         message = "Booted up the kernel instance"
-        identica = "Using %s as instance identica"
+        manifest = "Using %s as instance identica"
         sigint = "Received the SIGINT (interrupt signal)"
         sigterm = "Received the SIGTERM (terminate signal)"
         process.on "SIGINT", => @shutdownKernel sigint
@@ -137,8 +137,9 @@ module.exports.Generic = class Generic extends Archetype
         assert not _.isEmpty @setupSocketServers()
         assert not _.isEmpty @setupHotloadWatcher()
         @constructor.configure.apply @constructor
-        logger.info identica, @identica().bold
-        logger.info message.red; return this
+        assert identica = @constructor.identica()
+        logger.info manifest, identica.bold
+        logger.info message.red; return @
 
     # The public constructor of the kernel instrances. Generally
     # you should neither use it directly, not override. It serves
