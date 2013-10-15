@@ -206,7 +206,8 @@ module.exports.Generic = class Generic extends Archetype
     startupHttpsServer: ->
         options = Object.create {}
         assert secure = nconf.get "secure"
-        hostname = nconf.get "server:hostname"
+        assert server = nconf.get "server"
+        assert hostname = nconf.get "server:host"
         key = paths.relative process.cwd(), secure.key
         cert = paths.relative process.cwd(), secure.cert
         logger.info "Using SSL key file at %s".grey, key
@@ -214,9 +215,9 @@ module.exports.Generic = class Generic extends Archetype
         options.key = fs.readFileSync paths.resolve key
         options.cert = fs.readFileSync paths.resolve cert
         rsecure = "Running HTTPS server at %s:%s".magenta
-        logger.info rsecure, hostname, secure.port
+        logger.info rsecure, hostname, server.https
         @secure = https.createServer options, @connect
-        @secure?.listen secure.port, hostname; this
+        @secure?.listen server.https, hostname; this
 
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
@@ -224,11 +225,11 @@ module.exports.Generic = class Generic extends Archetype
     # for instantiating, configuring and launching up the servers.
     startupHttpServer: ->
         assert server = nconf.get "server"
-        hostname = nconf.get "server:hostname"
+        assert hostname = nconf.get "server:host"
         rserver = "Running HTTP server at %s:%s".magenta
-        logger.info rserver, hostname, server.port
+        logger.info rserver, hostname, server.http
         @server = http.createServer @connect
-        @server?.listen server.port, hostname
+        @server?.listen server.http, hostname
         @server.on "connection", (socket) ->
             return socket.setNoDelay yes
 
