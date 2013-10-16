@@ -68,6 +68,27 @@ module.exports = ->
     # is invoked at. It should be either an application build within
     # the framework or the framework itself (it can be launched all
     # by itself as a standalone). Please refer to the implementation!
+    # In terms of scalability - it starts the master server istance.
+    task "master", "bootstrap as the master server", (options) ->
+        library = options.library or DEFAULT_LIBRARY
+        scoping = options.scoping or DEFAULT_SCOPING
+        logging = options.logging or DEFAULT_LOGGING
+        process.env["NODE_ENV"] = scoping.toString()
+        process.env["log:level"] = logging.toString()
+        granite = require "#{__dirname}/../../index"
+        assert resolved = paths.resolve library or null
+        missingLibrary = "missing library: #{resolved}"
+        assert _.isObject(granite), "framework failed"
+        assert fs.existsSync(library), missingLibrary
+        compiled = granite.collectPackages no, library
+        assert _.isObject(compiled), "invalid library"
+        conf = new Object master: yes, instance: no
+        granite.cachedKernel(library).bootstrap conf
+
+    # This task launches an instance of application where this task
+    # is invoked at. It should be either an application build within
+    # the framework or the framework itself (it can be launched all
+    # by itself as a standalone). Please refer to the implementation!
     # In terms of scalability - it starts the application instance.
     task "boot", "bootstrap the framework kernel", (options) ->
         library = options.library or DEFAULT_LIBRARY
