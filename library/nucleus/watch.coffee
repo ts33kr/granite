@@ -132,7 +132,7 @@ module.exports.Watcher = class Watcher extends Archetype
     ensureSafety: (resolved) ->
         cached = require.cache[resolved]
         services = @collectServices cached
-        isZombie = (s) -> s.inherits Zombie
+        isZombie = (s) -> s.derives Zombie
         zombies = _.any services, isZombie
         assert _.isString cwd = process.cwd()
         relative = paths.relative cwd, resolved
@@ -211,7 +211,7 @@ module.exports.Watcher = class Watcher extends Archetype
         globals = _.values(required or {})
         exports = _.values(required?.exports or {})
         hasProto = (s) -> _.isObject(s) and s.prototype
-        isService = (s) -> try s.inherits service.Service
+        isService = (s) -> try s.derives service.Service
         isTyped = (s) -> hasProto(s) and isService(s)
         isFinal = (s) -> try not s.abstract()
         unscoped = _.filter globals, isTyped

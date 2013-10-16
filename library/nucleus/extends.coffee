@@ -122,7 +122,7 @@ module.exports.Extending = remote -> class Extending extends Object
     # subclass of the supplied archetype class (as argument). Of course
     # it is assumed that you should be invoking this method only on the
     # objects that are valid CoffeeSscript classes with necessary attrs.
-    Object.defineProperty Object::, "inherits",
+    Object.defineProperty Object::, "derives",
         enumerable: no, value: (archetype, loose) ->
             notObject = "acrhetype is not object"
             assert _.isObject(archetype), notObject

@@ -129,8 +129,8 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
             wrongKey = "invalid key supplied: #{key}"
             assert _.isObject(value), wrongValue
             assert not _.isEmpty(key), wrongKey
-            isScreen = value.inherits(Screenplay)
-            isZombie = value.inherits(Zombie)
+            isScreen = value.derives(Screenplay)
+            isZombie = value.derives(Zombie)
             assert isScreen is yes, notScreen
             assert isZombie is yes, notZombie
             return assert @$aux[key] = value

@@ -143,7 +143,7 @@ module.exports.Service = class Service extends Archetype
         noLocation = "the service has no location"
         securing = require "../membrane/securing"
         assert not _.isEmpty(@location()), noLocation
-        isProtected = this.inherits securing.OnlySsl
+        isProtected = this.derives securing.OnlySsl
         link = urlOfServer isProtected, @location()
         assert not _.isEmpty(link), int; return link
 
