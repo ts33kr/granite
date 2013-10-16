@@ -71,6 +71,13 @@ module.exports.Generic = class Generic extends Archetype
     # Refer to the static method `makeKernelSetup` for information.
     @bootstrap: (options={}) -> new this @makeKernelSetup options
 
+    # The kernel preemption routine is called once the kernel has
+    # passed the initial launching and configuration phase, but is
+    # yet to start up the router, connect services and instantiate
+    # an actual application. This method gets passes continuation
+    # that does that. The method can either invoke it or omit it.
+    kernelPreemption: (continuation) -> continuation.apply this
+
     # Either get or set an identica token. This token is application
     # identification string of a free form, but usually formed by a
     # app name plus a verion after the at sign. If no arguments are
@@ -123,8 +130,9 @@ module.exports.Generic = class Generic extends Archetype
     # then override this static method, rather than the `bootstrap`.
     # Be careful about the relations between methods when overriding.
     @makeKernelSetup: (options) -> ->
+        assert @options = _.cloneDeep options
         @broker = new content.JsonBroker this
-        assert _.isObject(options), "no options"
+        assert _.isObject(@options), "no options"
         manifest = "Using %s as instance identica"
         message = "Booted up framework kernel instance"
         sigint = "Received the SIGINT (interrupt signal)"
@@ -133,13 +141,14 @@ module.exports.Generic = class Generic extends Archetype
         process.on "SIGTERM", => @shutdownKernel sigterm
         assert _.isObject @setupScaffolding()
         this.constructor.configure().apply this
-        assert not _.isEmpty @setupConnectPipeline()
-        assert not _.isEmpty @setupListeningServers()
-        assert not _.isEmpty @setupSocketServers()
-        assert not _.isEmpty @setupHotloadWatcher()
-        assert identica = @constructor.identica()
-        logger.info manifest, identica.bold
-        logger.info message.red; return @
+        return @kernelPreemption.call this, =>
+            assert not _.isEmpty @setupConnectPipeline()
+            assert not _.isEmpty @setupListeningServers()
+            assert not _.isEmpty @setupSocketServers()
+            assert not _.isEmpty @setupHotloadWatcher()
+            assert identica = @constructor.identica()
+            logger.info manifest, identica.bold
+            logger.info message.red; return @
 
     # The public constructor of the kernel instrances. Generally
     # you should neither use it directly, not override. It serves
