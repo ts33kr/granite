@@ -106,7 +106,7 @@ module.exports.Scope = class Scope extends Archetype
         logger.info "Assuming the #{fpath.underline} config".cyan
         exists = fs.existsSync fpath; nconf.file fpath if exists
         for directory in nconf.get("env:dirs") or []
-            mode = nconf.get("env:mode")
+            assert not _.isEmpty mode = nconf.get("env:mode")
             msg = "Environment mkdir at %s with 0%s mode".yellow
             logger.info msg, directory.underline, mode.toString 8
             mkdirSyncRecursive directory, mode
@@ -121,7 +121,7 @@ module.exports.Scope = class Scope extends Archetype
         logger.info "Used #{fpath.underline} as config".grey
         assert _.isArray preserve = nconf.get "env:preserve"
         for directory in nconf.get("env:dirs") or []
-            continue if directory in preserve
+            continue if directory in (preserve or Array())
             msg = "Wiping out the env directory at %s".yellow
             logger.info msg, directory.underline
             rmdirSyncRecursive directory, yes
