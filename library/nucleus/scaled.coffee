@@ -98,24 +98,21 @@ module.exports.Scaled = class Scaled extends Generic
             logger.error message.red, error.stack
             return process.exit -1
 
-    # Setup and launch either HTTP or HTTPS servers to listen at
-    # the configured addresses and ports. This method reads up the
-    # scoping configuration in order to obtain the data necessary
-    # for instantiating, configuring and launching up the servers.
-    # This version goes to the Seaport hub to obtain the options!
-    startupHttpServer: ->
-        assert _.isObject config = nconf.get()
-        assert _.isObject(@seaport), "no seaport"
-        msg = "Got HTTP port from the Seaport: %s"
-        assert identica = @constructor.identica()
-        cfg = config: config, identica: identica
-        _.extend cfg, uuid: uuid.v4(), type: "http"
-        _.extend cfg, token: @token or undefined
-        record = @seaport.register identica, cfg
-        assert _.isNumber(record), "got mistaken"
-        logger.info msg.green, "#{record}".bold
-        assert config?.server?.http = record
-        nconf.set config; super; return this
+    # A configuration routine that ensures the scope config has the
+    # Seaport hub related configuration data. If so, it proceeds to
+    # retrieving that info and using it to locate and connect to a
+    # Seaport hub, which is then installed as the kernel instance
+    # variable, so that it can be accessed by the other routines.
+    @configure "access service Seaport hub", (next) ->
+        assert _.isString host = nconf.get "hub:host"
+        assert _.isNumber port = nconf.get "hub:port"
+        assert _.isObject opts = nconf.get "hub:opts"
+        @seaport = seaport.connect host, port, opts
+        assert _.isObject(@seaport), "seaport failed"
+        assert @seaport.register?, "a broken seaport"
+        shl = "#{host}:#{port}".toString().underline
+        msg = "Locate a Seaport hub at #{shl}".blue
+        logger.info msg; return next undefined
 
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
@@ -136,18 +133,21 @@ module.exports.Scaled = class Scaled extends Generic
         assert config?.server?.https = record
         nconf.set config; super; return this
 
-    # A configuration routine that ensures the scope config has the
-    # Seaport hub related configuration data. If so, it proceeds to
-    # retrieving that info and using it to locate and connect to a
-    # Seaport hub, which is then installed as the kernel instance
-    # variable, so that it can be accessed by the other routines.
-    @configure "access service Seaport hub", (next) ->
-        assert _.isString host = nconf.get "hub:host"
-        assert _.isNumber port = nconf.get "hub:port"
-        assert _.isObject opts = nconf.get "hub:opts"
-        @seaport = seaport.connect host, port, opts
-        assert _.isObject(@seaport), "seaport failed"
-        assert @seaport.register?, "a broken seaport"
-        shl = "#{host}:#{port}".toString().underline
-        msg = "Locate a Seaport hub at #{shl}".blue
-        logger.info msg; return next undefined
+    # Setup and launch either HTTP or HTTPS servers to listen at
+    # the configured addresses and ports. This method reads up the
+    # scoping configuration in order to obtain the data necessary
+    # for instantiating, configuring and launching up the servers.
+    # This version goes to the Seaport hub to obtain the options!
+    startupHttpServer: ->
+        assert _.isObject config = nconf.get()
+        assert _.isObject(@seaport), "no seaport"
+        msg = "Got HTTP port from the Seaport: %s"
+        assert identica = @constructor.identica()
+        cfg = config: config, identica: identica
+        _.extend cfg, uuid: uuid.v4(), type: "http"
+        _.extend cfg, token: @token or undefined
+        record = @seaport.register identica, cfg
+        assert _.isNumber(record), "got mistaken"
+        logger.info msg.green, "#{record}".bold
+        assert config?.server?.http = record
+        nconf.set config; super; return this
