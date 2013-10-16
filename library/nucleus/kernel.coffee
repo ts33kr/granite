@@ -243,6 +243,7 @@ module.exports.Generic = class Generic extends Archetype
     startupHttpServer: ->
         assert server = nconf.get "server"
         assert hostname = nconf.get "server:host"
+        assert _.isNumber(server.http), "no HTTP port"
         rserver = "Running HTTP server at %s:%s".magenta
         logger.info rserver, hostname, server.http
         @server = http.createServer @connect
