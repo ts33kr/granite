@@ -263,8 +263,8 @@ module.exports.Generic = class Generic extends Archetype
         logger.info "Attaching Socket.IO to HTTP server"
         newMessage = "New Socket.IO connected at %s server"
         newSocket = (o) -> logger.debug newMessage.grey, o
-        @secureSocket = socket.listen @secure, sconfig
-        @serverSocket = socket.listen @server, sconfig
+        assert @secureSocket = socket.listen @secure, sconfig
+        assert @serverSocket = socket.listen @server, sconfig
         @secureSocket.on "connection", -> newSocket "HTTPS"
         @serverSocket.on "connection", -> newSocket "HTTP"
 
