@@ -227,26 +227,40 @@ module.exports.Generic = class Generic extends Archetype
             message = "Exception while launching HTTP server:\r\n%s"
             logger.warn message.red, error.stack; process.exit -1
 
+    # This routine takes care of resolving all the necessary details
+    # for successfully creating and running an HTTPS (SSL) server.
+    # The details are typically at least the key and the certficiate.
+    # This implementation draws data from the config file and then
+    # used it to obtain the necessary content and whater else needs.
+    resolveSslDetails: ->
+        assert secure = nconf.get "secure"; options = {}
+        key = paths.relative process.cwd(), secure.key
+        cert = paths.relative process.cwd(), secure.cert
+        logger.info "Using SSL key file at %s".grey, key
+        logger.info "Using SSL cert file at %s".grey, cert
+        logger.debug "Assembling the HTTPS options".grey
+        options.key = fs.readFileSync paths.resolve key
+        options.cert = fs.readFileSync paths.resolve cert
+        assert options.cert.length >= 64, "invalid SSL cert"
+        assert options.key.length >= 64, "invalid SSL key"
+        options.secure = secure; return Object options
+
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
     # scoping configuration in order to obtain the data necessary
     # for instantiating, configuring and launching up the servers.
     startupHttpsServer: ->
-        options = Object.create {}
-        assert secure = nconf.get "secure"
         assert server = nconf.get "server"
-        assert host = nconf.get "server:host"
-        assert port = server.https, "no HTTPS port"
-        key = paths.relative process.cwd(), secure.key
-        cert = paths.relative process.cwd(), secure.cert
-        logger.info "Using SSL key file at %s".grey, key
-        logger.info "Using SSL cert file at %s".grey, cert
-        options.key = fs.readFileSync paths.resolve key
-        options.cert = fs.readFileSync paths.resolve cert
-        rsecure = "Running HTTPS server at %s".magenta
-        logger.info rsecure, "#{host}:#{port}".underline
+        assert hostname = nconf.get "server:host"
+        assert _.isNumber(server.https), "no HTTPS port"
+        assert _.isObject options = @resolveSslDetails()
+        running = "Running HTTPS server at %s".magenta
+        location = "#{hostname}:#{server.https}".toString()
+        logger.info running.underline, location.underline
         @secure = https.createServer options, @connect
-        @secure?.listen server.https, host; return @
+        @secure.listen server.https, hostname
+        @secure.on "connection", (socket) ->
+            return socket.setNoDelay yes
 
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
@@ -256,11 +270,11 @@ module.exports.Generic = class Generic extends Archetype
         assert server = nconf.get "server"
         assert hostname = nconf.get "server:host"
         assert _.isNumber(server.http), "no HTTP port"
-        rserver = "Running HTTP server at %s".magenta
-        assert location = "#{hostname}:#{server.http}"
-        logger.info rserver, location.underline
-        @server = http.createServer @connect
-        @server?.listen server.http, hostname
+        running = "Running HTTP server at %s".magenta
+        location = "#{hostname}:#{server.http}".toString()
+        logger.info running.underline, location.underline
+        @server = http.createServer @connect, undefined
+        @server.listen server.http, hostname
         @server.on "connection", (socket) ->
             return socket.setNoDelay yes
 
