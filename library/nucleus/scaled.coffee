@@ -71,7 +71,7 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isNumber(record), "got mistaken"
         logger.info msg.green, "#{record}".bold
         assert config?.server?.http = record
-        nconf.set config; super; return @
+        nconf.set config; super; return this
 
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
@@ -88,7 +88,7 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isNumber(record), "got mistaken"
         logger.info msg.green, "#{record}".bold
         assert config?.server?.https = record
-        nconf.set config; super; return @
+        nconf.set config; super; return this
 
     # A configuration routine that ensures the scope config has the
     # Seaport hub related configuration data. If so, it proceeds to
