@@ -209,9 +209,10 @@ module.exports.Scaled = class Scaled extends Generic
     # for instantiating, configuring and launching up the servers.
     # This version goes to the Seaport hub to obtain the options!
     startupHttpsServer: ->
+        type = "https".toUpperCase().bold
         assert _.isObject config = nconf.get()
         assert _.isObject(@seaport), "no seaport"
-        msg = "Got HTTPS port from the Seaport: %s"
+        msg = "Got #{type} port from the Seaport: %s"
         assert identica = @constructor.identica()
         cfg = config: config, identica: identica
         _.extend cfg, uuid: uuid.v4(), kind: "https"
@@ -228,9 +229,10 @@ module.exports.Scaled = class Scaled extends Generic
     # for instantiating, configuring and launching up the servers.
     # This version goes to the Seaport hub to obtain the options!
     startupHttpServer: ->
+        type = "http".toUpperCase().bold
         assert _.isObject config = nconf.get()
         assert _.isObject(@seaport), "no seaport"
-        msg = "Got HTTP port from the Seaport: %s"
+        msg = "Got #{type} port from the Seaport: %s"
         assert identica = @constructor.identica()
         cfg = config: config, identica: identica
         _.extend cfg, uuid: uuid.v4(), kind: "http"
