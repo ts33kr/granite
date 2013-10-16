@@ -57,6 +57,30 @@ module.exports.Scaled = class Scaled extends Generic
     # for more information on semantics and the way of working it.
     @identica "#{@PACKAGE.name}@#{@PACKAGE.version}"
 
+    # Create and launch a Seaport server in the current kernel. It
+    # draws the configuration from the same key as Seaport client
+    # uses. This routine should only be invoked when the kernel is
+    # launched in the master mode, generally. The method wires in
+    # some handlers into the Seaport to track hosts come and go.
+    createSeaportServer: ->
+        r = "Discovered service %s at %s".green
+        f = "Disconnect service %s at %s".yellow
+        create = "Created the Seaport server at %s"
+        assert _.isString host = nconf.get "hub:host"
+        assert _.isNumber port = nconf.get "hub:port"
+        assert _.isObject opts = nconf.get "hub:opts"
+        c = (srv) -> "#{srv.role}@#{srv.version}".bold
+        l = (h, p) -> "#{h}:#{p}".toLowerCase().underline
+        log = (m, s) -> logger.info m, c(s), l(s.host, s.port)
+        assert @spserver = seaport.createServer opts or {}
+        logger.info create.toString().magenta, l(host, port)
+        @spserver.on "register", (service) -> log r, service
+        @spserver.on "free", (service) -> log f, service
+        try @spserver.listen port, host catch error
+            message = "Seaport server failed\r\n%s"
+            logger.error message.red, error.stack
+            return process.exit -1
+
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
     # scoping configuration in order to obtain the data necessary
