@@ -86,8 +86,8 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isObject options = @resolveSslDetails()
         assert _.isString host = nconf.get "master:host"
         assert _.isNumber port = nconf.get "master:https"
-        cmp = (e) -> (x) -> e.uuid is x.target.uuid or 0
-        remove = (srv) -> _.remove @queueOfHttps, cmp srv
+        cmp = (exm) -> (srv) -> exm.uuid is srv.uuid or 0
+        remove = (srv) => _.remove @queueOfHttps, cmp(srv)
         assert forward = @makeForward @queueOfHttps, "https"
         @secureProxy = https.createServer options, forward
         assert @secureProxy; @secureProxy.listen port, host
@@ -107,8 +107,8 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isArray @queueOfHttp ?= new Array
         assert _.isString host = nconf.get "master:host"
         assert _.isNumber port = nconf.get "master:http"
-        cmp = (e) -> (x) -> e.uuid is x.target.uuid or 0
-        remove = (srv) -> _.remove @queueOfHttp, cmp srv
+        cmp = (exm) -> (srv) -> exm.uuid is srv.uuid or 0
+        remove = (srv) -> _.remove @queueOfHttp, cmp(srv)
         assert forward = @makeForward @queueOfHttp, "http"
         assert @serverProxy = http.createServer forward
         assert @serverProxy; @serverProxy.listen port, host
@@ -137,6 +137,7 @@ module.exports.Scaled = class Scaled extends Generic
         merged.target.https = service.kind is "https"
         merged.target.rejectUnauthorized = false
         queue.push proxy = new HttpProxy merged
+        assert _.isString proxy.uuid = service.uuid
         proxy.on "proxyError", (err, req, res) =>
             msg = "got an error talking to backend: %s"
             res.writeHead 500, "a proxy backend error"
