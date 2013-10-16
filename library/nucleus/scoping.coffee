@@ -92,7 +92,7 @@ module.exports.Scope = class Scope extends Archetype
         assert _.isString(prefix), "invalid prefix"
         throw new Error unknown unless basis in dirs
         prefix = prefix + "-" + unique if unique
-        return paths.join basis, prefix
+        return paths.join(basis, prefix).toString()
 
     # This method is responsible for starting up the scope object.
     # This means initialization of all its necessary routines and
@@ -105,7 +105,7 @@ module.exports.Scope = class Scope extends Archetype
         logger.info "Incorporating up the #{@tag.bold} scope".cyan
         logger.info "Assuming the #{fpath.underline} config".cyan
         exists = fs.existsSync fpath; nconf.file fpath if exists
-        for directory in nconf.get("env:dirs") or []
+        for directory in nconf.get("env:dirs") or new Array
             assert _.isNumber mode = nconf.get "env:mode"
             msg = "Environment mkdir at %s with 0%s mode".yellow
             logger.info msg, directory.underline, mode.toString 8
@@ -120,7 +120,7 @@ module.exports.Scope = class Scope extends Archetype
         logger.info "Dissipating the #{@tag.bold} scope".grey
         logger.info "Used #{fpath.underline} as config".grey
         assert _.isArray preserve = nconf.get "env:preserve"
-        for directory in nconf.get("env:dirs") or []
+        for directory in nconf.get("env:dirs") or new Array
             continue if directory in (preserve or Array())
             msg = "Wiping out the env directory at %s".yellow
             logger.info msg, directory.underline
