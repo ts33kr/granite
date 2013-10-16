@@ -312,9 +312,9 @@ module.exports.Generic = class Generic extends Archetype
     setupScaffolding: ->
         missing = "no NODE_ENV variable found"
         tag = nconf.get "NODE_ENV" or undefined
-        assert not _.isEmpty(tag), missing
+        assert not _.isEmpty(tag), "#{missing}"
         @scope = scoping.Scope.lookupOrFail tag
-        assert try @scope.incorporate this
+        assert this.scope.incorporate this, null
         assert @router = new routing.Router this
         assert @middleware = @router.middleware
         @middleware = @middleware.bind @router
