@@ -88,13 +88,13 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isNumber port = nconf.get "master:https"
         cmp = (exm) -> (srv) -> exm.uuid is srv.uuid or 0
         remove = (srv) => _.remove @queueOfHttps, cmp(srv)
-        assert forward = @makeForward @queueOfHttps, "https"
+        assert forward = @makeForwarder @queueOfHttps, "https"
         @secureProxy = https.createServer options, forward
         assert @secureProxy; @secureProxy.listen port, host
         running = "Master HTTPS server at %s".bold
         location = "#{host}:#{port}".toString().underline
         logger.info running.underline.magenta, location
-        register = @makeRegister @queueOfHttps, "https"
+        register = @makeRegistrar @queueOfHttps, "https"
         @spserver.on "free", (service) -> remove service
         @spserver.on "register", register; return this
 
@@ -109,13 +109,13 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isNumber port = nconf.get "master:http"
         cmp = (exm) -> (srv) -> exm.uuid is srv.uuid or 0
         remove = (srv) -> _.remove @queueOfHttp, cmp(srv)
-        assert forward = @makeForward @queueOfHttp, "http"
+        assert forward = @makeForwarder @queueOfHttp, "http"
         assert @serverProxy = http.createServer forward
         assert @serverProxy; @serverProxy.listen port, host
         running = "Master HTTP server at %s".bold
         location = "#{host}:#{port}".toString().underline
         logger.info running.underline.magenta, location
-        register = @makeRegister @queueOfHttp, "http"
+        register = @makeRegistrar @queueOfHttp, "http"
         @spserver.on "free", (service) -> remove service
         @spserver.on "register", register; return this
 
@@ -124,7 +124,7 @@ module.exports.Scaled = class Scaled extends Generic
     # examines the service to decide if it suits the parameters
     # passed to the factory, and if so - add it to the registry
     # of available services that are rotated using round-robin.
-    makeRegister: (queue, kind) -> (service) =>
+    makeRegistrar: (queue, kind) -> (service) =>
         assert ids = @constructor.identica()
         config = Object https: kind is "https"
         compile = (s) -> "#{s.role}@#{s.version}"
@@ -148,7 +148,7 @@ module.exports.Scaled = class Scaled extends Generic
     # from the master server (frontend) to actual server (backend)
     # that does the job of handling the request. The forwarder is
     # also responsible for rotating (round-robin) servers queue!
-    makeForward: (queue, kind) -> (request, response) =>
+    makeForwarder: (queue, kind) -> (request, response) =>
         encrypted = request.connection.encrypted
         assert u = "#{request.url}".underline.yellow
         assert x = (encrypted and "HTTPS" or "HTTP").bold
