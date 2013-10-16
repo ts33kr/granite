@@ -237,8 +237,8 @@ module.exports.Generic = class Generic extends Archetype
         key = paths.relative process.cwd(), secure.key
         cert = paths.relative process.cwd(), secure.cert
         template = "Reading SSL %s file at %s".toString()
-        logger.info template.grey, "key".bold, key.underline
-        logger.info template.grey, "cert".bold, cert.underline
+        logger.warn template.grey, "key".bold, key.underline
+        logger.warn template.grey, "cert".bold, cert.underline
         logger.debug "Assembling the HTTPS options".grey
         options.key = fs.readFileSync paths.resolve key
         options.cert = fs.readFileSync paths.resolve cert
