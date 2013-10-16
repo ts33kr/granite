@@ -64,10 +64,10 @@ module.exports = ->
     option "-g", "--git-hub-pages", "Publish documents to GitHub pages"
     option "-n", "--clean-modules", "Remove node_modules during cleanup"
 
-    # This task is defined here mainly for purpose of development and
-    # testing. It requires and bootstraps the kernel of the framework
-    # as if it was an end user application, built with the framework.
-    # This task can be used as a template for your end application!
+    # This task launches an instance of application where this task
+    # is invoked at. It should be either an application build within
+    # the framework or the framework itself (it can be launched all
+    # by itself as a standalone). Please refer to the implementation!
     # In terms of scalability - it starts the application instance.
     task "boot", "bootstrap the framework kernel", (options) ->
         library = options.library or DEFAULT_LIBRARY
