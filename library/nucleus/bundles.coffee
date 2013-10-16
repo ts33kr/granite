@@ -42,7 +42,8 @@ scoping = require "./scoping"
 # Of course you are free to define as much scopes as you need.
 module.exports.PRODUCTION = new scoping.Scope "production", ->
     @synopsis = "Final production environment for end users"
-    @defaults = new Object env: {}, server: {}, secure: {}
+    @defaults = new Object env: {},  server: {}, secure: {}
+    @defaults.hub = host: "localhost", port: 1337, opts: {}
     @defaults.env = dirs: ["tmp", "var", "pub"], mode: 0o744
     @defaults.server = host: "localhost", http: 8081, https: 1443
     @defaults.session = secret: "abcdef", cookie: maxAge: 3600000
@@ -66,7 +67,8 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
 # Of course you are free to define as much scopes as you need.
 module.exports.STAGING = new scoping.Scope "staging", ->
     @synopsis = "An environment between staging and production"
-    @defaults = new Object env: {}, server: {}, secure: {}
+    @defaults = new Object env: {},  server: {}, secure: {}
+    @defaults.hub = host: "localhost", port: 1337, opts: {}
     @defaults.env = dirs: ["tmp", "var", "pub"], mode: 0o744
     @defaults.server = host: "localhost", http: 8081, https: 1443
     @defaults.session = secret: "abcdef", cookie: maxAge: 3600000
@@ -90,7 +92,8 @@ module.exports.STAGING = new scoping.Scope "staging", ->
 # Of course you are free to define as much scopes as you need.
 module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @synopsis = "Unstable working environment for developers"
-    @defaults = new Object env: {}, server: {}, secure: {}
+    @defaults = new Object env: {},  server: {}, secure: {}
+    @defaults.hub = host: "localhost", port: 1337, opts: {}
     @defaults.env = dirs: ["tmp", "var", "pub"], mode: 0o744
     @defaults.server = host: "localhost", http: 8081, https: 1443
     @defaults.session = secret: "abcdef", cookie: maxAge: 3600000
@@ -114,7 +117,8 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
 # Of course you are free to define as much scopes as you need.
 module.exports.TESTING = new scoping.Scope "testing", ->
     @synopsis = "Isolated environment for running the tests"
-    @defaults = new Object env: {}, server: {}, secure: {}
+    @defaults = new Object env: {},  server: {}, secure: {}
+    @defaults.hub = host: "localhost", port: 1337, opts: {}
     @defaults.env = dirs: ["tmp", "var", "pub"], mode: 0o744
     @defaults.server = host: "localhost", http: 8081, https: 1443
     @defaults.session = secret: "abcdef", cookie: maxAge: 3600000
