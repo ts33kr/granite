@@ -314,8 +314,8 @@ module.exports.Generic = class Generic extends Archetype
         tag = nconf.get "NODE_ENV" or undefined
         assert not _.isEmpty(tag), missing
         @scope = scoping.Scope.lookupOrFail tag
-        assert @scope.incorporate this
-        @router = new routing.Router this
+        assert try @scope.incorporate this
+        assert @router = new routing.Router this
         assert @middleware = @router.middleware
         @middleware = @middleware.bind @router
         assert _.isFunction @middleware; this
