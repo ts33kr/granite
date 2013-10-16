@@ -47,6 +47,40 @@ fs = require "fs"
 # Please refer to the documentation of the methods for more info.
 module.exports.Scope = class Scope extends Archetype
 
+    # This method is responsible for starting up the scope object.
+    # This means initialization of all its necessary routines and
+    # setting up whatever this scope needs to set. The default
+    # implementation takes care only of loading the proper config.
+    # The kernel invokes this prior to proceeding its operations.
+    incorporate: (kernel) ->
+        nconf.defaults(@defaults or @constructor.DEFAULTS or {})
+        nconf.overrides(@overrides or @constructor.OVERRIDES or {})
+        fpath = "#{nconf.get "layout:config"}/#{@tag}.json"
+        logger.info "Incorporating up the #{@tag.bold} scope".cyan
+        logger.info "Assuming the #{fpath.underline} config".cyan
+        exists = fs.existsSync fpath; nconf.file fpath if exists
+        for directory in nconf.get("env:dirs") or new Array
+            assert _.isNumber mode = nconf.get "env:mode"
+            msg = "Environment mkdir at %s with 0%s mode".yellow
+            logger.info msg, directory.underline, mode.toString 8
+            mkdirSyncRecursive directory, mode
+
+    # This method is responsible for shutting down the scope object.
+    # This means stripping down all the necessary routines and other
+    # resources that are mandated by this this scope object. Default
+    # implementation does not do almost anything, so it is up to you.
+    # The kernel invokes this after the shutting down its operations.
+    disperse: (kernel) ->
+        fpath = "#{nconf.get "layout:config"}/#{@tag}.json"
+        logger.info "Dissipating the #{@tag.bold} scope".grey
+        logger.info "Used #{fpath.underline} as config".grey
+        assert _.isArray preserve = nconf.get "env:preserve"
+        for directory in nconf.get("env:dirs") or new Array
+            continue if directory in (preserve or Array())
+            msg = "Wiping out the env directory at %s".yellow
+            logger.info msg, directory.underline
+            rmdirSyncRecursive directory, yes
+
     # Construct a new scope, using the supplied tag (a short name)
     # and a synopsis (short description of the scope) parameters.
     # The constructor of the scope should only associate the data.
@@ -93,35 +127,3 @@ module.exports.Scope = class Scope extends Archetype
         throw new Error unknown unless basis in dirs
         prefix = prefix + "-" + unique if unique
         return paths.join(basis, prefix).toString()
-
-    # This method is responsible for starting up the scope object.
-    # This means initialization of all its necessary routines and
-    # setting up whatever this scope needs to set. The default
-    # implementation takes care only of loading the proper config.
-    incorporate: (kernel) ->
-        nconf.defaults(@defaults or @constructor.DEFAULTS or {})
-        nconf.overrides(@overrides or @constructor.OVERRIDES or {})
-        fpath = "#{nconf.get "layout:config"}/#{@tag}.json"
-        logger.info "Incorporating up the #{@tag.bold} scope".cyan
-        logger.info "Assuming the #{fpath.underline} config".cyan
-        exists = fs.existsSync fpath; nconf.file fpath if exists
-        for directory in nconf.get("env:dirs") or new Array
-            assert _.isNumber mode = nconf.get "env:mode"
-            msg = "Environment mkdir at %s with 0%s mode".yellow
-            logger.info msg, directory.underline, mode.toString 8
-            mkdirSyncRecursive directory, mode
-
-    # This method is responsible for shutting down the scope object.
-    # This means stripping down all the necessary routines and other
-    # resources that are mandated by this this scope object. Default
-    # implementation does not do almost anything, so it is up to you.
-    disperse: (kernel) ->
-        fpath = "#{nconf.get "layout:config"}/#{@tag}.json"
-        logger.info "Dissipating the #{@tag.bold} scope".grey
-        logger.info "Used #{fpath.underline} as config".grey
-        assert _.isArray preserve = nconf.get "env:preserve"
-        for directory in nconf.get("env:dirs") or new Array
-            continue if directory in (preserve or Array())
-            msg = "Wiping out the env directory at %s".yellow
-            logger.info msg, directory.underline
-            rmdirSyncRecursive directory, yes
