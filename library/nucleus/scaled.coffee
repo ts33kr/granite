@@ -40,7 +40,9 @@ http = require "http"
 util = require "util"
 fs = require "fs"
 
+{format} = require "util"
 {Generic} = require "./kernel"
+{HttpProxy} = require "http-proxy"
 
 # This is the descendant of the generic kernel that implements the
 # scaling of the framework across an arbitrary clustered processes
@@ -73,6 +75,92 @@ module.exports.Scaled = class Scaled extends Generic
         assert not _.isEmpty @startupHttpsMaster()
         assert not _.isEmpty @startupHttpMaster()
         continuation.call @ if @options.instance
+
+    # Prepare and setup an HTTPS master server. This server is the
+    # proxy server that is going to consume all the HTTPS requests
+    # and load balance the request to some of the instances. Please
+    # refer to the `node-http-proxy` library for info on the proxy.
+    # Also see `makeForward` method for details on load balancing!
+    startupHttpsMaster: ->
+        assert _.isArray @queueOfHttps ?= new Array
+        assert _.isObject options = @resolveSslDetails()
+        assert _.isString host = nconf.get "master:host"
+        assert _.isNumber port = nconf.get "master:https"
+        cmp = (e) -> (x) -> e.uuid is x.target.uuid or 0
+        remove = (srv) -> _.remove @queueOfHttps, cmp srv
+        assert forward = @makeForward @queueOfHttps, "https"
+        @secureProxy = https.createServer options, forward
+        assert @secureProxy; @secureProxy.listen port, host
+        running = "Master HTTPS server at %s".bold
+        location = "#{host}:#{port}".toString().underline
+        logger.info running.underline.magenta, location
+        register = @makeRegister @queueOfHttps, "https"
+        @spserver.on "free", (service) -> remove service
+        @spserver.on "register", register; return this
+
+    # Prepare and setup an HTTP master server. This server is the
+    # proxy server that is going to consume all the HTTP requests
+    # and load balance the request to some of the instances. Please
+    # refer to the `node-http-proxy` library for info on the proxy.
+    # Also see `makeForward` method for details on load balancing!
+    startupHttpMaster: ->
+        assert _.isArray @queueOfHttp ?= new Array
+        assert _.isString host = nconf.get "master:host"
+        assert _.isNumber port = nconf.get "master:http"
+        cmp = (e) -> (x) -> e.uuid is x.target.uuid or 0
+        remove = (srv) -> _.remove @queueOfHttp, cmp srv
+        assert forward = @makeForward @queueOfHttp, "http"
+        assert @serverProxy = http.createServer forward
+        assert @serverProxy; @serverProxy.listen port, host
+        running = "Master HTTP server at %s".bold
+        location = "#{host}:#{port}".toString().underline
+        logger.info running.underline.magenta, location
+        register = @makeRegister @queueOfHttp, "http"
+        @spserver.on "free", (service) -> remove service
+        @spserver.on "register", register; return this
+
+    # This is a factory method that produces handlers invoked on
+    # discovering a new service on the Seaport hub. This handler
+    # examines the service to decide if it suits the parameters
+    # passed to the factory, and if so - add it to the registry
+    # of available services that are rotated using round-robin.
+    makeRegister: (queue, kind) -> (service) =>
+        assert ids = @constructor.identica()
+        config = Object https: kind is "https"
+        compile = (s) -> "#{s.role}@#{s.version}"
+        return undefined unless service.kind is kind
+        return undefined unless compile(service) is ids
+        options = @resolveSslDetails() if config.https
+        _.extend config, https: options if config.https
+        where = host: service.host, port: service.port
+        assert merged = _.extend config, target: where
+        merged.target.https = service.kind is "https"
+        merget.target.rejectUnauthorized = false
+        queue.push proxy = new HttpProxy merged
+        proxy.on "proxyError", (err, req, res) =>
+            msg = "got an error talking to backend: %s"
+            res.writeHead 500, "a proxy backend error"
+            res.end format msg, err.toString(); this
+
+    # This is a factory method that produces request forwarders.
+    # These are directly responsible for proxying an HTTP request
+    # from the master server (frontend) to actual server (backend)
+    # that does the job of handling the request. The forwarder is
+    # also responsible for rotating (round-robin) servers queue!
+    makeForward: (queue, kind) -> (request, response) =>
+        encrypted = request.connection.encrypted
+        assert u = "#{request.url}".underline.yellow
+        assert x = (encrypted and "HTTPS" or "HTTP").bold
+        reason = "no instances found behind a frontend"
+        msg = "the frontend has no instances to talk to"
+        assert _.isArray(queue), "got invalid proxy queue"
+        response.writeHead 504, reason if _.isEmpty queue
+        return response.end(msg) and no if _.isEmpty queue
+        assert proxy = queue.shift(); queue.push proxy
+        a = "#{proxy.target.host}:#{proxy.target.port}"
+        assert a = "#{a.toLowerCase().underline.yellow}"
+        logger.info "Proxy %s request %s to %s", x, u, a
+        return proxy.proxyRequest request, response
 
     # Create and launch a Seaport server in the current kernel. It
     # draws the configuration from the same key as Seaport client
@@ -125,7 +213,7 @@ module.exports.Scaled = class Scaled extends Generic
         msg = "Got HTTPS port from the Seaport: %s"
         assert identica = @constructor.identica()
         cfg = config: config, identica: identica
-        _.extend cfg, uuid: uuid.v4(), type: "https"
+        _.extend cfg, uuid: uuid.v4(), kind: "https"
         _.extend cfg, token: @token or undefined
         record = @seaport.register identica, cfg
         assert _.isNumber(record), "got mistaken"
@@ -144,7 +232,7 @@ module.exports.Scaled = class Scaled extends Generic
         msg = "Got HTTP port from the Seaport: %s"
         assert identica = @constructor.identica()
         cfg = config: config, identica: identica
-        _.extend cfg, uuid: uuid.v4(), type: "http"
+        _.extend cfg, uuid: uuid.v4(), kind: "http"
         _.extend cfg, token: @token or undefined
         record = @seaport.register identica, cfg
         assert _.isNumber(record), "got mistaken"
