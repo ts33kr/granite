@@ -57,6 +57,23 @@ module.exports.Scaled = class Scaled extends Generic
     # for more information on semantics and the way of working it.
     @identica "#{@PACKAGE.name}@#{@PACKAGE.version}"
 
+    # The kernel preemption routine is called once the kernel has
+    # passed the initial launching and configuration phase, but is
+    # yet to start up the router, connect services and instantiate
+    # an actual application. This method gets passes continuation
+    # that does that. The method can either invoke it or omit it.
+    kernelPreemption: (continuation) ->
+        assert _.isObject(@options), "got no options"
+        either = @options.master or @options.instance
+        assert either, "no master and no instance mode"
+        return continuation() unless @options.master
+        logger.warn "The kernel is booting as master"
+        assert nconf.get("master"), "no master config"
+        assert not _.isEmpty @createSeaportServer()
+        assert not _.isEmpty @startupHttpsMaster()
+        assert not _.isEmpty @startupHttpMaster()
+        continuation.call @ if @options.instance
+
     # Create and launch a Seaport server in the current kernel. It
     # draws the configuration from the same key as Seaport client
     # uses. This routine should only be invoked when the kernel is
@@ -93,6 +110,7 @@ module.exports.Scaled = class Scaled extends Generic
         assert identica = @constructor.identica()
         cfg = config: config, identica: identica
         _.extend cfg, uuid: uuid.v4(), type: "http"
+        _.extend cfg, token: @token or undefined
         record = @seaport.register identica, cfg
         assert _.isNumber(record), "got mistaken"
         logger.info msg.green, "#{record}".bold
@@ -111,6 +129,7 @@ module.exports.Scaled = class Scaled extends Generic
         assert identica = @constructor.identica()
         cfg = config: config, identica: identica
         _.extend cfg, uuid: uuid.v4(), type: "https"
+        _.extend cfg, token: @token or undefined
         record = @seaport.register identica, cfg
         assert _.isNumber(record), "got mistaken"
         logger.info msg.green, "#{record}".bold

@@ -28,6 +28,7 @@ connect = require "connect"
 logger = require "winston"
 moment = require "moment"
 socket = require "socket.io"
+uuid = require "node-uuid"
 colors = require "colors"
 assert = require "assert"
 async = require "async"
@@ -155,6 +156,7 @@ module.exports.Generic = class Generic extends Archetype
     # the purpose of setting up the configurations will never be
     # changed, such as the kernel self identification tokens.
     constructor: (initializer) ->
+        assert not _.isEmpty @token = uuid.v4()
         nconf.env().argv(); @setupLoggingFacade()
         assert @package = @constructor.PACKAGE or {}
         assert branding = [@package.name, "smisome1"]
