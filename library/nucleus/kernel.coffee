@@ -224,17 +224,18 @@ module.exports.Generic = class Generic extends Archetype
         options = Object.create {}
         assert secure = nconf.get "secure"
         assert server = nconf.get "server"
-        assert hostname = nconf.get "server:host"
+        assert host = nconf.get "server:host"
+        assert port = server.https, "no HTTPS port"
         key = paths.relative process.cwd(), secure.key
         cert = paths.relative process.cwd(), secure.cert
         logger.info "Using SSL key file at %s".grey, key
         logger.info "Using SSL cert file at %s".grey, cert
         options.key = fs.readFileSync paths.resolve key
         options.cert = fs.readFileSync paths.resolve cert
-        rsecure = "Running HTTPS server at %s:%s".magenta
-        logger.info rsecure, hostname, server.https
+        rsecure = "Running HTTPS server at %s".magenta
+        logger.info rsecure, "#{host}:#{port}".underline
         @secure = https.createServer options, @connect
-        @secure?.listen server.https, hostname; this
+        @secure?.listen server.https, host; return @
 
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
@@ -244,8 +245,9 @@ module.exports.Generic = class Generic extends Archetype
         assert server = nconf.get "server"
         assert hostname = nconf.get "server:host"
         assert _.isNumber(server.http), "no HTTP port"
-        rserver = "Running HTTP server at %s:%s".magenta
-        logger.info rserver, hostname, server.http
+        rserver = "Running HTTP server at %s".magenta
+        assert location = "#{hostname}:#{server.http}"
+        logger.info rserver, location.underline
         @server = http.createServer @connect
         @server?.listen server.http, hostname
         @server.on "connection", (socket) ->
