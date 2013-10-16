@@ -310,8 +310,8 @@ module.exports.Generic = class Generic extends Archetype
     # in with the located and instantiated services. Please refer
     # to the implementation on how and what is being done exactly.
     setupScaffolding: ->
-        tag = nconf.get "NODE_ENV" or null
-        missing = "No NODE_ENV variable found"
+        missing = "no NODE_ENV variable found"
+        tag = nconf.get "NODE_ENV" or undefined
         assert not _.isEmpty(tag), missing
         @scope = scoping.Scope.lookupOrFail tag
         assert @scope.incorporate this
