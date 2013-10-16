@@ -28,6 +28,7 @@ asciify = require "asciify"
 connect = require "connect"
 seaport = require "seaport"
 logger = require "winston"
+uuid = require "node-uuid"
 moment = require "moment"
 colors = require "colors"
 assert = require "assert"
@@ -67,6 +68,7 @@ module.exports.Scaled = class Scaled extends Generic
         msg = "Got HTTP port from the Seaport: %s"
         assert identica = @constructor.identica()
         cfg = config: config, identica: identica
+        _.extend cfg, uuid: uuid.v4(), type: "http"
         record = @seaport.register identica, cfg
         assert _.isNumber(record), "got mistaken"
         logger.info msg.green, "#{record}".bold
@@ -84,6 +86,7 @@ module.exports.Scaled = class Scaled extends Generic
         msg = "Got HTTPS port from the Seaport: %s"
         assert identica = @constructor.identica()
         cfg = config: config, identica: identica
+        _.extend cfg, uuid: uuid.v4(), type: "https"
         record = @seaport.register identica, cfg
         assert _.isNumber(record), "got mistaken"
         logger.info msg.green, "#{record}".bold
