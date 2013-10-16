@@ -95,7 +95,7 @@ module.exports.Scaled = class Scaled extends Generic
     # retrieving that info and using it to locate and connect to a
     # Seaport hub, which is then installed as the kernel instance
     # variable, so that it can be accessed by the other routines.
-    @configure "access service discovery hub", (next) ->
+    @configure "access service Seaport hub", (next) ->
         assert _.isString host = nconf.get "hub:host"
         assert _.isNumber port = nconf.get "hub:port"
         assert _.isObject opts = nconf.get "hub:opts"
