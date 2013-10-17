@@ -101,9 +101,42 @@ module.exports.RDuplex = class RDuplex extends Duplex
 
 # This is an abstract base class API stub service. Its purpose is
 # providing the boilerplate for ensuring that the connection is
+# going through the master server! If a request is not going via
+# master server then deny current request with an error code. Be
+# aware that this compound will be effective for all HTTP methods.
+module.exports.OnlyMaster = class OnlyMaster extends Barebones
+
+    # This is a marker that indicates to some internal subsystems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete class implementation. This
+    # mainly is used to exclude or account for abstract classes.
+    @abstract yes
+
+    # A hook that will be called prior to firing up the processing
+    # of the service. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    ignition: (request, response, next) ->
+        str = (address) -> address.address
+        inbound = request.connection.address()
+        assert server = @kernel.server.address()
+        assert secure = @kernel.secure.address()
+        assert not _.isEmpty "#{str(inbound)}"
+        assert master = nconf.get "master:host"
+        return next() if str(inbound) is str(server)
+        return next() if str(inbound) is str(secure)
+        return next() if str(inbound) is master
+        content = "please use the master server"
+        reason = "an attempt of direct access"
+        response.writeHead 401, reason
+        return response.end content
+
+# This is an abstract base class API stub service. Its purpose is
+# providing the boilerplate for ensuring that the connection is
 # going through the HTTPS channel. If a request is not going via
 # SSL transport then redirect the current request to such one. Be
-# aware that this compund will be effective for all HTTP methods.
+# aware that this compound will be effective for all HTTP methods.
 module.exports.OnlySsl = class OnlySsl extends Barebones
 
     # This is a marker that indicates to some internal subsystems
