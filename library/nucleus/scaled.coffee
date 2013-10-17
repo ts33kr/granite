@@ -69,7 +69,7 @@ module.exports.Scaled = class Scaled extends Generic
     shutdownKernel: (reason, eol=yes) ->
         util.puts require("os").EOL if eol
         try @spserver.close() if @spserver?
-        @emit "shutdownScaledKernel", reason, eol
+        @emit "shutdownScaledKernel", arguments...
         message = "Graceful shutdown of Scaled kernel"
         try @serverProxy.close() if @serverProxy?
         try @secureProxy.close() if @secureProxy?
