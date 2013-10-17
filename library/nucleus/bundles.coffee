@@ -60,6 +60,7 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @defaults.watch = dirs: [], force: no
     @defaults.visual = compression: yes
     @defaults.socket = "log level": 0
+    @defaults.balancer = sticky: yes
     @defaults.env.preserve = ["pub"]
 
 # One of the predefined scopes, baked into the framework. Scopes
@@ -86,6 +87,7 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @defaults.watch = dirs: [], force: no
     @defaults.visual = compression: yes
     @defaults.socket = "log level": 0
+    @defaults.balancer = sticky: yes
     @defaults.env.preserve = ["pub"]
 
 # One of the predefined scopes, baked into the framework. Scopes
@@ -112,6 +114,7 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.watch = dirs: [], force: yes
     @defaults.visual = compression: yes
     @defaults.socket = "log level": 0
+    @defaults.balancer = sticky: yes
     @defaults.env.preserve = ["pub"]
 
 # One of the predefined scopes, baked into the framework. Scopes
@@ -138,4 +141,5 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.watch = dirs: [], force: yes
     @defaults.visual = compression: yes
     @defaults.socket = "log level": 0
+    @defaults.balancer = sticky: yes
     @defaults.env.preserve = ["pub"]

@@ -167,6 +167,7 @@ module.exports.Scaled = class Scaled extends Generic
         keygrip = new Keygrip [secret], "sha256", "hex"
         cookies = new Cookies request, response, keygrip
         xbackend = cookies.get "xbackend", signed: yes
+        return rrb() unless nconf.get "balancer:sticky"
         assert _.isObject proxy = ltp(xbackend) or rrb()
         configure = signed: yes, overwrite: yes, httpOnly: no
         s = cookies.set "xbackend", proxy.uuid, configure
