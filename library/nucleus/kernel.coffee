@@ -141,9 +141,9 @@ module.exports.Generic = class Generic extends Archetype
         process.on "SIGINT", => @shutdownKernel sigint
         process.on "SIGTERM", => @shutdownKernel sigterm
         assert _.isObject @setupScaffolding()
-        assert _.isObject @setupConnectPipeline()
         this.constructor.configure().apply this
         return @kernelPreemption.call this, =>
+            assert not _.isEmpty @setupConnectPipeline()
             assert not _.isEmpty @setupListeningServers()
             assert not _.isEmpty @setupSocketServers()
             assert not _.isEmpty @setupHotloadWatcher()
