@@ -86,8 +86,6 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isObject options = @resolveSslDetails()
         assert _.isString host = nconf.get "master:host"
         assert _.isNumber port = nconf.get "master:https"
-        cmp = (exm) -> (srv) -> exm.uuid is srv.uuid or 0
-        remove = (srv) => _.remove @queueOfHttps, cmp(srv)
         assert registr = @makeRegistrar q, "http", null
         assert selectr = @makeSelectors q, "http", null
         assert forward = @makeForwarder q, "http", selectr
@@ -98,6 +96,7 @@ module.exports.Scaled = class Scaled extends Generic
         running = "Master HTTPS server at %s".bold
         location = "#{host}:#{port}".toString().underline
         logger.info running.underline.magenta, location
+        remove = (s) -> _.remove q, (x) -> s.uuid is x.uuid
         @spserver.on "free", (service) -> remove service
         @spserver.on "register", registr; return this
 
@@ -110,8 +109,6 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isArray q = @queueOfHttp ?= Array()
         assert _.isString host = nconf.get "master:host"
         assert _.isNumber port = nconf.get "master:http"
-        cmp = (exm) -> (srv) -> exm.uuid is srv.uuid or 0
-        remove = (srv) => _.remove @queueOfHttp, cmp(srv)
         assert registr = @makeRegistrar q, "http", null
         assert selectr = @makeSelectors q, "http", null
         assert forward = @makeForwarder q, "http", selectr
@@ -122,6 +119,7 @@ module.exports.Scaled = class Scaled extends Generic
         running = "Master HTTP server at %s".bold
         location = "#{host}:#{port}".toString().underline
         logger.info running.underline.magenta, location
+        remove = (s) -> _.remove q, (x) -> s.uuid is x.uuid
         @spserver.on "free", (service) -> remove service
         @spserver.on "register", registr; return this
 
