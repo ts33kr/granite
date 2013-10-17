@@ -128,7 +128,7 @@ module.exports = ->
     # In terms of scalability - it starts the master server istance.
     # It is different from `boot` in that it continously spins it.
     task "forever-master", "forever execute master task", (options) ->
-        assert (col = process.stdout.columns) > 0
+        assert col = process.stdout.columns or 80
         assert forever = require "forever-monitor"
         rep = (x) -> "master" if x is "forever-master"
         parameters = _.cloneDeep process.argv, rep
@@ -146,7 +146,7 @@ module.exports = ->
     # In terms of scalability - it starts the application instance.
     # It is different from `boot` in that it continously spins it.
     task "forever-boot", "forever execute boot task", (options) ->
-        assert (col = process.stdout.columns) > 0
+        assert col = process.stdout.columns or 80
         assert forever = require "forever-monitor"
         rep = (x) -> "boot" if x is "forever-boot"
         parameters = _.cloneDeep process.argv, rep
