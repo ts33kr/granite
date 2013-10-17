@@ -176,16 +176,19 @@ module.exports.Generic = class Generic extends Archetype
     # HTTP and HTTPS server that may be running, stopping the router
     # and unregistering all the services as a precauting. After that
     # the scope is being dispersed and some events are being emited.
-    shutdownKernel: (reason) ->
-        util.puts require("os").EOL
+    shutdownKernel: (reason, eol=yes) ->
+        util.puts require("os").EOL if eol
         logger.warn reason.toString().red
         try @router.shutdownRouter?() catch
         snapshot = _.clone(@router.registry or [])
         @router.unregister srv for srv in snapshot
         try @server.close(); try @secure.close()
+        try @secureSocket.close() if @secureSocket?
+        try @serverSocket.close() if @serverSocket?
         shutdown = "Shutting the kernel instance down"
         logger.warn shutdown.red; @emit "shutdown"
-        @scope.disperse(); process.exit -1
+        @scope.disperse(); @domain.dispose()
+        return process.exit -1
 
     # Instantiate a hot swapping watcher for this kernel and setup
     # the watcher per the scoping configuration to watch for certain

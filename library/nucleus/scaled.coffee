@@ -61,6 +61,22 @@ module.exports.Scaled = class Scaled extends Generic
     # for more information on semantics and the way of working it.
     @identica "#{@PACKAGE.name}@#{@PACKAGE.version}"
 
+    # Shutdown the kernel instance. This includes shutting down both
+    # HTTP and HTTPS server that may be running, stopping the router
+    # and unregistering all the services as a precauting. After that
+    # the scope is being dispersed and some events are being emited.
+    # This implementaton cleans up some of the scalability resources.
+    shutdownKernel: (reason, eol=yes) ->
+        util.puts require("os").EOL if eol
+        try @spserver.close() if @spserver?
+        @emit "shutdownScaledKernel", reason, eol
+        message = "Graceful shutdown of Scaled kernel"
+        try @serverProxy.close() if @serverProxy?
+        try @secureProxy.close() if @secureProxy?
+        sproxy.close() for sproxy in @queueOfHttp
+        sproxy.close() for sproxy in @queueOfHttps
+        logger.info message.red; super reason, no
+
     # The kernel preemption routine is called once the kernel has
     # passed the initial launching and configuration phase, but is
     # yet to start up the router, connect services and instantiate
