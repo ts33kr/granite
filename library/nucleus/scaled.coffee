@@ -90,13 +90,13 @@ module.exports.Scaled = class Scaled extends Generic
         assert selectr = @makeSelectors q, "http", null
         assert forward = @makeForwarder q, "http", selectr
         assert upgrade = @makeUpgraders q, "http", selectr
+        remove = (s) -> _.remove q, (x) -> s.uuid is x.uuid
         @secureProxy = https.createServer options, forward
         assert @secureProxy; @secureProxy.listen port, host
         @secureProxy.on "upgrade", -> upgrade arguments...
         running = "Master HTTPS server at %s".bold
         location = "#{host}:#{port}".toString().underline
         logger.info running.underline.magenta, location
-        remove = (s) -> _.remove q, (x) -> s.uuid is x.uuid
         @spserver.on "free", (service) -> remove service
         @spserver.on "register", registr; return this
 
@@ -113,13 +113,13 @@ module.exports.Scaled = class Scaled extends Generic
         assert selectr = @makeSelectors q, "http", null
         assert forward = @makeForwarder q, "http", selectr
         assert upgrade = @makeUpgraders q, "http", selectr
+        remove = (s) -> _.remove q, (x) -> s.uuid is x.uuid
         assert @serverProxy = http.createServer forward
         assert @serverProxy; @serverProxy.listen port, host
         @serverProxy.on "upgrade", -> upgrade arguments...
         running = "Master HTTP server at %s".bold
         location = "#{host}:#{port}".toString().underline
         logger.info running.underline.magenta, location
-        remove = (s) -> _.remove q, (x) -> s.uuid is x.uuid
         @spserver.on "free", (service) -> remove service
         @spserver.on "register", registr; return this
 
