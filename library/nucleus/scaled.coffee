@@ -87,7 +87,7 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isString host = nconf.get "master:host"
         assert _.isNumber port = nconf.get "master:https"
         cmp = (exm) -> (srv) -> exm.uuid is srv.uuid or 0
-        remove = (s) => assert _.remove @queueOfHttps, cmp(s)
+        remove = (srv) => _.remove @queueOfHttps, cmp(srv)
         assert upgrade = @makeUpgraders @queueOfHttp, "https"
         assert registr = @makeRegistrar @queueOfHttps, "https"
         assert forward = @makeForwarder @queueOfHttps, "https"
@@ -110,7 +110,7 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isString host = nconf.get "master:host"
         assert _.isNumber port = nconf.get "master:http"
         cmp = (exm) -> (srv) -> exm.uuid is srv.uuid or 0
-        remove = (s) => assert _.remove @queueOfHttp, cmp(s)
+        remove = (srv) => _.remove @queueOfHttp, cmp(srv)
         assert upgrade = @makeUpgraders @queueOfHttp, "http"
         assert registr = @makeRegistrar @queueOfHttp, "http"
         assert forward = @makeForwarder @queueOfHttp, "http"
