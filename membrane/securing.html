@@ -84,9 +84,33 @@ you wish to decline, just don't call <code>next</code> and close socket.</p></di
             <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="nx">value</span> <span class="o">and</span> <span class="nx">value</span> <span class="o">&gt;=</span> <span class="mi">1</span>
             <span class="nx">@redis</span><span class="p">.</span><span class="nx">del</span> <span class="nx">gen</span><span class="p">(</span><span class="nx">key</span><span class="p">(</span><span class="nx">uuid</span><span class="p">)),</span> <span class="nf">-&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class API stub service. Its purpose is
 providing the boilerplate for ensuring that the connection is
+going through the master server! If a request is not going via
+master server then deny current request with an error code. Be
+aware that this compound will be effective for all HTTP methods.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.OnlyMaster = </span><span class="k">class</span> <span class="nx">OnlyMaster</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to firing up the processing
+of the service. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">ignition: </span><span class="nf">(request, response, next) -&gt;</span>
+        <span class="nv">str = </span><span class="nf">(address) -&gt;</span> <span class="nx">address</span><span class="p">.</span><span class="nx">address</span>
+        <span class="nv">inbound = </span><span class="nx">request</span><span class="p">.</span><span class="nx">connection</span><span class="p">.</span><span class="nx">address</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">server = </span><span class="nx">@kernel</span><span class="p">.</span><span class="nx">server</span><span class="p">.</span><span class="nx">address</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">secure = </span><span class="nx">@kernel</span><span class="p">.</span><span class="nx">secure</span><span class="p">.</span><span class="nx">address</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">str</span><span class="p">(</span><span class="nx">inbound</span><span class="p">)</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nx">assert</span> <span class="nv">master = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;master:host&quot;</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="nx">str</span><span class="p">(</span><span class="nx">inbound</span><span class="p">)</span> <span class="o">is</span> <span class="nx">str</span><span class="p">(</span><span class="nx">server</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="nx">str</span><span class="p">(</span><span class="nx">inbound</span><span class="p">)</span> <span class="o">is</span> <span class="nx">str</span><span class="p">(</span><span class="nx">secure</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="nx">str</span><span class="p">(</span><span class="nx">inbound</span><span class="p">)</span> <span class="o">is</span> <span class="nx">master</span>
+        <span class="nv">content = </span><span class="s">&quot;please use the master server&quot;</span>
+        <span class="nv">reason = </span><span class="s">&quot;an attempt of direct access&quot;</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="mi">401</span><span class="p">,</span> <span class="nx">reason</span>
+        <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">end</span> <span class="nx">content</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class API stub service. Its purpose is
+providing the boilerplate for ensuring that the connection is
 going through the HTTPS channel. If a request is not going via
 SSL transport then redirect the current request to such one. Be
-aware that this compund will be effective for all HTTP methods.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.OnlySsl = </span><span class="k">class</span> <span class="nx">OnlySsl</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+aware that this compound will be effective for all HTTP methods.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.OnlySsl = </span><span class="k">class</span> <span class="nx">OnlySsl</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to firing up the processing
