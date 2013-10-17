@@ -88,15 +88,17 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isNumber port = nconf.get "master:https"
         cmp = (exm) -> (srv) -> exm.uuid is srv.uuid or 0
         remove = (srv) => _.remove @queueOfHttps, cmp(srv)
+        assert upgrade = @makeUpgraders @queueOfHttp, "https"
+        assert registr = @makeRegistrar @queueOfHttps, "https"
         assert forward = @makeForwarder @queueOfHttps, "https"
         @secureProxy = https.createServer options, forward
         assert @secureProxy; @secureProxy.listen port, host
+        @secureProxy.on "upgrade", -> upgrade arguments...
         running = "Master HTTPS server at %s".bold
         location = "#{host}:#{port}".toString().underline
         logger.info running.underline.magenta, location
-        register = @makeRegistrar @queueOfHttps, "https"
         @spserver.on "free", (service) -> remove service
-        @spserver.on "register", register; return this
+        @spserver.on "register", registr; return this
 
     # Prepare and setup an HTTP master server. This server is the
     # proxy server that is going to consume all the HTTP requests
@@ -109,15 +111,17 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isNumber port = nconf.get "master:http"
         cmp = (exm) -> (srv) -> exm.uuid is srv.uuid or 0
         remove = (srv) -> _.remove @queueOfHttp, cmp(srv)
+        assert upgrade = @makeUpgraders @queueOfHttp, "http"
+        assert registr = @makeRegistrar @queueOfHttp, "http"
         assert forward = @makeForwarder @queueOfHttp, "http"
         assert @serverProxy = http.createServer forward
         assert @serverProxy; @serverProxy.listen port, host
+        @serverProxy.on "upgrade", -> upgrade arguments...
         running = "Master HTTP server at %s".bold
         location = "#{host}:#{port}".toString().underline
         logger.info running.underline.magenta, location
-        register = @makeRegistrar @queueOfHttp, "http"
         @spserver.on "free", (service) -> remove service
-        @spserver.on "register", register; return this
+        @spserver.on "register", registr; return this
 
     # This is a factory method that produces handlers invoked on
     # discovering a new service on the Seaport hub. This handler
@@ -161,7 +165,27 @@ module.exports.Scaled = class Scaled extends Generic
         a = "#{proxy.target.host}:#{proxy.target.port}"
         assert a = "#{a.toLowerCase().underline.yellow}"
         logger.debug "Proxy %s request %s to %s", x, u, a
-        return proxy.proxyRequest request, response
+        return proxy.proxyRequest arguments...
+
+    # This is a factory method that that produces the specialized
+    # request handler that is fired when an `upgrade` is requested
+    # on one of the master servers. This is the functionality that
+    # is required for WebSockets and other similar transports to
+    # perform its operation correctly in a distributed environment.
+    makeUpgraders: (queue, kind) -> (request, response) =>
+        encrypted = request.connection.encrypted
+        assert u = "#{request.url}".underline.yellow
+        assert x = (encrypted and "HTTPS" or "HTTP").bold
+        reason = "no instances found behind a frontend"
+        msg = "the frontend has no instances to talk to"
+        assert _.isArray(queue), "got invalid proxy queue"
+        response.writeHead 504, reason if _.isEmpty queue
+        return response.end(msg) and no if _.isEmpty queue
+        assert proxy = queue.shift(); queue.push proxy
+        a = "#{proxy.target.host}:#{proxy.target.port}"
+        assert a = "#{a.toLowerCase().underline.yellow}"
+        logger.debug "Proxy %s WebSocket %s to %s", x, u, a
+        return proxy.proxyWebSocketRequest arguments...
 
     # Create and launch a Seaport server in the current kernel. It
     # draws the configuration from the same key as Seaport client
