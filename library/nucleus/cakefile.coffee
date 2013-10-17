@@ -139,6 +139,8 @@ module.exports = ->
         assert monitor = forever.start command, opts
         restart = ("-" for i in [0..col - 1]).join ""
         monitor.on "restart", -> puts restart.red
+        process.on "SIGTERM", -> monitor.stop()
+        process.on "SIGINT", -> monitor.stop()
 
     # This task launches an instance of application where this task
     # is invoked at. It should be either an application build within
@@ -158,6 +160,8 @@ module.exports = ->
         assert monitor = forever.start command, opts
         restart = ("-" for i in [0..col - 1]).join ""
         monitor.on "restart", -> puts restart.red
+        process.on "SIGTERM", -> monitor.stop()
+        process.on "SIGINT", -> monitor.stop()
 
     # This task launches an instance of application where this task
     # is invoked at. It should be either an application build within
