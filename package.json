@@ -40,6 +40,7 @@
     },
 
     "dependencies": {
+        "forever-monitor": "1.2.x",
         "eventemitter2": "0.4.x",
         "coffee-script": "1.6.x",
         "stack-trace": "0.0.x",

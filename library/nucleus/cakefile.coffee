@@ -32,6 +32,7 @@ logger = require "winston"
 _ = require "lodash"
 {rmdirSyncRecursive} = require "wrench"
 {spawn} = require "child_process"
+{puts} = require "util"
 
 # Here follows the definition of a number of constants that define
 # the defaults for some of the options, generally for the ones that
@@ -182,3 +183,39 @@ module.exports = ->
         assert _.isObject(compiled), "invalid library"
         conf = new Object master: no, instance: yes
         granite.cachedKernel(library).bootstrap conf
+
+    # This task launches an instance of application where this task
+    # is invoked at. It should be either an application build within
+    # the framework or the framework itself (it can be launched all
+    # by itself as a standalone). Please refer to the implementation!
+    # In terms of scalability - it starts the master server istance.
+    # It is different from `boot` in that it continously spins it.
+    task "forever-master", "forever execute master task", (options) ->
+        assert (col = process.stdout.columns) > 0
+        assert forever = require "forever-monitor"
+        rep = (x) -> "master" if x is "forever-master"
+        parameters = _.cloneDeep process.argv, rep
+        assert parameters = _.drop parameters, 2
+        assert command = ["cake"].concat parameters
+        opts = env: process.env, cwd: process.cwd
+        assert monitor = forever.start command, opts
+        restart = ("-" for i in [0..col - 1]).join ""
+        monitor.on "restart", -> puts restart.red
+
+    # This task launches an instance of application where this task
+    # is invoked at. It should be either an application build within
+    # the framework or the framework itself (it can be launched all
+    # by itself as a standalone). Please refer to the implementation!
+    # In terms of scalability - it starts the application instance.
+    # It is different from `boot` in that it continously spins it.
+    task "forever-boot", "forever execute boot task", (options) ->
+        assert (col = process.stdout.columns) > 0
+        assert forever = require "forever-monitor"
+        rep = (x) -> "boot" if x is "forever-boot"
+        parameters = _.cloneDeep process.argv, rep
+        assert parameters = _.drop parameters, 2
+        assert command = ["cake"].concat parameters
+        opts = env: process.env, cwd: process.cwd
+        assert monitor = forever.start command, opts
+        restart = ("-" for i in [0..col - 1]).join ""
+        monitor.on "restart", -> puts restart.red
