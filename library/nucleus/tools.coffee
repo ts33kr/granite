@@ -54,3 +54,23 @@ module.exports.urlOfServer = (ssl, parts, params, segment) ->
     url += "?#{params}" if params?
     url += "##{segment}" if segment?
     return _.escape url.toString()
+
+# Get the entire host information that includes hostname and port
+# that are in use by the current kernel and the servers. It may
+# be very useful for automatic generation of correct URLs and all
+# other content that requires the specific reference to the host.
+# This uses the hostname and port of the master instance server.
+module.exports.urlOfMaster = (ssl, parts, params, segment) ->
+    params = query.stringify params if params?
+    parts = parts.join "/" if _.isArray parts
+    assert server = nconf.get "master:http"
+    assert secure = nconf.get "master:https"
+    assert hostname = nconf.get "master:host"
+    port = if ssl then secure else server
+    scheme = if ssl then "https" else "http"
+    dedup = (string) -> string.replace "//", "/"
+    url = "#{scheme}://#{hostname}:#{port}"
+    url += dedup("/#{parts}") if parts?
+    url += "?#{params}" if params?
+    url += "##{segment}" if segment?
+    return _.escape url.toString()
