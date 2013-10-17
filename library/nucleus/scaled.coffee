@@ -27,6 +27,8 @@ _ = require "lodash"
 asciify = require "asciify"
 connect = require "connect"
 seaport = require "seaport"
+Keygrip = require "keygrip"
+Cookies = require "cookies"
 logger = require "winston"
 uuid = require "node-uuid"
 moment = require "moment"
@@ -147,11 +149,31 @@ module.exports.Scaled = class Scaled extends Generic
             res.writeHead 500, "a proxy backend error"
             res.end format msg, err.toString(); this
 
+    # This is a factory method that produces methods that dispatch
+    # requests to the corresponding backend proxied server. It is
+    # the direct implementor of the round-robin rotation algorithm.
+    # Beware howeber that is also implements the sticky session algo
+    # based on setting and getting the correctly signed req cookies.
     makeSelectors: (queue, kind) -> (request, response) =>
-        proxy = queue.shift()
-        assert _.isObject proxy
-        num = queue.push proxy
-        assert num > 0; proxy
+        encrypted = request.connection.encrypted
+        response.set = yes # a hack for `cookies` module
+        response.getHeader = (key) -> [key.toLowerCase()]
+        ltp = (u) -> _.find queue, (srv) -> srv.uuid is u
+        rrb = -> assert p = queue.shift(); queue.push p; p
+        sticky = "Sticky %s request %s of %s".toString()
+        assert url = "#{request.url}".underline.yellow
+        assert x = (encrypted and "HTTPS" or "HTTP").bold
+        assert secret = nconf.get "session:secret" or null
+        keygrip = new Keygrip [secret], "sha256", "hex"
+        cookies = new Cookies request, response, keygrip
+        xbackend = cookies.get "xbackend", signed: yes
+        assert _.isObject proxy = ltp(xbackend) or rrb()
+        assert configure = signed: yes, overwrite: yes
+        s = cookies.set "xbackend", proxy.uuid, configure
+        a = "#{proxy.target.host}:#{proxy.target.port}"
+        assert a = "#{a.toLowerCase().underline.yellow}"
+        logger.debug sticky, x.bold, url, a if xbackend
+        assert s.response is response; return proxy
 
     # This is a factory method that produces request forwarders.
     # These are directly responsible for proxying an HTTP request

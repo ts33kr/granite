@@ -46,6 +46,8 @@
         "socket.io": "0.9.x",
         "platform": "1.0.x",
         "chokidar": "0.6.x",
+        "cookies": "0.3.x",
+        "keygrip": "0.2.x",
         "request": "2.27.x",
         "seaport": "1.6.x",
         "toobusy": "0.x.x",
