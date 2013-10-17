@@ -184,7 +184,7 @@ module.exports.Scaled = class Scaled extends Generic
         assert proxy = queue.shift(); queue.push proxy
         a = "#{proxy.target.host}:#{proxy.target.port}"
         assert a = "#{a.toLowerCase().underline.yellow}"
-        logger.debug "Proxy %s WebSocket %s to %s", x, u, a
+        logger.debug "Proxy %s upgrade %s to %s", x, u, a
         return proxy.proxyWebSocketRequest arguments...
 
     # Create and launch a Seaport server in the current kernel. It
