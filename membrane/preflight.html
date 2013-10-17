@@ -61,9 +61,11 @@ in all the remote classes that you need to the remote call site.</p></div></div>
         <span class="vi">@remotes = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">subject</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This server side method is called on the context prior to the
 context being compiled and flushed down to the client site. The
 method is wired in an asynchronous way for greater functionality.
-This is the place where you would be importing the dependencies.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(symbol, context, request, next) -&gt;</span>
-        <span class="nv">inline = </span><span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="o">or</span> <span class="nf">-&gt;</span>
-        <span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="o">`</span><span class="nv">assert = </span><span class="nx">chai</span><span class="p">.</span><span class="nx">assert</span><span class="o">`</span>
+This is the place where you would be importing the dependencies.
+Pay attention that most implementations side effect the context.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(symbol, context, request, next) -&gt;</span>
+        <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="o">`</span><span class="nv">assert = </span><span class="nx">chai</span><span class="p">.</span><span class="nx">assert</span><span class="o">`</span>
+        <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="o">`</span><span class="nx">assert</span><span class="p">(</span><span class="nv">logger = </span><span class="nx">log</span><span class="p">)</span><span class="o">`</span>
+        <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="k">try</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">enableAll</span><span class="p">()</span>
         <span class="nv">remotes = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">remotes</span> <span class="o">or</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="nx">remote</span> <span class="k">in</span> <span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">remotes</span>
             <span class="nx">@inject</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">remote</span>
@@ -81,6 +83,7 @@ by the internal implementations of the various subcomponents.</p></div></div><di
     <span class="nx">@bower</span> <span class="s">&quot;async&quot;</span><span class="p">,</span> <span class="s">&quot;lib/async.js&quot;</span>
     <span class="nx">@bower</span> <span class="s">&quot;eventemitter2&quot;</span>
     <span class="nx">@bower</span> <span class="s">&quot;bootstrap</span><span class="err">#</span><span class="s">3&quot;</span>
+    <span class="nx">@bower</span> <span class="s">&quot;loglevel&quot;</span>
     <span class="nx">@bower</span> <span class="s">&quot;lodash&quot;</span>
     <span class="nx">@bower</span> <span class="s">&quot;chai&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block here defines a set of remote dependencies that are
 going to be necessary no matter what sort of functionality is

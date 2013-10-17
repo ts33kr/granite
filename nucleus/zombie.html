@@ -43,7 +43,11 @@ singleton behavior. Typically zombies are used from outside of the
 service infrastructure, yet zombies service themvselves reside in.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Zombie = </span><span class="k">class</span> <span class="nx">Zombie</span> <span class="k">extends</span> <span class="nx">Service</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
-mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method determines whether the supplied HTTP request
+mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either obtain or set the HTTP location of the current service.
+If not location has been set, but the one is requested then
+the deduced default is returned. Default location is the first
+resource regular expression pattern being unescaped to string.
+Do not confuse it with <code>qualified</code> method that deals with URL.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@location: </span><span class="nf">-&gt;</span> <span class="s">&quot;/</span><span class="si">#{</span><span class="nx">@reference</span><span class="p">()</span><span class="si">}</span><span class="s">/</span><span class="si">#{</span><span class="nx">@identify</span><span class="p">()</span><span class="si">}</span><span class="s">&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method determines whether the supplied HTTP request
 matches this service. This is determined by examining the
 domain/host and the path, in accordance with the patterns
 that were used for configuring the class of this service.
@@ -58,11 +62,11 @@ although there is no guarantee that this handle is initialized!</p></div></div><
         <span class="nv">instantiated = </span><span class="o">=&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">has</span> <span class="nx">@</span><span class="p">,</span> <span class="s">&quot;instance&quot;</span>
         <span class="k">return</span> <span class="nx">@instance</span> <span class="k">if</span> <span class="nx">instantiated</span><span class="p">()</span>
         <span class="nv">internal = </span><span class="s">&quot;an internal zombie error&quot;</span>
-        <span class="vi">@instance = </span><span class="k">new</span> <span class="k">this</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="nx">assert</span> <span class="nx">instantiated</span><span class="p">(),</span> <span class="nx">internal</span>
+        <span class="nx">assert</span> <span class="vi">@instance = </span><span class="k">new</span> <span class="k">this</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="nx">assert</span> <span class="nx">instantiated</span><span class="p">()</span> <span class="o">is</span> <span class="kc">yes</span><span class="p">,</span> <span class="nx">internal</span>
         <span class="nx">assert</span> <span class="nv">upstream = </span><span class="nx">@instance</span><span class="p">.</span><span class="nx">upstreamAsync</span>
-        <span class="nv">upstream = </span><span class="nx">upstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@instance</span>
-        <span class="nv">singleton = </span><span class="nx">upstream</span> <span class="s">&quot;singleton&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+        <span class="nx">assert</span> <span class="nv">upstream = </span><span class="nx">upstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@instance</span>
+        <span class="nx">assert</span> <span class="nv">singleton = </span><span class="nx">upstream</span> <span class="s">&quot;singleton&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
             <span class="nx">callback</span><span class="o">?</span> <span class="nx">@instance</span><span class="p">,</span> <span class="nx">kernel</span>
         <span class="nx">singleton</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">@instance</span><span class="p">;</span> <span class="nx">@instance</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An important method whose responsibility is to create a new
 instance of the service, which is later will be registered in
@@ -74,7 +78,7 @@ new suitable services to register. This works asynchronously!</p></div></div><di
         <span class="nv">constructor = </span><span class="nx">service</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">or</span> <span class="nf">-&gt;</span>
         <span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">arguments</span>
         <span class="nx">assert</span> <span class="nv">upstream = </span><span class="nx">service</span><span class="p">.</span><span class="nx">upstreamAsync</span>
-        <span class="nv">upstream = </span><span class="nx">upstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">service</span>
-        <span class="nv">instance = </span><span class="nx">upstream</span> <span class="s">&quot;instance&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+        <span class="nx">assert</span> <span class="nv">upstream = </span><span class="nx">upstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">service</span>
+        <span class="nx">assert</span> <span class="nv">instance = </span><span class="nx">upstream</span> <span class="s">&quot;instance&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
             <span class="nx">callback</span><span class="o">?</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">kernel</span>
         <span class="nx">instance</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">service</span><span class="p">;</span> <span class="nx">service</span></div></div></div></div></body></html>

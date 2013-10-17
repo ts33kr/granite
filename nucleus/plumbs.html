@@ -45,7 +45,7 @@ The format is takes from the <code>NConf</code> config or the default <code>dev<
     <span class="nv">format = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">formatKey</span><span class="p">)</span> <span class="o">or</span> <span class="s">&quot;dev&quot;</span>
     <span class="nv">level = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">levelKey</span><span class="p">)</span> <span class="o">or</span> <span class="s">&quot;debug&quot;</span>
     <span class="nv">filter = </span><span class="nf">(string) -&gt;</span> <span class="nx">string</span><span class="p">.</span><span class="nx">replace</span> <span class="s">&quot;\n&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span>
-    <span class="nv">writer = </span><span class="nf">(data) -&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">log</span> <span class="nx">level</span><span class="p">,</span> <span class="nx">filter</span> <span class="nx">data</span>
+    <span class="nv">writer = </span><span class="nf">(d) -&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">log</span> <span class="nx">level</span><span class="p">,</span> <span class="nx">filter</span> <span class="nx">d</span>
     <span class="nx">assert</span> <span class="nv">options = stream: write: </span><span class="nx">writer</span>
     <span class="nx">assert</span> <span class="nv">options.format = </span><span class="nx">format</span>
     <span class="k">return</span> <span class="nx">connect</span><span class="p">.</span><span class="nx">logger</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware is really a wrapper around the <code>Connect</code> session
@@ -75,7 +75,7 @@ will not be processed, but simply dropped. This is a config wrapper.</p></div></
     <span class="k">return</span> <span class="nf">(request, response, next) -&gt;</span>
         <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">busy</span><span class="p">()</span> <span class="o">is</span> <span class="kc">yes</span>
         <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="mi">503</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">reason</span>
-        <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware uses an external library to parse the incoming
+        <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">end</span> <span class="nx">options</span><span class="p">.</span><span class="nx">reason</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware uses an external library to parse the incoming
 user agent identification string into a platform description
 object. If the user agent string is absent from the requesting
 entity then the platform will not be defined on request object.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.platform = </span><span class="nf">(kernel) -&gt;</span>
@@ -112,7 +112,7 @@ very useful to use this method to negiotate the content type field.</p></div></d
             <span class="nv">strings = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">mimes</span><span class="p">,</span> <span class="nf">(x) -&gt;</span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">x</span>
             <span class="nv">strings = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">strings</span><span class="p">,</span> <span class="nx">patternize</span>
             <span class="nv">merged = </span><span class="nx">_</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">regexps</span><span class="p">,</span> <span class="nx">strings</span>
-            <span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">merged</span><span class="p">,</span> <span class="nx">handles</span>
+            <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">merged</span><span class="p">,</span> <span class="nx">handles</span>
         <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headersSent</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A middeware that makes possible external specification of session
 bearer via HTTP headers. This basically meanins it allows for you
 to explicitly specify a session ID via the <code>X-Session-ID</code> header.
@@ -138,7 +138,7 @@ necessary headers, such as nullary <code>Content-Length</code> and some other.</
             <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s">&quot;Location&quot;</span><span class="p">,</span> <span class="nx">url</span>
             <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s">&quot;Content-Length&quot;</span><span class="p">,</span> <span class="mi">0</span>
             <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="nx">relocated</span><span class="p">,</span> <span class="nx">message</span>
-            <span class="nx">response</span><span class="p">.</span><span class="nx">end</span> <span class="kc">undefined</span>
+            <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">end</span> <span class="kc">undefined</span>
         <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headersSent</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware is a little handy utility that merges the set
 of parameters, specifically the ones transferred via query or
 via body mechanism into one object that can be used to easily
@@ -157,4 +157,4 @@ just captures some rudimentary data, such as timestamp and UUID.</p></div></div>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isDate</span> <span class="nv">request.date = </span><span class="k">new</span> <span class="nb">Date</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">request.kernel = </span><span class="nx">kernel</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">request.uuid = </span><span class="nx">uuid</span><span class="p">.</span><span class="nx">v1</span><span class="p">()</span>
-        <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headersSent</span></div></div></div></div></body></html>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headersSent</span></div></div></div></div></body></html>

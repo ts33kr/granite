@@ -57,7 +57,15 @@ pattern. The implementation was borrowed from StackOverflow thread.</p></div></d
         <span class="nv">noString = </span><span class="s">&quot;cannot retrieve RE source&quot;</span>
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">@source</span><span class="p">),</span> <span class="nx">noString</span>
         <span class="nv">string = </span><span class="nx">@source</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/\\\//g</span><span class="p">,</span> <span class="s">&quot;/&quot;</span>
-        <span class="k">return</span> <span class="nx">string</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/[\$\^]/g</span><span class="p">,</span> <span class="s">&quot;&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This extension provides a convenient interface for looking up and
+        <span class="k">return</span> <span class="nx">string</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/[\$\^]/g</span><span class="p">,</span> <span class="s">&quot;&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Collect all the matches of the regular expression against of the
+supplied string. This method basically gathers all the matches that
+sequentially matches against the input string and packs them into
+an array which is handed to the invoker. Be sure to set the G flag.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">RegExp</span><span class="o">::</span><span class="nv">collect = </span><span class="nf">(string) -&gt;</span>
+        <span class="nv">matches = </span><span class="k">new</span> <span class="nb">Array</span> <span class="kc">undefined</span>
+        <span class="nv">noString = </span><span class="s">&quot;got no string supplied&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">string</span><span class="p">),</span> <span class="nx">noString</span>
+        <span class="nx">matches</span><span class="p">.</span><span class="nx">push</span> <span class="nx">m</span> <span class="k">while</span> <span class="nv">m = </span><span class="nx">@exec</span> <span class="nx">string</span>
+        <span class="nx">assert</span> <span class="nx">matches</span><span class="p">;</span> <span class="k">return</span> <span class="nx">matches</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This extension provides a convenient interface for looking up and
 setting up the object identifification tag. This tag is usually a
 class or function name, nick or an arbitraty name set with this
 method. If nothing found, the methods falls back to some default.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nb">Object</span><span class="o">::</span><span class="p">,</span> <span class="s">&quot;identify&quot;</span><span class="p">,</span>
@@ -90,7 +98,7 @@ Use this method rather than directly setting and check for markers.</p></div></d
             <span class="k">delete</span> <span class="nx">@$abstract</span><span class="p">;</span> <span class="nx">@$abstract</span> <span class="o">is</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Determine if the object that is bound to this invocation is a
 subclass of the supplied archetype class (as argument). Of course
 it is assumed that you should be invoking this method only on the
-objects that are valid CoffeeSscript classes with necessary attrs.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nb">Object</span><span class="o">::</span><span class="p">,</span> <span class="s">&quot;inherits&quot;</span><span class="p">,</span>
+objects that are valid CoffeeSscript classes with necessary attrs.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nb">Object</span><span class="o">::</span><span class="p">,</span> <span class="s">&quot;derives&quot;</span><span class="p">,</span>
         <span class="nv">enumerable: </span><span class="kc">no</span><span class="p">,</span> <span class="nv">value: </span><span class="nf">(archetype, loose) -&gt;</span>
             <span class="nv">notObject = </span><span class="s">&quot;acrhetype is not object&quot;</span>
             <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">archetype</span><span class="p">),</span> <span class="nx">notObject</span>

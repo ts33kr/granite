@@ -89,15 +89,15 @@ SSL transport then redirect the current request to such one. Be
 aware that this compund will be effective for all HTTP methods.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.OnlySsl = </span><span class="k">class</span> <span class="nx">OnlySsl</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
-mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to invoking the API method
-implementation. Please refer to this prototype signature for
+mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to firing up the processing
+of the service. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">preprocess: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span>
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">ignition: </span><span class="nf">(request, response, next) -&gt;</span>
         <span class="nv">connection = </span><span class="nx">request</span><span class="o">?</span><span class="p">.</span><span class="nx">connection</span>
         <span class="nv">encrypted = </span><span class="nx">connection</span><span class="o">?</span><span class="p">.</span><span class="nx">encrypted</span>
         <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">encrypted</span>
-        <span class="nv">protectedUrl = </span><span class="nx">tools</span><span class="p">.</span><span class="nx">urlWithHost</span> <span class="kc">yes</span>
+        <span class="nv">protectedUrl = </span><span class="nx">tools</span><span class="p">.</span><span class="nx">urlOfServer</span> <span class="kc">yes</span>
         <span class="nv">current = </span><span class="nx">url</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">protectedUrl</span>
         <span class="nv">current.pathname = </span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span>
         <span class="nv">current.query = </span><span class="nx">request</span><span class="p">.</span><span class="nx">params</span>

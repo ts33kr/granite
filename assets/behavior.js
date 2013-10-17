@@ -79,6 +79,22 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "singleLineComment": ["#"],
               "name": "CoffeeScript"
             },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/access.coffee",
+            "projectPath": "library/exposure/access.coffee",
+            "targetPath": "exposure/access",
+            "title": "access"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "singleLineComment": ["#"],
+              "name": "CoffeeScript"
+            },
             "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/publish.coffee",
             "projectPath": "library/exposure/publish.coffee",
             "targetPath": "exposure/publish",
@@ -141,6 +157,22 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "projectPath": "library/membrane/aux.coffee",
             "targetPath": "membrane/aux",
             "title": "aux"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "singleLineComment": ["#"],
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/bilateral.coffee",
+            "projectPath": "library/membrane/bilateral.coffee",
+            "targetPath": "membrane/bilateral",
+            "title": "bilateral"
           },
           "depth": 2,
           "outline": []
@@ -583,6 +615,22 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "projectPath": "library/nucleus/routing.coffee",
             "targetPath": "nucleus/routing",
             "title": "routing"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "singleLineComment": ["#"],
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/nucleus/scaled.coffee",
+            "projectPath": "library/nucleus/scaled.coffee",
+            "targetPath": "nucleus/scaled",
+            "title": "scaled"
           },
           "depth": 2,
           "outline": []

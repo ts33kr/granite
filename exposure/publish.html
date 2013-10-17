@@ -46,12 +46,13 @@ set of service related data, such as health status and so on.</p></div></div><di
 to be used for matching HTTP requests against this service.
 Typically an HTTP pathname pattern and a domain name pattern.
 Try not to put constraints on the domain, unless necessary.
-Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@resource</span> <span class="s">&quot;/api/publish&quot;</span><span class="p">;</span> <span class="nx">@documentation</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Establish a heartbeat monitor. A hearbit monitor is a method
+Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@resource</span> <span class="s">&quot;/api/publish&quot;</span>
+    <span class="nx">@documentation</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Establish a heartbeat monitor. A hearbit monitor is a method
 that tests whether some arbitrarty server functonality does
 what it is supposed to be. The heartbeats are all executed and
 kept on the server. A service may define any number of beats.
 The hearbeat implementation cycle is never exposed to clients.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@heartbeat</span> <span class="s">&quot;yields a consistent structure&quot;</span><span class="p">,</span> <span class="nf">(check, accept) -&gt;</span>
-        <span class="nx">request</span><span class="p">.</span><span class="nx">get</span> <span class="nx">@qualified</span><span class="p">(),</span> <span class="nf">(error, response, body) =&gt;</span>
+        <span class="nx">request</span><span class="p">.</span><span class="nx">get</span> <span class="nx">@qualified</span><span class="p">(</span><span class="kc">no</span><span class="p">),</span> <span class="nf">(error, response, body) =&gt;</span>
             <span class="nv">mirror = </span><span class="nf">(obj) =&gt;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">location</span> <span class="o">is</span> <span class="nx">@location</span><span class="p">()</span>
             <span class="nv">method = </span><span class="nf">(obj) =&gt;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">method</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="o">is</span> <span class="s">&quot;GET&quot;</span>
             <span class="nx">check</span><span class="p">.</span><span class="nx">try</span> <span class="s">&quot;broken body&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nv">body = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">body</span>
