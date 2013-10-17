@@ -82,15 +82,16 @@ module.exports.Scaled = class Scaled extends Generic
     # refer to the `node-http-proxy` library for info on the proxy.
     # Also see `makeForward` method for details on load balancing!
     startupHttpsMaster: ->
-        assert _.isArray @queueOfHttps ?= new Array
+        assert _.isArray q = @queueOfHttps ?= Array()
         assert _.isObject options = @resolveSslDetails()
         assert _.isString host = nconf.get "master:host"
         assert _.isNumber port = nconf.get "master:https"
         cmp = (exm) -> (srv) -> exm.uuid is srv.uuid or 0
         remove = (srv) => _.remove @queueOfHttps, cmp(srv)
-        assert upgrade = @makeUpgraders @queueOfHttp, "https"
-        assert registr = @makeRegistrar @queueOfHttps, "https"
-        assert forward = @makeForwarder @queueOfHttps, "https"
+        assert registr = @makeRegistrar q, "http", null
+        assert selectr = @makeSelectors q, "http", null
+        assert forward = @makeForwarder q, "http", selectr
+        assert upgrade = @makeUpgraders q, "http", selectr
         @secureProxy = https.createServer options, forward
         assert @secureProxy; @secureProxy.listen port, host
         @secureProxy.on "upgrade", -> upgrade arguments...
@@ -106,14 +107,15 @@ module.exports.Scaled = class Scaled extends Generic
     # refer to the `node-http-proxy` library for info on the proxy.
     # Also see `makeForward` method for details on load balancing!
     startupHttpMaster: ->
-        assert _.isArray @queueOfHttp ?= new Array
+        assert _.isArray q = @queueOfHttp ?= Array()
         assert _.isString host = nconf.get "master:host"
         assert _.isNumber port = nconf.get "master:http"
         cmp = (exm) -> (srv) -> exm.uuid is srv.uuid or 0
         remove = (srv) => _.remove @queueOfHttp, cmp(srv)
-        assert upgrade = @makeUpgraders @queueOfHttp, "http"
-        assert registr = @makeRegistrar @queueOfHttp, "http"
-        assert forward = @makeForwarder @queueOfHttp, "http"
+        assert registr = @makeRegistrar q, "http", null
+        assert selectr = @makeSelectors q, "http", null
+        assert forward = @makeForwarder q, "http", selectr
+        assert upgrade = @makeUpgraders q, "http", selectr
         assert @serverProxy = http.createServer forward
         assert @serverProxy; @serverProxy.listen port, host
         @serverProxy.on "upgrade", -> upgrade arguments...
@@ -147,12 +149,18 @@ module.exports.Scaled = class Scaled extends Generic
             res.writeHead 500, "a proxy backend error"
             res.end format msg, err.toString(); this
 
+    makeSelectors: (queue, kind) -> (request, response) =>
+        proxy = queue.shift()
+        assert _.isObject proxy
+        num = queue.push proxy
+        assert num > 0; proxy
+
     # This is a factory method that produces request forwarders.
     # These are directly responsible for proxying an HTTP request
     # from the master server (frontend) to actual server (backend)
     # that does the job of handling the request. The forwarder is
     # also responsible for rotating (round-robin) servers queue!
-    makeForwarder: (queue, kind) -> (request, response) =>
+    makeForwarder: (queue, kind, select) -> (request, response) =>
         encrypted = request.connection.encrypted
         assert u = "#{request.url}".underline.yellow
         assert x = (encrypted and "HTTPS" or "HTTP").bold
@@ -161,7 +169,7 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isArray(queue), "got invalid proxy queue"
         response.writeHead 504, reason if _.isEmpty queue
         return response.end(msg) and no if _.isEmpty queue
-        assert proxy = queue.shift(); queue.push proxy
+        assert proxy = select.apply this, arguments
         a = "#{proxy.target.host}:#{proxy.target.port}"
         assert a = "#{a.toLowerCase().underline.yellow}"
         logger.debug "Proxy %s request %s to %s", x, u, a
@@ -172,7 +180,7 @@ module.exports.Scaled = class Scaled extends Generic
     # on one of the master servers. This is the functionality that
     # is required for WebSockets and other similar transports to
     # perform its operation correctly in a distributed environment.
-    makeUpgraders: (queue, kind) -> (request, response) =>
+    makeUpgraders: (queue, kind, select) -> (request, response) =>
         encrypted = request.connection.encrypted
         assert u = "#{request.url}".underline.yellow
         assert x = (encrypted and "HTTPS" or "HTTP").bold
@@ -181,7 +189,7 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isArray(queue), "got invalid proxy queue"
         response.writeHead 504, reason if _.isEmpty queue
         return response.end(msg) and no if _.isEmpty queue
-        assert proxy = queue.shift(); queue.push proxy
+        assert proxy = select.apply this, arguments
         a = "#{proxy.target.host}:#{proxy.target.port}"
         assert a = "#{a.toLowerCase().underline.yellow}"
         logger.debug "Proxy %s upgrade %s to %s", x, u, a
