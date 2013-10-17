@@ -125,22 +125,37 @@ module.exports = ->
     # is invoked at. It should be either an application build within
     # the framework or the framework itself (it can be launched all
     # by itself as a standalone). Please refer to the implementation!
-    # In terms of scalability - it starts both master and instance.
-    task "single", "bootstrap the master and instance", (options) ->
-        library = options.library or DEFAULT_LIBRARY
-        scoping = options.scoping or DEFAULT_SCOPING
-        logging = options.logging or DEFAULT_LOGGING
-        process.env["NODE_ENV"] = scoping.toString()
-        process.env["log:level"] = logging.toString()
-        granite = require "#{__dirname}/../../index"
-        assert resolved = paths.resolve library or null
-        missingLibrary = "missing library: #{resolved}"
-        assert _.isObject(granite), "framework failed"
-        assert fs.existsSync(library), missingLibrary
-        compiled = granite.collectPackages no, library
-        assert _.isObject(compiled), "invalid library"
-        conf = new Object master: yes, instance: yes
-        granite.cachedKernel(library).bootstrap conf
+    # In terms of scalability - it starts the master server istance.
+    # It is different from `boot` in that it continously spins it.
+    task "forever-master", "forever execute master task", (options) ->
+        assert (col = process.stdout.columns) > 0
+        assert forever = require "forever-monitor"
+        rep = (x) -> "master" if x is "forever-master"
+        parameters = _.cloneDeep process.argv, rep
+        assert parameters = _.drop parameters, 2
+        assert command = ["cake"].concat parameters
+        opts = env: process.env, cwd: process.cwd
+        assert monitor = forever.start command, opts
+        restart = ("-" for i in [0..col - 1]).join ""
+        monitor.on "restart", -> puts restart.red
+
+    # This task launches an instance of application where this task
+    # is invoked at. It should be either an application build within
+    # the framework or the framework itself (it can be launched all
+    # by itself as a standalone). Please refer to the implementation!
+    # In terms of scalability - it starts the application instance.
+    # It is different from `boot` in that it continously spins it.
+    task "forever-boot", "forever execute boot task", (options) ->
+        assert (col = process.stdout.columns) > 0
+        assert forever = require "forever-monitor"
+        rep = (x) -> "boot" if x is "forever-boot"
+        parameters = _.cloneDeep process.argv, rep
+        assert parameters = _.drop parameters, 2
+        assert command = ["cake"].concat parameters
+        opts = env: process.env, cwd: process.cwd
+        assert monitor = forever.start command, opts
+        restart = ("-" for i in [0..col - 1]).join ""
+        monitor.on "restart", -> puts restart.red
 
     # This task launches an instance of application where this task
     # is invoked at. It should be either an application build within
@@ -188,34 +203,19 @@ module.exports = ->
     # is invoked at. It should be either an application build within
     # the framework or the framework itself (it can be launched all
     # by itself as a standalone). Please refer to the implementation!
-    # In terms of scalability - it starts the master server istance.
-    # It is different from `boot` in that it continously spins it.
-    task "forever-master", "forever execute master task", (options) ->
-        assert (col = process.stdout.columns) > 0
-        assert forever = require "forever-monitor"
-        rep = (x) -> "master" if x is "forever-master"
-        parameters = _.cloneDeep process.argv, rep
-        assert parameters = _.drop parameters, 2
-        assert command = ["cake"].concat parameters
-        opts = env: process.env, cwd: process.cwd
-        assert monitor = forever.start command, opts
-        restart = ("-" for i in [0..col - 1]).join ""
-        monitor.on "restart", -> puts restart.red
-
-    # This task launches an instance of application where this task
-    # is invoked at. It should be either an application build within
-    # the framework or the framework itself (it can be launched all
-    # by itself as a standalone). Please refer to the implementation!
-    # In terms of scalability - it starts the application instance.
-    # It is different from `boot` in that it continously spins it.
-    task "forever-boot", "forever execute boot task", (options) ->
-        assert (col = process.stdout.columns) > 0
-        assert forever = require "forever-monitor"
-        rep = (x) -> "boot" if x is "forever-boot"
-        parameters = _.cloneDeep process.argv, rep
-        assert parameters = _.drop parameters, 2
-        assert command = ["cake"].concat parameters
-        opts = env: process.env, cwd: process.cwd
-        assert monitor = forever.start command, opts
-        restart = ("-" for i in [0..col - 1]).join ""
-        monitor.on "restart", -> puts restart.red
+    # In terms of scalability - it starts both master and instance.
+    task "single", "bootstrap the master and instance", (options) ->
+        library = options.library or DEFAULT_LIBRARY
+        scoping = options.scoping or DEFAULT_SCOPING
+        logging = options.logging or DEFAULT_LOGGING
+        process.env["NODE_ENV"] = scoping.toString()
+        process.env["log:level"] = logging.toString()
+        granite = require "#{__dirname}/../../index"
+        assert resolved = paths.resolve library or null
+        missingLibrary = "missing library: #{resolved}"
+        assert _.isObject(granite), "framework failed"
+        assert fs.existsSync(library), missingLibrary
+        compiled = granite.collectPackages no, library
+        assert _.isObject(compiled), "invalid library"
+        conf = new Object master: yes, instance: yes
+        granite.cachedKernel(library).bootstrap conf
