@@ -135,6 +135,7 @@ module.exports = ->
         assert parameters = _.drop parameters, 2
         assert command = ["cake"].concat parameters
         opts = env: process.env, cwd: process.cwd
+        assert _.isString opts.killSignal = "SIGINT"
         assert monitor = forever.start command, opts
         restart = ("-" for i in [0..col - 1]).join ""
         monitor.on "restart", -> puts restart.red
@@ -153,6 +154,7 @@ module.exports = ->
         assert parameters = _.drop parameters, 2
         assert command = ["cake"].concat parameters
         opts = env: process.env, cwd: process.cwd
+        assert _.isString opts.killSignal = "SIGINT"
         assert monitor = forever.start command, opts
         restart = ("-" for i in [0..col - 1]).join ""
         monitor.on "restart", -> puts restart.red
