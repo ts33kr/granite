@@ -156,9 +156,9 @@ module.exports.Generic = class Generic extends Archetype
     # the purpose of setting up the configurations will never be
     # changed, such as the kernel self identification tokens.
     constructor: (initializer) ->
-        assert crash = "kernel:crashOnError"
-        crasher = (code) -> process.exit code
+        crash = "kernel:crashOnError"
         assert not _.isEmpty @token = uuid.v4()
+        panic = => @shutdownKernel "kernel panic"
         nconf.env().argv(); @setupLoggingFacade()
         assert @package = @constructor.PACKAGE or {}
         assert branding = [@package.name, "smisome1"]
@@ -166,7 +166,7 @@ module.exports.Generic = class Generic extends Archetype
         assert @domain = require("domain").create()
         assert bark = "kernel domain panic:\r\n%s".red
         @on "panic", (e) -> logger.error bark, e.stack
-        @on "panic", (e) -> crasher() if nconf.get crash
+        @on "panic", (e) -> panic() if nconf.get crash
         @domain.on "error", (e) => @emit "panic", e
         asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
@@ -185,14 +185,14 @@ module.exports.Generic = class Generic extends Archetype
         util.puts require("os").EOL if eol
         logger.warn reason.toString().red
         try @router.shutdownRouter?() catch
-        snapshot = _.clone(@router.registry or [])
+        snapshot = _.clone(@router?.registry or [])
         @router.unregister srv for srv in snapshot
         try @server.close(); try @secure.close()
         try @secureSocket.close() if @secureSocket?
         try @serverSocket.close() if @serverSocket?
         shutdown = "Shutting the kernel instance down"
         logger.warn shutdown.red; @emit "shutdown"
-        @scope.disperse(); @domain.dispose()
+        @scope?.disperse(); @domain?.dispose()
         return process.exit -1
 
     # Instantiate a hot swapping watcher for this kernel and setup

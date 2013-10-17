@@ -68,13 +68,14 @@ module.exports.Scaled = class Scaled extends Generic
     # This implementaton cleans up some of the scalability resources.
     shutdownKernel: (reason, eol=yes) ->
         util.puts require("os").EOL if eol
-        try @spserver.close() if @spserver?
         @emit "shutdownScaledKernel", arguments...
         message = "Graceful shutdown of Scaled kernel"
+        try @spserver.close() if @spserver.close?
         try @serverProxy.close() if @serverProxy?
         try @secureProxy.close() if @secureProxy?
-        sproxy.close() for sproxy in @queueOfHttp
-        sproxy.close() for sproxy in @queueOfHttps
+        terminator = (proxy) -> try proxy.close()
+        _.each @queueOfHttps or Array(), terminator
+        _.each @queueOfHttp or Array(), terminator
         logger.info message.red; super reason, no
 
     # The kernel preemption routine is called once the kernel has
