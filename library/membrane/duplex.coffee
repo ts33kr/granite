@@ -41,7 +41,7 @@ compose = require "./../nucleus/compose"
 {format} = require "util"
 {STATUS_CODES} = require "http"
 {EventEmitter2} = require "eventemitter2"
-{urlOfServer} = require "./../nucleus/tools"
+{urlOfMaster} = require "./../nucleus/tools"
 {remote, external} = require "./remote"
 {Barebones} = require "./skeleton"
 {Preflight} = require "./preflight"
@@ -183,7 +183,7 @@ module.exports.Duplex = class Duplex extends Preflight
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
         context.scripts.push "/socket.io/socket.io.js"
-        context.duplex = urlOfServer yes, @location()
+        context.duplex = urlOfMaster yes, @location()
         context.providers = new Array
         _.forIn this, (value, name, service) =>
             providing = value?.providing or null
@@ -239,7 +239,7 @@ module.exports.Duplex = class Duplex extends Preflight
     feedback: external ->
         i = "please see browser console for information"
         p = "an exception happend at the server provider"
-        c = "error raised during socket connection, #{i}"
+        c = "error raised during socket connection: %s, #{i}"
         connecting = "attempting connection at #{@location}"
         disconnect = "lost socket connection at #{@location}"
         reconnecting = "attempting to reconnect at #{@location}"
