@@ -161,13 +161,16 @@ module.exports.Generic = class Generic extends Archetype
         assert @package = @constructor.PACKAGE or {}
         assert branding = [@package.name, "smisome1"]
         types = [@package.version, @package.codename]
+        assert @domain = require("domain").create()
+        @domain.on "error", (e) => @emit "panic", e
         asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
             identify = "Running ver %s, codename: %s"
             using = "Using %s class as the kernel type"
             logger.info identify.underline, types...
             logger.info using, @constructor.name.bold
-            initializer?.apply this; @emit "ready"
+            @domain.run => initializer?.apply this
+            @emit "ready", initializer; return @
 
     # Shutdown the kernel instance. This includes shutting down both
     # HTTP and HTTPS server that may be running, stopping the router
@@ -180,8 +183,8 @@ module.exports.Generic = class Generic extends Archetype
         snapshot = _.clone(@router.registry or [])
         @router.unregister srv for srv in snapshot
         try @server.close(); try @secure.close()
-        shutdown = "Shutting the kernel instance down".red
-        logger.warn shutdown; @emit "shutdown"
+        shutdown = "Shutting the kernel instance down"
+        logger.warn shutdown.red; @emit "shutdown"
         @scope.disperse(); process.exit -1
 
     # Instantiate a hot swapping watcher for this kernel and setup
@@ -259,6 +262,7 @@ module.exports.Generic = class Generic extends Archetype
         location = "#{hostname}:#{server.https}".toString()
         logger.info running.underline, location.underline
         @secure = https.createServer options, @connect
+        assert _.isObject @domain; @domain.add @secure
         @secure.listen server.https, hostname
         @secure.on "connection", (socket) ->
             return socket.setNoDelay yes
@@ -275,6 +279,7 @@ module.exports.Generic = class Generic extends Archetype
         location = "#{hostname}:#{server.http}".toString()
         logger.info running.underline, location.underline
         @server = http.createServer @connect, undefined
+        assert _.isObject @domain; @domain.add @server
         @server.listen server.http, hostname
         @server.on "connection", (socket) ->
             return socket.setNoDelay yes
@@ -291,6 +296,7 @@ module.exports.Generic = class Generic extends Archetype
         newSocket = (o) -> logger.debug newMessage.grey, o
         assert @secureSocket = socket.listen @secure, sconfig
         assert @serverSocket = socket.listen @server, sconfig
+        @domain.add @secureSocket; @domain.add @serverSocket
         @secureSocket.on "connection", -> newSocket "HTTPS"
         @serverSocket.on "connection", -> newSocket "HTTP"
 

@@ -94,6 +94,7 @@ module.exports.Scaled = class Scaled extends Generic
         assert upgrade = @makeUpgraders q, "http", selectr
         remove = (s) -> _.remove q, (x) -> s.uuid is x.uuid
         @secureProxy = https.createServer options, forward
+        assert _.isObject @domain; @domain.add @secureProxy
         assert @secureProxy; @secureProxy.listen port, host
         @secureProxy.on "upgrade", -> upgrade arguments...
         running = "Master HTTPS server at %s".bold
@@ -117,6 +118,7 @@ module.exports.Scaled = class Scaled extends Generic
         assert upgrade = @makeUpgraders q, "http", selectr
         remove = (s) -> _.remove q, (x) -> s.uuid is x.uuid
         assert @serverProxy = http.createServer forward
+        assert _.isObject @domain; @domain.add @serverProxy
         assert @serverProxy; @serverProxy.listen port, host
         @serverProxy.on "upgrade", -> upgrade arguments...
         running = "Master HTTP server at %s".bold
@@ -234,6 +236,7 @@ module.exports.Scaled = class Scaled extends Generic
         log = (m, s) -> logger.info m, c(s), l(s.host, s.port)
         match = (s) -> "#{s.role}@#{s.version}" is identica
         assert @spserver = seaport.createServer opts or {}
+        assert _.isObject @domain; @domain.add @spserver
         logger.info create.toString().magenta, l(host, port)
         @spserver.on "register", (s) -> log r, s if match s
         @spserver.on "free", (s) -> log f, s if match s
