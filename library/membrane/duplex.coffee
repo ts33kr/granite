@@ -295,7 +295,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     register: (kernel, router, next) ->
-        assert kernel?.secureSocket, "no HTTPS Socket.IO"
+        assert kernel?.secureSocket, "no SSL Socket.IO"
         context = kernel.secureSocket.of @location()
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
@@ -315,7 +315,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     unregister: (kernel, router, next) ->
-        assert kernel?.secureSocket, "no HTTPS Socket.IO"
+        assert kernel?.secureSocket, "no SSL Socket.IO"
         context = kernel.secureSocket.of @location()
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
