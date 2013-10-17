@@ -14,7 +14,9 @@
         "rest", "json", "ui", "ux",
         "enterprise", "full-stack",
         "interactive", "real-time",
-        "socket", "websocket", "io"
+        "socket", "websocket", "io",
+        "distributed", "balancer",
+        "cluster", "availability"
     ],
 
     "repository": {
