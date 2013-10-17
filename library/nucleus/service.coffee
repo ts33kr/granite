@@ -42,6 +42,7 @@ scoping = require "./scoping"
 {format} = require "util"
 {Archetype} = require "./archetype"
 {urlOfServer} = require "./tools"
+{urlOfMaster} = require "./tools"
 
 # This is an abstract base class for every kind of service in this
 # framework and the end user application. It provides the matching
@@ -138,13 +139,14 @@ module.exports.Service = class Service extends Archetype
     # This includes details such as host, port, path and alike. The
     # method knows how to disambiguate between SSL and non SSL paths.
     # Do not confuse it with `location` method that deals locations.
-    @qualified: ->
+    @qualified: (master=yes) ->
         int = "internal error getting qualified"
         noLocation = "the service has no location"
         securing = require "../membrane/securing"
         assert not _.isEmpty(@location()), noLocation
         isProtected = this.derives securing.OnlySsl
-        link = urlOfServer isProtected, @location()
+        sel = master and urlOfMaster or urlOfServer
+        link = sel.call this, isProtected, @location()
         assert not _.isEmpty(link), int; return link
 
     # Either obtain or set the HTTP location of the current service.

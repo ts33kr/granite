@@ -61,7 +61,7 @@ module.exports.Publish = class Publish extends Barebones
     # kept on the server. A service may define any number of beats.
     # The hearbeat implementation cycle is never exposed to clients.
     @heartbeat "yields a consistent structure", (check, accept) ->
-        request.get @qualified(), (error, response, body) =>
+        request.get @qualified(no), (error, response, body) =>
             mirror = (obj) => obj.location is @location()
             method = (obj) => obj.method.toString() is "GET"
             check.try "broken body", -> body = JSON.parse body
