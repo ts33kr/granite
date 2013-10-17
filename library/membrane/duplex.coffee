@@ -298,11 +298,11 @@ module.exports.Duplex = class Duplex extends Preflight
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     register: (kernel, router, next) ->
-        assert sserver = kernel?.serverSocket
-        assert ssecure = kernel?.secureSocket
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
         resolve = (handler) => handler.of @location()
+        assert sserver = kernel.serverSocket, "no HTTP socket"
+        assert ssecure = kernel.secureSocket, "no HTTPS socket"
         contexts = _.map [sserver, ssecure], resolve
         makeScreener = (context) => (socket) =>
             socket.on "screening", (binder, ack) =>
@@ -323,12 +323,12 @@ module.exports.Duplex = class Duplex extends Preflight
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     unregister: (kernel, router, next) ->
-        assert sserver = kernel?.serverSocket
-        assert ssecure = kernel?.secureSocket
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
         resolve = (handler) => handler.of @location()
-        contexts = _.map [sserver, ssecure], resolve
+        assert sserver = kernel.serverSocket, "no HTTP socket"
+        assert ssecure = kernel.secureSocket, "no HTTPS socket"
         remove = (c) -> c.removeAllListeners "connection"
+        contexts = _.map [sserver, ssecure], resolve
         _.each contexts, (context) => remove context
         return next undefined
