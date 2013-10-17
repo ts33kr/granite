@@ -196,16 +196,18 @@ module.exports.Scaled = class Scaled extends Generic
         r = "Discovered service %s at %s".green
         f = "Disconnect service %s at %s".yellow
         create = "Created the Seaport server at %s"
+        assert identica = try @constructor.identica()
         assert _.isString host = nconf.get "hub:host"
         assert _.isNumber port = nconf.get "hub:port"
         assert _.isObject opts = nconf.get "hub:opts"
         c = (srv) -> "#{srv.role}@#{srv.version}".bold
         l = (h, p) -> "#{h}:#{p}".toLowerCase().underline
         log = (m, s) -> logger.info m, c(s), l(s.host, s.port)
+        match = (s) -> "#{s.role}@#{s.version}" is identica
         assert @spserver = seaport.createServer opts or {}
         logger.info create.toString().magenta, l(host, port)
-        @spserver.on "register", (service) -> log r, service
-        @spserver.on "free", (service) -> log f, service
+        @spserver.on "register", (s) -> log r, s if match s
+        @spserver.on "free", (s) -> log f, s if match s
         try @spserver.listen port, host catch error
             message = "Seaport server failed\r\n%s"
             logger.error message.red, error.stack
