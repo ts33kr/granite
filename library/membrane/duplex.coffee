@@ -304,15 +304,17 @@ module.exports.Duplex = class Duplex extends Preflight
         assert pure, "location is not pure enough"
         resolve = (handler) => handler.of @location()
         contexts = _.map [sserver, ssecure], resolve
+        makeScreener = (context) => (socket) =>
+            socket.on "screening", (binder, ack) =>
+                screening = @upstreamAsync "screening", =>
+                    bonding = [context, binder, socket, ack]
+                    @publishProviders.apply this, bonding
+                screening context, socket, binder
         _.each contexts, (context, position, vector) =>
+            assert screener = makeScreener context
             assert applied = @authorization context
             context.authorization applied.bind this
-            context.on "connection", (socket) =>
-                socket.on "screening", (binder, ack) =>
-                    screening = @upstreamAsync "screening", =>
-                        bonding = [context, binder, socket, ack]
-                        @publishProviders.apply this, bonding
-                    screening context, socket, binder
+            return context.on "connection", screener
         return next undefined
 
     # A hook that will be called prior to unregistering the service
