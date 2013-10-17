@@ -180,11 +180,14 @@ module.exports.Duplex = class Duplex extends Preflight
     # This is the place where you would be importing the dependencies.
     # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
+        encrypted = request.connection.encrypted
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
+        proto = request.headers["x-forwarded-proto"]
+        enc = encrypted or proto is "https" and yes
         context.scripts.push "/socket.io/socket.io.js"
-        context.duplex = urlOfMaster yes, @location()
-        context.providers = new Array
+        context.duplex = urlOfMaster enc, @location()
+        assert _.isArray context.providers ?= Array()
         _.forIn this, (value, name, service) =>
             providing = value?.providing or null
             return unless _.isFunction providing
@@ -295,18 +298,21 @@ module.exports.Duplex = class Duplex extends Preflight
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     register: (kernel, router, next) ->
-        assert kernel?.secureSocket, "no SSL Socket.IO"
-        context = kernel.secureSocket.of @location()
+        assert sserver = kernel?.serverSocket
+        assert ssecure = kernel?.secureSocket
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
-        assert applied = @authorization context
-        context.authorization applied.bind this
-        context.on "connection", (socket) =>
-            socket.on "screening", (binder, ack) =>
-                screening = @upstreamAsync "screening", =>
-                    bonding = [context, binder, socket, ack]
-                    @publishProviders.apply this, bonding
-                screening context, socket, binder
+        resolve = (handler) => handler.of @location()
+        contexts = _.map [sserver, ssecure], resolve
+        _.each contexts, (context, position, vector) =>
+            assert applied = @authorization context
+            context.authorization applied.bind this
+            context.on "connection", (socket) =>
+                socket.on "screening", (binder, ack) =>
+                    screening = @upstreamAsync "screening", =>
+                        bonding = [context, binder, socket, ack]
+                        @publishProviders.apply this, bonding
+                    screening context, socket, binder
         return next undefined
 
     # A hook that will be called prior to unregistering the service
@@ -315,9 +321,12 @@ module.exports.Duplex = class Duplex extends Preflight
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     unregister: (kernel, router, next) ->
-        assert kernel?.secureSocket, "no SSL Socket.IO"
-        context = kernel.secureSocket.of @location()
+        assert sserver = kernel?.serverSocket
+        assert ssecure = kernel?.secureSocket
         pure = /[a-zA-Z0-9/-_]+/.test @location()
         assert pure, "location is not pure enough"
-        context.removeAllListeners "connection"
+        resolve = (handler) => handler.of @location()
+        contexts = _.map [sserver, ssecure], resolve
+        remove = (c) -> c.removeAllListeners "connection"
+        _.each contexts, (context) => remove context
         return next undefined
