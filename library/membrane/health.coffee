@@ -79,8 +79,7 @@ module.exports.Healthcare = class Healthcare extends Service
     # include information such as originating file and line number.
     # Please refer to the implementation regarding extracted info.
     @healthreport: (error, callback) ->
-        descriptor = new Object success: no
-        assert stack = require("callsite")()
+        assert descriptor = new Object success: no
         generic = "the health status has been rejected"
         noFrame = "no correct stack trace frame is found"
         pattern = /\s+at\s(.+)\s\((.+):(\d+):(\d+),.+\)/g
