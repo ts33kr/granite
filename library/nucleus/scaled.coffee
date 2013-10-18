@@ -175,6 +175,7 @@ module.exports.Scaled = class Scaled extends Generic
     # based on setting and getting the correctly signed req cookies.
     makeSelectors: (queue, kind) -> (request, response) =>
         encrypted = request.connection.encrypted
+        assert _.isNumber ttl = nconf.get "balancer:ttl"
         response.set = yes # a hack for `cookies` module
         response.getHeader = (key) -> [key.toLowerCase()]
         ltp = (u) -> _.find queue, (srv) -> srv.uuid is u
@@ -189,6 +190,7 @@ module.exports.Scaled = class Scaled extends Generic
         return rrb() unless nconf.get "balancer:sticky"
         assert _.isObject proxy = ltp(xbackend) or rrb()
         configure = signed: yes, overwrite: yes, httpOnly: no
+        configure.expires = moment().add("s", ttl).toDate()
         s = cookies.set "xbackend", proxy.uuid, configure
         a = "#{proxy.target.host}:#{proxy.target.port}"
         assert a = "#{a.toLowerCase().underline.yellow}"

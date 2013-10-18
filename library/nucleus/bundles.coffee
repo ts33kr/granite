@@ -56,12 +56,12 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @defaults.session.key = "granite.session.identification"
     @defaults.threshold = lag: 70, reason: "overloaded"
     @defaults.failures = exposeExceptions: no
+    @defaults.balancer = sticky: yes, ttl: 60
     @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: no
     @defaults.kernel = crashOnError: yes
     @defaults.visual = compression: yes
     @defaults.socket = "log level": 0
-    @defaults.balancer = sticky: yes
     @defaults.env.preserve = ["pub"]
 
 # One of the predefined scopes, baked into the framework. Scopes
@@ -84,12 +84,12 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @defaults.session.key = "granite.session.identification"
     @defaults.threshold = lag: 70, reason: "overloaded"
     @defaults.failures = exposeExceptions: no
+    @defaults.balancer = sticky: yes, ttl: 60
     @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: no
     @defaults.kernel = crashOnError: yes
     @defaults.visual = compression: yes
     @defaults.socket = "log level": 0
-    @defaults.balancer = sticky: yes
     @defaults.env.preserve = ["pub"]
 
 # One of the predefined scopes, baked into the framework. Scopes
@@ -112,12 +112,12 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.session.key = "granite.session.identification"
     @defaults.threshold = lag: 70, reason: "overloaded"
     @defaults.failures = exposeExceptions: yes
+    @defaults.balancer = sticky: yes, ttl: 60
     @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: yes
     @defaults.kernel = crashOnError: yes
     @defaults.visual = compression: yes
     @defaults.socket = "log level": 0
-    @defaults.balancer = sticky: yes
     @defaults.env.preserve = ["pub"]
 
 # One of the predefined scopes, baked into the framework. Scopes
@@ -140,10 +140,10 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.session.key = "granite.session.identification"
     @defaults.threshold = lag: 70, reason: "overloaded"
     @defaults.failures = exposeExceptions: no
+    @defaults.balancer = sticky: yes, ttl: 60
     @defaults.assets = dirs: [], opts: {}
     @defaults.watch = dirs: [], force: yes
     @defaults.kernel = crashOnError: yes
     @defaults.visual = compression: yes
     @defaults.socket = "log level": 0
-    @defaults.balancer = sticky: yes
     @defaults.env.preserve = ["pub"]
