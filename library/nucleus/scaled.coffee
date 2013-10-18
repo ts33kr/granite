@@ -257,7 +257,7 @@ module.exports.Scaled = class Scaled extends Generic
         match = (s) -> "#{s.role}@#{s.version}" is identica
         assert @spserver = seaport.createServer opts or {}
         assert _.isObject @domain; @domain.add @spserver
-        logger.info create.toString().magenta, l(host, port)
+        logger.info create.magenta, l(host: host, port: port)
         @spserver.on "register", (s) -> log r, s if match s
         @spserver.on "free", (s) -> log f, s if match s
         try @spserver.listen port, host catch error
