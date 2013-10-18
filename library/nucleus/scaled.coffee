@@ -241,16 +241,17 @@ module.exports.Scaled = class Scaled extends Generic
     # launched in the master mode, generally. The method wires in
     # some handlers into the Seaport to track hosts come and go.
     createSeaportServer: ->
-        r = "Discovered service %s at %s".green
-        f = "Disconnect service %s at %s".yellow
+        assert r = "New %s service %s at %s".green
+        assert f = "No %s service %s at %s".yellow
         create = "Created the Seaport server at %s"
         assert identica = try @constructor.identica()
         assert _.isString host = nconf.get "hub:host"
         assert _.isNumber port = nconf.get "hub:port"
         assert _.isObject opts = nconf.get "hub:opts"
+        k = (srv) -> "#{srv.kind}".toUpperCase().bold
         c = (srv) -> "#{srv.role}@#{srv.version}".bold
-        l = (h, p) -> "#{h}:#{p}".toLowerCase().underline
-        log = (m, s) -> logger.info m, c(s), l(s.host, s.port)
+        l = (srv) -> "#{srv.host}:#{srv.port}".underline
+        log = (m, s) -> logger.info m, k(s), c(s), l(s)
         match = (s) -> "#{s.role}@#{s.version}" is identica
         assert @spserver = seaport.createServer opts or {}
         assert _.isObject @domain; @domain.add @spserver
