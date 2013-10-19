@@ -66,9 +66,11 @@ module.exports.Access = class Access extends Barebones
             format = (m) -> "ressurection error: #{m}"
             masked = format error.message if error
             return callback Error masked if error
+            s = enumerable: no, configurable: yes
             p = enumerable: yes, configurable: yes
-            p.get = -> return entity or undefined
+            p.get = s.get = -> entity or undefined
             Object.defineProperty container, key, p
+            Object.defineProperty session, key, p
             assert container[key]?; callback()
 
     # Authenticate supplied entity as the authorized entity against
