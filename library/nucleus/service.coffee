@@ -225,7 +225,7 @@ module.exports.Service = class Service extends Archetype
     rescuing: (error, request, response, next) ->
         expose = "failures:exposeExceptions"
         assert plain = @constructor.identify()
-        assert method = request.method.underline
+        assert not _.isEmpty method = request.method
         identify = @constructor.identify().underline
         template = "Exception in a #{method} at %s: %s"
         logger.error template.red, identify, error.stack
