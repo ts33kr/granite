@@ -78,6 +78,7 @@ module.exports.Barebones = class Barebones extends Stubs
     # exact process of how it is being documented depends on how the
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
+    # Also, see `Descriptor` compound implementation for reference!
     @OPTIONS (method, service, kernel) ->
         @github "ts33kr", "granite", "library/membrane/skeleton.coffee"
         @relevant "ts33kr.github.io/granite/membrane/skeleton.html"
