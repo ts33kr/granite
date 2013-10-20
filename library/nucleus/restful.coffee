@@ -84,14 +84,14 @@ module.exports.Restful = class Restful extends Service
     # Can be used from the outside, but generally should not be done.
     unsupported: (request, response, next) ->
         methodNotAllowed = 405
-        codes = http.STATUS_CODES
-        message = codes[methodNotAllowed]
-        doesJson = response.accepts /json/
+        assert codes = http.STATUS_CODES
+        assert message = codes[methodNotAllowed]
+        doesJson = response.accepts(/json/) or no
         response.writeHead methodNotAllowed, message
         descriptor = error: message, code: methodNotAllowed
         @emit "unsupported", request, response, next
         return response.send descriptor if doesJson
-        response.send message; this
+        response.send message; return this
 
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the
