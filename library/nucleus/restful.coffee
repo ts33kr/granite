@@ -74,7 +74,7 @@ module.exports.Restful = class Restful extends Service
         assert _.isFunction(limitation), noLimitation
         assert limitation.length is 3, wrongSignature
         assert _.isArray inherted = @$condition or []
-        @$condition = inherted.concat
+        return @$condition = inherted.concat
             limitation: limitation
             synopsis: synopsis
 
@@ -104,7 +104,7 @@ module.exports.Restful = class Restful extends Service
         identify = @constructor?.identify().underline
         p = (i, c) -> i.limitation request, response, c
         fails = "service #{identify} fails some conditions"
-        super request, response, (decision) =>
+        return super request, response, (decision) =>
             return decide no unless decision
             async.every conditions, p, (confirms) ->
                 return decide yes if confirms
@@ -160,8 +160,8 @@ module.exports.Restful = class Restful extends Service
         isContent = content isnt undefined
         noContent = "No valid content supplied"
         throw new Error noContent unless isContent
-        @emit "push", this, response, content
-        uploader = -> response.send content
+        try @emit "push", this, response, content
+        uploader = -> return response.send content
         prestreamer = @upstreamAsync "prepushing", =>
             poststreamer = @upstreamAsync "postpushing"
             uploader(); poststreamer response, content
