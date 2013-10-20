@@ -179,9 +179,10 @@ module.exports.Service = class Service extends Archetype
         current = => @$location or automatic
         automatic = _.head(@resources)?.unescape()
         return current() if arguments.length is 0
-        isLocation = _.isString location
-        noLocation = "The location is not a string"
-        throw new Error noLocation unless isLocation
+        isEmpty = "the location must not be empty"
+        noLocation = "the location is not a string"
+        assert _.isString(location), noLocation
+        assert not _.isEmpty(location), isEmpty
         @$location = location.toString(); this
 
     # This is a very basic method that adds the specified regular
