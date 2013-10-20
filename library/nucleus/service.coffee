@@ -225,8 +225,9 @@ module.exports.Service = class Service extends Archetype
     rescuing: (error, request, response, next) ->
         expose = "failures:exposeExceptions"
         assert plain = @constructor.identify()
+        assert method = request.method.underline
         identify = @constructor.identify().underline
-        template = "Exception while processing at %s: %s"
+        template = "Exception in a #{method} at %s: %s"
         logger.error template.red, identify, error.stack
         @emit "failure", this, error, request, response
         return next() unless nconf.get(expose) is yes
