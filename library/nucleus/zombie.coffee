@@ -80,6 +80,8 @@ module.exports.Zombie = class Zombie extends Service
         instantiated = => _.has @, "instance"
         return @instance if instantiated()
         internal = "an internal zombie error"
+        assert _.isFunction lazy = @lazy()
+        do -> lazy.call this, kernel, callback
         assert @instance = new this arguments...
         assert instantiated() is yes, internal
         assert upstream = @instance.upstreamAsync

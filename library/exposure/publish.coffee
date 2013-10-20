@@ -55,6 +55,21 @@ module.exports.Publish = class Publish extends Barebones
     @resource "/api/publish"
     @documentation yes
 
+    # This block describes certain method of abrbitrary service. The
+    # exact process of how it is being documented depends on how the
+    # documented function is implemented. Please refer to `Document`
+    # class and its module implementation for more information on it.
+    # Also, see `Descriptor` compound implementation for reference!
+    @lazy -> @GET (method, service, kernel) ->
+        @relevant "ts33kr.github.io/granite/exposure/publish.html"
+        @relevant "ts33kr.github.io/granite/membrane/document.html"
+        @github "ts33kr", "granite", "library/exposure/publish.coffee"
+        @synopsis "Get inventory of all APIs available in the system"
+        @outputs "An array of objects, each describes a service"
+        @markings framework: "critical", stable: "positive"
+        @version kernel.package.version or undefined
+        @produces "application/json"
+
     # Establish a heartbeat monitor. A hearbit monitor is a method
     # that tests whether some arbitrarty server functonality does
     # what it is supposed to be. The heartbeats are all executed and
@@ -125,18 +140,3 @@ module.exports.Publish = class Publish extends Barebones
                 github: document.github()
                 notes: document.notes()
                 method: method
-
-    # This block describes certain method of abrbitrary service. The
-    # exact process of how it is being documented depends on how the
-    # documented function is implemented. Please refer to `Document`
-    # class and its module implementation for more information on it.
-    # Also, see `Descriptor` compound implementation for reference!
-    @GET (method, service, kernel) ->
-        @relevant "ts33kr.github.io/granite/exposure/publish.html"
-        @relevant "ts33kr.github.io/granite/membrane/document.html"
-        @github "ts33kr", "granite", "library/exposure/publish.coffee"
-        @synopsis "Get inventory of all APIs available in the system"
-        @outputs "An array of objects, each describes a service"
-        @markings framework: "critical", stable: "positive"
-        @version kernel.package.version or undefined
-        @produces "application/json"
