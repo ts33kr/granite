@@ -190,15 +190,15 @@ module.exports.Service = class Service extends Archetype
     # Supports implicit extraction of captured groups in the match.
     # Use this to configure what resources should match with service.
     @resource: (pattern) ->
-        identify = @identify().underline
+        assert identify = @identify().underline.toString()
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
         pattern = regexify pattern if _.isString pattern
         inspected = pattern.unescape()?.underline or pattern
         associate = "Associating #{inspected} resource with %s"
         notRegexp = "The #{inspected} is not a valid regexp"
         assert _.isRegExp(pattern) and pattern.source, notRegexp
-        @resources = (@resources or []).concat pattern
-        logger.debug associate.grey, identify; this
+        assert @resources = (@resources or []).concat pattern
+        logger.debug associate.grey, identify; return this
 
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted domain patterns.
@@ -206,16 +206,15 @@ module.exports.Service = class Service extends Archetype
     # Supports implicit extraction of captured groups in the match.
     # Use this to configure what domains should match with service.
     @domain: (pattern) ->
-        previous = @domains or []
-        identify = @identify().underline
+        assert identify = @identify().underline.toString()
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
         pattern = regexify pattern if _.isString pattern
         inspected = pattern.unescape()?.underline or pattern
         associate = "Associating #{inspected} domain with %s"
         notRegexp = "The #{inspected} is not a valid regexp"
         assert _.isRegExp(pattern) and pattern.source, notRegexp
-        @domains = (@domains or []).concat pattern
-        logger.debug associate.grey, identify; this
+        assert @domains = (@domains or []).concat pattern
+        logger.debug associate.grey, identify; return @
 
     # This method handles the rescuing of the request/response pair
     # when some error happens during the processing of the request
@@ -248,9 +247,9 @@ module.exports.Service = class Service extends Archetype
         hostname = _.first request.headers.host.split ":"
         pdomain = (p) -> gdomain = hostname.match p
         presource = (p) -> gresource = pathname.match p
-        pdomain = _.find domains, pdomain
-        presource = _.find resources, presource
-        assert gdomain isnt null, "missing domain"
+        pdomain = _.find(domains, pdomain) or null
+        presource = _.find(resources, presource) or null
+        assert gdomain isnt null, "missing the domain"
         assert gresource isnt null, "missing resource"
         @emit "process", gdomain, gresource, arguments...
         return domain: gdomain, resource: gresource
@@ -267,8 +266,8 @@ module.exports.Service = class Service extends Archetype
         hostname = _.first request.headers.host.split ":"
         pdomain = (pattern) -> pattern.test hostname
         presource = (pattern) -> pattern.test pathname
-        domainOk = _.some domains, pdomain
-        resourceOk = _.some resources, presource
-        matches = domainOk and resourceOk
-        @emit "matches", matches, arguments...
+        domainOk = _.some(domains, pdomain) or no
+        resourceOk = _.some(resources, presource) or no
+        matches = domainOk is yes and resourceOk is yes
+        @emit "matches", matches, request, response
         return decide domainOk and resourceOk
