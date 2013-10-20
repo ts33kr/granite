@@ -89,7 +89,7 @@ module.exports.Healthcare = class Healthcare extends Service
         assert not _.isEmpty descriptor.file = target[2]
         assert not _.isEmpty descriptor.line = target[3]
         assert not _.isEmpty descriptor.cols = target[4]
-        return callback undefined, descriptor
+        return try callback undefined, descriptor
 
     # Run a healthcare check on the service instance. This method
     # retrieves all the heartbeats of this service and its hierarchy
