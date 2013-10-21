@@ -54,7 +54,7 @@ module.exports.Broker = class Broker extends Archetype
     # pair, it should return anything other than a function object.
     @associate: (negotiator) ->
         assert registry = @registry or []
-        isValid = _.isFunction negotiator
+        isValid = try _.isFunction negotiator
         invalid = "checker is not valid method"
         throw new Error invalid unless isValid
         @registry = registry.concat negotiator
@@ -77,12 +77,12 @@ module.exports.Broker = class Broker extends Archetype
     # is being used by this class. It has to do with the way this method
     # writes out the `Content-Length` header deduced from encoded size.
     output: (response, encoded) ->
-        valid = _.isString encoded
-        areSent = response.headersSent
+        valid = try _.isString encoded
+        sent = response.headersSent or no
         invalid = "invalid encoded content"
         throw new Error invalid unless valid
         args = ["Content-Length", encoded.length]
-        response.setHeader args... unless areSent
+        response.setHeader args... unless sent
         return response.write encoded
 
 # This class is a content negotiation broker. It is instantiated by
@@ -96,15 +96,15 @@ module.exports.JsonBroker = class JsonBroker extends Broker
     # it is then it sets the appropriate `Content-Type` header and
     # writes out the properly encoded JSON response to the client.
     @associate (request, response, content) ->
-        isArray = _.isArray content
-        isObject = _.isObject content
-        return unless isArray or isObject
-        (request, response, content) =>
-            assert type = "Content-Type"
-            assert json = "application/json"
-            sent = response.headersSent or no
+        isArray = _.isArray(content) or false
+        isObject = _.isObject(content) or false
+        return null unless isArray or isObject
+        return (request, response, content) =>
+            type = "Content-Type".toLowerCase()
+            json = "application/json".toLowerCase()
+            sent = response.headersSent or false
             assert dump = JSON.stringify.bind JSON
-            doesHtml = response.accepts /html/
+            doesHtml = try response.accepts /html/
             spaces = if doesHtml then 4 else null
             response.setHeader type, json unless sent
             jsoned = (x) -> dump x, undefined, spaces
