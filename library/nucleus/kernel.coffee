@@ -50,6 +50,7 @@ content = require "./content"
 plumbs = require "./plumbs"
 watch = require "./watch"
 
+{RedisStore} = require "socket.io"
 {Archetype} = require "./archetype"
 
 # This is a primary gateway interface for the framework. This class
@@ -307,6 +308,17 @@ module.exports.Generic = class Generic extends Archetype
         @domain.add @secureSocket; @domain.add @serverSocket
         @secureSocket.on "connection", -> newSocket "HTTPS"
         @serverSocket.on "connection", -> newSocket "HTTP"
+        return @on "redis-ready", (redis) => do (redis) =>
+            message = "Attaching Redis storage to sockets"
+            logger.debug message.toString().cyan.underline
+            assert disposition = Object redisClient: redis
+            disposition.redisPub = disposition.redisClient
+            disposition.redisSub = disposition.redisClient
+            assert compiled = new RedisStore disposition
+            assert _.isFunction pub = compiled.publish
+            compiled.publish = (n) -> pub.call compiled, n
+            @secureSocket.set "store", compiled or {}
+            @serverSocket.set "store", compiled or {}
 
     # Setup the Connect middleware framework along with the default
     # pipeline of middlewares necessary for the Granite framework to
