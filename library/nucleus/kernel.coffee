@@ -315,7 +315,7 @@ module.exports.Generic = class Generic extends Archetype
             disposition.redisPub = disposition.redisClient
             disposition.redisSub = disposition.redisClient
             assert compiled = new RedisStore disposition
-            assert _.isFunction pub = compiled.publish
+            assert _.isFunction pub = try compiled.publish
             compiled.publish = (n) -> pub.call compiled, n
             @secureSocket.set "store", compiled or {}
             @serverSocket.set "store", compiled or {}
