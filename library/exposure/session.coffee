@@ -44,7 +44,7 @@ url = require "url"
 # make use of `RedisClient` and other wirings specific to framework.
 # It is highly recommended to use this storage engine in production
 # environments. Please refer to `plumbs` module for how to make use.
-module.exports.RedisStorage = class RedisStorage extends Zombie
+module.exports.RedisSession = class RedisSession extends Zombie
 
     # These invocations establish the parameters which are going
     # to be used for matching HTTP requests against this service.
