@@ -93,11 +93,12 @@ module.exports.Publish = class Publish extends Barebones
             check.for "no githubs", get.github.length is 1
             return accept()
 
-    # A hook that will be called prior to invoking the API method
-    # implementation. Please refer to this prototype signature for
-    # information on the parameters it accepts. Beware, this hook
-    # is asynchronously wired in, so consult with `async` package.
-    # Please be sure invoke the `next` arg to proceed, if relevant.
+    # This is a per service middleware that gets spinned up once a
+    # request comes through the service. All middlewares are method
+    # agnostic and are being spinned up for all the HTTP methods. It
+    # is a good idea to break up the entiry functionality of service
+    # into a smaller middlewares, as they are being run in sequence.
+    # Be aware that the middlewares can also be inherited from BCs.
     @middleware (request, response, resource, domain, next) ->
         assert descriptions = @collectDescriptions()
         internalError = "unexpected publishing error"
