@@ -85,9 +85,9 @@ module.exports.RedisClient = class RedisClient extends Service
         assert spawner = redisio.createClient.bind redisio
         logger.info message.cyan.underline, host, port
         kernel.redis = spawner port, host, options
-        assert _.isObject kernel.redis, noRedis
-        try @emit "redis-ready", kernel.redis
-        next.call this, undefined; return @
+        assert _.isObject(kernel.redis), noRedis
+        @emit "redis-ready", kernel.redis, kernel
+        next.call this, undefined; return this
 
     # A hook that will be called prior to instantiating the service
     # implementation. Please refer to this prototype signature for

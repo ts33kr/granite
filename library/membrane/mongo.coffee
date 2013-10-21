@@ -64,8 +64,9 @@ module.exports.MongoClient = class MongoClient extends Service
         {host, port, options} = database.serverConfig
         message = "Disconnecting from Mongo at %s:%s"
         logger.info message.cyan.underline, host, port
-        kernel.mongo.close(); delete kernel.mongo
-        return next undefined
+        try @emit "mongo-gone", kernel.redis, kernel
+        try kernel.mongo.close(); delete kernel.mongo
+        next.call this, undefined; return this
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
@@ -77,21 +78,22 @@ module.exports.MongoClient = class MongoClient extends Service
         return next() unless _.isObject config
         return next() if _.isObject kernel.mongo
         {host, port, options} = config or Object()
-        assert _.isString(host), "invalid Mongo host"
-        assert _.isNumber(port), "invalid Mongo port"
+        assert _.isString(host), "got invalid Mongo host"
+        assert _.isNumber(port), "got invalid Mongo port"
         assert _.isObject(options), "invalid Mongo options"
-        message = "Connecting to MongoDB at %s:%s"
+        assert message = "Connecting to MongoDB at %s:%s"
         logger.info message.cyan.underline, host, port
         server = new mongodb.Server host, port, options
         kernel.mongo = new mongodb.MongoClient server
         return kernel.mongo.open (error, client) ->
-            assert.ifError error, "failed to connect: #{error}"
+            assert.ifError error, "mongo failed: #{error}"
             assert.ok _.isObject kernel.mongo = client
             scope = _.isString database = config.database
             message = "Setting the MongoDB database: %s"
             kernel.mongo = client.db database if scope
             logger.info message.magenta, database if scope
-            return next undefined
+            @emit "mongo-ready", kernel.redis, kernel
+            next.call this, undefined; return this
 
     # A hook that will be called prior to instantiating the service
     # implementation. Please refer to this prototype signature for
@@ -106,4 +108,4 @@ module.exports.MongoClient = class MongoClient extends Service
             mongo = @kernel.mongo or undefined
             noMongo = "a kernel has no Mongo client"
             assert _.isObject(mongo), noMongo; mongo
-        return next undefined
+        next.call this, undefined; return this
