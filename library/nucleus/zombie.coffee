@@ -87,7 +87,8 @@ module.exports.Zombie = class Zombie extends Service
         assert upstream = @instance.upstreamAsync
         assert upstream = upstream.bind @instance
         assert singleton = upstream "singleton", ->
-            callback? @instance, kernel
+            return unless _.isFunction callback
+            callback.call this, @instance, kernel
         singleton kernel, @instance; @instance
 
     # An important method whose responsibility is to create a new
@@ -103,5 +104,6 @@ module.exports.Zombie = class Zombie extends Service
         assert upstream = service.upstreamAsync
         assert upstream = upstream.bind service
         assert instance = upstream "instance", ->
-            callback? service, kernel
+            return unless _.isFunction callback
+            callback.call this, service, kernel
         instance kernel, service; service
