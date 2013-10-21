@@ -24,6 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 _ = require "lodash"
+assert = require "assert"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
@@ -52,7 +53,7 @@ module.exports.Broker = class Broker extends Archetype
     # and response pair. If specific negotiator cannot handle the
     # pair, it should return anything other than a function object.
     @associate: (negotiator) ->
-        registry = @registry or []
+        assert registry = @registry or []
         isValid = _.isFunction negotiator
         invalid = "Checker is not a valid method"
         throw new Error invalid unless isValid
