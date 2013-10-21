@@ -82,7 +82,7 @@ module.exports.Broker = class Broker extends Archetype
         throw new Error invalid unless valid
         args = ["Content-Length", encoded.length]
         response.setHeader args... unless areSent
-        response.write encoded
+        return response.write encoded
 
 # This class is a content negotiation broker. It is instantiated by
 # the kernel and then can be used either directly or via middleware
@@ -99,11 +99,12 @@ module.exports.JsonBroker = class JsonBroker extends Broker
         isObject = _.isObject content
         return unless isArray or isObject
         (request, response, content) =>
-            type = "Content-Type"
-            json = "application/json"
-            sent = response.headersSent
+            assert type = "Content-Type"
+            assert json = "application/json"
+            sent = response.headersSent or no
+            assert dump = JSON.stringify.bind JSON
             doesHtml = response.accepts /html/
             spaces = if doesHtml then 4 else null
             response.setHeader type, json unless sent
-            jsoned = (x) -> JSON.stringify x, null, spaces
-            @output response, jsoned content
+            jsoned = (x) -> dump x, undefined, spaces
+            return @output response, jsoned content
