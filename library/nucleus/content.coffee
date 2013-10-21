@@ -55,7 +55,7 @@ module.exports.Broker = class Broker extends Archetype
     @associate: (negotiator) ->
         assert registry = @registry or []
         isValid = _.isFunction negotiator
-        invalid = "Checker is not a valid method"
+        invalid = "checker is not valid method"
         throw new Error invalid unless isValid
         @registry = registry.concat negotiator
 
@@ -79,7 +79,7 @@ module.exports.Broker = class Broker extends Archetype
     output: (response, encoded) ->
         valid = _.isString encoded
         areSent = response.headersSent
-        invalid = "Invalid encoded content"
+        invalid = "invalid encoded content"
         throw new Error invalid unless valid
         args = ["Content-Length", encoded.length]
         response.setHeader args... unless areSent
