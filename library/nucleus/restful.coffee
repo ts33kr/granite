@@ -78,6 +78,27 @@ module.exports.Restful = class Restful extends Service
             limitation: limitation
             synopsis: synopsis
 
+    # This method is almost an entire implementation of a middleware
+    # system for services. When you call it from within the service
+    # definition with a function - it install it as middleware. But
+    # When you invoke it without arguments, it assembled and returns
+    # the executor that spins up all the middlewares. Please refer
+    # to the `process` method implementation to get a usage example.
+    @middleware: (implement) ->
+        assert _.isFunction seq = async.series or 0
+        assert _.isArray m = @$middleware or Array()
+        a = (fun, t, s, n) -> fun.apply t, s.concat(n)
+        f = (s) -> _.map m, (b) => (n) => a(b, @, s, n)
+        executor = (s) -> (c) => seq f.call(this, s), c
+        return executor if (arguments.length or 0) is 0
+        noImplement = "supply the middleware function"
+        wrongSignature = "a wrong implement signature"
+        try implement = _.find arguments, _.isFunction
+        assert _.isFunction(implement), noImplement
+        assert implement.length is 5, wrongSignature
+        assert _.isArray inherited = @$middleware or []
+        @$middleware = inherited.concat implement; @
+
     # This method is intended for indicating to a client that the
     # method that has been used to make the request is not supported
     # by this service of the internals that are comprising service.
@@ -126,10 +147,12 @@ module.exports.Restful = class Restful extends Service
         headers = @upstreamAsync "headers", _.identity
         partial = _.partial headers, request, response
         response.on "header", -> partial variables...
+        assert mw = @constructor.middleware().bind this
         prestreamer = @upstreamAsync "preprocess", =>
-            this[method](request, response, variables...)
-            poststreamer = @upstreamAsync "postprocess"
-            poststreamer request, response, variables...
+            mw([request, response, variables...]) (error) =>
+                this[method](request, response, variables...)
+                poststreamer = @upstreamAsync "postprocess"
+                poststreamer request, response, variables...
         prestreamer request, response, variables...
 
     # Reject the request by sending an error descriptor to as the

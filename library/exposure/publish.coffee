@@ -98,7 +98,7 @@ module.exports.Publish = class Publish extends Barebones
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
-    preprocess: (request, response, resource, domain, next) ->
+    @middleware (request, response, resource, domain, next) ->
         assert descriptions = @collectDescriptions()
         internalError = "unexpected publishing error"
         assert _.isObject request.records = descriptions
