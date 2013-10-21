@@ -36,7 +36,7 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-{RedisStorage} = require "../exposure/session"
+{RedisSession} = require "../exposure/session"
 
 # This middleware is really a wrapper around the `Connect` logger
 # that pipes all the request logs to the `Winston` instances that
@@ -62,7 +62,7 @@ module.exports.session = (kernel) ->
     redis = _.isObject nconf.get "redis"
     noSession = "No session settings in scope"
     useRedis = "Using Redis session storage engine"
-    options.store = RedisStorage.obtain() if redis
+    options.store = RedisSession.obtain() if redis
     assert _.isObject(options), noSession
     logger.info useRedis.blue if redis
     return connect.session options
