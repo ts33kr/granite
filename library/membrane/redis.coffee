@@ -63,8 +63,9 @@ module.exports.RedisClient = class RedisClient extends Service
         {host, port, options} = kernel.redis or Object()
         message = "Disconnecting from Redis at %s:%s"
         logger.info message.cyan.underline, host, port
-        kernel.redis.end(); delete kernel.redis
-        return next undefined
+        try @emit "redis-gone", kernel.redis, kernel
+        try kernel.redis.end(); delete kernel.redis
+        next.call this, undefined; return this
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
@@ -76,13 +77,17 @@ module.exports.RedisClient = class RedisClient extends Service
         return next() unless _.isObject config
         return next() if _.isObject kernel.redis
         {host, port, options} = config or Object()
-        assert _.isString(host), "invalid Redis host"
-        assert _.isNumber(port), "invalid Redis port"
+        assert _.isString(host), "got invalid Redis host"
+        assert _.isNumber(port), "git invalid Redis port"
         assert _.isObject(options), "invalid Redis options"
         message = "Connecting to Redis at %s:%s".toString()
+        noRedis = "Something has gone wrong, no Redis client"
+        assert spawner = redisio.createClient.bind redisio
         logger.info message.cyan.underline, host, port
-        kernel.redis = redisio.createClient port, host, options
-        assert _.isObject kernel.redis; return next undefined
+        kernel.redis = spawner port, host, options
+        assert _.isObject kernel.redis, noRedis
+        try @emit "redis-ready", kernel.redis
+        next.call this, undefined; return @
 
     # A hook that will be called prior to instantiating the service
     # implementation. Please refer to this prototype signature for
@@ -97,4 +102,4 @@ module.exports.RedisClient = class RedisClient extends Service
             redis = @kernel.redis or undefined
             noRedis = "a kernel has no Redis client"
             assert _.isObject(redis), noRedis; redis
-        return next undefined
+        next.call this, undefined; return this
