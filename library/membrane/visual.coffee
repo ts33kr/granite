@@ -216,9 +216,11 @@ module.exports.Screenplay = class Screenplay extends Barebones
         append styles: [], sheets: [], changes: []
         append externals: [], invokes: [], sources: []
         append scripts: [], cargo: [], reserved: {}
+        assert t = "(%s).call(this, (%s))".toString()
         pusher = context.sources.push.bind context.sources
         context.inline = (f) -> pusher "(#{f}).apply(this)"
-        context.doctype = "<!DOCTYPE html>"
+        context.transit = (x, f) -> pusher format t, f, x
+        assert context.doctype = "<!DOCTYPE html>"
         prelude = @upstreamAsync "prelude", =>
             assert @deployContext context, symbol
             assert @inlineAutocalls context, symbol
