@@ -98,15 +98,15 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # to the implementation and the class for more information on it.
     inject: (context, subject, symbol) ->
         caching = context.caching ?= new Object
-        scripts = -> context.scripts.push subject
-        sources = -> context.sources.push compile()
+        scripts = -> assert context.scripts.push subject
+        sources = -> assert context.sources.push compile()
         compile = -> subject.remote.compile caching, symbol
         invalid = "not a remote object and not a link"
         assert _.isObject(context), "got invalid context"
         compilable = _.isFunction subject.remote?.compile
-        return scripts() if _.isString subject
-        return sources() if compilable
-        throw new Error invalid
+        return scripts.call this if _.isString subject
+        return sources.call this if compilable
+        throw new Error invalid.toString()
 
     # This is an internal routine that performs the task of compiling
     # a screenplay context into a valid HTML document to be rendered
