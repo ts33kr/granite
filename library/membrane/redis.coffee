@@ -64,6 +64,7 @@ module.exports.RedisClient = class RedisClient extends Service
         message = "Disconnecting from Redis at %s:%s"
         logger.info message.cyan.underline, host, port
         try @emit "redis-gone", kernel.redis, kernel
+        try kernel.emit? "redis-gone", kernel.redis
         try kernel.redis.end(); delete kernel.redis
         next.call this, undefined; return this
 
@@ -87,6 +88,7 @@ module.exports.RedisClient = class RedisClient extends Service
         kernel.redis = spawner port, host, options
         assert _.isObject(kernel.redis), noRedis
         @emit "redis-ready", kernel.redis, kernel
+        kernel.emit "redis-ready", kernel.redis
         next.call this, undefined; return this
 
     # A hook that will be called prior to instantiating the service

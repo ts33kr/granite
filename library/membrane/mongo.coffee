@@ -65,7 +65,8 @@ module.exports.MongoClient = class MongoClient extends Service
         message = "Disconnecting from Mongo at %s:%s"
         logger.info message.cyan.underline, host, port
         try @emit "mongo-gone", kernel.redis, kernel
-        try kernel.mongo.close(); delete kernel.mongo
+        try kernel.emit? "mongo-gone", kernel.redis
+        kernel.mongo.close(); delete kernel.mongo
         next.call this, undefined; return this
 
     # A hook that will be called prior to registering the service
@@ -93,6 +94,7 @@ module.exports.MongoClient = class MongoClient extends Service
             kernel.mongo = client.db database if scope
             logger.info message.magenta, database if scope
             @emit "mongo-ready", kernel.redis, kernel
+            kernel.emit "mongo-ready", kernel.redis
             next.call this, undefined; return this
 
     # A hook that will be called prior to instantiating the service
