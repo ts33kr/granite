@@ -99,7 +99,7 @@ module.exports.Generic = class Generic extends Archetype
     # content. That is, it will expose it to the world (not list it).
     # The serving aspects can be configured via a passed in options.
     serveStaticDirectory: (directory, options) ->
-        cwd = process.cwd().toString()
+        assert cwd = process.cwd().toString()
         solved = paths.relative cwd, directory
         notExist = "assets dir %s does not exist"
         serving = "Serving %s as static assets dir"
@@ -123,7 +123,7 @@ module.exports.Generic = class Generic extends Archetype
         return (->) if not @$configure and not arguments.length
         assert _.isFunction(routine), "invalid config routine"
         assert _.isString(explain), "no explanation given"
-        assert (@$configure ?= []).push new Object
+        return (@$configure ?= []).push new Object
             explain: explain, routine: routine
 
     # The complementary part of the kernel launching protocol. It is
