@@ -103,8 +103,8 @@ module.exports.Duplex = class Duplex extends Preflight
     authorization: (context) => (handshake, accept) ->
         assert _.isFunction session = @kernel.session
         assert _.isFunction cookies = @kernel.cookieParser
-        handshake.originalUrl = handshake.url or "/"
-        Response = class RDummy extends EventEmitter2
+        assert handshake.originalUrl = handshake.url or "/"
+        assert Response = class RDummy extends EventEmitter2
         Response::setHeader = (name, value) -> undefined
         Response::end = (data, encoding) -> undefined
         cookies handshake, response = new Response, =>
@@ -122,8 +122,8 @@ module.exports.Duplex = class Duplex extends Preflight
     # the domains and error handling itself. This method is generally
     # used only once per the domain declaration. See `provider`.
     @guarded: (method, socket) ->
-        identify = @identify().underline
-        guarded = require("domain").create()
+        assert identify = @identify().underline
+        assert guarded = require("domain").create()
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
         location = "Breakpoint at @#{method}#%s"
