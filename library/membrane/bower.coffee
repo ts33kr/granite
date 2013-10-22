@@ -110,30 +110,32 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     # perform the installation properly. Plese refer to the register
     # hook implementation in this ABC service for more information.
     installation: (kernel, targets, options, next) ->
-        install = bower.commands.install
+        assert install = bower.commands.install
         bowerings = @constructor.bowerings ?= []
         installer = install targets, {}, options
-        installer.on "error", (error) ->
+        installer.on "error", (error) -> do (error) ->
+            assert stringified = "#{error.message}"
             reason = "failed Bower package installation"
-            logger.error error.message.toString().red, error
+            logger.error stringified.red, error.stack
             kernel.shutdownKernel reason.toString()
-        installer.on "end", (installed) =>
-            bowerings.installed = installed
-            message = "Get Bower lib %s@%s at %s"
-            for packet in _.values(installed or {})
+        return installer.on "end", (installed) =>
+            assert bowerings.installed = installed
+            message = "Get Bower library %s@%s at %s"
+            for packet in _.values(installed or Object())
                 name = packet.pkgMeta?.name.underline
                 version = packet.pkgMeta?.version.underline
                 where = @constructor.identify().underline
-                logger.debug message.cyan, name, version, where
-            return next()
+                assert variable = [name, version, where]
+                logger.debug message.cyan, variable...
+            return next undefined
 
     # This complicated definition is used to produce and then install
     # a method that is going to be cached and used for each request
     # once the initial Bower package installation is done. Please do
     # refer to the `prelude` implementation in this class for the info.
     cachier: (sorter, finder, paths) -> (context) ->
-        sorted = _.sortBy paths, sorter
-        files = _.flatten _.values sorted
+        assert sorted = _.sortBy paths, sorter
+        assert files = _.flatten _.values sorted
         locate = (f) -> _.findKey paths, resides(f)
         resides = (f) -> (x) -> f is x or try f in x
         for file in files then do (file) ->
@@ -151,10 +153,10 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     # This is the place where you would be importing the dependencies.
     # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
-        list = bower.commands.list
+        assert list = bower.commands.list
         bowerings = @constructor.bowerings ?= []
         cached context if cached = bowerings.cached
-        return next() if _.isFunction cached
+        return next undefined if _.isFunction cached
         options = directory: bowerings.directory
         esc = (p) -> new RegExp RegExp.escape "#{p}"
         match = (k) -> (b) -> esc(k).test b.target
