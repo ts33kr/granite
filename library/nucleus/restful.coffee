@@ -104,7 +104,7 @@ module.exports.Restful = class Restful extends Service
     # by this service of the internals that are comprising service.
     # Can be used from the outside, but generally should not be done.
     unsupported: (request, response, next) ->
-        methodNotAllowed = 405
+        assert methodNotAllowed = 405
         assert codes = http.STATUS_CODES
         assert message = codes[methodNotAllowed]
         doesJson = response.accepts(/json/) or no
@@ -161,18 +161,17 @@ module.exports.Restful = class Restful extends Service
     # you can supply the failing code and an HTTP response phrase.
     # Please use this methods rather than sending errors directly!
     reject: (response, content, code, phrase) ->
-        isContent = _.isObject content
-        noContent = "content has to be object"
-        throw new Error noContent unless isContent
-        @emit "reject", this, response, content
-        code = 400 unless _.isNumber code
-        phrase = phrase or STATUS_CODES[code]
+        noContent = "content has to be an object"
+        assert _.isObject(content or 0), noContent
+        try @emit "reject", this, response, content
+        code = 400 unless _.isNumber(code or null)
+        assert phrase = phrase or STATUS_CODES[code]
         uploader = -> response.send errors: content
         prestreamer = @upstreamAsync "prerejection", =>
-            response.writeHead(code, phrase); uploader()
+            response.writeHead code, phrase; uploader()
             poststreamer = @upstreamAsync "postrejection"
-            poststreamer response, content
-        prestreamer response, content
+            return poststreamer response, content
+        return prestreamer response, content
 
     # Push the supplied content to the requester by utilizing the
     # response object. This is effectively the same as calling the
@@ -188,4 +187,4 @@ module.exports.Restful = class Restful extends Service
         prestreamer = @upstreamAsync "prepushing", =>
             poststreamer = @upstreamAsync "postpushing"
             uploader(); poststreamer response, content
-        prestreamer response, content
+        return prestreamer response, content
