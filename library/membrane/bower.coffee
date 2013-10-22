@@ -78,7 +78,7 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         assert hash = crypto.createHash "md5"
         id = hash.update(@identify()).digest "hex"
         automatic = => global or @$bowerSink or id
-        global = nconf.get "bower:global_sink_dir"
+        global = nconf.get "bower:globalSinkDirectory"
         return automatic() if arguments.length is 0
         assert _.isString(sink), "has to be a string"
         assert not _.isEmpty(sink), "got empty sink"
