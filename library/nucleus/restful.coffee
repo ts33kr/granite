@@ -146,7 +146,7 @@ module.exports.Restful = class Restful extends Service
         assert variables = [tokens.resource, tokens.domain]
         assert headers = @upstreamAsync "headers", _.identity
         assert partial = _.partial headers, request, response
-        response.on "header", -> try partial variables...
+        response.on "header", -> do -> partial variables...
         assert mw = @constructor.middleware().bind this
         prestreamer = @upstreamAsync "preprocess", =>
             mw([request, response, variables...]) (error) =>
