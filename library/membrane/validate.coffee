@@ -67,7 +67,7 @@ module.exports.Validator = class Validator extends Barebones
         noChain = "the #{context} has no valid chain method"
         assert _.isFunction(context.prototype.run), noRun
         assert _.isFunction(context.prototype.chain), noChain
-        @$vcontext = context; return this
+        assert _.isObject @$vcontext = context; return this
 
     # Given the storage with possible validation contexts appended
     # run all the validator contexts in parallel and wait for the
@@ -75,15 +75,14 @@ module.exports.Validator = class Validator extends Barebones
     # continuation routine and pass the validation results to it.
     # Continuation will recieve error indicator and results params.
     validateValues: (storage, continuation) ->
-        notStorage = "a #{storage} is not a storage"
         notContinuation = "a #{continuation} is not function"
         transformer = (o) -> (c) -> o.run (e) -> c null, e
         assert _.isFunction(continuation), notContinuation
-        assert _.isObject(storage), notStorage
-        vcontexts = storage.__vcontexts__ or {}
+        assert _.isObject(storage), "invalid storage given"
+        assert vcontexts = storage.__vcontexts__ or Object()
         transformed =  _.map _.values(vcontexts), transformer
         transformed = _.object _.keys(vcontexts), transformed
-        async.parallel transformed, (error, results) =>
+        return async.parallel transformed, (error, results) =>
             failure = _.any _.values(results), _.isObject
             assert.ifError error, "internal valdation error"
             return continuation.bind(this) failure, results
@@ -97,8 +96,8 @@ module.exports.Validator = class Validator extends Barebones
         oneOfValid = _.isString(schema) or _.isObject(schema)
         assert oneOfValid, "invalid schema definition is supplied"
         assert _.isFunction(continuation), "got invalid callback"
-        results = tv4.validateMultiple(subject, schema)
-        assert results; failure = results.valid is false
+        assert results = tv4.validateMultiple(subject, schema)
+        failure = (not results.valid?) or results.valid is no
         return continuation.bind(this) failure, results
 
     # Create new validation context for the values designated by
