@@ -130,12 +130,12 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # and launched on the client (browser side). Please refer to the
     # implementation for greater understanding of what it does exactly.
     compileContext: (context) ->
-        [x, c, j] = ["text/css", "stylesheet", "text/javascript"]
         script = (s) -> "<script src=\x22#{s}\x22></script>"
-        sheet = (s) -> "<link rel=\x22#{c}\x22 href=\x22#{s}\x22>"
         source = (s) -> "<script type=\x22#{j}\x22>#{s}</script>\n"
         style = (s) -> "<style type=\x22#{x}\x22>#{s}</style>\n"
+        sheet = (s) -> "<link rel=\x22#{c}\x22 href=\x22#{s}\x22>"
         template = "%s<html><head>%s</head><body></body></html>"
+        [x, c, j] = ["text/css", "stylesheet", "text/javascript"]
         scripts = _.map(context.scripts, script).join String()
         changes = _.map(context.changes, source).join String()
         sources = _.map(context.sources, source).join String()
