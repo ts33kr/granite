@@ -72,7 +72,7 @@ module.exports.Restful = class Restful extends Service
         wrongSignature = "malformed limitation signature"
         assert _.isString(synopsis), "got no synopsis"
         assert _.isFunction(limitation), noLimitation
-        assert limitation.length is 3, wrongSignature
+        assert limitation.length >= 3, wrongSignature
         assert _.isArray inherted = @$condition or []
         return @$condition = inherted.concat
             limitation: limitation
@@ -95,7 +95,7 @@ module.exports.Restful = class Restful extends Service
         wrongSignature = "a wrong implement signature"
         try implement = _.find arguments, _.isFunction
         assert _.isFunction(implement), noImplement
-        assert implement.length is 5, wrongSignature
+        assert implement.length >= 3, wrongSignature
         assert _.isArray inherited = @$middleware or []
         @$middleware = inherited.concat implement; @
 
@@ -142,15 +142,15 @@ module.exports.Restful = class Restful extends Service
         [tokens, knowns] = [super, @constructor.SUPPORTED]
         return @unsupported arguments... unless method in knowns
         missing = "Missing implementation for #{method} method"
-        throw new Error missing unless method of this
-        variables = [tokens.resource, tokens.domain]
-        headers = @upstreamAsync "headers", _.identity
-        partial = _.partial headers, request, response
-        response.on "header", -> partial variables...
+        throw new Error missing.toString() unless method of this
+        assert variables = [tokens.resource, tokens.domain]
+        assert headers = @upstreamAsync "headers", _.identity
+        assert partial = _.partial headers, request, response
+        response.on "header", -> try partial variables...
         assert mw = @constructor.middleware().bind this
         prestreamer = @upstreamAsync "preprocess", =>
             mw([request, response, variables...]) (error) =>
-                this[method](request, response, variables...)
+                this[method] request, response, variables...
                 poststreamer = @upstreamAsync "postprocess"
                 poststreamer request, response, variables...
         prestreamer request, response, variables...
