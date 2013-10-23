@@ -59,32 +59,32 @@ module.exports.Barebones = class Barebones extends Stubs
     @compose Descriptor
     @compose Healthcare
 
-    # This method should generally be used to obtain HTTP methods that
-    # are allowed on this resources. This is not the only possible way
-    # of implementing this method, because it usually can have a lot of
-    # different interpretations other than the one in the HTTP spec.
-    OPTIONS: (request, response) ->
-        knowns = @constructor.SUPPORTED
-        doesJson = response.accepts /json/
-        pathname = try url.parse(request.url).pathname
-        checkIfSupported = (m) => @[m] isnt @unsupported
-        supported = _.filter knowns, checkIfSupported
-        descriptor = methods: supported, resource: pathname
-        return @push response, descriptor if doesJson
-        formatted = supported.join(", ") + "\r\n"
-        response.send formatted; this
-
     # This block describes certain method of abrbitrary service. The
     # exact process of how it is being documented depends on how the
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
     # Also, see `Descriptor` compound implementation for reference!
-    @OPTIONS (method, service, kernel) ->
-        @github "ts33kr", "granite", "library/membrane/skeleton.coffee"
+    @lazy -> @OPTIONS (method, service, kernel) ->
         @relevant "ts33kr.github.io/granite/membrane/skeleton.html"
+        @github "ts33kr", "granite", "library/membrane/skeleton.coffee"
         @notes "This method is default implemented for each service"
         @synopsis "Get a set of HTTP methods supported by service"
         @outputs "An array of supported methods, JSON or string"
         @markings framework: "critical", stable: "positive"
         @version kernel.package.version or undefined
         @produces "application/json", "text/html"
+
+    # This method should generally be used to obtain HTTP methods that
+    # are allowed on this resources. This is not the only possible way
+    # of implementing this method, because it usually can have a lot of
+    # different interpretations other than the one in the HTTP spec.
+    OPTIONS: (request, response, resource, domain, session) ->
+        assert knowns = try @constructor.SUPPORTED
+        doesJson = response.accepts(/json/) or false
+        pathname = try url.parse(request.url).pathname
+        checkIfSupported = (m) => @[m] isnt @unsupported
+        supported = _.filter knowns, checkIfSupported
+        descriptor = methods: supported, resource: pathname
+        return @push response, descriptor if doesJson
+        formatted = supported.join(", ") + "\r\n"
+        response.send formatted; return this
