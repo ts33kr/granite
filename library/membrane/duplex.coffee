@@ -172,7 +172,7 @@ module.exports.Duplex = class Duplex extends Preflight
             _.extend respond, socket.handshake or new Object
             _.extend socket, socket.handshake or new Object
             assert respond.binder = socket.binder = binder
-            return execute parameters..., respond
+            execute parameters..., respond, session
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
