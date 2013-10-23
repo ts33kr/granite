@@ -78,7 +78,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # implementation will not be immediatelly , but rather when the
     # specified signal is emited on the current context (service)
     # object. Effectively, it is the same as creating the autocall
-    # that explicitly binds the event using `on` with the context/
+    # that explicitly binds the event using `on` with the context.
     @awaiting: (event, method) ->
         isRemote = _.isObject method?.remote
         notFunction = "no function is passed"
