@@ -146,14 +146,12 @@ module.exports.PValidator = class PValidator extends Validator
     # completion. If no validation mistakes found, run continuation.
     # If some mistakes are found however, see `@abnormalParameters`.
     validateParameters: (request, response, continuation) ->
-        notRequest = "a #{request} is not a request"
-        notResponse = "a #{response} is not a response"
         notContinuation = "a #{continuation} is not function"
         assert _.isFunction(continuation), notContinuation
-        assert _.isObject(response), notResponse
-        assert _.isObject(request), notRequest
+        assert _.isObject(response), "incorrect response object"
+        assert _.isObject(request), "got incorrect request object"
         @validateValues request.params, (failure, results) ->
-            signature = [results, request, response]
+            assert signature = [results, request, response]
             return @abnormalParameters signature... if failure
             return continuation.bind(this) failure, results
 
