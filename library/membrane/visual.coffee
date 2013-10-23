@@ -72,8 +72,25 @@ module.exports.Screenplay = class Screenplay extends Barebones
         method = external method unless isRemote
         assert _.isFunction(method), notFunction
         parameters = {} unless _.isObject parameters
-        method.remote.autocall = parameters
-        assert parameters; return method
+        method.remote.autocall = parameters; method
+
+    # The awaiting directive is a lot like `autocall`, except the
+    # implementation will not be immediatelly , but rather when the
+    # specified signal is emited on the current context (service)
+    # object. Effectively, it is the same as creating the autocall
+    # that explicitly binds the event using `on` with the context/
+    @awaiting: (event, method) ->
+        isRemote = _.isObject method?.remote
+        notFunction = "no function is passed"
+        invalidEvent = "invalid event supplied"
+        method = external method unless isRemote
+        assert _.isFunction(method), notFunction
+        assert not _.isEmpty(event), invalidEvent
+        assert method.remote.autocall = Object()
+        method.remote.auto = (symbol, key) -> ->
+            t = "#{symbol}.on(%s, #{symbol}.#{key})"
+            return format t, JSON.stringify event
+        method.remote.meta = event: event; method
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
@@ -166,9 +183,11 @@ module.exports.Screenplay = class Screenplay extends Barebones
         _.each prototypes, (p) -> _.forOwn p, (value, key) ->
             return yes unless value?.remote?.autocall?
             params = JSON.stringify value.remote.autocall
+            auto = a if _.isFunction a = value.remote.auto
             template = "#{symbol}.#{key}.call(#{symbol}, %s)"
             formatted = Object.create String.prototype
             formatted.valueOf = -> format template, params
+            formatted.valueOf = auto symbol, key if auto
             formatted.priority = value.remote.autocall.z
             uns = -> context.invokes.unshift formatted
             return uns() if value.remote.autocall.unshift
@@ -208,19 +227,12 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # creates a proper empty context that conforms to the necessary
     # restrictions. Then it runs the internal machinery to fill the
     # context with the service and request related data and events.
+    # Optionally, a existent object can be transformed into context.
     assembleContext: (symbol, request, asm, stock, receive) ->
         noPrelude = "no prelude method detected"
         assert _.isFunction(@prelude), noPrelude
         assert _.isObject context = stock or {}
-        append = -> _.extend context, arguments...
-        append styles: [], sheets: [], changes: []
-        append externals: [], invokes: [], sources: []
-        append scripts: [], cargo: [], reserved: {}
-        assert t = "(%s).call(this, (%s))".toString()
-        pusher = context.sources.push.bind context.sources
-        context.inline = (f) -> pusher "(#{f}).apply(this)"
-        context.transit = (x, f) -> pusher format t, f, x
-        assert context.doctype = "<!DOCTYPE html>"
+        assert @extendContext.call this, context
         prelude = @upstreamAsync "prelude", =>
             assert @deployContext context, symbol
             assert @inlineAutocalls context, symbol
@@ -229,11 +241,30 @@ module.exports.Screenplay = class Screenplay extends Barebones
             return receive context, compiled or null
         return prelude symbol, context, request
 
+    # An internally used routine, part of the context assembly proc.
+    # It is used to extend either a fresh or passed in stock object
+    # with all the commodities that should be present on contexts.
+    # This includes utilitiy methods and member definitions that all
+    # of the internal and external codebase depends and relies on.
+    extendContext: (context) ->
+        append = -> _.extend context, arguments...
+        append styles: [], sheets: [], changes: []
+        append externals: [], invokes: [], sources: []
+        append scripts: [], cargo: [], reserved: {}
+        assert context.doctype = "<!DOCTYPE html>"
+        assert t = "(%s).call(this, (%s))".toString()
+        assert a = "(%s).apply(this, (%s))".toString()
+        v = (f, s) -> format a, f, try JSON.stringify s
+        pusher = context.sources.push.bind context.sources
+        context.inline = (f) -> pusher "(#{f}).apply(this)"
+        context.varargs = (s...) -> pusher v(_.last(s), s)
+        context.transit = (x, f) -> pusher format t, f, x
+
     # Get the contents of the resources at the established path. It
     # is a good idea for this HTTP method to be idempotent. As the
     # rule, this method does not have to alter any contents or data
     # of the resource. Use for unobtrusive retrieval of resources.
-    GET: (request, response) ->
+    GET: (request, response, resource, domain, session) ->
         symbol = "service".toString().toLowerCase()
         assert args = [symbol, request, yes, undefined]
         @assembleContext args..., (context, compiled) ->
