@@ -146,8 +146,7 @@ module.exports.PValidator = class PValidator extends Validator
     # completion. If no validation mistakes found, run continuation.
     # If some mistakes are found however, see `@abnormalParameters`.
     validateParameters: (request, response, continuation) ->
-        notContinuation = "a #{continuation} is not function"
-        assert _.isFunction(continuation), notContinuation
+        assert _.isFunction(continuation), "invalid continuation"
         assert _.isObject(response), "incorrect response object"
         assert _.isObject(request), "got incorrect request object"
         @validateValues request.params, (failure, results) ->
@@ -162,8 +161,8 @@ module.exports.PValidator = class PValidator extends Validator
     abnormalParameters: (results, request, response) ->
         notRequest = "a #{request} is not a request"
         notResponse = "a #{response} is not a respnonse"
-        assert _.isObject(response), notResponse
-        assert _.isObject(request), notRequest
+        assert _.isObject(response), notResponse.toString()
+        assert _.isObject(request), notRequest.toString()
         response.statusCode = 400 # bad HTTP request
         strings = _.map results, (e) -> e.message
         map = _.object _.keys(results), strings
@@ -190,9 +189,9 @@ module.exports.HValidator = class HValidator extends Validator
         notHeaders = "the request has no headers"
         notRequest = "a #{request} is not a request"
         notNaming = "invalid header name supplied"
-        assert _.isObject(request), notRequest
-        assert headers = request.headers, notHeaders
-        assert not _.isEmpty(name), notNaming
+        assert headers = request?.headers, notHeaders
+        assert _.isObject(request), notRequest.toString()
+        assert not _.isEmpty(name), notNaming.toString()
         normalized = name.toString().toLowerCase()
         return @value headers, normalized, message
 
@@ -201,14 +200,11 @@ module.exports.HValidator = class HValidator extends Validator
     # completion. If no validation mistakes found, run continuation.
     # If some mistakes are found however, see `@abnormalHeaders`.
     validateHeaders: (request, response, continuation) ->
-        notRequest = "a #{request} is not a request"
-        notResponse = "a #{response} is not a response"
-        notContinuation = "a #{continuation} is not function"
-        assert _.isFunction(continuation), notContinuation
-        assert _.isObject(response), notResponse
-        assert _.isObject(request), notRequest
+        assert _.isFunction(continuation), "invalid continuation"
+        assert _.isObject(response), "incorrect response object"
+        assert _.isObject(request), "got incorrect request object"
         @validateValues request.headers, (failure, results) ->
-            signature = [results, request, response]
+            assert signature = [results, request, response]
             return @abnormalHeaders signature... if failure
             return continuation.bind(this) failure, results
 
@@ -219,8 +215,8 @@ module.exports.HValidator = class HValidator extends Validator
     abnormalHeaders: (results, request, response) ->
         notRequest = "a #{request} is not a request"
         notResponse = "a #{response} is not a respnonse"
-        assert _.isObject(response), notResponse
-        assert _.isObject(request), notRequest
+        assert _.isObject(response), notResponse.toString()
+        assert _.isObject(request), notRequest.toString()
         response.statusCode = 400 # bad HTTP request
         strings = _.map results, (e) -> e.message
         map = _.object _.keys(results), strings
@@ -244,14 +240,11 @@ module.exports.BValidator = class BValidator extends Validator
     # completion. If no validation mistakes found, run continuation.
     # If some mistakes are found however, see `@abnormalBody` method.
     validateBody: (request, response, schema, continuation) ->
-        notRequest = "a #{request} is not a request"
-        notResponse = "a #{response} is not a response"
-        notContinuation = "a #{continuation} is not function"
-        assert _.isFunction(continuation), notContinuation
-        assert _.isObject(response), notResponse
-        assert _.isObject(request), notRequest
+        assert _.isFunction(continuation), "invalid continuation"
+        assert _.isObject(response), "incorrect response object"
+        assert _.isObject(request), "got incorrect request object"
         @validateSchema request.body, schema, (failure, results) ->
-            signature = [results, request, response]
+            assert signature = [results, request, response]
             return @abnormalBody signature... if failure
             return continuation.bind(this) failure, results
 
@@ -262,8 +255,8 @@ module.exports.BValidator = class BValidator extends Validator
     abnormalBody: (results, request, response) ->
         notRequest = "a #{request} is not a request"
         notResponse = "a #{response} is not a respnonse"
-        assert _.isObject(response), notResponse
-        assert _.isObject(request), notRequest
+        assert _.isObject(response), notResponse.toString()
+        assert _.isObject(request), notRequest.toString()
         response.statusCode = 400 # bad HTTP request
         noErrors = "the schema results is not valid"
         assert _.isObject(results.errors), noErrors
