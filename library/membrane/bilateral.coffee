@@ -104,7 +104,7 @@ module.exports.Bilateral = class Bilateral extends Duplex
     # the uplinks. Once detected, each uplink gets published onto a
     # socket channel that makes it available for the invocation by
     # the corresponding server site facilities implemented belows.
-    bilateral: @autocall z: +999, ->
+    bilateral: @autocall z: +102, ->
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
         uplinking = "Uplink %s at #{@location}, nsp=%s"

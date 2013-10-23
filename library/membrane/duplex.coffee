@@ -219,7 +219,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # client end of the Socket.IO channel and creates wrapper around
     # all the providers residing in the current service implementation.
     # Refer to other `Duplex` methods for understanding what goes on.
-    bootloader: @autocall ->
+    bootloader: @autocall z: +101, ->
         options = new Object reconnect: no, url: @duplex
         try @socket = io.connect @duplex, options catch error
             message = "blew up Socket.IO: #{error.message}"
