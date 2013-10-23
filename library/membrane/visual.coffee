@@ -232,10 +232,11 @@ module.exports.Screenplay = class Screenplay extends Barebones
         noPrelude = "no prelude method detected"
         assert _.isFunction(@prelude), noPrelude
         assert _.isObject context = stock or {}
-        assert @extendContext.call this, context
+        @extendContext.call this, context, symbol
         prelude = @upstreamAsync "prelude", =>
             assert @deployContext context, symbol
             assert @inlineAutocalls context, symbol
+            context.inline -> @emit "installed", this
             context = @compressContext context if asm
             compiled = @compileContext context if asm
             return receive context, compiled or null
@@ -246,17 +247,18 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # with all the commodities that should be present on contexts.
     # This includes utilitiy methods and member definitions that all
     # of the internal and external codebase depends and relies on.
-    extendContext: (context) ->
+    extendContext: (context, symbol) ->
         append = -> _.extend context, arguments...
         append styles: [], sheets: [], changes: []
         append externals: [], invokes: [], sources: []
         append scripts: [], cargo: [], reserved: {}
-        assert context.doctype = "<!DOCTYPE html>"
-        assert t = "(%s).call(this, (%s))".toString()
-        assert a = "(%s).apply(this, (%s))".toString()
         v = (f, s) -> format a, f, try JSON.stringify s
+        assert context.doctype = type = "<!DOCTYPE html>"
+        assert t = "(%s).call(#{symbol or "this"}, (%s))"
+        assert a = "(%s).apply(#{symbol or "this"}, (%s))"
+        assert i = (f) -> "(#{f}).call(#{symbol or "this"})"
         pusher = context.sources.push.bind context.sources
-        context.inline = (f) -> pusher "(#{f}).apply(this)"
+        context.inline = (implement) -> pusher i(implement)
         context.varargs = (s...) -> pusher v(_.last(s), s)
         context.transit = (x, f) -> pusher format t, f, x
 
