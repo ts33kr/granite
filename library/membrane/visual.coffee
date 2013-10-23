@@ -232,7 +232,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         noPrelude = "no prelude method detected"
         assert _.isFunction(@prelude), noPrelude
         assert _.isObject context = stock or {}
-        @extendContext.call this, context, symbol
+        @energizeContext.call @, context, symbol
         prelude = @upstreamAsync "prelude", =>
             assert @deployContext context, symbol
             assert @inlineAutocalls context, symbol
@@ -247,7 +247,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # with all the commodities that should be present on contexts.
     # This includes utilitiy methods and member definitions that all
     # of the internal and external codebase depends and relies on.
-    extendContext: (context, symbol) ->
+    energizeContext: (context, symbol) ->
         append = -> _.extend context, arguments...
         append styles: [], sheets: [], changes: []
         append externals: [], invokes: [], sources: []
