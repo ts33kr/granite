@@ -210,13 +210,21 @@ module.exports.Screenplay = class Screenplay extends Barebones
         context.styles = _.unique context.styles, u
         assert context.scripts = _.unique scripts, u
         assert _.isArray sources = _.unique sources
+        assert not _.isEmpty(sources), emptySources
         return context unless nconf.get compression
+        return @contextReduction context, sources
+
+    # This is the place where actual context sources minification
+    # and reduction takes place. This method invokes the UglifyJS2
+    # on the previously preprocessed sources and the re-emerges it
+    # in the context in place of the originals. This method also
+    # takes care of the compression cache, which is very important.
+    contextReduction: (context, sources) ->
         assert hasher = crypto.createHash "md5"
         joined = context.sources.join new String
         digest = hasher.update(joined).digest "hex"
         context.sources = c if c = @ccache?[digest]
         return context if context.sources and c
-        assert not _.isEmpty(sources), emptySources
         assert sources = _.reject sources, _.isEmpty
         assert minify = require("uglify-js").minify
         minified = minify sources, fromString: yes
