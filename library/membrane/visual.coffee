@@ -80,13 +80,10 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # object. Effectively, it is the same as creating the autocall
     # that explicitly binds the event using `on` with the context.
     @awaiting: (event, method) ->
-        isRemote = _.isObject method?.remote
-        notFunction = "no function is passed"
-        invalidEvent = "invalid event supplied"
-        method = external method unless isRemote
-        assert _.isFunction(method), notFunction
+        invalidEvent = "an invalid event supplied"
         assert not _.isEmpty(event), invalidEvent
-        assert method.remote.autocall = Object()
+        assert method = @autocall Object(), method
+        assert _.isObject method.remote.autocall
         method.remote.auto = (symbol, key) -> ->
             t = "#{symbol}.on(%s, #{symbol}.#{key})"
             return format t, JSON.stringify event
