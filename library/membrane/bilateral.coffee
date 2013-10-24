@@ -75,7 +75,7 @@ module.exports.Bilateral = class Bilateral extends Duplex
             context.invokes.push "\r\n#{template}\r\n"
             uplinks = context.uplinks ?= new Object
             uplinks[name] = directives; return @
-        return next undefined
+        return next.call this, undefined
 
     # Declarate the supplied implementation function as the uplink.
     # An uplink is an external (remote) function published on socket
