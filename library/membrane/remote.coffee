@@ -51,7 +51,7 @@ compiler = module.exports.compiler = (caching, symbol) ->
     return f() unless _.isObject @compiled
     hierarchy = try @compiled.hierarchy?()
     assert _.isArray(hierarchy), "no hierarchy"
-    hasRemote = (x) ->_.isObject x.remote
+    hasRemote = (x) -> _.isObject x.remote
     compilation = (x) -> x.remote.compile caching
     areRemote = _.filter hierarchy, hasRemote
     compiled = _.map areRemote, compilation
@@ -67,17 +67,17 @@ compiler = module.exports.compiler = (caching, symbol) ->
 remote = module.exports.remote = (wrapper) ->
     noWrapper = "wrapper must be a function"
     invalidArgs = "wrapper cannot have arguments"
-    assert _.isFunction wrapper, noWrapper
+    assert _.isFunction(wrapper), noWrapper
     assert wrapper.length is 0, invalidArgs
     try compiled = wrapper() catch error
         msg = "compilation failed: #{error.message}"
-        error.message = msg; throw error
-    compiled.remote = Object.create {}
-    compiled.remote.compiled = compiled
+        error.message = msg.toString(); throw error
+    assert compiled.remote = Object.create {}
+    assert compiled.remote.compiled = compiled
+    assert compiled.remote.compile = compiler
+    assert compiled.remote.source = wrapper
     compiled.remote.symbol = compiled.name
-    compiled.remote.source = wrapper.toString()
-    compiled.remote.compile = compiler
-    return compiled
+    assert _.isFunction compiled; compiled
 
 # A handy shortcut for the `remote` decorator that can be used with
 # pure functions (not classes) to avoid having the top level, zero
@@ -90,9 +90,9 @@ external = module.exports.external = (compiled) ->
     assert.ok _.isFunction(compiled), notFunction
     assert not compiled.__super__?, wrongCompiled
     wrapper = "function() { return #{compiled} }"
-    compiled.remote = Object.create {}
-    compiled.remote.compiled = compiled
+    assert compiled.remote = Object.create {}
+    assert compiled.remote.compiled = compiled
+    assert compiled.remote.compile = compiler
+    assert compiled.remote.source = wrapper
     compiled.remote.symbol = compiled.name
-    compiled.remote.source = wrapper.toString()
-    compiled.remote.compile = compiler
-    return compiled
+    assert _.isFunction compiled; compiled
