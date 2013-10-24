@@ -50,8 +50,8 @@ module.exports.Document = class Document extends Archetype
         return @$notes if arguments.length is 0
         noNotes = "The notes is not a string"
         assert _.isString(notes), noNotes
-        @emit "notes", arguments...
-        @$notes = notes.toString()
+        @emit.call this, "notes", arguments...
+        return @$notes = notes.toString()
 
     # Either get or set the inputs of the method that is being
     # described by this document. If you do not supply inputs
@@ -61,8 +61,8 @@ module.exports.Document = class Document extends Archetype
         return @$inputs if arguments.length is 0
         noInputs = "The inputs is not a string"
         assert _.isString inputs, noInputs
-        @emit "inputs", arguments...
-        @$inputs = inputs.toString()
+        @emit.call this, "inputs", arguments...
+        return @$inputs = inputs.toString()
 
     # Either get or set the outputs of the method that is being
     # described by this document. If you do not supply outputs
@@ -72,7 +72,7 @@ module.exports.Document = class Document extends Archetype
         return @$outputs if arguments.length is 0
         noOutputs = "The outputs is not a string"
         assert _.isString(outputs), noOutputs
-        @emit "outputs", arguments...
+        @emit.call this, "outputs", arguments...
         @$outputs = outputs.toString()
 
     # Either get or set the description of the method that is being
@@ -83,8 +83,8 @@ module.exports.Document = class Document extends Archetype
         return @$synopsis if arguments.length is 0
         noSynopsis = "The synopsis is not a string"
         assert _.isString(synopsis), noSynopsis
-        @emit "synopsis", arguments...
-        @$synopsis = synopsis.toString()
+        @emit.call this, "synopsis", arguments...
+        return @$synopsis = synopsis.toString()
 
     # Either get or set the argument information of the method that
     # is being described by this document. If you do no supply any
@@ -98,8 +98,8 @@ module.exports.Document = class Document extends Archetype
         assert _.isString(description), noDescription
         assert _.isString(identify), noIdentify
         assert _.isString(typeable), noTypeable
-        @emit "argument", arguments...
-        (@$argument ?= []).push
+        @emit.call this, "argument", arguments...
+        return (@$argument ?= []).push
             description: description
             identify: identify
             typeable: typeable
@@ -110,12 +110,12 @@ module.exports.Document = class Document extends Archetype
     # Each failure consists of the expected code and reason for fail
     failure: (code, reasoning) ->
         return @$failure if arguments.length is 0
-        noCode = "The code is not a number"
-        noReasoning = "The reasoning is not a string"
+        noCode = "The supplied code is not a number"
+        noReasoning = "the reasoning is not a string"
         assert _.isString(reasoning), noReasoning
-        assert _.isNumber(code), noCode
-        @emit "failure", arguments...
-        (@$failure ?= []).push
+        assert  code and _.isNumber(code), noCode
+        @emit.call this, "failure", arguments...
+        return (@$failure ?= []).push
             reasoning: reasoning
             code: code
 
@@ -130,9 +130,9 @@ module.exports.Document = class Document extends Archetype
         noPath = "the path name must be a valid string"
         assert _.isString(username), noUsername
         assert _.isString(repository), noRepository
-        assert _.isString(path), noPath
-        @emit "github", arguments...
-        (@$github ?= []).push
+        assert path and _.isString(path), noPath
+        @emit.call this, "github", arguments...
+        return (@$github ?= []).push
             repository: repository
             username: username
             path: path
@@ -145,8 +145,8 @@ module.exports.Document = class Document extends Archetype
         return @$relevant if arguments.length is 0
         noRelevant = "the relevant should be a string"
         assert _.isString(relevant), noRelevant
-        @emit "relevant", arguments...
-        (@$relevant ?= []).push relevant
+        @emit.call this, "relevant", arguments...
+        return (@$relevant ?= []).push relevant
 
     # Either get or set the produces information of the method that
     # is being described by this document. If you do no supply any
@@ -157,7 +157,7 @@ module.exports.Document = class Document extends Archetype
         notString = "elements must be MIME type strings"
         assert _.all(produces, _.isString), notString
         @$produces = (@$produces or []).concat produces
-        @emit "produces", @$produces, arguments
+        @emit.call @, "produces", @$produces, arguments
 
     # Either get or set the consumes information of the method that
     # is being described by this document. If you do no supply any
@@ -168,7 +168,7 @@ module.exports.Document = class Document extends Archetype
         notString = "elements must be MIME type strings"
         assert _.all(consumes, _.isString), notString
         @$consumes = (@$consumes or []).concat consumes
-        @emit "consumes", @$consumes, arguments
+        @emit.call @, "consumes", @$consumes, arguments
 
     # Either get or set the markings information of the method that
     # is being described by this document. If you do no supply any
@@ -189,8 +189,8 @@ module.exports.Document = class Document extends Archetype
         return @$schemas if arguments.length is 0
         noSchemas = "the schemas should be a object"
         assert _.isObject(schemas), noSchemas
-        _.extend (@$schemas ?= {}), schemas
-        @emit "schemas", arguments...
+        assert _.extend (@$schemas ?= {}), schemas
+        @emit.call this, "schemas", arguments...
 
     # Either get or set the version information of the method that
     # is being described by this document. If you do no supply any
@@ -200,5 +200,5 @@ module.exports.Document = class Document extends Archetype
         return @$version if arguments.length is 0
         noVersion = "the version should be a string"
         assert _.isString(version), noVersion
-        @emit "version", arguments...
-        @$version = version
+        @emit.call this, "version", arguments...
+        return @$version = version
