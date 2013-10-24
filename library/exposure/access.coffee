@@ -58,6 +58,8 @@ module.exports.Access = class Access extends Barebones
     # If the entity or session does not exist, nothing gets defined.
     dereference: (container, callback) ->
         sid = "x-authenticate-entity"; key = "entity"
+        isVanillaSession = _.isObject container.cookie
+        container = session: container if isVanillaSession
         return callback() unless session = container.session
         return callback() unless content = session[sid]
         delete container[key] if _.has container, key
@@ -82,6 +84,8 @@ module.exports.Access = class Access extends Barebones
         noSave = "the session has not save function"
         noSession = "container has no session object"
         message = "Persisted the entity against session"
+        isVanillaSession = _.isObject container.cookie
+        container = session: container if isVanillaSession
         assert session = container?.session, noSession
         assert _.isObject(entity), "malformed entity"
         @hibernateEntity ?= (xe, xn) -> xn null, xe
