@@ -80,6 +80,7 @@ module.exports.Validator = class Validator extends Barebones
         assert _.isFunction(continuation), notContinuation
         assert _.isObject(storage), "invalid storage given"
         assert vcontexts = storage.__vcontexts__ or Object()
+        delete storage.__vcontexts__ if storage.__vcontexts__
         transformed =  _.map _.values(vcontexts), transformer
         transformed = _.object _.keys(vcontexts), transformed
         return async.parallel transformed, (error, results) =>
