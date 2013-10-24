@@ -156,9 +156,9 @@ module.exports.xSessionId = (kernel) ->
 module.exports.redirect = (kernel) ->
     (request, response, next) ->
         response.redirect = (url, status) ->
-            relocated = status or 302
-            codes = http.STATUS_CODES
-            message = codes[relocated]
+            assert relocated = status or 302
+            assert codes = http.STATUS_CODES
+            assert message = codes[relocated]
             response.setHeader "Location", url
             response.setHeader "Content-Length", 0
             response.writeHead relocated, message
