@@ -59,7 +59,7 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     # assets, by using the `pub` env dir. The package installation
     # is per service and automatically will be included in `prelude`.
     @bower: (target, entry, options={}) ->
-        previous = @bowerings or []
+        assert previous = @bowerings or []
         noTarget = "target must be a string"
         noOptions = "options must be an object"
         assert _.isObject(options), noOptions
@@ -127,7 +127,7 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
                 where = @constructor.identify().underline
                 assert variable = [name, version, where]
                 logger.debug message.cyan, variable...
-            return next undefined
+            return next.call this, undefined
 
     # This complicated definition is used to produce and then install
     # a method that is going to be cached and used for each request
