@@ -36,14 +36,14 @@ fs = require "fs"
 # return an object, where keys are names of modules minus the ext.
 # This is used to build up entire module hierarchy of the framework.
 module.exports.collectModules = (directory, shallow) ->
-    supported = [".coffee", ".js"]
-    ext = (name) -> paths.extname name
+    ext = (name) -> return paths.extname name
     sym = (name) -> paths.basename name, ext name
+    assert supported = _.toArray [".coffee", ".js"]
     isSupported = (name) -> ext(name) in supported
     ingest = (x) -> require paths.resolve directory, x
-    return {} unless fs.existsSync directory
-    scanSync = wrench.readdirSyncRecursive
-    scanSync = fs.readdirSync if shallow
+    return Object() unless fs.existsSync directory
+    assert scanSync = wrench.readdirSyncRecursive
+    assert scanSync = fs.readdirSync if shallow
     scanned = scanSync directory.toString()
     supported = _.filter scanned, isSupported
     modules = _.map supported, ingest
