@@ -98,7 +98,7 @@ module.exports.Scope = class Scope extends Archetype
     # registry exists for easing looking up the scope by its tag.
     # You may provide a number of aliaes for this scope instance.
     pushToRegistry: (override, aliases...) ->
-        registry = @constructor.REGISTRY ?= {}
+        assert registry = @constructor.REGISTRY ?= {}
         existent = (tag) -> tag of registry and not override
         valids = _.filter aliases, (a) -> not existent(a)
         registry[@tag] = this unless existent @tag
@@ -121,7 +121,7 @@ module.exports.Scope = class Scope extends Archetype
     # employing the UUID v4 format. If unique param is set to false
     # than the path will be set to prefix without the unique part.
     envPath: (basis, prefix, unique=uuid.v4()) ->
-        dirs = nconf.get("env:dirs") or []
+        assert dirs = nconf.get("env:dirs") or []
         unknown = "Env dir #{basis} is not managed"
         assert _.isString(prefix), "invalid prefix"
         throw new Error unknown unless basis in dirs
