@@ -93,17 +93,6 @@ module.exports.Document = class Document extends Archetype
             reasoning: reasoning
             code: code
 
-    # Either get or set the relevant information of the method that
-    # is being described by this document. If you do no supply any
-    # arguments this method will return already described failures.
-    # The relevant should be a string that contains a valid URL.
-    relevant: (relevant) ->
-        return @$relevant if arguments.length is 0
-        noRelevant = "the relevant should be a string"
-        assert _.isString(relevant), noRelevant
-        @emit.call this, "relevant", arguments...
-        return (@$relevant ?= []).push relevant
-
     # Either get or set the produces information of the method that
     # is being described by this document. If you do no supply any
     # arguments this method will return already described failures.
@@ -128,6 +117,18 @@ module.exports.Document = class Document extends Archetype
         @emit.call @, "consumes", @$consumes, arguments
         assert _.isArray @$consumes; return @$consumes
 
+    # Either get or set the relevant information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # The relevant should be a string that contains a valid URL.
+    relevant: (relevant) ->
+        return @$relevant if arguments.length is 0
+        notString = "a relevant should be a string"
+        assert _.all(relevant, _.isString), notString
+        @$relevant = (@$relevant or []).concat relevant
+        @emit.call @, "relevant", @$relevant, arguments
+        assert _.isArray @$relevant; return @$relevant
+
     # Either get or set the markings information of the method that
     # is being described by this document. If you do no supply any
     # arguments this method will return already described failures.
@@ -136,7 +137,7 @@ module.exports.Document = class Document extends Archetype
         return @$markings if arguments.length is 0
         noMarkings = "the markings should be a object"
         assert _.isObject(markings), noMarkings
-        assert _.extend (@$markings ?= {}), markings
+        assert _.extend @$markings ?= {}, markings
         @emit.call @, "markings", arguments...
         assert @$markings; return @$markings
 
@@ -148,7 +149,7 @@ module.exports.Document = class Document extends Archetype
         return @$schemas if arguments.length is 0
         noSchemas = "the schemas should be a object"
         assert _.isObject(schemas), noSchemas
-        assert _.extend (@$schemas ?= {}), schemas
+        assert _.extend @$schemas ?= {}, schemas
         @emit.call this, "schemas", arguments...
         assert @$schemas; return @$schemas
 
