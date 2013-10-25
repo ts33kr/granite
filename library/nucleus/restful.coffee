@@ -181,9 +181,10 @@ module.exports.Restful = class Restful extends Service
     # system of service hooks. Refer to the original sender for
     # more information on how the content is encoded and passed.
     push: (response, content) ->
-        isContent = content isnt undefined
-        noContent = "No valid content supplied"
-        throw new Error noContent unless isContent
+        isArray = content? and _.isArray content
+        isObject = content? and _.isObject content
+        noContent = "no valid root content supplied"
+        assert isArray or isObject, "#{noContent}"
         try @emit "push", this, response, content
         uploader = -> return response.send content
         prestreamer = @upstreamAsync "prepushing", =>
