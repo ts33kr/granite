@@ -105,8 +105,8 @@ module.exports.JsonBroker = class JsonBroker extends Broker
         json = "application/json".toLowerCase()
         sent = response.headersSent or false
         assert dump = JSON.stringify.bind JSON
-        doesHtml = try response.accepts /html/
-        spaces = if doesHtml then 4 else null
+        doesHtml = response.accepts /html/, /xhtml/
+        spaces = if doesHtml then 4 else undefined
         response.setHeader type, json unless sent
         jsoned = (x) -> dump x, undefined, spaces
         return @output response, jsoned content
