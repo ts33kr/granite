@@ -48,7 +48,7 @@ module.exports.Document = class Document extends Archetype
     # Notes are warning/beware messages about the implementation.
     remark: (remark) ->
         return @$remark if arguments.length is 0
-        noRemark = "The remark is not a string"
+        noRemark = "the remark is not a string"
         assert _.isString(remark), noRemark
         @emit.call this, "remark", arguments...
         return @$remark = remark.toString()
@@ -59,7 +59,7 @@ module.exports.Document = class Document extends Archetype
     # Inputs is a description of the body that method expects.
     inputs: (inputs) ->
         return @$inputs if arguments.length is 0
-        noInputs = "The inputs is not a string"
+        noInputs = "the inputs is not a string"
         assert _.isString(inputs), noInputs
         @emit.call this, "inputs", arguments...
         return @$inputs = inputs.toString()
@@ -70,7 +70,7 @@ module.exports.Document = class Document extends Archetype
     # Outputs is a description of data returned by the method.
     outputs: (outputs) ->
         return @$outputs if arguments.length is 0
-        noOutputs = "The outputs is not a string"
+        noOutputs = "the outputs is not a string"
         assert _.isString(outputs), noOutputs
         @emit.call this, "outputs", arguments...
         @$outputs = outputs.toString()
@@ -81,7 +81,7 @@ module.exports.Document = class Document extends Archetype
     # Synopsis is a brief story of what this service method does.
     synopsis: (synopsis) ->
         return @$synopsis if arguments.length is 0
-        noSynopsis = "The synopsis is not a string"
+        noSynopsis = "the synopsis is not a string"
         assert _.isString(synopsis), noSynopsis
         @emit.call this, "synopsis", arguments...
         return @$synopsis = synopsis.toString()
@@ -92,9 +92,9 @@ module.exports.Document = class Document extends Archetype
     # Argument consists of name, approximate type and description.
     argument: (identify, typeable, description) ->
         return @$argument if arguments.length is 0
-        noIdentify = "The identify is not a string"
-        noTypeable = "The typeable is not a string"
-        noDescription = "The description is not a string"
+        noIdentify = "the identify is not a string"
+        noTypeable = "the typeable is not a string"
+        noDescription = "the description is not a string"
         assert _.isString(description), noDescription
         assert _.isString(identify), noIdentify
         assert _.isString(typeable), noTypeable
@@ -110,7 +110,7 @@ module.exports.Document = class Document extends Archetype
     # Each failure consists of the expected code and reason for fail
     failure: (code, reasoning) ->
         return @$failure if arguments.length is 0
-        noCode = "The supplied code is not a number"
+        noCode = "the supplied code is not a number"
         noReasoning = "the reasoning is not a string"
         assert _.isString(reasoning), noReasoning
         assert  code and _.isNumber(code), noCode
