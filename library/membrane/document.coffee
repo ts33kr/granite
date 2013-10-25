@@ -42,6 +42,68 @@ util = require "util"
 # This approach gives unique ability to build self documented APIs.
 module.exports.Document = class Document extends Archetype
 
+    # Either get or set the argument information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described arguments.
+    # Argument consists of name, approximate type and description.
+    argument: (identify, typeable, description) ->
+        return @$argument if arguments.length is 0
+        noIdentify = "the identify param is not a string"
+        noTypeable = "the typeable param is not a string"
+        noDescription = "the description is not a string"
+        assert _.isString(description), noDescription
+        assert _.isString(identify), noIdentify
+        assert _.isString(typeable), noTypeable
+        @emit.call this, "argument", arguments...
+        return (@$argument ?= []).push
+            description: description
+            identify: identify
+            typeable: typeable
+
+    # Either get or set the Github information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # Each consists of a username, the repository name and the path.
+    github: (username, repository, path) ->
+        return @$github if arguments.length is 0
+        noUsername = "the username must be a string"
+        noRepository = "the repository must be a string"
+        noPath = "the path name must be a valid string"
+        assert _.isString(username), noUsername
+        assert _.isString(repository), noRepository
+        assert path and _.isString(path), noPath
+        @emit.call this, "github", arguments...
+        return (@$github ?= []).push
+            repository: repository
+            username: username
+            path: path
+
+    # Either get or set the failure information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # Each failure consists of the expected code and reason for fail
+    failure: (code, reasoning) ->
+        return @$failure if arguments.length is 0
+        noCode = "the supplied code is not a number"
+        noReasoning = "the reasoning is not a string"
+        assert _.isString(reasoning), noReasoning
+        assert  code and _.isNumber(code), noCode
+        @emit.call this, "failure", arguments...
+        return (@$failure ?= []).push
+            reasoning: reasoning
+            code: code
+
+    # Either get or set the version information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # The version should be a string with an arbitrary contents.
+    version: (version) ->
+        return @$version if arguments.length is 0
+        noVersion = "version should be a string"
+        assert _.isString(version), noVersion
+        @emit.call this, "version", arguments...
+        return @$version = vesrion.toString()
+
     # Either get or set the remark to the method that is being
     # described by this document. If you do not supply example
     # this method will return you one, assuming it was set before.
@@ -73,7 +135,7 @@ module.exports.Document = class Document extends Archetype
         noOutputs = "the outputs is not a string"
         assert _.isString(outputs), noOutputs
         @emit.call this, "outputs", arguments...
-        @$outputs = outputs.toString()
+        return @$outputs = outputs.toString()
 
     # Either get or set the description of the method that is being
     # described by this document. If you do not supply description
@@ -85,57 +147,6 @@ module.exports.Document = class Document extends Archetype
         assert _.isString(synopsis), noSynopsis
         @emit.call this, "synopsis", arguments...
         return @$synopsis = synopsis.toString()
-
-    # Either get or set the argument information of the method that
-    # is being described by this document. If you do no supply any
-    # arguments this method will return already described arguments.
-    # Argument consists of name, approximate type and description.
-    argument: (identify, typeable, description) ->
-        return @$argument if arguments.length is 0
-        noIdentify = "the identify is not a string"
-        noTypeable = "the typeable is not a string"
-        noDescription = "the description is not a string"
-        assert _.isString(description), noDescription
-        assert _.isString(identify), noIdentify
-        assert _.isString(typeable), noTypeable
-        @emit.call this, "argument", arguments...
-        return (@$argument ?= []).push
-            description: description
-            identify: identify
-            typeable: typeable
-
-    # Either get or set the failure information of the method that
-    # is being described by this document. If you do no supply any
-    # arguments this method will return already described failures.
-    # Each failure consists of the expected code and reason for fail
-    failure: (code, reasoning) ->
-        return @$failure if arguments.length is 0
-        noCode = "the supplied code is not a number"
-        noReasoning = "the reasoning is not a string"
-        assert _.isString(reasoning), noReasoning
-        assert  code and _.isNumber(code), noCode
-        @emit.call this, "failure", arguments...
-        return (@$failure ?= []).push
-            reasoning: reasoning
-            code: code
-
-    # Either get or set the Github information of the method that
-    # is being described by this document. If you do no supply any
-    # arguments this method will return already described failures.
-    # Each consists of a username, the repository name and the path.
-    github: (username, repository, path) ->
-        return @$github if arguments.length is 0
-        noUsername = "the username must be a string"
-        noRepository = "the repository must be a string"
-        noPath = "the path name must be a valid string"
-        assert _.isString(username), noUsername
-        assert _.isString(repository), noRepository
-        assert path and _.isString(path), noPath
-        @emit.call this, "github", arguments...
-        return (@$github ?= []).push
-            repository: repository
-            username: username
-            path: path
 
     # Either get or set the relevant information of the method that
     # is being described by this document. If you do no supply any
@@ -158,6 +169,7 @@ module.exports.Document = class Document extends Archetype
         assert _.all(produces, _.isString), notString
         @$produces = (@$produces or []).concat produces
         @emit.call @, "produces", @$produces, arguments
+        assert _.isArray @$produces; return @$produces
 
     # Either get or set the consumes information of the method that
     # is being described by this document. If you do no supply any
@@ -169,6 +181,7 @@ module.exports.Document = class Document extends Archetype
         assert _.all(consumes, _.isString), notString
         @$consumes = (@$consumes or []).concat consumes
         @emit.call @, "consumes", @$consumes, arguments
+        assert _.isArray @$consumes; return @$consumes
 
     # Either get or set the markings information of the method that
     # is being described by this document. If you do no supply any
@@ -179,7 +192,8 @@ module.exports.Document = class Document extends Archetype
         noMarkings = "the markings should be a object"
         assert _.isObject(markings), noMarkings
         _.extend (@$markings ?= {}), markings
-        @emit "markings", arguments...
+        @emit.call @, "markings", arguments...
+        assert @$markings; return @$markings
 
     # Either get or set the schemas information of the method that
     # is being described by this document. If you do no supply any
@@ -191,14 +205,4 @@ module.exports.Document = class Document extends Archetype
         assert _.isObject(schemas), noSchemas
         assert _.extend (@$schemas ?= {}), schemas
         @emit.call this, "schemas", arguments...
-
-    # Either get or set the version information of the method that
-    # is being described by this document. If you do no supply any
-    # arguments this method will return already described failures.
-    # The version should be a string with an arbitrary contents.
-    version: (version) ->
-        return @$version if arguments.length is 0
-        noVersion = "the version should be a string"
-        assert _.isString(version), noVersion
-        @emit.call this, "version", arguments...
-        return @$version = version
+        assert @$schemas; return @$schemas
