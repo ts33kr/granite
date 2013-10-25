@@ -53,11 +53,13 @@ module.exports.Broker = class Broker extends Archetype
     # and response pair. If specific negotiator cannot handle the
     # pair, it should return anything other than a function object.
     @associate: (negotiator) ->
-        assert registry = @registry or []
         isValid = try _.isFunction negotiator
-        invalid = "checker is not valid method"
+        assert registry = @registry or Array()
+        invalid = "negotiator is not a function"
         throw new Error invalid unless isValid
         @registry = registry.concat negotiator
+        assert negotiator in (@registry or [])
+        assert negotiator.apply?; negotiator
 
     # Content negotiate the request/response pair to use the correct
     # protocol. The protocol is implemented by the content negotiator
