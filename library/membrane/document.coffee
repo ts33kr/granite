@@ -93,6 +93,65 @@ module.exports.Document = class Document extends Archetype
             reasoning: reasoning
             code: code
 
+    # Either get or set the relevant information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # The relevant should be a string that contains a valid URL.
+    relevant: (relevant) ->
+        return @$relevant if arguments.length is 0
+        noRelevant = "the relevant should be a string"
+        assert _.isString(relevant), noRelevant
+        @emit.call this, "relevant", arguments...
+        return (@$relevant ?= []).push relevant
+
+    # Either get or set the produces information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # The mimes should be args that contains a valid MIME types.
+    produces: (produces...) ->
+        return @$produces if arguments.length is 0
+        notString = "elements must be MIME type strings"
+        assert _.all(produces, _.isString), notString
+        @$produces = (@$produces or []).concat produces
+        @emit.call @, "produces", @$produces, arguments
+        assert _.isArray @$produces; return @$produces
+
+    # Either get or set the consumes information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # The mimes should be args that contains a valid MIME types.
+    consumes: (consumes...) ->
+        return @$consumes if arguments.length is 0
+        notString = "elements must be MIME type strings"
+        assert _.all(consumes, _.isString), notString
+        @$consumes = (@$consumes or []).concat consumes
+        @emit.call @, "consumes", @$consumes, arguments
+        assert _.isArray @$consumes; return @$consumes
+
+    # Either get or set the markings information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # The markings should be an object of `marking: level` values.
+    markings: (markings) ->
+        return @$markings if arguments.length is 0
+        noMarkings = "the markings should be a object"
+        assert _.isObject(markings), noMarkings
+        assert _.extend (@$markings ?= {}), markings
+        @emit.call @, "markings", arguments...
+        assert @$markings; return @$markings
+
+    # Either get or set the schemas information of the method that
+    # is being described by this document. If you do no supply any
+    # arguments this method will return already described failures.
+    # The schemas should be an object of `slot: schema` values.
+    schemas: (schemas) ->
+        return @$schemas if arguments.length is 0
+        noSchemas = "the schemas should be a object"
+        assert _.isObject(schemas), noSchemas
+        assert _.extend (@$schemas ?= {}), schemas
+        @emit.call this, "schemas", arguments...
+        assert @$schemas; return @$schemas
+
     # Either get or set the version information of the method that
     # is being described by this document. If you do no supply any
     # arguments this method will return already described failures.
@@ -147,62 +206,3 @@ module.exports.Document = class Document extends Archetype
         assert _.isString(synopsis), noSynopsis
         @emit.call this, "synopsis", arguments...
         return @$synopsis = synopsis.toString()
-
-    # Either get or set the relevant information of the method that
-    # is being described by this document. If you do no supply any
-    # arguments this method will return already described failures.
-    # The relevant should be a string that contains a valid URL.
-    relevant: (relevant) ->
-        return @$relevant if arguments.length is 0
-        noRelevant = "the relevant should be a string"
-        assert _.isString(relevant), noRelevant
-        @emit.call this, "relevant", arguments...
-        return (@$relevant ?= []).push relevant
-
-    # Either get or set the produces information of the method that
-    # is being described by this document. If you do no supply any
-    # arguments this method will return already described failures.
-    # The mimes should be args that contains a valid MIME types.
-    produces: (produces...) ->
-        return @$produces if arguments.length is 0
-        notString = "elements must be MIME type strings"
-        assert _.all(produces, _.isString), notString
-        @$produces = (@$produces or []).concat produces
-        @emit.call @, "produces", @$produces, arguments
-        assert _.isArray @$produces; return @$produces
-
-    # Either get or set the consumes information of the method that
-    # is being described by this document. If you do no supply any
-    # arguments this method will return already described failures.
-    # The mimes should be args that contains a valid MIME types.
-    consumes: (consumes...) ->
-        return @$consumes if arguments.length is 0
-        notString = "elements must be MIME type strings"
-        assert _.all(consumes, _.isString), notString
-        @$consumes = (@$consumes or []).concat consumes
-        @emit.call @, "consumes", @$consumes, arguments
-        assert _.isArray @$consumes; return @$consumes
-
-    # Either get or set the markings information of the method that
-    # is being described by this document. If you do no supply any
-    # arguments this method will return already described failures.
-    # The markings should be an object of `marking: level` values.
-    markings: (markings) ->
-        return @$markings if arguments.length is 0
-        noMarkings = "the markings should be a object"
-        assert _.isObject(markings), noMarkings
-        _.extend (@$markings ?= {}), markings
-        @emit.call @, "markings", arguments...
-        assert @$markings; return @$markings
-
-    # Either get or set the schemas information of the method that
-    # is being described by this document. If you do no supply any
-    # arguments this method will return already described failures.
-    # The schemas should be an object of `slot: schema` values.
-    schemas: (schemas) ->
-        return @$schemas if arguments.length is 0
-        noSchemas = "the schemas should be a object"
-        assert _.isObject(schemas), noSchemas
-        assert _.extend (@$schemas ?= {}), schemas
-        @emit.call this, "schemas", arguments...
-        assert @$schemas; return @$schemas
