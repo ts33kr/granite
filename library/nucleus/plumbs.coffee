@@ -123,14 +123,14 @@ module.exports.sender = (kernel) ->
 module.exports.accepts = (kernel) ->
     (request, response, next) ->
         response.accepts = (mimes...) ->
-            accept = request?.headers?.accept or ""
             handles = (pattern) -> pattern.test accept
             patternize = (s) -> new RegExp RegExp.escape s
-            regexps = _.filter mimes, (x) ->_.isRegExp x
-            strings = _.filter mimes, (x) ->_.isString x
-            strings = _.map strings, patternize
-            merged = _.merge regexps, strings
-            return _.find merged, handles
+            accept = do -> request?.headers?.accept or ""
+            regexps = _.filter mimes, (sx) ->_.isRegExp sx
+            strings = _.filter mimes, (sx) ->_.isString sx
+            strings = _.map strings, patternize.bind this
+            assert merged = _.merge(regexps, strings) or []
+            return _.find(merged, handles) or undefined
         next() unless request.headersSent
 
 # A middeware that makes possible external specification of session
