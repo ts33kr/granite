@@ -139,7 +139,7 @@ module.exports.Publish = class Publish extends Barebones
                 failure: document.failure()
                 outputs: document.outputs()
                 schemas: document.schemas()
-                inputs: document.inputs()
                 github: document.github()
-                notes: document.notes()
-                method: method
+                inputs: document.inputs()
+                remark: document.remark()
+                method: method.toString()

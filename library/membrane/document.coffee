@@ -42,16 +42,16 @@ util = require "util"
 # This approach gives unique ability to build self documented APIs.
 module.exports.Document = class Document extends Archetype
 
-    # Either get or set the example of the method that is being
+    # Either get or set the remark to the method that is being
     # described by this document. If you do not supply example
     # this method will return you one, assuming it was set before.
     # Notes are warning/beware messages about the implementation.
-    notes: (notes) ->
-        return @$notes if arguments.length is 0
-        noNotes = "The notes is not a string"
-        assert _.isString(notes), noNotes
-        @emit.call this, "notes", arguments...
-        return @$notes = notes.toString()
+    remark: (remark) ->
+        return @$remark if arguments.length is 0
+        noRemark = "The remark is not a string"
+        assert _.isString(remark), noRemark
+        @emit.call this, "remark", arguments...
+        return @$remark = remark.toString()
 
     # Either get or set the inputs of the method that is being
     # described by this document. If you do not supply inputs
@@ -60,7 +60,7 @@ module.exports.Document = class Document extends Archetype
     inputs: (inputs) ->
         return @$inputs if arguments.length is 0
         noInputs = "The inputs is not a string"
-        assert _.isString inputs, noInputs
+        assert _.isString(inputs), noInputs
         @emit.call this, "inputs", arguments...
         return @$inputs = inputs.toString()
 
