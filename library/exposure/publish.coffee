@@ -121,10 +121,10 @@ module.exports.Publish = class Publish extends Barebones
     GET: (request, response, resource, domain, session) ->
         @push response, _.map request.records, (record) ->
             constructor = record.service.constructor
-            healthcare: record.healthcare or Object()
-            qualified: "#{record.service.qualified()}"
             location: "#{record.service.location()}"
+            qualified: "#{record.service.qualified()}"
             identify: constructor.identify().toString()
+            healthcare: record.healthcare or new Object
             patterns: _.map constructor.resources, "source"
             methods: _.map record.methods, (document, method) ->
                 relevant: document.relevant()
