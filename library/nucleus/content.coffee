@@ -66,12 +66,15 @@ module.exports.Broker = class Broker extends Archetype
     # that might or might not have been previously add to the broker.
     # The negotiator returns a function if it can handle the pair.
     negotiate: (request, response, content) ->
-        registry = @constructor.registry ?= []
+        registry = @constructor.registry or []
+        anInternal = "no negotiatator registry"
+        assert _.isArray(registry), anInternal
+        e = (flush) -> flush.apply @, arguments
         for own index, negotiator of registry
             bounded = negotiator.bind this
-            flusher = bounded arguments...
+            flusher = try bounded arguments...
             handles = _.isFunction flusher
-            return flusher arguments... if handles
+            return e(flusher) if handles
         @output response, content.toString()
 
     # Output the encoded content to the response write stream. This is
@@ -85,7 +88,7 @@ module.exports.Broker = class Broker extends Archetype
         throw new Error invalid unless valid
         args = ["Content-Length", encoded.length]
         response.setHeader args... unless sent
-        return response.write encoded
+        return response.write "#{encoded}"
 
 # This class is a content negotiation broker. It is instantiated by
 # the kernel and then can be used either directly or via middleware
@@ -93,21 +96,28 @@ module.exports.Broker = class Broker extends Archetype
 # using the correct protocol, meaning correct `Content-Type`, etc.
 module.exports.JsonBroker = class JsonBroker extends Broker
 
+    # The actual flusher that serializes the JSON root object and
+    # fluses it down to the request. This is executed if negotiator
+    # successfully checks out all the criteria to invoke flusher on
+    # the supplied data. It should be either an array or an object.
+    @jsonFlusher: (request, response, content) =>
+        type = "Content-Type".toLowerCase()
+        json = "application/json".toLowerCase()
+        sent = response.headersSent or false
+        assert dump = JSON.stringify.bind JSON
+        doesHtml = try response.accepts /html/
+        spaces = if doesHtml then 4 else null
+        response.setHeader type, json unless sent
+        jsoned = (x) -> dump x, undefined, spaces
+        return @output response, jsoned content
+
     # Associate the JSON negotiator with the broker. This method
     # checks if the content is either `Object` or `Array`, and if
     # it is then it sets the appropriate `Content-Type` header and
     # writes out the properly encoded JSON response to the client.
     @associate (request, response, content) ->
-        isArray = _.isArray(content) or false
-        isObject = _.isObject(content) or false
-        return null unless isArray or isObject
-        return (request, response, content) =>
-            type = "Content-Type".toLowerCase()
-            json = "application/json".toLowerCase()
-            sent = response.headersSent or false
-            assert dump = JSON.stringify.bind JSON
-            doesHtml = try response.accepts /html/
-            spaces = if doesHtml then 4 else null
-            response.setHeader type, json unless sent
-            jsoned = (x) -> dump x, undefined, spaces
-            return @output response, jsoned content
+        return unless content? and c = content
+        return unless isArray(c) or isObject(c)
+        return unless (try JSON.stringify content)
+        assert bound = this.jsonFlusher.bind this
+        assert _.isFunction bound; return bound
