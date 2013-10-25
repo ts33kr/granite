@@ -153,6 +153,17 @@ module.exports.Document = class Document extends Archetype
         @emit.call this, "schemas", arguments...
         assert @$schemas; return @$schemas
 
+    # Either get or set the description of the method that is being
+    # described by this document. If you do not supply description
+    # this method will return you one, assuming it was set before.
+    # Synopsis is a brief story of what this service method does.
+    synopsis: (synopsis) ->
+        return @$synopsis if arguments.length is 0
+        noSynopsis = "the synopsis is not a string"
+        assert _.isString(synopsis), noSynopsis
+        @emit.call this, "synopsis", arguments...
+        return @$synopsis = synopsis.toString()
+
     # Either get or set the version information of the method that
     # is being described by this document. If you do no supply any
     # arguments this method will return already described failures.
@@ -163,28 +174,6 @@ module.exports.Document = class Document extends Archetype
         assert _.isString(version), noVersion
         @emit.call this, "version", arguments...
         return @$version = vesrion.toString()
-
-    # Either get or set the remark to the method that is being
-    # described by this document. If you do not supply example
-    # this method will return you one, assuming it was set before.
-    # Notes are warning/beware messages about the implementation.
-    remark: (remark) ->
-        return @$remark if arguments.length is 0
-        noRemark = "the remark is not a string"
-        assert _.isString(remark), noRemark
-        @emit.call this, "remark", arguments...
-        return @$remark = remark.toString()
-
-    # Either get or set the inputs of the method that is being
-    # described by this document. If you do not supply inputs
-    # this method will return you one, assuming it was set before.
-    # Inputs is a description of the body that method expects.
-    inputs: (inputs) ->
-        return @$inputs if arguments.length is 0
-        noInputs = "the inputs is not a string"
-        assert _.isString(inputs), noInputs
-        @emit.call this, "inputs", arguments...
-        return @$inputs = inputs.toString()
 
     # Either get or set the outputs of the method that is being
     # described by this document. If you do not supply outputs
@@ -197,13 +186,24 @@ module.exports.Document = class Document extends Archetype
         @emit.call this, "outputs", arguments...
         return @$outputs = outputs.toString()
 
-    # Either get or set the description of the method that is being
-    # described by this document. If you do not supply description
+    # Either get or set the inputs of the method that is being
+    # described by this document. If you do not supply inputs
     # this method will return you one, assuming it was set before.
-    # Synopsis is a brief story of what this service method does.
-    synopsis: (synopsis) ->
-        return @$synopsis if arguments.length is 0
-        noSynopsis = "the synopsis is not a string"
-        assert _.isString(synopsis), noSynopsis
-        @emit.call this, "synopsis", arguments...
-        return @$synopsis = synopsis.toString()
+    # Inputs is a description of the body that method expects.
+    inputs: (inputs) ->
+        return @$inputs if arguments.length is 0
+        noInputs = "the inputs is not a string"
+        assert _.isString(inputs), noInputs
+        @emit.call this, "inputs", arguments...
+        return @$inputs = inputs.toString()
+
+    # Either get or set the remark to the method that is being
+    # described by this document. If you do not supply example
+    # this method will return you one, assuming it was set before.
+    # Notes are warning/beware messages about the implementation.
+    remark: (remark) ->
+        return @$remark if arguments.length is 0
+        noRemark = "the remark is not a string"
+        assert _.isString(remark), noRemark
+        @emit.call this, "remark", arguments...
+        return @$remark = remark.toString()
