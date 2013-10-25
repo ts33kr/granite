@@ -111,7 +111,7 @@ module.exports.Publish = class Publish extends Barebones
             record.service.healthcare (error, measures) ->
                 assert.ifError error, internalError
                 assert record.healthcare = measures
-                return callback undefined
+                return callback.call @, undefined
         return async.parallel getters, next
 
     # Get the contents of the resources at the established path. It
