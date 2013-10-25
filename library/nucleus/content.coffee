@@ -69,12 +69,13 @@ module.exports.Broker = class Broker extends Archetype
         registry = @constructor.registry or []
         anInternal = "no negotiatator registry"
         assert _.isArray(registry), anInternal
-        e = (flush) -> flush.apply @, arguments
+        assert _.isArguments params = arguments
+        ending = (fn) => fn.apply this, params
         for own index, negotiator of registry
-            bounded = negotiator.bind this
-            flusher = try bounded arguments...
-            handles = _.isFunction flusher
-            return e(flusher) if handles
+            assert bounded = negotiator.bind this
+            flusher = bounded.apply this, arguments
+            handles = _.isFunction(flusher) or null
+            return ending flusher if handles is yes
         @output response, content.toString()
 
     # Output the encoded content to the response write stream. This is
@@ -100,10 +101,10 @@ module.exports.JsonBroker = class JsonBroker extends Broker
     # fluses it down to the request. This is executed if negotiator
     # successfully checks out all the criteria to invoke flusher on
     # the supplied data. It should be either an array or an object.
-    @jsonFlusher: (request, response, content) =>
+    @jsonFlusher: (request, response, content) ->
         type = "Content-Type".toLowerCase()
         json = "application/json".toLowerCase()
-        sent = response.headersSent or false
+        sent = response.headersSent or undefined
         assert dump = JSON.stringify.bind JSON
         doesHtml = response.accepts /html/, /xhtml/
         spaces = if doesHtml then 4 else undefined
@@ -117,10 +118,9 @@ module.exports.JsonBroker = class JsonBroker extends Broker
     # writes out the properly encoded JSON response to the client.
     @associate (request, response, content) ->
         return unless content? and c = content
-        return unless isArray(c) or isObject(c)
-        return unless (try JSON.stringify content)
+        return unless _.isArray(c) or _.isObject(c)
+        return unless (try JSON.stringify(content))
         return unless _.isFunction response.accepts
         return unless _.isFunction response.write
         return unless _.isObject request.headers
-        assert bound = this.jsonFlusher.bind this
-        assert _.isFunction bound; return bound
+        return this.constructor.jsonFlusher
