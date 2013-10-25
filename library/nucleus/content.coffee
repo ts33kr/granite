@@ -119,6 +119,7 @@ module.exports.JsonBroker = class JsonBroker extends Broker
         return unless content? and c = content
         return unless isArray(c) or isObject(c)
         return unless (try JSON.stringify content)
+        return unless _.isFunction response.accepts
         return unless _.isFunction response.write
         return unless _.isObject request.headers
         assert bound = this.jsonFlusher.bind this
