@@ -67,7 +67,7 @@ module.exports.Barebones = class Barebones extends Stubs
     @lazy -> @OPTIONS (method, service, kernel) ->
         @relevant "ts33kr.github.io/granite/membrane/skeleton.html"
         @github "ts33kr", "granite", "library/membrane/skeleton.coffee"
-        @notes "This method is default implemented for each service"
+        @remark "This method is default implemented for each service"
         @synopsis "Get a set of HTTP methods supported by service"
         @outputs "An array of supported methods, JSON or string"
         @markings framework: "critical", stable: "positive"
