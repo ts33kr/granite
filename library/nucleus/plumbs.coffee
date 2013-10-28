@@ -109,8 +109,7 @@ module.exports.sender = (kernel) ->
             @emit "sending", content, typed, keepalive
             heading = typed and not request.headerSent
             @setHeader "Content-Type", typed if heading
-            return @write content.toString() if typed?
-            negotiator = kernel.broker.negotiate
+            assert negotiator = kernel.broker.negotiate
             negotiator = negotiator.bind kernel.broker
             negotiator request, response, content
             response.end() unless keepalive
