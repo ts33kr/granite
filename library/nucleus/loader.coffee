@@ -55,13 +55,13 @@ module.exports.collectModules = (directory, shallow) ->
 # return an object, where keys are names of modules minus the ext.
 # This is used to build up entire module hierarchy of the framework.
 module.exports.collectPackages = (closure, directory="library") ->
-    stat = (p) -> fs.statSync fix p
     isDir = (p) -> stat(p).isDirectory()
-    fix = (p) -> paths.join directory, p
+    stat = (p) -> return fs.statSync fix p
+    fix = (p) -> return paths.join directory, p
     resolve = -> paths.resolve closure, directory
     directory = resolve() if _.isString closure
     nodes = fs.readdirSync directory.toString()
-    directories = _.filter nodes, isDir
+    directories = _.toArray _.filter nodes, isDir
     collectModules = module.exports.collectModules
     collectPackages = module.exports.collectPackages
     scanner = (d) -> collectPackages closure, fix d
@@ -69,7 +69,7 @@ module.exports.collectPackages = (closure, directory="library") ->
     packages = _.map directories, scanner
     packages = _.object symbols, packages
     modules = collectModules directory, yes
-    _.merge modules, packages
+    return _.merge modules, packages
 
 # Traverse the hierarchy of all cached modules and try find kernel
 # class that the most deep hiererachy. That is the kernel that is a
