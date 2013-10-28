@@ -79,6 +79,33 @@ module.exports.Extending = remote -> class Extending extends Object
         matches.push m while m = @exec string
         assert matches; return matches
 
+    # Determine if the object that is bound to this invocation is a
+    # subclass of the supplied archetype class (as argument). Of course
+    # it is assumed that you should be invoking this method only on the
+    # objects that are valid CoffeeSscript classes with necessary attrs.
+    Object.defineProperty Object::, "derives",
+        enumerable: no, value: (archetype, loose) ->
+            notObject = "supplied acrhetype is not object"
+            assert _.isObject(archetype or null), notObject
+            predicate = (x) -> x.similarWith archetype, loose
+            assert _.isObject(@__super__), "this is not class"
+            return yes if predicate(this or undefined) is yes
+            return _.any @hierarchy(), predicate
+
+    # Determine if the object that is bound to this invocation is an
+    # object of the supplied archetype class (as argument). Of course
+    # if is assumed that you should be invoking this only on instances
+    # of some class in order to yield positive results. Please refer
+    # to the `compose` module for more information on how this works.
+    Object.defineProperty Object::, "objectOf",
+        enumerable: no, value: (archetype, loose) ->
+            notObject = "supplied acrhetype is not object"
+            assert _.isObject(archetype or null), notObject
+            predicate = (x) -> x.similarWith archetype, loose
+            assert hierarchy = @constructor?.hierarchy()
+            return yes if predicate(@constructor) is yes
+            return _.any hierarchy or [], predicate
+
     # This extension provides a convenient interface for looking up and
     # setting up the object identifification tag. This tag is usually a
     # class or function name, nick or an arbitraty name set with this
@@ -99,9 +126,9 @@ module.exports.Extending = remote -> class Extending extends Object
     # that the method is abstract and has no implementation attached to.
     Object.defineProperty Object::, "unimplemented",
         enumerable: no, value: (archarguments) ->
-            stack = strace.get arguments.callee
-            caller = _.head stack or undefined
-            identification = caller.getMethodName()
+            assert stack = strace.get arguments.callee
+            caller = _.head(stack or Array()) or undefined
+            assert identification = caller.getMethodName()
             naming = "abstract method #{identification}"
             throw new Error "#{naming} is not implemented"
 
@@ -117,30 +144,3 @@ module.exports.Extending = remote -> class Extending extends Object
             assert _.isBoolean(boolean), wrong
             return @$abstract = this if boolean
             delete @$abstract; @$abstract is @
-
-    # Determine if the object that is bound to this invocation is a
-    # subclass of the supplied archetype class (as argument). Of course
-    # it is assumed that you should be invoking this method only on the
-    # objects that are valid CoffeeSscript classes with necessary attrs.
-    Object.defineProperty Object::, "derives",
-        enumerable: no, value: (archetype, loose) ->
-            notObject = "acrhetype is not object"
-            assert _.isObject(archetype), notObject
-            predicate = (x) -> x.similarWith archetype, loose
-            assert @__super__, "not a class"
-            return yes if predicate this
-            _.any @hierarchy(), predicate
-
-    # Determine if the object that is bound to this invocation is an
-    # object of the supplied archetype class (as argument). Of course
-    # if is assumed that you should be invoking this only on instances
-    # of some class in order to yield positive results. Please refer
-    # to the `compose` module for more information on how this works.
-    Object.defineProperty Object::, "objectOf",
-        enumerable: no, value: (archetype, loose) ->
-            notObject = "acrhetype is not object"
-            assert _.isObject archetype, notObject
-            predicate = (x) -> x.similarWith archetype, loose
-            hierarchy = @constructor?.hierarchy()
-            return yes if predicate @constructor
-            _.any hierarchy or [], predicate
