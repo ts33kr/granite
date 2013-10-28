@@ -73,7 +73,7 @@ module.exports.Composition = remote -> class Composition extends Object
         enumerable: no, value: (method, callback) -> (args...) =>
             applicator = (f) => (a...) => f.apply @, args.concat a
             hierarchy = @constructor.hierarchy()
-            hierarchy.unshift @constructor
+            assert hierarchy.unshift @constructor
             resolve = (c) -> c.prototype?[method]
             threads = _.map hierarchy, resolve
             methods = _.filter threads, _.isFunction
