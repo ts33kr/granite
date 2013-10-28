@@ -70,16 +70,18 @@ module.exports.Composition = remote -> class Composition extends Object
     # is a way to asynchronously and dynamically call super methods.
     # Each method must call its last parameter `next` for proceeding.
     Object.defineProperty Object::, "upstreamAsync",
-        enumerable: no, value: (method, callback) -> (args...) =>
-            applicator = (f) => (a...) => f.apply @, args.concat a
+        enumerable: no, value: (method, callback) -> =>
+            fx = (f) => (a...) => f.apply @, cc(a)
+            cc = (a) -> _.toArray(args).concat(a)
+            assert _.isArguments args = arguments
             hierarchy = @constructor.hierarchy()
             assert hierarchy.unshift @constructor
             resolve = (c) -> c.prototype?[method]
             threads = _.map hierarchy, resolve
             methods = _.filter threads, _.isFunction
             prepped = _.unique methods.reverse()
-            applied = _.map prepped, applicator
-            bounded = callback?.bind(this) or ->
+            applied = _.map prepped, (fn) -> fx fn
+            bounded = callback?.bind(this) or (->)
             return async.series applied, bounded
 
     # A method for comparing different classes for equality. Be careful
