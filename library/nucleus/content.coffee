@@ -39,7 +39,8 @@ util = require "util"
 # This class is a content negotiation broker. It is instantiated by
 # the kernel and then can be used either directly or via middleware
 # to negotiate the procedure of responding to a client with the data
-# using the correct protocol, meaning correct `Content-Type`, etc.
+# using the correct protocol, meaning correct `Content-Type` header.
+# This also tries to correctly set the `Content-Length` header too.
 module.exports.Broker = class Broker extends Archetype
 
     # Every broker has to have a public constructor that accepts
@@ -92,10 +93,11 @@ module.exports.Broker = class Broker extends Archetype
         response.setHeader args... unless sent
         return response.write "#{encoded}"
 
-# This class is a content negotiation broker. It is instantiated by
-# the kernel and then can be used either directly or via middleware
-# to negotiate the procedure of responding to a client with the data
-# using the correct protocol, meaning correct `Content-Type`, etc.
+# This class is a derived content negotiation broker that provides
+# the support for sending native data as JSON encoded blob. This does
+# support `Object` and `Array` as the root containers. If any other
+# root data type is attempted - that is an error. The broker and the
+# `sender` middleware are designed to work mostly with data objects.
 module.exports.JsonBroker = class JsonBroker extends Broker
 
     # The actual flusher that serializes the JSON root object and
