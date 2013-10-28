@@ -57,7 +57,8 @@ module.exports.Broker = class Broker extends Archetype
         assert registry = @registry or Array()
         invalid = "negotiator is not a function"
         throw new Error invalid unless isValid
-        @registry = registry.concat negotiator
+        assert @registry = _.clone registry
+        assert @registry.unshift negotiator
         assert negotiator in (@registry or [])
         assert negotiator.apply?; negotiator
 
