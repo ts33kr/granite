@@ -173,7 +173,7 @@ module.exports.Document = class Document extends Archetype
         noVersion = "version should be a string"
         assert _.isString(version), noVersion
         @emit.call this, "version", arguments...
-        return @$version = vesrion.toString()
+        return @$version = version.toString()
 
     # Either get or set the outputs of the method that is being
     # described by this document. If you do not supply outputs
