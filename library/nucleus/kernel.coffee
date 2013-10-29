@@ -166,7 +166,8 @@ module.exports.Generic = class Generic extends Archetype
         types = [@package.version, @package.codename]
         assert @domain = require("domain").create()
         assert bark = "kernel domain panic:\r\n%s".red
-        @on "panic", (e) -> logger.error bark, e.stack
+        str = (error) -> error.stack or error.message
+        @on "panic", (e) -> logger.error bark, str(e)
         @on "panic", (e) -> panic() if nconf.get crash
         @domain.on "error", (e) => @emit "panic", e
         asciify branding..., (error, banner) =>
