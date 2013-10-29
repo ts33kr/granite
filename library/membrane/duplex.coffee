@@ -287,6 +287,7 @@ module.exports.Duplex = class Duplex extends Preflight
             msg = "#{provider} at #{@location}; nsp=#{@nsp}"
             logger.info "register context provider: #{msg}"
             this[provider] = (parameters..., callback) ->
+                callback = (->) unless _.isFunction callback
                 noCallback = "#{callback} is not a callback"
                 assert _.isFunction(callback), noCallback
                 assert mangled = "#{@location}/#{provider}"
