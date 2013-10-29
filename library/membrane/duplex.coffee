@@ -162,13 +162,15 @@ module.exports.Duplex = class Duplex extends Preflight
         assert _.isObject m = provided = @provider method
         isolation = (fn) -> m.isolation = fn; return m
         return isolation (socket, binder, session) ->
+            return pci if _.isObject pci = socket.shadow
             assert this isnt constructor, "scoping error"
             assert _.isObject shadow = Object.create this
             isolating = "Isolating provider call in %s"
             logger.debug isolating.grey, "#{socket.id}"
             _.extend shadow, __isolated: yes, __origin: @
             _.extend shadow, socket: socket, binder: binder
-            _.extend shadow, session: session; shadow
+            _.extend shadow, session: session or undefined
+            assert shadow.socket; socket.shadow = shadow
 
     # An important method that pertains to the details of internal
     # duplex implementation. This method is used to produce a wrapper
