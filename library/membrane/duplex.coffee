@@ -200,10 +200,10 @@ module.exports.Duplex = class Duplex extends Preflight
     # `upstreamAsync` mechanism to invoke the `connected` method at all
     # peers of the inheritance hierarchy. Refer to the method for info.
     trampoline: @provider (context, callback) ->
-        identify = @constructor.identify?()
-        isocket = "Notified from socket %s"
+        isocket = "Executed the trampoline on %s"
         message = "Inbound duplex connection at %s"
         request = "Acknowledged from request at %s"
+        assert identify = try @constructor.identify()
         logger.debug message.magenta, identify.underline
         logger.debug request.magenta, context.url.underline
         logger.debug isocket.magenta, callback.socket.id
