@@ -100,21 +100,24 @@ module.exports.Scope = class Scope extends Archetype
     # registry exists for easing looking up the scope by its tag.
     # You may provide a number of aliaes for this scope instance.
     pushToRegistry: (override, aliases...) ->
-        assert registry = @constructor.REGISTRY ?= {}
+        registry = @constructor.REGISTRY ?= new Object()
+        assert _.isObject(registry), "got no scope registry"
         existent = (tag) -> tag of registry and not override
         valids = _.filter aliases, (a) -> not existent(a)
-        registry[@tag] = this unless existent @tag
-        registry[alias] = this for alias in valids
+        assert not existent(@tag), "current scope exists"
+        do -> registry[alias] = this for alias in valids
+        assert _.isObject registry[@tag] = this; this
 
     # Lookup the possibly existent scope with one of the following
     # alises as a tag. If no matching candidates exist, the method
     # will fail with en error, since this is considered a critical
     # error. You should always use this method instead of manual.
     @lookupOrFail: (aliases...) ->
-        assert _.isObject registry = @REGISTRY ?= Object()
         assert not _.isEmpty joined = aliases.join ", "
+        lookingUp = "Looking up any of these scopes: %s"
+        assert _.isObject registry = @REGISTRY ?= Object()
         notFound = "Could not found any of #{joined} scopes"
-        logger.info "Looking up any of this scopes: %s".grey, joined
+        logger.info lookingUp.grey, joined.toString().bold
         found = (v for own k, v of registry when k in aliases)
         throw new Error notFound unless found.length > 0
         assert.ok _.isObject scope = _.head(found); scope
