@@ -86,11 +86,13 @@ module.exports.Scope = class Scope extends Archetype
     # The constructor of the scope should only associate the data.
     # The scope startup logic should be implemented in the method.
     constructor: (@tag, synopsis) ->
-        assert _.isString(@tag), "invalid tag"
+        assert _.isString(@tag), "got invalid tag"
         @synopsis = synopsis if _.isString synopsis
+        noInitializer = "no scope initializer supplied"
         @directory = @constructor.DIRECTORY or __dirname
         initializer = _.find arguments, _.isFunction
-        initializer?.call this, @tag, synopsis
+        assert _.isFunction initializer, noInitializer
+        initializer?.apply this, [@tag, synopsis]
         @pushToRegistry yes, @tag.toUpperCase()
 
     # Push the current scope instance into the global registry
