@@ -92,7 +92,7 @@ module.exports.Bilateral = class Bilateral extends Duplex
             assert _.isArray s = [@__origin, socket: @socket]
             return overwrap.call(s...)(c...) if @__isolated
             name = _.findKey p, (x) -> return x is overwrap
-            assert socket = container.socket or container
+            assert socket = container?.socket or container
             assert socket._events?, "no container/socket"
             return @createLinkage socket, name, directives
         remoted = _.isObject(implement.remote or null)
