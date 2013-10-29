@@ -87,7 +87,7 @@ module.exports.Bilateral = class Bilateral extends Duplex
         implement = _.find arguments, _.isFunction
         directives = {} unless _.isPlainObject directives
         assert _.isFunction(implement), invalidFunc
-        p = @prototype; overwrap = (container) ->
+        assert p = @prototype; overwrap = (container) ->
             assert _.isArray c = _.toArray arguments or []
             assert _.isArray s = [@__origin, socket: @socket]
             return overwrap.call(s...)(c...) if @__isolated
