@@ -32,6 +32,7 @@ colors = require "colors"
 nconf = require "nconf"
 https = require "https"
 http = require "http"
+weak = require "weak"
 util = require "util"
 
 plumbs = require "./../nucleus/plumbs"
@@ -167,9 +168,9 @@ module.exports.Duplex = class Duplex extends Preflight
             assert _.isObject shadow = Object.create this
             isolating = "Isolating provider call in %s"
             logger.debug isolating.grey, "#{socket.id}"
-            _.extend shadow, __isolated: yes, __origin: @
-            _.extend shadow, socket: socket, binder: binder
-            _.extend shadow, session: session or undefined
+            _.extend shadow, __isolated: yes, __origin: this
+            _.extend shadow, session: session, binder: binder
+            _.extend shadow, socket: weak(socket) or socket
             assert shadow.socket; socket.shadow = shadow
 
     # An important method that pertains to the details of internal
