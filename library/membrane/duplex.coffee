@@ -141,14 +141,15 @@ module.exports.Duplex = class Duplex extends Preflight
     # as the normal function, nothing disrupts that. When function is
     # marked as a provider, it will be exposed via Socket.IO channel
     # that this compound sets up: a half duplex web sockets channel.
-    @provider: (method) ->
-        noMethod = "a #{method} is not a function"
-        invalidArgs = "has to have at least 1 arg"
+    @provider: (parameters, method) ->
+        supplied = _.isPlainObject parameters
+        malformed = "got an invalid provider"
         assert bound = this.covering.bind this
+        method = _.find arguments, _.isFunction
+        assert _.isFunction(method), malformed
         applicator = _.partial bound, method
-        assert _.isFunction(method), noMethod
-        assert method.length >= 1, invalidArgs
-        method.provider = Object.create {}
+        parameters = undefined unless supplied
+        method.provider = parameters or {}
         method.isolation = -> return this
         method.providing = applicator
         method.origin = this; method
@@ -158,9 +159,9 @@ module.exports.Duplex = class Duplex extends Preflight
     # Upon the provider invocation, this variation creates a shadow
     # object derives from the services, therefore isolating calling
     # scope to this object that has all the socket and session set.
-    @isolated: (method) ->
-        assert _.isObject constructor = this or undefined
-        assert _.isObject m = provided = @provider method
+    @isolated: (parameters, method) ->
+        assert _.isObject constructor = this or 0
+        assert m = @provider.apply this, arguments
         isolation = (fn) -> m.isolation = fn; return m
         return isolation (socket, binder, session) ->
             return pci if _.isObject pci = socket.shadow
