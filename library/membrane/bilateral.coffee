@@ -114,7 +114,7 @@ module.exports.Bilateral = class Bilateral extends Duplex
             mangled += "/#{nsp}" if _.isString nsp = @nsp
             assert value; return @socket.on mangled, =>
                 logger.info uplinking, reference, nsp
-                return value i(arguments)..., (params...) =>
+                value.call this, i(arguments)..., (params...) =>
                     id = @socket.sacks = (@socket.sacks ?= 0) + 1
                     ack = type: "ack", name: mangled, ack: "data"
                     assert _.extend ack, ackId: id, args: o(params)
