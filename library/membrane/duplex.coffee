@@ -148,8 +148,27 @@ module.exports.Duplex = class Duplex extends Preflight
         assert _.isFunction(method), noMethod
         assert method.length >= 1, invalidArgs
         method.provider = Object.create {}
+        method.isolation = -> return this
         method.providing = applicator
         method.origin = this; method
+
+    # This is a modification of the `provider` method that slightly
+    # changes the scoping/bind for the provider body implementation.
+    # Upon the provider invocation, this variation creates a shadow
+    # object derives from the services, therefore isolating calling
+    # scope to this object that has all the socket and session set.
+    @isolated: (method) ->
+        assert _.isObject constructor = this or undefined
+        assert _.isObject m = provided = @provider method
+        isolation = (fn) -> m.isolation = fn; return m
+        return isolation (socket, binder, session) ->
+            assert this isnt constructor, "scoping error"
+            assert _.isObject shadow = Object.create this
+            isolating = "Isolating provider call in %s"
+            logger.debug isolating.grey, "#{socket.id}"
+            _.extend shadow, __isolated: yes, __origin: @
+            _.extend shadow, socket: socket, binder: binder
+            _.extend shadow, session: session; shadow
 
     # An important method that pertains to the details of internal
     # duplex implementation. This method is used to produce a wrapper
@@ -166,8 +185,9 @@ module.exports.Duplex = class Duplex extends Preflight
         assert _.isFunction g = guarded.run.bind guarded
         s = (f) => session.save -> f.apply this, arguments
         assert binder; return (parameters..., callback) ->
-            execute = (a...) => g => method.apply this, i(a)
-            respond = (a...) => g => s => callback.apply this, o(a)
+            pci = method.isolation.call @, socket, binder, session
+            respond = (a...) => g => s => callback.apply pci, o(a)
+            execute = (a...) => g => s => method.apply pci, i(a)
             assert respond.session = socket.session = session
             assert respond.binder = socket.binder = binder
             assert respond.socket = socket.socket = socket
