@@ -168,11 +168,10 @@ module.exports.Duplex = class Duplex extends Preflight
         assert binder; return (parameters..., callback) ->
             execute = (a...) => g => method.apply this, i(a)
             respond = (a...) => g => s => callback.apply this, o(a)
-            respond.socket = socket; respond.context = context
-            _.extend respond, socket.handshake or new Object
-            _.extend socket, socket.handshake or new Object
+            assert respond.session = socket.session = session
             assert respond.binder = socket.binder = binder
-            execute parameters..., respond, session
+            assert respond.socket = socket.socket = socket
+            return execute parameters..., respond, session
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
