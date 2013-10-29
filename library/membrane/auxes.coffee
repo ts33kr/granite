@@ -126,9 +126,7 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
             notZombie = "not a zombie child: #{value}"
             notScreen = "has no visual core: #{value}"
             wrongValue = "got invalid value: #{value}"
-            wrongKey = "invalid key supplied: #{key}"
             assert _.isObject(value), wrongValue
-            assert not _.isEmpty(key), wrongKey
             isScreen = value.derives(Screenplay)
             isZombie = value.derives(Zombie)
             assert isScreen is yes, notScreen
