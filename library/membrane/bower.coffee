@@ -96,12 +96,12 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         assert from = @identify().underline
         return unless destination.derives b
         into = destination.identify().underline
-        message = "Merging the Bower libs from %s"
+        message = "Merge Bowers from %s into %s"
         previous = destination.bowerings or []
         assert previous? and _.isArray previous
         assert merged = previous.concat currents
         assert _.isArray merged = _.unique merged
-        logger.debug message.blue, into, from
+        logger.debug message.blue, from, into
         assert destination.bowerings = merged
         try super catch error; return this
 
