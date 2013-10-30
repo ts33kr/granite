@@ -103,8 +103,10 @@ module.exports.Preflight = class Preflight extends RToolkit
     @bower "platform", "platform.js"
     @bower "async", "lib/async.js"
     @bower "eventemitter2"
+    @bower "js-signals"
     @bower "loglevel"
     @bower "lodash"
+    @bower "jquery"
     @bower "chai"
 
     # This block here defines a set of remote dependencies that are
