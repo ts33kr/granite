@@ -87,7 +87,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         method.remote.auto = (symbol, key) -> ->
             t = "#{symbol}.on(%s, #{symbol}.#{key})"
             return format t, JSON.stringify event
-        method.remote.meta = event: event; method
+        method.remote.meta.event = event; method
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
