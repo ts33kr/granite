@@ -161,8 +161,11 @@ module.exports.Screenplay = class Screenplay extends Barebones
             return unless _.isObject value?.remote
             return unless src = value.remote.source
             return if (value is @constructor) is yes
-            set = "#{symbol}.#{key} = (#{src})()"
-            context.sources.push "\r\n#{set}\r\n"
+            blob = JSON.stringify value.remote.meta
+            metadata = value.remote.metadata or "meta"
+            set = "#{symbol}.#{key} = (#{src}).call()\r\n"
+            set += "#{symbol}.#{key}.#{metadata} = #{blob}"
+            assert context.sources.push "\r\n#{set}\r\n"
         context.sources.unshift applicator
         context.changes.unshift installer
         context.sources.unshift runtime
