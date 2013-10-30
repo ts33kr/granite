@@ -160,13 +160,14 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         locate = (f) -> _.findKey paths, resides(f)
         resides = (f) -> (x) -> f is x or try f in x
         for file in files then do (paths, file) ->
+            bowering = finder null, locate(file)
+            entry = bowering?.entry or undefined
+            assert formatted = "#{file}/#{entry}"
+            context.scripts.push formatted if entry
+            return unless _.isEmpty entry?.toString()
             ext = (e) -> path.extname(file) is e
             context.scripts.push file if ext ".js"
             context.sheets.push file if ext ".css"
-            bowering = finder null, locate(file)
-            entry = bowering?.entry or new String
-            return if _.isEmpty entry.toString()
-            context.scripts.push "#{file}/#{entry}"
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
