@@ -76,6 +76,7 @@ remote = module.exports.remote = (wrapper) ->
     assert compiled.remote.compiled = compiled
     assert compiled.remote.compile = compiler
     assert compiled.remote.source = wrapper
+    assert compiled.remote.meta ?= Object()
     compiled.remote.symbol = compiled.name
     assert _.isFunction compiled; compiled
 
@@ -94,6 +95,6 @@ external = module.exports.external = (compiled) ->
     assert compiled.remote.compiled = compiled
     assert compiled.remote.compile = compiler
     assert compiled.remote.source = wrapper
-    assert compiled.remote.meta = Object()
+    assert compiled.remote.meta ?= Object()
     compiled.remote.symbol = compiled.name
     assert _.isFunction compiled; compiled
