@@ -159,7 +159,7 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         assert files = _.flatten _.values sorted
         locate = (f) -> _.findKey paths, resides(f)
         resides = (f) -> (x) -> f is x or try f in x
-        for file in files then do (file) ->
+        for file in files then do (paths, file) ->
             ext = (e) -> path.extname(file) is e
             context.scripts.push file if ext ".js"
             context.sheets.push file if ext ".css"
