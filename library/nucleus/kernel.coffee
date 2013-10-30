@@ -306,7 +306,7 @@ module.exports.Generic = class Generic extends Archetype
         newSocket = (o) -> logger.debug newMessage.grey, o
         assert @secureSocket = socket.listen @secure, sconfig
         assert @serverSocket = socket.listen @server, sconfig
-        @domain.add @secureSocket; @domain.add @serverSocket
+        @configureSocketServers @serverSocket, @secureSocket
         @secureSocket.on "connection", -> newSocket "HTTPS"
         @serverSocket.on "connection", -> newSocket "HTTP"
         return @on "redis-ready", (redis) => do (redis) =>
@@ -320,6 +320,24 @@ module.exports.Generic = class Generic extends Archetype
             compiled.publish = (n) -> pub.call compiled, n
             @secureSocket.set "store", compiled or {}
             @serverSocket.set "store", compiled or {}
+
+    # This configuration utility sets up the environment for the
+    # Socket.IO server in the current kernel. Basically, this does
+    # the socket server configuration using the Socket.IO configure
+    # API to set the necessary options to opimize the performance.
+    # Please refer to the implementation for more info on options.
+    configureSocketServers: ->
+        assert not _.isEmpty servers = _.toArray arguments
+        @domain.add server for own server, index of servers
+        logger.info "Configuring the Socket.IO servers".cyan
+        assert @serverSocket in servers, "missing HTTP socket"
+        assert @secureSocket in servers, "missing HTTPS socket"
+        assert _.isObject every = try Object.create new Object
+        every.set = (k, fx) -> io.set k, fx for io in servers
+        every.enable = (fx) -> io.enable fx for io in servers
+        do -> every.enable "browser client minification"
+        do -> every.enable "browser client etag"
+        do -> every.enable "browser client gzip"
 
     # Setup the Connect middleware framework along with the default
     # pipeline of middlewares necessary for the Granite framework to
