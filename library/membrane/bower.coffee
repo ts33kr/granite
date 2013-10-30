@@ -38,6 +38,7 @@ path = require "path"
 http = require "http"
 util = require "util"
 
+{EOL} = require "os"
 {Screenplay} = require "./visual"
 
 # This abstract base class provides the dynamic Bower support for
@@ -84,6 +85,26 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         assert not _.isEmpty(sink), "got empty sink"
         return @$bowerSink = sink.toString()
 
+    # This is the composition hook that gets invoked when compound
+    # is being composed into other services and components. Checks
+    # if there are Bower dependencies defined on both components,
+    # and if they are - merges them together and assigns a merged
+    # dependency list to the compoun that mixed in bower support.
+    @composition: (destination) ->
+        assert _.isObject b = BowerSupport
+        assert currents = @bowerings or []
+        assert from = @identify().underline
+        return unless destination.derives b
+        into = destination.identify().underline
+        message = "Merging the Bower libs from %s"
+        previous = destination.bowerings or []
+        assert previous? and _.isArray previous
+        assert merged = previous.concat currents
+        assert _.isArray merged = _.unique merged
+        logger.debug message.blue, into, from
+        assert destination.bowerings = merged
+        try super catch error; return this
+
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
@@ -114,7 +135,7 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         bowerings = @constructor.bowerings ?= []
         installer = install targets, {}, options
         installer.on "error", (error) -> do (error) ->
-            assert stringified = "#{error.message}"
+            assert stringified = "#{error.message}#{EOL}"
             reason = "failed Bower package installation"
             logger.error stringified.red, error.stack
             kernel.shutdownKernel reason.toString()
