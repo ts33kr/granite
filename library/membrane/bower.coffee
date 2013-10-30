@@ -184,6 +184,6 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         sorter = (v, k) -> _.findIndex bowerings, match(k)
         finder = (v, k) -> _.find bowerings, match(k)
         list(paths: yes, options).on "end", (paths) =>
-            scope = [sorter, finder, paths]
+            assert scope = [sorter, finder, paths]
             bowerings.cached = @cachier scope...
             bowerings.cached context; next()
