@@ -103,7 +103,6 @@ module.exports.Preflight = class Preflight extends RToolkit
     @bower "platform", "platform.js"
     @bower "async", "lib/async.js"
     @bower "eventemitter2"
-    @bower "bootstrap#3"
     @bower "loglevel"
     @bower "lodash"
     @bower "chai"
