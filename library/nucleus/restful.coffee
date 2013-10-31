@@ -138,24 +138,26 @@ module.exports.Restful = class Restful extends Service
     # defined in the subclass of this abstract base class. Default
     # implementation of each method will throw a not implemented.
     process: (request, response, next) ->
-        method = request?.method?.toUpperCase()?.trim()
-        [tokens, knowns] = [super, @constructor.SUPPORTED]
-        return @unsupported arguments... unless method in knowns
-        missing = "Missing implementation for #{method} method"
-        throw new Error missing.toString() unless method of this
-        assert variables = [tokens.resource, tokens.domain]
-        assert headers = @upstreamAsync "headers", _.identity
-        assert partial = _.partial headers, request, response
-        response.on "header", -> do -> partial variables...
+        method = request.method.toUpperCase()
+        assert _.isPlainObject tokens = super
+        known = method in @constructor.SUPPORTED
+        return @unsupported arguments... unless known
+        missing = "a #{method} method not implemented"
+        throw new Error missing unless method of this
+        variables = [tokens.resource, tokens.domain]
+        headers = @upstreamAsync "headers", _.identity
+        partial = _.partial headers, request, response
+        response.on "header", -> partial variables...
         assert mw = @constructor.middleware().bind this
-        prestreamer = @upstreamAsync "preprocess", =>
-            mw([request, response, variables...]) (error) =>
-                assert expanded = _.clone variables or []
-                expanded.push request.session or undefined
-                this[method] request, response, expanded...
-                poststreamer = @upstreamAsync "postprocess"
-                poststreamer request, response, variables...
-        prestreamer request, response, variables...
+        signature = [request, response, variables...]
+        intake = (f) => @upstreamAsync "preprocess", f
+        go = (fn) => usp = intake fn; usp signature...
+        go => mw(signature) (error, results, misc) =>
+            assert expanded = _.clone variables or []
+            expanded.push request.session or undefined
+            this[method] request, response, expanded...
+            poststreamer = @upstreamAsync "postprocess"
+            poststreamer request, response, variables...
 
     # Reject the request by sending an error descriptor to as the
     # response. The error descriptor is a top level object that will
