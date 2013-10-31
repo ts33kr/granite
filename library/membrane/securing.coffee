@@ -129,7 +129,7 @@ module.exports.OnlyMaster = class OnlyMaster extends Barebones
         return next() if str(inbound) is master
         content = "please use the master server"
         reason = "an attempt of direct access"
-        response.writeHead 401, reason
+        response.writeHead 401, "#{reason}"
         return response.end content
 
 # This is an abstract base class API stub service. Its purpose is
@@ -137,7 +137,7 @@ module.exports.OnlyMaster = class OnlyMaster extends Barebones
 # going through the HTTPS channel. If a request is not going via
 # SSL transport then redirect the current request to such one. Be
 # aware that this compound will be effective for all HTTP methods.
-module.exports.OnlySsl = class OnlySsl extends Barebones
+module.exports.OnlySsl = class OnlySsl extends OnlyMaster
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -151,12 +151,15 @@ module.exports.OnlySsl = class OnlySsl extends Barebones
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     ignition: (request, response, next) ->
-        connection = request?.connection
-        encrypted = connection?.encrypted
+        connection = request.connection or {}
+        encrypted = connection.encrypted or no
+        assert headers = request.headers or {}
+        protocol = headers["x-forwarded-proto"]
         return next() if _.isObject encrypted
-        protectedUrl = tools.urlOfServer yes
-        current = url.parse protectedUrl
-        current.pathname = request.url
-        current.query = request.params
-        compiled = url.format current
-        response.redirect compiled
+        return next() if protocol is "https"
+        protectedUrl = tools.urlOfMaster yes
+        current = try url.parse protectedUrl
+        assert current.pathname = request.url
+        assert current.query = request.params
+        assert compiled = url.format current
+        return response.redirect compiled
