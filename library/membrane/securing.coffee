@@ -118,7 +118,7 @@ module.exports.OnlyMaster = class OnlyMaster extends Barebones
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     ignition: (request, response, next) ->
-        str = (address) -> address.address
+        str = (address) -> address?.address
         inbound = request.connection.address()
         assert server = @kernel.server.address()
         assert secure = @kernel.secure.address()
