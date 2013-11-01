@@ -104,7 +104,7 @@ module.exports.Publish = class Publish extends Barebones
     # Be aware that the middlewares can also be inherited from BCs.
     @middleware (request, response, resource, domain, next) ->
         assert descriptions = @collectDescriptions()
-        internalError = "unexpected publishing error"
+        internalError = "an unexpected publishing error"
         assert _.isObject request.records = descriptions
         return next() unless _.isObject request.platform
         getters = _.map descriptions, (record) => (callback) =>
