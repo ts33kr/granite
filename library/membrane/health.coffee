@@ -98,9 +98,9 @@ module.exports.Healthcare = class Healthcare extends Service
     # to a summary and a value to a success or failure. Also, if any
     # error happens in any of the hertbeats, it reports to callback.
     healthcare: (callback) ->
-        adapt = (f) => @constructor.heartrate f
-        bind = (method) => adapt method.bind this
-        assert heartbeats = @constructor.heartbeat()
+        adapt = (f) => return @constructor.heartrate f
+        bind = (method) => return adapt method.bind this
+        heartbeats = @constructor.heartbeat() or Array()
         assert indexed = _.indexBy heartbeats, "summary"
         assert id = try @constructor.identify().underline
         transform = (a, v, k) -> a[k] = bind v.estimate
