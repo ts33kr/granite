@@ -70,12 +70,13 @@ module.exports.Descriptor = class Descriptor extends Stubs
     # its documentation and publish it via a doc system publisher.
     # The specific documentation settings will not be inherited!
     @documentation: (boolean) ->
+        inquiry = arguments.length is 0 or false
         isDocumentation = @$documentation is this
-        return isDocumentation unless boolean?
+        return isDocumentation if inquiry is yes
         invalidFlag = "the flag has to be boolean"
         assert _.isBoolean(boolean), invalidFlag
         return @$documentation = this if boolean
-        delete @$documentation; @$documentation is @
+        delete @$documentation; return undefined
 
     # Traverse all of the services that are registered with the router
     # and collect the documentation for each method, then given this
