@@ -41,7 +41,7 @@ url = require "url"
 {RedisClient} = require "./redis"
 tools = require "../nucleus/tools"
 
-# This is an extension of the `Duple` abstract base service that
+# This is an extension of the `Duplex` abstract base service that
 # implements a dialogue sort of protection for the duplex channel.
 # It means that a client who made the initial GET request must be
 # ensured to be the same client that tried to connect over duplex
