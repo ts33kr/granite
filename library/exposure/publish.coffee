@@ -62,7 +62,7 @@ module.exports.Publish = class Publish extends Barebones
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
     # Also, see `Descriptor` compound implementation for reference!
-    @lazy -> @GET (method, service, kernel) ->
+    @GET (method, service, kernel) ->
         @relevant "ts33kr.github.io/granite/exposure/publish.html"
         @relevant "ts33kr.github.io/granite/membrane/document.html"
         @github "ts33kr", "granite", "library/exposure/publish.coffee"

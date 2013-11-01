@@ -64,7 +64,7 @@ module.exports.Barebones = class Barebones extends Stubs
     # documented function is implemented. Please refer to `Document`
     # class and its module implementation for more information on it.
     # Also, see `Descriptor` compound implementation for reference!
-    @lazy -> @OPTIONS (method, service, kernel) ->
+    @OPTIONS (method, service, kernel) ->
         @relevant "ts33kr.github.io/granite/membrane/skeleton.html"
         @github "ts33kr", "granite", "library/membrane/skeleton.coffee"
         @remark "This method is default implemented for each service"

@@ -57,12 +57,12 @@ module.exports.Descriptor = class Descriptor extends Stubs
     # methods. These definitions proxy the calls from static scope
     # to the prototype scope, and implicitly run the description
     # routine on the targeted REST methods. Prefer using these.
-    @OPTIONS = -> @describe @prototype.OPTIONS, arguments...
-    @DELETE = -> @describe @prototype.DELETE, arguments...
-    @PATCH = -> @describe @prototype.PATCH, arguments...
-    @POST = -> @describe @prototype.POST, arguments...
-    @PUT = -> @describe @prototype.PUT, arguments...
-    @GET = -> @describe @prototype.GET, arguments...
+    @OPTIONS = (fn) -> @lazy -> @describe @prototype.OPTIONS, fn
+    @DELETE = (fn) -> @lazy -> @describe @prototype.DELETE, fn
+    @PATCH = (fn) -> @lazy -> @describe @prototype.PATCH, fn
+    @POST = (fn) -> @lazy -> @describe @prototype.POST, fn
+    @PUT = (fn) -> @lazy -> @describe @prototype.PUT, fn
+    @GET = (fn) -> @lazy -> @describe @prototype.GET, fn
 
     # This method allows to configure the service with respect to
     # choosing to be documented or not. If the documentation is
@@ -82,15 +82,15 @@ module.exports.Descriptor = class Descriptor extends Stubs
     # information, build a hierarhical tree object of all the methods
     # and the services that implement them and return to the invoker.
     collectDescriptions: (substitution) ->
-        services = @kernel?.router?.registry
-        services = substitution if substitution?
+        assert services = @kernel?.router?.registry
+        assert service = move if move = substitution
         assert _.isArray(services), "invalid services"
         publishing = (s) -> s.constructor.documentation()
-        conformant = (s) -> try s.objectOf Descriptor
-        services = _.filter services, conformant
-        services = _.filter services, publishing
-        logger.debug "Collecting API documentation"
-        _.map services, @documentService.bind this
+        conformant = (s) -> do -> try s.objectOf Descriptor
+        services = _.filter services, conformant or Array()
+        services = _.filter services, publishing or Array()
+        logger.debug "Collecting service API documentation"
+        return _.map services, @documentService.bind this
 
     # Part of the internal descriptor system implementation. This
     # method is invoked for each of the collected service that are
@@ -99,13 +99,13 @@ module.exports.Descriptor = class Descriptor extends Stubs
     # does the necessary initializations on it and return the doc.
     documentService: (service) ->
         assert unsupported = service.unsupported
-        supported = service.constructor.SUPPORTED
+        assert supported = service.constructor.SUPPORTED
         implemented = (m) -> service[m] isnt unsupported
-        fix = (m) => @constructor.describe service[m], ->
+        fix = (m) => @constructor.describe service[m], (->)
         doc = (m) => (service[m].document or fix(m)).blankSlate()
-        filtered = _.filter supported, implemented
+        filtered = _.filter supported, implemented or Array()
         methods = _.object filtered, _.map(filtered, doc)
-        args = (method) => [method, service, @kernel]
+        args = (method) => return [method, service, @kernel]
         assert not _.isEmpty link = service.qualified()
         doc.descriptor? args(m)... for m, doc of methods
         return service: service, methods: methods
@@ -115,15 +115,15 @@ module.exports.Descriptor = class Descriptor extends Stubs
     # process such documentation and do with it whatever is necessary.
     # This approach gives unique ability to build self documented APIs.
     @describe: (method, descriptor) ->
-        noMethod = "no valid method is supplied"
-        noDescriptor = "no valid descriptor supplied"
-        assert _.isFunction(descriptor), noDescriptor
-        assert _.isFunction(method), noMethod
-        method.document ?= new Document
-        method.document.descriptor = descriptor
-        assert method.document.blankSlate = ->
-            document = new Document
+        noMethod = "no target method has been supplied"
+        noDescriptor = "got no valid descriptor supplied"
+        assert _.isFunction(method or undefined), noMethod
+        assert _.isFunction(descriptor or 0), noDescriptor
+        assert _.isObject method.document ?= new Document
+        assert method.document.descriptor = descriptor
+        assert slate = method.document.blankSlate = ->
+            assert document = new Document()
             document.descriptor = @descriptor
             document.blankSlate = @blankSlate
-            return document
+            return Object.create document
         return method.document
