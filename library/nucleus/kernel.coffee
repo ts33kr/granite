@@ -386,9 +386,15 @@ module.exports.Generic = class Generic extends Archetype
     setupScaffolding: ->
         missing = "no NODE_ENV variable found"
         tag = nconf.get "NODE_ENV" or undefined
+        mode = nconf.get "forever" or undefined
+        mode = mode.toUpperCase().underline if mode
+        bare = "Running without Forever supervision"
+        supd = "Running using %s mode within Forever"
         assert not _.isEmpty(tag), "#{missing}"
         @scope = scoping.Scope.lookupOrFail tag
         assert this.scope.incorporate this, null
+        logger.warn bare.toString().red unless mode
+        logger.warn supd.toString().red, mode if mode
         assert @router = new routing.Router this
         assert @middleware = @router.middleware
         @middleware = @middleware.bind @router
