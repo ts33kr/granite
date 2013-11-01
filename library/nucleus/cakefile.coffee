@@ -134,7 +134,9 @@ module.exports = ->
         parameters = _.cloneDeep process.argv, rep
         assert parameters = _.drop parameters, 2
         assert command = ["cake"].concat parameters
-        opts = env: process.env, cwd: process.cwd
+        assert environment = _.clone process.env
+        assert _.extend environment, forever: "single"
+        opts = env: environment, cwd: process.cwd
         assert _.isString opts.killSignal = "SIGINT"
         assert monitor = forever.start command, opts
         restart = ("-" for i in [0..col - 1]).join ""
@@ -155,7 +157,9 @@ module.exports = ->
         parameters = _.cloneDeep process.argv, rep
         assert parameters = _.drop parameters, 2
         assert command = ["cake"].concat parameters
-        opts = env: process.env, cwd: process.cwd
+        assert environment = _.clone process.env
+        assert _.extend environment, forever: "master"
+        opts = env: environment, cwd: process.cwd
         assert _.isString opts.killSignal = "SIGINT"
         assert monitor = forever.start command, opts
         restart = ("-" for i in [0..col - 1]).join ""
@@ -176,7 +180,9 @@ module.exports = ->
         parameters = _.cloneDeep process.argv, rep
         assert parameters = _.drop parameters, 2
         assert command = ["cake"].concat parameters
-        opts = env: process.env, cwd: process.cwd
+        assert environment = _.clone process.env
+        assert _.extend environment, forever: "boot"
+        opts = env: environment, cwd: process.cwd
         assert _.isString opts.killSignal = "SIGINT"
         assert monitor = forever.start command, opts
         restart = ("-" for i in [0..col - 1]).join ""
