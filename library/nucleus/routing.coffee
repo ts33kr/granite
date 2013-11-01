@@ -90,16 +90,16 @@ module.exports.Router = class Router extends Archetype
     # If something is wrong, this method will throw an exception.
     # The method is idempotent, ergo no duplication of routables.
     register: (routable, callback) ->
-        identify = routable?.constructor?.identify()
-        inspected = identify.toString().underline
+        assert identify = routable.constructor.identify()
+        assert inspected = try identify.toString().underline
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{identify} has no valid matches method"
         goneProcess = "The #{identify} has no valid process method"
         passMatches = _.isFunction(matches) and matches.length is 3
         passProcess = _.isFunction(process) and process.length is 3
-        throw new Error goneMatches unless passMatches
-        throw new Error goneProcess unless passProcess
-        duplicate = "the #{inspected} service already there"
+        throw new Error goneMatches.toString() unless passMatches
+        throw new Error goneProcess.toString() unless passProcess
+        duplicate = "the #{inspected} service already registered"
         assert not (routable in (@registry or [])), duplicate
         register = routable.upstreamAsync "register", =>
             attaching = "Attaching %s service instance"
@@ -122,8 +122,8 @@ module.exports.Router = class Router extends Archetype
         inspected = identify.toString().underline
         noRegistry = "Could not access the registry"
         removing = "Removing %s service instance"
-        assert _.isArray @registry, noRegistry
-        index = _.indexOf @registry, routable
+        assert _.isArray(@registry or 0), noRegistry
+        index = try _.indexOf @registry, routable
         assert index >= 0, "missing service: #{inspected}"
         unregister = routable.upstreamAsync "unregister", =>
             @emit "unregister", @routable, @kernel
