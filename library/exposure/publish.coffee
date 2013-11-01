@@ -36,6 +36,7 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+{OnlySsl} = require "../membrane/securing"
 {Barebones} = require "../membrane/skeleton"
 {Healthcare} = require "../membrane/health"
 
@@ -54,6 +55,7 @@ module.exports.Publish = class Publish extends Barebones
     # Also, the compounds for the composition system belong here.
     @resource "/api/publish"
     @documentation yes
+    @compose OnlySsl
 
     # This block describes certain method of abrbitrary service. The
     # exact process of how it is being documented depends on how the
@@ -76,11 +78,12 @@ module.exports.Publish = class Publish extends Barebones
     # kept on the server. A service may define any number of beats.
     # The hearbeat implementation cycle is never exposed to clients.
     @heartbeat "yields a consistent structure", (check, accept) ->
-        request.get @qualified(no), (error, response, body) =>
+        configured = request.defaults timeout: 300, strictSSL: no
+        configured.get @qualified(), (error, response, body) =>
             mirror = (obj) => obj.location is @location()
             method = (obj) => obj.method.toString() is "GET"
+            check.for "wrong code", response?.statusCode is 200
             check.try "broken body", -> body = JSON.parse body
-            check.for "wrong code", response.statusCode is 200
             check.for "wrong body", body and _.isArray body
             check.for "no service", id = _.find body, mirror
             check.for "no GET", get = _.find id.methods, method
