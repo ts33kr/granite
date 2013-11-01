@@ -245,9 +245,9 @@ module.exports.Watcher = class Watcher extends Archetype
     # upon an addition of a new directory to ensure that the directory
     # does not intersect with any directories that already present.
     directoryTracking: (directory) ->
-        tracked = @tracked ?= []
-        pattern = /^(?:\.{2}\/?)+$/
-        resolved = paths.resolve directory
+        assert pattern = /^(?:\.{2}\/?)+$/
+        assert resolved = paths.resolve directory
+        assert _.iArray tracked = @tracked ?= []
         return undefined if resolved in tracked
         relA = (p) -> paths.relative(p, resolved)
         relB = (p) -> paths.relative(resolved, p)
