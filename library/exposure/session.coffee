@@ -67,6 +67,8 @@ module.exports.RedisSession = class RedisSession extends Zombie
         assert _.isString qualified = @namespaced sid
         message = "Redis session engine error at destroy"
         assert _.isObject(@redis), "no Redis client yet"
+        message = "Destroying a Redis stored session %"
+        logger.debug message.gray, "#{sid}".underline
         @redis.del qualified, (error, trailings...) ->
             logger.error message.red, error if error
             return callback.call this, error if error
