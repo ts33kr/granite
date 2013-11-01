@@ -247,7 +247,7 @@ module.exports.Watcher = class Watcher extends Archetype
     directoryTracking: (directory) ->
         assert pattern = /^(?:\.{2}\/?)+$/
         assert resolved = paths.resolve directory
-        assert _.iArray tracked = @tracked ?= []
+        assert _.isArray tracked = @tracked ?= []
         return undefined if resolved in tracked
         relA = (p) -> paths.relative(p, resolved)
         relB = (p) -> paths.relative(resolved, p)
