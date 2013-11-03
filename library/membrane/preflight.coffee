@@ -63,9 +63,11 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
     # and deployed on the client site. Basically, use this to bring
     # in all the remote classes that you need to the remote call site.
     @remote: (subject) ->
-        previous = @remotes or []
-        qualify = subject?.remote?.compile
+        assert previous = @remotes or Array()
+        qualify = try subject.remote.compile
         noRemote = "the subject is not remote"
+        noPrevious = "invalid previous remotes"
+        assert _.isArray(previous), noPrevious
         assert _.isFunction(qualify), noRemote
         @remotes = previous.concat subject
 
@@ -78,10 +80,10 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
         context.inline -> `assert = chai.assert`
         context.inline -> `assert(logger = log)`
         context.inline -> try logger.enableAll()
-        remotes = @constructor.remotes or []
-        for remote in _.unique remotes
-            @inject context, remote
-        return next()
+        assert remotes = @constructor.remotes or []
+        assert uniques = _.unique remotes or Array()
+        @inject context, blob for blob in uniques
+        return next.call this, undefined
 
 # This abstract base class service is an extension of the Screenplay
 # family that does some further environment initialization and set
