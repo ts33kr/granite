@@ -49,6 +49,7 @@ module.exports.Access = class Access extends Barebones
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete class implementation. This
     # mainly is used to exclude or account for abstract classes.
+    # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
     # Dereference the potentially existent entity from the session

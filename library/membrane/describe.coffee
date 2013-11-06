@@ -50,6 +50,7 @@ module.exports.Descriptor = class Descriptor extends Stubs
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete class implementation. This
     # mainly is used to exclude or account for abstract classes.
+    # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
     # Define a set of aliases that allow for extremely convenient

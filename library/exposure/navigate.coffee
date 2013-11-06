@@ -51,6 +51,7 @@ module.exports.Navigate = class Navigate extends Preflight
     # that this class has to be considered abstract and therefore
     # can not be treated as a complete class implementation. This
     # mainly is used to exclude or account for abstract classes.
+    # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
     # This block here defines a set of Bower dependencies that are
