@@ -58,6 +58,7 @@ module.exports.Navigate = class Navigate extends Preflight
     # going to be necessary no matter what sort of functionality is
     # is going to be implemented. Most of these libraries required
     # by the internal implementations of the various subcomponents.
+    # Refer to `BowerSupport` class implementation for information.
     @bower "crossroads.js", "dist/crossroads.min.js"
     @bower "hasher", "dist/js/hasher.min.js"
 
