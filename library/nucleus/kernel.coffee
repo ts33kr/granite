@@ -27,6 +27,7 @@ asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
 moment = require "moment"
+pkginfo = require "pkginfo"
 socket = require "socket.io"
 uuid = require "node-uuid"
 colors = require "colors"
@@ -64,7 +65,7 @@ module.exports.Generic = class Generic extends Archetype
     # module which is used by the kernel to draw different kinds
     # of the information and data. This could be overridden by the
     # modified kernels that are custom to arbitrary applications.
-    @PACKAGE = require "#{__dirname}/../../package"
+    @PACKAGE = pkginfo(module) and module.exports
 
     # Create a new instance of the kernel, run all the prerequisites
     # that are necessary, do the configuration on the kernel, then
