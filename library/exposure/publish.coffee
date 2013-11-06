@@ -121,6 +121,7 @@ module.exports.Publish = class Publish extends Barebones
     # is a good idea for this HTTP method to be idempotent. As the
     # rule, this method does not have to alter any contents or data
     # of the resource. Use for unobtrusive retrieval of resources.
+    # The method is an HTTP verb, coherent with the REST interface.
     GET: (request, response, resource, domain, session) ->
         @push response, _.map request.records, (record) ->
             constructor = record.service.constructor

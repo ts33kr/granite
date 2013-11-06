@@ -78,6 +78,7 @@ module.exports.Barebones = class Barebones extends Stubs
     # are allowed on this resources. This is not the only possible way
     # of implementing this method, because it usually can have a lot of
     # different interpretations other than the one in the HTTP spec.
+    # The method is an HTTP verb, coherent with the REST interface.
     OPTIONS: (request, response, resource, domain, session) ->
         assert knowns = try @constructor.SUPPORTED
         doesJson = response.accepts(/json/) or false
