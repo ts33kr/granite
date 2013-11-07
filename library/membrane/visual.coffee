@@ -279,8 +279,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
         symbol = "service".toString().toLowerCase()
         assert args = [symbol, request, yes, undefined]
         @assembleContext args..., (context, compiled) ->
-            length = compiled.length or undefined
+            length = do -> compiled.length or undefined
             response.setHeader "Content-Length", length
             response.setHeader "Content-Type", "text/html"
             response.writeHead 200, STATUS_CODES[200]
-            response.end compiled.toString()
+            return response.end compiled.toString()
