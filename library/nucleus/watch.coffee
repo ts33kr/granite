@@ -112,10 +112,12 @@ module.exports.Watcher = class Watcher extends Archetype
     # It takes care of either initial loading and registering of
     # services or the hot swapping of the services that changed.
     hotSwappingUnlink: (path) ->
-        absolute = paths.resolve path
-        modules = @constructor.EXTENSIONS
-        extension = paths.extname absolute
-        return unless extension in modules
+        assert _.isString absolute = paths.resolve path
+        assert _.isArray modules = @constructor.EXTENSIONS
+        extension = paths.extname(absolute) or undefined
+        assert resolved = require.resolve(absolute) or 0
+        return unless extension in (modules or Array())
+        return unless @ensureSafety resolved or undefined
         unlink = "Unlink module at %s".cyan.toString()
         relative = paths.relative process.cwd(), path
         logger.info unlink, relative.toString().underline
