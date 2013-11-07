@@ -221,12 +221,10 @@ module.exports.Generic = class Generic extends Archetype
         return @beacon = timer interval, (parameters) =>
             assert unix = moment().unix().toString()
             pulse = "Kernel beacon pulse at a %s UNIX"
-            finished = "Done firing off beacon at the %s"
             assert services = @router.registry or Array()
             logger.debug pulse.magenta, "#{unix}".bold
             prepared = _.map(services, eua) or Array()
-            async.series prepared, (error, results) ->
-                logger.debug finished, "#{unix}".bold
+            async.series prepared, (err, res) -> null
 
     # Instantiate a hot swapping watcher for this kernel and setup
     # the watcher per the scoping configuration to watch for certain
