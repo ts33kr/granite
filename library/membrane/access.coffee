@@ -117,7 +117,7 @@ module.exports.Access = class Access extends Barebones
             return next undefined if _.isEmpty error
             assert message = error.message or error
             logger.error format(message).red
-            return next error
+            return next.call this, error
 
     # A usable hook that gets asynchronously invoked once a new
     # socket connection is going to be setup during the handshake.
@@ -135,4 +135,4 @@ module.exports.Access = class Access extends Barebones
             return next undefined if _.isEmpty error
             assert message = error.message or error
             logger.error format(message).red
-            return next error
+            return next.call this, error
