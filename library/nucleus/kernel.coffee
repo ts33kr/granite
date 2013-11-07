@@ -338,8 +338,8 @@ module.exports.Generic = class Generic extends Archetype
     # operate correctly. You are encouraged to override this method
     # to provide a Connect setup procedure to your own liking, etc.
     setupConnectPipeline: ->
-        @connect = connect()
-        @connectStaticAssets()
+        assert @connect = connect()
+        assert @connectStaticAssets()
         threshold = plumbs.threshold this
         @connect.use @threshold = threshold
         @connect.use @query = connect.query()
