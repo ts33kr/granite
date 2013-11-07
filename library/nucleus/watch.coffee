@@ -163,7 +163,7 @@ module.exports.Watcher = class Watcher extends Archetype
         message = "Zombies at #{relative.underline}"
         logger.warn message.grey if zombies is yes
         return yes if nconf.get "watch:force"
-        return yes unless zombies
+        return yes if _.isEmpty zombies
 
     # Given the freshly resolved module, require it and then run the
     # collector on it to find all services it may be defining. Then
