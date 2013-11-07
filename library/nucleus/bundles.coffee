@@ -119,7 +119,7 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.assets = dirs: [], opts: {}
     @defaults.kernel = crashOnError: yes
     @defaults.visual = compression: yes
-    @defaults.beacon = interval: 6000
+    @defaults.beacon = interval: 60000
     @defaults.socket = "log level": 0
     @defaults.env.preserve = ["pub"]
 
@@ -148,6 +148,6 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.assets = dirs: [], opts: {}
     @defaults.kernel = crashOnError: yes
     @defaults.visual = compression: yes
-    @defaults.beacon = interval: 6000
+    @defaults.beacon = interval: 60000
     @defaults.socket = "log level": 0
     @defaults.env.preserve = ["pub"]
