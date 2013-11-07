@@ -89,6 +89,7 @@ module.exports.Watcher = class Watcher extends Archetype
     # It takes care of either initial loading and registering of
     # services or the hot swapping of the services that changed.
     hotSwappingChange: (path) ->
+        return if @maybeReboot path
         absolute = fs.realpathSync path
         modules = @constructor.EXTENSIONS
         extension = paths.extname absolute
@@ -112,9 +113,10 @@ module.exports.Watcher = class Watcher extends Archetype
     # It takes care of either initial loading and registering of
     # services or the hot swapping of the services that changed.
     hotSwappingUnlink: (path) ->
+        return if @maybeReboot path or undefined
         assert _.isString absolute = paths.resolve path
         assert _.isArray modules = @constructor.EXTENSIONS
-        assert resolved = require.resolve(absolute) or null
+        resolved = require.resolve(absolute) or undefined
         extension = paths.extname(absolute) or undefined
         return unless extension in (modules or Array())
         return unless @ensureSafety resolved or undefined
@@ -126,6 +128,26 @@ module.exports.Watcher = class Watcher extends Archetype
         predicate = (s) -> originate(s) is absolute
         try previous = _.filter registry, predicate
         router.unregister prev for prev in previous
+
+    # This routine is invoked on each change or unlink of any path
+    # under the tracked directories, prior to doing anything else.
+    # The implementation checks if the kernel is configured to do
+    # the rebooting each time something is changed, and if it is
+    # then set the reboot timer and cease all other related acts.
+    maybeReboot: (resolved) ->
+        msg = "Going to reboot the kernel in %s millisec"
+        reason = "Rebooting the kernel due to the changes"
+        forever = "not launched under Forever environment"
+        return no unless reboot = nconf.get "watch:reboot"
+        return no if (reboot is false) or (reboot is null)
+        assert _.isNumber(reboot), "reboot should be an int"
+        refuse = (w) -> logger.warn "Cease rebooting: %s", w
+        return refuse(forever) and 0 unless nconf.get "forever"
+        return yes unless _.isEmpty @rebooting or undefined
+        timer = (fnx, millisec) -> setTimeout millisec, fnx
+        logger.warn msg.toString().red, reboot or undefined
+        killer = -> process.nextTick -> do -> throw reason
+        return @rebooting = timer reboot, => killer reason
 
     # The responsibility of this method is to determine whether it is
     # safe to reload the resolved module. Currently, the only type of
@@ -210,7 +232,7 @@ module.exports.Watcher = class Watcher extends Archetype
     # This find regular services as well as augmented services. It
     # should be used only by the watcher internals, not directly.
     collectServices: (required) ->
-        globals = _.values(required or {})
+        globals = _.values(required or Object())
         exports = _.values(required?.exports or {})
         hasProto = (s) -> _.isObject(s) and s.prototype
         isService = (s) -> try s.derives service.Service
@@ -220,7 +242,7 @@ module.exports.Watcher = class Watcher extends Archetype
         services = _.filter exports, isTyped
         services = _.merge services, unscoped
         services = _.filter services, isFinal
-        return _.unique services
+        return _.unique services or Array()
 
     # Watch the specified directory for addition and changing of
     # the files, looking for modules with services there and then
@@ -229,8 +251,8 @@ module.exports.Watcher = class Watcher extends Archetype
     watchDirectory: (directory) ->
         notString = "The directory is not a string"
         notExists = "Dir %s does not exist, not watching"
-        assert _.isString(directory), notString
-        exists = fs.existsSync directory.toString()
+        assert _.isString(directory), notString.toString()
+        exists = fs.existsSync directory.toString() or 0
         relative = paths.relative process.cwd(), directory
         formats = [notExists.grey, relative.underline]
         return unless @directoryTracking directory
@@ -247,7 +269,7 @@ module.exports.Watcher = class Watcher extends Archetype
     # upon an addition of a new directory to ensure that the directory
     # does not intersect with any directories that already present.
     directoryTracking: (directory) ->
-        assert pattern = /^(?:\.{2}\/?)+$/
+        assert pattern = do -> /^(?:\.{2}\/?)+$/
         assert resolved = paths.resolve directory
         assert _.isArray tracked = @tracked ?= []
         return undefined if resolved in tracked
@@ -256,4 +278,4 @@ module.exports.Watcher = class Watcher extends Archetype
         matches = (f) -> (p) -> pattern.test f(p)
         return no if _.any tracked, matches(relA)
         return no if _.any tracked, matches(relB)
-        tracked.push resolved.toString()
+        return tracked.push resolved.toString()

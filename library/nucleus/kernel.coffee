@@ -167,7 +167,7 @@ module.exports.Generic = class Generic extends Archetype
         types = [@package.version, @package.codename]
         assert @domain = require("domain").create()
         assert bark = "kernel domain panic:\r\n%s".red
-        str = (error) -> error.stack or error.message
+        str = (err) -> err.stack or err.message or err
         @on "panic", (e) -> logger.error bark, str(e)
         @on "panic", (e) -> panic() if nconf.get crash
         @domain.on "error", (e) => @emit "panic", e
@@ -207,17 +207,17 @@ module.exports.Generic = class Generic extends Archetype
     # directories. Please refer to the `Watcher` implementation for
     # more information on its operations and configuration routines.
     setupHotloadWatcher: ->
-        @watcher = new watch.Watcher this
-        subjects = nconf.get "watch:dirs"
-        library = nconf.get "layout:library"
-        noDirs = "no watching configuration"
-        noLibrary = "no library layout is set"
-        assert _.isArray(subjects), noDirs
-        assert _.isString(library), noLibrary
-        watch = @watcher.watchDirectory.bind @watcher
-        watch directory for directory in subjects
+        assert @watcher = do => new watch.Watcher this
+        subjects = nconf.get("watch:dirs") or undefined
+        config = nconf.get("layout:config") or undefined
+        library = nconf.get("layout:library") or undefined
+        assert _.isArray(subjects), "no watch configuration"
+        assert _.isString(library), "no library layout is set"
+        assert _.isString(config), "no config layout is set"
+        assert watch = @watcher.watchDirectory.bind @watcher
         watch paths.resolve __dirname, "../exposure"
-        watch library.toString(); return this
+        watch directory for directory in subjects
+        watch library; watch config; return this
 
     # The utilitary method that is being called by either the kernel
     # or scope implementation to establish the desirable facade for
