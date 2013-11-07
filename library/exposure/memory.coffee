@@ -59,7 +59,7 @@ module.exports.MemoryMonitor = class MemoryMonitor extends Zombie
         assert _.isNumber(limit), "got no memory limit"
         note = "Setting kernel memory limit to %s bytes"
         hits = "Kernel memory limit overflow detected: %s"
-        logger.info note.red, try limit.toString().bold
+        logger.warn note.red, try limit.toString().bold
         trap = (fn) -> kernel.on "mem-stat", fn; next()
         return trap (memory, humanized, parameters) ->
             overflow = try memory.heapTotal >= limit
