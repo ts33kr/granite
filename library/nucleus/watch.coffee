@@ -154,12 +154,12 @@ module.exports.Watcher = class Watcher extends Archetype
     # modules that are not safe to reload are the ones that do export
     # zombie services. They won't be reloaded and a warning is emited.
     ensureSafety: (resolved) ->
-        cached = require.cache[resolved]
-        services = @collectServices cached
-        isZombie = (s) -> s.derives Zombie
-        zombies = _.any services, isZombie
-        assert _.isString cwd = process.cwd()
-        relative = paths.relative cwd, resolved
+        assert cached = require.cache[resolved]
+        services = @collectServices(cached) or []
+        isZombie = (srv) -> try srv.derives Zombie
+        zombies = _.any(services, isZombie) or false
+        assert _.isString current = try process.cwd()
+        relative = paths.relative current, resolved
         message = "Zombies at #{relative.underline}"
         logger.warn message.grey if zombies is yes
         return yes if nconf.get "watch:force"
