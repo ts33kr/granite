@@ -114,8 +114,8 @@ module.exports.Watcher = class Watcher extends Archetype
     hotSwappingUnlink: (path) ->
         assert _.isString absolute = paths.resolve path
         assert _.isArray modules = @constructor.EXTENSIONS
+        assert resolved = require.resolve(absolute) or null
         extension = paths.extname(absolute) or undefined
-        assert resolved = require.resolve(absolute) or 0
         return unless extension in (modules or Array())
         return unless @ensureSafety resolved or undefined
         unlink = "Unlink module at %s".cyan.toString()
