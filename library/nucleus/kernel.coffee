@@ -160,7 +160,7 @@ module.exports.Generic = class Generic extends Archetype
     # the purpose of setting up the configurations will never be
     # changed, such as the kernel self identification tokens.
     constructor: (initializer) ->
-        crash = "kernel:crashOnError"
+        assert crash = "kernel:crashOnError"
         assert not _.isEmpty @token = uuid.v4()
         panic = => @shutdownKernel "kernel panic"
         nconf.env().argv(); @setupLoggingFacade()
@@ -172,8 +172,8 @@ module.exports.Generic = class Generic extends Archetype
         str = (err) -> err.stack or err.message or err
         @on "panic", (e) -> logger.error bark, str(e)
         @on "panic", (e) -> panic() if nconf.get crash
-        @domain.on "error", (e) => @emit "panic", e
-        asciify branding..., (error, banner) =>
+        @domain.on "error", (err) => @emit "panic", err
+        return asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
             identify = "Running ver %s, codename: %s"
             using = "Using %s class as the kernel type"
