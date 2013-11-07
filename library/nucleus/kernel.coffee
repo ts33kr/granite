@@ -185,18 +185,22 @@ module.exports.Generic = class Generic extends Archetype
     # and unregistering all the services as a precauting. After that
     # the scope is being dispersed and some events are being emited.
     shutdownKernel: (reason, eol=yes) ->
-        util.puts require("os").EOL if eol
-        logger.warn reason.toString().red
-        try @router.shutdownRouter?() catch
-        snapshot = _.clone(@router?.registry or [])
-        @router.unregister srv for srv in snapshot
-        try @server.close(); try @secure.close()
-        try @secureSocket.close() if @secureSocket?
-        try @serverSocket.close() if @serverSocket?
-        shutdown = "Shutting the kernel instance down"
-        logger.warn shutdown.red; @emit "shutdown"
-        @scope?.disperse(); @domain?.dispose()
-        return process.exit -1
+        generic = "the kernel requested to shutdown"
+        util.puts require("os").EOL.toString() if eol
+        logger.warn (reason or generic).toString().red
+        try @router.shutdownRouter?() catch error then
+        snapshot = _.clone @router?.registry or Array()
+        assert unreg = @router.unregister.bind @router
+        xkill = (s, next) -> return unreg s, (-> next())
+        fns = _.map snapshot, (s) -> (n) -> xkill s, n
+        return async.series fns, (error, results) =>
+            try @server.close(); try @secure.close()
+            try @secureSocket.close() if @secureSocket?
+            try @serverSocket.close() if @serverSocket?
+            shutdown = "Shutting the kernel instance down"
+            logger.warn shutdown.red; @emit "shutdown"
+            @scope?.disperse(); @domain?.dispose()
+            return process.exit -1
 
     # Instantiate a hot swapping watcher for this kernel and setup
     # the watcher per the scoping configuration to watch for certain
