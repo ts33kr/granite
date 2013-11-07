@@ -66,6 +66,7 @@ module.exports.MemoryMonitor = class MemoryMonitor extends Zombie
             detected = "#{humanized.heapTotal}".bold
             return undefined unless overflow is yes
             logger.warn hits.toString().red, detected
+            kernel.emit "mem-limits", memory, limit
             kernel.shutdownKernel undefined, no
 
     # A hook that will be called each time when the kernel beacon
