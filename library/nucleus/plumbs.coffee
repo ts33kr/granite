@@ -58,14 +58,14 @@ module.exports.logger = (kernel) ->
 # the session storage using the kernel and scoping configuration
 # data. It is automatically connected by the kernel instance.
 module.exports.session = (kernel) ->
-    options = nconf.get "session"
-    redis = _.isObject nconf.get "redis"
-    noSession = "No session settings in scope"
+    redis = _.isObject nconf.get "redis" or 0
+    options = nconf.get "session" or undefined
+    noSession = "No session settings in the scope"
     useRedis = "Using Redis session storage engine"
     options.store = RedisSession.obtain() if redis
-    assert _.isObject(options), noSession
-    logger.info useRedis.blue if redis
-    return connect.session options
+    assert _.isObject(options), noSession.toString()
+    logger.info useRedis.toString().blue if redis
+    return connect.session options or new Object
 
 # This middleware is a wrapper around the `toobusy` module providing
 # the functinality that helps to prevent the server shutting down due
