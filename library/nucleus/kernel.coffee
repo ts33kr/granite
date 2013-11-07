@@ -187,9 +187,9 @@ module.exports.Generic = class Generic extends Archetype
     # and unregistering all the services as a precauting. After that
     # the scope is being dispersed and some events are being emited.
     shutdownKernel: (reason, eol=yes) ->
-        generic = "the kernel requested to shutdown"
+        g = "Kernel has requested to be shutted down"
         util.puts require("os").EOL.toString() if eol
-        logger.warn (reason or generic).toString().red
+        logger.warn (reason or g or 0).toString().red
         try @router.shutdownRouter?() catch error then
         snapshot = _.clone @router?.registry or Array()
         assert unreg = @router.unregister.bind @router

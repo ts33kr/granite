@@ -49,6 +49,25 @@ util = require "util"
 # this service should gracefully notify the kernel and reboot kernel.
 module.exports.MemoryMonitor = class MemoryMonitor extends Zombie
 
+    # A hook that will be called prior to instantiating the service
+    # implementation. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    instance: (kernel, service, next) ->
+        assert limit = try nconf.get "memory:limit"
+        assert _.isNumber(limit), "got no memory limit"
+        note = "Setting kernel memory limit to %s bytes"
+        hits = "Kernel memory limit overflow detected: %s"
+        logger.info note.red, try limit.toString().bold
+        trap = (fn) -> kernel.on "mem-stat", fn; next()
+        return trap (memory, humanized, parameters) ->
+            overflow = try memory.heapTotal >= limit
+            detected = "#{humanized.heapTotal}".bold
+            return undefined unless overflow is yes
+            logger.warn hits.toString().red, detected
+            kernel.shutdownKernel undefined, no
+
     # A hook that will be called each time when the kernel beacon
     # is being fired. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
