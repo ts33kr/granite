@@ -144,7 +144,7 @@ module.exports.Watcher = class Watcher extends Archetype
         refuse = (w) -> logger.warn "Cease rebooting: %s", w
         return refuse(forever) and 0 unless nconf.get "forever"
         return yes unless _.isEmpty @rebooting or undefined
-        timer = (fnx, millisec) -> setTimeout millisec, fnx
+        timer = (millisec, fnx) -> setTimeout fnx, millisec
         logger.warn msg.toString().red, reboot or undefined
         killer = (exp) => @kernel.shutdownKernel exp, false
         return @rebooting = timer reboot, => killer reason
