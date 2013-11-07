@@ -55,15 +55,14 @@ module.exports.MemoryMonitor = class MemoryMonitor extends Zombie
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     beacon: (kernel, timestamp, next) ->
-        assert usage = try process.memoryUsage()
-        assert _.isObject(usage), "got no memory data"
+        assert _.isObject mem = process.memoryUsage()
         h = (size) -> return filesize(size).toString()
         c = (value, k) -> return k and _.isNumber value
         humanize = (a, v, k) -> a[k] = h(v) if c(v, k)
         note = "memory: RESIDENT=%s; USED=%s; TOTAL=%s"
-        assert humaned = try _.transform usage, humanize
+        assert humaned = try _.transform mem, humanize
         assert resident = humaned.rss.toString().bold
         assert used = humaned.heapUsed.toString().bold
         assert total = humaned.heapTotal.toString().bold
         logger.debug note.grey, resident, used, total
-        kernel.emit "mem-stat", usage, humaned; next()
+        kernel.emit "mem-stat", mem, humaned; next()
