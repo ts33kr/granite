@@ -78,6 +78,13 @@ module.exports.Service = class Service extends Archetype
     # Refer to the original constructor method for more information.
     qualified: -> @constructor.qualified arguments...
 
+    # A hook that will be called each time when the kernel beacon
+    # is being fired. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    beacon: (kernel, next) -> next()
+
     # A hook that will be called prior to instantiating the service
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
