@@ -225,14 +225,15 @@ module.exports.Generic = class Generic extends Archetype
     # logging. The options from the config may be used to configure
     # various options of the logger, such as output format, etc.
     setupLoggingFacade: ->
-        format = "DD/MM/YYYY @ hh:mm:ss"
-        stamp = -> moment().format format
+        assert format = "DD/MM/YYYY @ hh:mm:ss"
+        stamp = -> return moment().format format
         options = timestamp: stamp, colorize: yes
-        options.level = nconf.get "log:level"
-        noLevel = "No logging level specified"
+        options.level = nconf.get "log:level" or 0
+        noLevel = "No logging level is specified"
         throw new Error noLevel unless options.level
-        logger.remove logger.transports.Console
-        logger.add logger.transports.Console, options
+        assert console = logger.transports.Console
+        try do -> logger.remove console catch error
+        logger.add console, options; return this
 
     # This routine takes care of resolving all the necessary details
     # for successfully creating and running an HTTPS (SSL) server.
@@ -267,7 +268,7 @@ module.exports.Generic = class Generic extends Archetype
         logger.info running.underline, location.underline
         @secure = https.createServer options, @connect
         assert _.isObject @domain; @domain.add @secure
-        do -> @secure.listen server.https, hostname
+        do => @secure.listen server.https, hostname
         return @secure.on "connection", (socket) ->
             return socket.setNoDelay yes
 
@@ -284,7 +285,7 @@ module.exports.Generic = class Generic extends Archetype
         logger.info running.underline, location.underline
         @server = http.createServer @connect, undefined
         assert _.isObject @domain; @domain.add @server
-        do -> @server.listen server.http, hostname
+        do => @server.listen server.http, hostname
         return @server.on "connection", (socket) ->
             return socket.setNoDelay yes
 
