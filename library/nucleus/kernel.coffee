@@ -210,10 +210,11 @@ module.exports.Generic = class Generic extends Archetype
     # implement the appropriate asynchronous hook. This mechanism is
     # intended as a heartbeat that can be leveraged by each service.
     setupBeacon: ->
+        assert b = "beacon"; u = -> moment.unix()
         msg = "Setting up the kernel beacon at %s ms"
         interval = nconf.get("beacon:interval") or null
         noInterval = "no beacon interval has been given"
-        eua = (s) => (n) => s.upstreamAsync("beacon", n)(@)
+        eua = (s) => (n) => s.upstreamAsync(b, n)(@, u())
         assert _.isNumber(interval), noInterval.toString()
         logger.info msg.magenta, interval.toString().bold
         timer = (millisec, fn) -> setInterval fn, millisec

@@ -83,7 +83,7 @@ module.exports.Service = class Service extends Archetype
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
-    beacon: (kernel, next) -> next()
+    beacon: (kernel, timestamp, next) -> next()
 
     # A hook that will be called prior to instantiating the service
     # implementation. Please refer to this prototype signature for
