@@ -146,7 +146,7 @@ module.exports.Watcher = class Watcher extends Archetype
         return yes unless _.isEmpty @rebooting or undefined
         timer = (fnx, millisec) -> setTimeout millisec, fnx
         logger.warn msg.toString().red, reboot or undefined
-        killer = -> process.nextTick -> do -> throw reason
+        killer = (exp) => @kernel.shutdownKernel exp, false
         return @rebooting = timer reboot, => killer reason
 
     # The responsibility of this method is to determine whether it is
