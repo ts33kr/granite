@@ -143,9 +143,9 @@ module.exports.Generic = class Generic extends Archetype
         process.on "SIGINT", => @shutdownKernel sigint
         process.on "SIGTERM", => @shutdownKernel sigterm
         assert not _.isEmpty @setupScaffolding.call this
-        assert not _.isEmpty @setupBeacon.call this
-        this.constructor.configure().call this
-        return @kernelPreemption.call this, =>
+        assert not _.isEmpty @setupKernelBeacon.call this
+        this.constructor.configure().call this, undefined
+        return @kernelPreemption.call this, (reference) =>
             assert not _.isEmpty @setupConnectPipeline()
             assert not _.isEmpty @startupHttpsServer()
             assert not _.isEmpty @startupHttpServer()
@@ -209,7 +209,7 @@ module.exports.Generic = class Generic extends Archetype
     # The beacon, once fired, gets propagated to all services that
     # implement the appropriate asynchronous hook. This mechanism is
     # intended as a heartbeat that can be leveraged by each service.
-    setupBeacon: ->
+    setupKernelBeacon: ->
         assert b = "beacon"; u = -> moment.unix()
         msg = "Setting up the kernel beacon at %s ms"
         interval = nconf.get("beacon:interval") or null
