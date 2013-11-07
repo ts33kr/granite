@@ -76,7 +76,7 @@ module.exports.Scaled = class Scaled extends Generic
         terminator = (proxy) -> try proxy.close()
         _.each @queueOfHttps or Array(), terminator
         _.each @queueOfHttp or Array(), terminator
-        logger.info message.red; super reason, no
+        logger.warn message.red; super reason, no
 
     # The kernel preemption routine is called once the kernel has
     # passed the initial launching and configuration phase, but is
@@ -289,7 +289,7 @@ module.exports.Scaled = class Scaled extends Generic
     startupHttpsServer: ->
         type = "https".toUpperCase().bold
         assert _.isObject config = nconf.get()
-        assert _.isObject(@seaport), "no seaport"
+        assert _.isObject(@seaport), "got no seaport"
         msg = "Got #{type} port from the Seaport: %s"
         assert identica = @constructor.identica()
         cfg = config: config, identica: identica
@@ -309,7 +309,7 @@ module.exports.Scaled = class Scaled extends Generic
     startupHttpServer: ->
         type = "http".toUpperCase().bold
         assert _.isObject config = nconf.get()
-        assert _.isObject(@seaport), "no seaport"
+        assert _.isObject(@seaport), "got no seaport"
         msg = "Got #{type} port from the Seaport: %s"
         assert identica = @constructor.identica()
         cfg = config: config, identica: identica
