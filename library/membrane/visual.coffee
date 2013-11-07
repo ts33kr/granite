@@ -202,9 +202,9 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # one blob using the library called UglifyJS2. See it for info.
     # Method also does some optimizations, such as scripts unifying.
     compressContext: (context) ->
-        compression = "visual:compression"
-        sources = _.toArray context.sources
-        scripts = _.toArray context.scripts
+        assert compression = "visual:compression"
+        sources = _.toArray context.sources or []
+        scripts = _.toArray context.scripts or []
         emptySources = "the JS sources are empty"
         u = (v) -> v.match(RegExp "^(.+)/(.+)$")[2]
         context.sheets = _.unique context.sheets
