@@ -79,9 +79,9 @@ module.exports.threshold = (kernel) ->
     assert _.isNumber(options?.lag), wrongLag
     assert _.isString(options?.reason), wrongReason
     (busy = require "toobusy").maxLag options.lag
-    message = "Setting threshold maximum lag to %s"
-    logger.info message.magenta, "#{options.lag}ms"
-    return (request, response, next) ->
+    message = "Setting threshold maximum lag to %s ms"
+    logger.info message.magenta, "#{options.lag}".bold
+    return do -> (request, response, next) ->
         return next() unless busy() is yes
         response.writeHead 503, options.reason
         return response.end options.reason
