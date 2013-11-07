@@ -142,8 +142,9 @@ module.exports.Generic = class Generic extends Archetype
         sigterm = "Received the SIGTERM (terminate signal)"
         process.on "SIGINT", => @shutdownKernel sigint
         process.on "SIGTERM", => @shutdownKernel sigterm
-        assert _.isObject @setupScaffolding()
-        this.constructor.configure().apply this
+        assert not _.isEmpty @setupScaffolding.call this
+        assert not _.isEmpty @setupBeacon.call this
+        this.constructor.configure().call this
         return @kernelPreemption.call this, =>
             assert not _.isEmpty @setupConnectPipeline()
             assert not _.isEmpty @startupHttpsServer()
@@ -202,6 +203,29 @@ module.exports.Generic = class Generic extends Archetype
             logger.warn shutdown.red; @emit "shutdown"
             @scope?.disperse(); @domain?.dispose()
             return process.exit -1
+
+    # The important internal routine that sets up and configures a
+    # kernel beacon that gets fired once at each configured interval.
+    # The beacon, once fired, gets propagated to all services that
+    # implement the appropriate asynchronous hook. This mechanism is
+    # intended as a heartbeat that can be leveraged by each service.
+    setupBeacon: ->
+        msg = "Setting up the kernel beacon at %s ms"
+        interval = nconf.get("beacon:interval") or null
+        noInterval = "no beacon interval has been given"
+        eua = (s) => (n) => s.upstreamAsync("beacon", n)(@)
+        assert _.isNumber(interval), noInterval.toString()
+        logger.info msg.magenta, interval.toString().bold
+        timer = (millisec, fn) -> setInterval fn, millisec
+        return @beacon = timer interval, (parameters) =>
+            assert unix = moment().unix().toString()
+            pulse = "Kernel beacon pulse at a %s UNIX"
+            finished = "Done firing off beacon at the %s"
+            assert services = @router.registry or Array()
+            logger.debug pulse.magenta, "#{unix}".bold
+            prepared = _.map(services, eua) or Array()
+            async.series prepared, (error, results) ->
+                logger.debug finished, "#{unix}".bold
 
     # Instantiate a hot swapping watcher for this kernel and setup
     # the watcher per the scoping configuration to watch for certain
