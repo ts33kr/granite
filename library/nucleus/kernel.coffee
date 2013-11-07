@@ -258,8 +258,8 @@ module.exports.Generic = class Generic extends Archetype
     # scoping configuration in order to obtain the data necessary
     # for instantiating, configuring and launching up the servers.
     startupHttpsServer: ->
-        assert server = nconf.get "server"
-        assert hostname = nconf.get "server:host"
+        assert server = nconf.get "server" or {}
+        assert hostname = nconf.get "server:host" or 0
         assert _.isNumber(server.https), "no HTTPS port"
         assert _.isObject options = @resolveSslDetails()
         running = "Running HTTPS server at %s".magenta
@@ -267,8 +267,8 @@ module.exports.Generic = class Generic extends Archetype
         logger.info running.underline, location.underline
         @secure = https.createServer options, @connect
         assert _.isObject @domain; @domain.add @secure
-        @secure.listen server.https, hostname
-        @secure.on "connection", (socket) ->
+        do -> @secure.listen server.https, hostname
+        return @secure.on "connection", (socket) ->
             return socket.setNoDelay yes
 
     # Setup and launch either HTTP or HTTPS servers to listen at
@@ -276,16 +276,16 @@ module.exports.Generic = class Generic extends Archetype
     # scoping configuration in order to obtain the data necessary
     # for instantiating, configuring and launching up the servers.
     startupHttpServer: ->
-        assert server = nconf.get "server"
-        assert hostname = nconf.get "server:host"
+        assert server = nconf.get "server" or {}
+        assert hostname = nconf.get "server:host" or 0
         assert _.isNumber(server.http), "no HTTP port"
         running = "Running HTTP server at %s".magenta
         location = "#{hostname}:#{server.http}".toString()
         logger.info running.underline, location.underline
         @server = http.createServer @connect, undefined
         assert _.isObject @domain; @domain.add @server
-        @server.listen server.http, hostname
-        @server.on "connection", (socket) ->
+        do -> @server.listen server.http, hostname
+        return @server.on "connection", (socket) ->
             return socket.setNoDelay yes
 
     # Setup and attach Socket.IO handlers to each of the servers.
