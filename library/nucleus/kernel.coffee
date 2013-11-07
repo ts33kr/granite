@@ -146,7 +146,8 @@ module.exports.Generic = class Generic extends Archetype
         this.constructor.configure().apply this
         return @kernelPreemption.call this, =>
             assert not _.isEmpty @setupConnectPipeline()
-            assert not _.isEmpty @setupListeningServers()
+            assert not _.isEmpty @startupHttpsServer()
+            assert not _.isEmpty @startupHttpServer()
             assert not _.isEmpty @setupSocketServers()
             assert not _.isEmpty @setupHotloadWatcher()
             assert identica = @constructor.identica()
@@ -232,18 +233,6 @@ module.exports.Generic = class Generic extends Archetype
         throw new Error noLevel unless options.level
         logger.remove logger.transports.Console
         logger.add logger.transports.Console, options
-
-    # Create and configure the HTTP and HTTPS servers to listen at
-    # the configured addresses and ports. This method reads up the
-    # scoping configuration in order to obtain the data necessary
-    # for instantiating, configuring and launching up the servers.
-    setupListeningServers: ->
-        try @startupHttpsServer() catch error
-            message = "Exception while launching HTTPS server:\r\n%s"
-            logger.warn message.red, error.stack; process.exit -1
-        try @startupHttpServer() catch error
-            message = "Exception while launching HTTP server:\r\n%s"
-            logger.warn message.red, error.stack; process.exit -1
 
     # This routine takes care of resolving all the necessary details
     # for successfully creating and running an HTTPS (SSL) server.
