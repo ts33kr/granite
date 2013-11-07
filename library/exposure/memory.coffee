@@ -55,8 +55,8 @@ module.exports.MemoryMonitor = class MemoryMonitor extends Zombie
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     instance: (kernel, service, next) ->
-        assert limit = try nconf.get "memory:limit"
-        assert _.isNumber(limit), "got no memory limit"
+        assert limit = nconf.get("memory:limit") or null
+        assert _.isNumber(limit), "invalid memory limits"
         note = "Setting kernel memory limit to %s bytes"
         hits = "Kernel memory limit overflow detected: %s"
         logger.warn note.red, try limit.toString().bold
@@ -67,7 +67,7 @@ module.exports.MemoryMonitor = class MemoryMonitor extends Zombie
             return undefined unless overflow is yes
             logger.warn hits.toString().red, detected
             kernel.emit "mem-limits", memory, limit
-            kernel.shutdownKernel undefined, no
+            kernel.shutdownKernel undefined, false
 
     # A hook that will be called each time when the kernel beacon
     # is being fired. Please refer to this prototype signature for
