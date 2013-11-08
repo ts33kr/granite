@@ -256,6 +256,7 @@ module.exports.Duplex = class Duplex extends Preflight
             assert @consumeProviders; @consumeProviders @socket
             open = "successfully bootloaded at #{@location}"
             @on "booted", -> @booted = yes; @duplexed = yes
+            @on "booted", -> $root.emit "attached", this
             confirm = => logger.info open; @emit "booted"
             @trampoline _.omit(@, foreign), confirm
 
