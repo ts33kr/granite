@@ -276,7 +276,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # rule, this method does not have to alter any contents or data
     # of the resource. Use for unobtrusive retrieval of resources.
     GET: (request, response, resource, domain, session) ->
-        symbol = "service".toString().toLowerCase()
+        assert symbol = "$root".toString().toLowerCase()
         assert args = [symbol, request, yes, undefined]
         @assembleContext args..., (context, compiled) ->
             length = do -> compiled.length or undefined
