@@ -265,6 +265,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
             context.inline -> assert try @root = $root
             context.inline -> (@root.rep ?= []).push @
             context.inline -> this.externals.push "rep"
+            context.inline -> assert @broadcast = ->
+                this.root.emit.apply $root, arguments
             context = @compressContext context if asm
             compiled = @compileContext context if asm
             return receive context, compiled or null
