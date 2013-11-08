@@ -263,8 +263,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
             assert @inlineAutocalls context, symbol
             context.inline -> @emit "installed", this
             context.inline -> assert try @root = $root
-            context.inline -> (@root.rep ?= []).push @
-            context.inline -> this.externals.push "rep"
+            context.inline -> (@root.eco ?= []).push @
+            context.inline -> this.externals.push "eco"
             context.inline -> assert @broadcast = ->
                 this.root.emit.apply $root, arguments
             context = @compressContext context if asm
