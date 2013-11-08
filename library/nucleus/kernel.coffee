@@ -28,7 +28,7 @@ connect = require "connect"
 logger = require "winston"
 moment = require "moment"
 pkginfo = require "pkginfo"
-socket = require "socket.io"
+socketio = require "socket.io"
 uuid = require "node-uuid"
 colors = require "colors"
 assert = require "assert"
@@ -322,8 +322,8 @@ module.exports.Generic = class Generic extends Archetype
         logger.info "Attaching Socket.IO to HTTP server"
         newMessage = "New Socket.IO connected at %s server"
         newSocket = (o) -> logger.debug newMessage.grey, o
-        assert @secureSocket = socket.listen @secure, sconfig
-        assert @serverSocket = socket.listen @server, sconfig
+        assert @secureSocket = socketio.listen @secure, sconfig
+        assert @serverSocket = socketio.listen @server, sconfig
         @configureSocketServers @serverSocket, @secureSocket
         @secureSocket.on "connection", -> newSocket "HTTPS"
         @serverSocket.on "connection", -> newSocket "HTTP"
@@ -353,6 +353,13 @@ module.exports.Generic = class Generic extends Archetype
         assert _.isObject every = try Object.create new Object
         every.set = (k, fx) -> io.set k, fx for io in servers
         every.enable = (fx) -> io.enable fx for io in servers
+        assert socketio.Manager::garbageCollection = ->
+            assert ids = _.keys @handshaken or Object()
+            assert _.isNumber index = ids?.length or 0
+            assert _.isNumber current = try Date.now()
+            f = (h) -> (current - h?.issued or 0) >= 3e4
+            k = (h, i) -> h.onDisconnect ids[i] if f(h)
+            k @handshaken[ids[index]], index while index--
         do -> every.enable "browser client minification"
         do -> every.enable "browser client etag"
         do -> every.enable "browser client gzip"
