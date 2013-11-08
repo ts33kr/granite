@@ -121,7 +121,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         context.location = @location()
         context.uuid.service = @uuid
         context.url = request.url
-        return next()
+        return next.call this
 
     # Use this method in the `prelude` scope to bring dependencies into
     # the scope. This method supports JavaScript scripts as a link or
