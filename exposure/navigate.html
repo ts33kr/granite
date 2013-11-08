@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="en"><head><title>exposure/navigate</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/navigate"><meta name="groc-project-path" content="library/exposure/navigate.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/navigate.coffee">library/exposure/navigate.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">request = </span><span class="nx">require</span> <span class="s">&quot;request&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span>
+<span class="p">{</span><span class="nx">Preflight</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/preflight&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This abstract compound provides the hash navigation functionality.
+It is basically and advanced hash router to be deployed to client
+site. It is well fitted within the framework architecture and is
+the fusion of the server and client site environments, exposing a
+convenient server API that that defined the client routing logic.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Navigate = </span><span class="k">class</span> <span class="nx">Navigate</span> <span class="k">extends</span> <span class="nx">Preflight</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block here defines a set of Bower dependencies that are
+going to be necessary no matter what sort of functionality is
+is going to be implemented. Most of these libraries required
+by the internal implementations of the various subcomponents.
+Refer to <code>BowerSupport</code> class implementation for information.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@bower</span> <span class="s">&quot;crossroads.js&quot;</span><span class="p">,</span> <span class="s">&quot;dist/crossroads.min.js&quot;</span>
+    <span class="nx">@bower</span> <span class="s">&quot;hasher&quot;</span><span class="p">,</span> <span class="s">&quot;dist/js/hasher.min.js&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Mount the supplied implementation as the hash location route
+hanlder. The implementation is assumed to be the client site
+coded and therefore is automatically externalized by use of
+<code>external</code> tool and the gets transferred to a client by the
+usual mechanisms defined in the <code>Screenplay</code> implementation.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@mount: </span><span class="nf">(xoptions, xendpoint, ximplement) -&gt;</span>
+        <span class="nv">endpoint = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">)</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nv">implement = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">)</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nv">options = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span><span class="p">)</span> <span class="o">or</span> <span class="p">{}</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">endpoint</span><span class="p">),</span> <span class="s">&quot;got invalid endpoint&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">implement</span><span class="p">),</span> <span class="s">&quot;no implementation&quot;</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">implement</span><span class="p">.</span><span class="nx">remote</span><span class="o">?</span><span class="p">,</span> <span class="s">&quot;is already external&quot;</span>
+        <span class="nx">assert</span> <span class="sr">/[\w\/-_]+/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">endpoint</span><span class="p">),</span> <span class="s">&quot;dirty endpoint&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nv">externed = </span><span class="nx">external</span> <span class="nx">implement</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">externed</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">meta</span> <span class="o">?=</span> <span class="nb">Object</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">ptr = endpoint: </span><span class="nx">endpoint</span><span class="p">,</span> <span class="nv">options: </span><span class="nx">options</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">externed</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">meta</span><span class="p">,</span> <span class="nx">ptr</span><span class="p">;</span> <span class="nx">externed</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an external autocall routine that when invoked on the
+client site - it creates, initializes, and sets up the hashing
+navigation solution. This is a subsystem that features fully
+fledged router for the hash (#) style navigation within single
+page-ish environment. Should be used in the top level service!</p></div></div><div class="code"><div class="wrapper">    <span class="nv">navigation: </span><span class="nx">@autocall</span> <span class="nv">z: </span><span class="o">+</span><span class="mi">103</span><span class="p">,</span> <span class="nf">-&gt;</span>
+        <span class="nv">router = </span><span class="s">&quot;no crossroads router is detected&quot;</span>
+        <span class="nv">attaching = </span><span class="s">&quot;no hasher library has been found&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">hasher</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">attaching</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">crossroads</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">router</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;setting up the hashing navigation&quot;</span>
+        <span class="nv">parser = </span><span class="nf">(landed, old) -&gt;</span> <span class="nx">crossroads</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">landed</span>
+        <span class="nv">begin = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">@</span><span class="p">,</span> <span class="nf">(x) -&gt;</span> <span class="nx">x</span><span class="o">?</span><span class="p">.</span><span class="nx">meta</span><span class="o">?</span><span class="p">.</span><span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">default</span>
+        <span class="nx">hasher</span><span class="p">.</span><span class="nx">setHash</span> <span class="nx">begin</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">endpoint</span> <span class="k">if</span> <span class="nx">begin</span><span class="o">?</span><span class="p">.</span><span class="nx">meta</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">hasher</span><span class="p">.</span><span class="nx">initialized</span><span class="p">.</span><span class="nx">add</span> <span class="nx">parser</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">hasher</span><span class="p">.</span><span class="nx">changed</span><span class="p">.</span><span class="nx">add</span> <span class="nx">parser</span>
+        <span class="nv">setupAndExecute = </span><span class="nf">(fx) -&gt;</span> <span class="nx">hasher</span><span class="p">.</span><span class="nx">init</span><span class="p">();</span> <span class="nx">fx</span>
+        <span class="nx">setupAndExecute</span> <span class="nx">_</span><span class="p">.</span><span class="nx">forIn</span> <span class="k">this</span><span class="p">,</span> <span class="nf">(value, name) -&gt;</span>
+            <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">value</span> <span class="o">or</span> <span class="kc">null</span>
+            <span class="k">return</span> <span class="k">unless</span> <span class="nx">value</span><span class="o">?</span><span class="p">.</span><span class="nx">meta</span><span class="o">?</span><span class="p">.</span><span class="nx">endpoint</span> <span class="o">or</span> <span class="mi">0</span>
+            <span class="nx">assert</span> <span class="nv">endpoint = </span><span class="k">try</span> <span class="nx">value</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">endpoint</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="s">&quot;mount endpoint </span><span class="si">#{</span><span class="nx">endpoint</span><span class="si">}</span><span class="s">&quot;</span>
+            <span class="nx">crossroads</span><span class="p">.</span><span class="nx">addRoute</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">endpoint</span><span class="si">}</span><span class="s">&quot;</span><span class="p">,</span> <span class="nx">value</span></div></div></div></div></body></html>

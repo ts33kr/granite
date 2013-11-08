@@ -42,7 +42,8 @@ The methods have implementations, but marked as the unsupported.
 The ABC also provides stubbed implementation for the API hooks.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Stubs = </span><span class="k">class</span> <span class="nx">Stubs</span> <span class="k">extends</span> <span class="nx">Restful</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
-mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called once the Connect middleware writes
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called once the Connect middleware writes
 off the headers. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
@@ -73,19 +74,25 @@ is asynchronously wired in, so consult with <code>async</code> package.
 Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">postpushing: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should generally be used to obtain HTTP methods that
 are allowed on this resources. This is not the only possible way
 of implementing this method, because it usually can have a lot of
-different interpretations other than the one in the HTTP spec.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">OPTIONS: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Delete the contents of the resources at the establushed path. It
+different interpretations other than the one in the HTTP spec.
+The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">OPTIONS: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Delete the contents of the resources at the establushed path. It
 generally should destroy the contents of the resource for good.
 Be sure to provide enough protection for your API for destructive
-HTTP methods like this one. Apply it to indicate destruction.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">DELETE: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Alter the contents of the resources at the established path. It
+HTTP methods like this one. Apply it to indicate destruction.
+The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">DELETE: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Alter the contents of the resources at the established path. It
 usually means partial replacing contents with the new contents.
 This HTTP method nicely maps to UPDATE method of the storages.
-Use this method to partially replace the contents of resources.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">PATCH: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Append the contents to the resources at the established path. It
+Use this method to partially replace the contents of resources.
+The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">PATCH: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Append the contents to the resources at the established path. It
 usually means adding new content in addition to the old one. This
 HTTP method nicely maps to INSERT method of the storage engines.
-Use this method to successively append new contents to resources.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">POST: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Alter the contents of the resources at the established path. It
+Use this method to successively append new contents to resources.
+The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">POST: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Alter the contents of the resources at the established path. It
 usually means replacing the old contents with the new contents.
 This HTTP method nicely maps to UPDATE method of the storages.
-Use this method to repetidely replace the contents of resources.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">PUT: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Get the contents of the resources at the established path. It
+Use this method to repetidely replace the contents of resources.
+The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">PUT: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Get the contents of the resources at the established path. It
 is a good idea for this HTTP method to be idempotent. As the
 rule, this method does not have to alter any contents or data
-of the resource. Use for unobtrusive retrieval of resources.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">GET: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div></div></body></html>
+of the resource. Use for unobtrusive retrieval of resources.
+The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">GET: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div></div></body></html>

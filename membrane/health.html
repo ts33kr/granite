@@ -45,7 +45,8 @@ a service is healthy or not. On top of that it exposes the system
 that allows to query the health care status for all the services.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Healthcare = </span><span class="k">class</span> <span class="nx">Healthcare</span> <span class="k">extends</span> <span class="nx">Service</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
-mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method wraps a vanilla supplied heartbeat estimate with
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method wraps a vanilla supplied heartbeat estimate with
 a special wrapper. This wrapper provides a smater callback to
 the estimate as compared to the default one in <code>async</code>. Please
 refer to the implementation for the information on a callback.
@@ -57,7 +58,7 @@ Implementation directly affects the contents of the result map.</p></div></div><
         <span class="nx">assert</span> <span class="nv">guardian = </span><span class="nx">require</span><span class="p">(</span><span class="s">&quot;domain&quot;</span><span class="p">).</span><span class="nx">create</span><span class="p">()</span>
         <span class="nv">accept = </span><span class="nf">-&gt;</span> <span class="nx">callback</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nv">success: </span><span class="kc">yes</span>
         <span class="nv">guard = </span><span class="nf">(heartbeat) -&gt;</span> <span class="nx">guardian</span><span class="p">.</span><span class="nx">run</span> <span class="nx">heartbeat</span>
-        <span class="nx">assert</span> <span class="nv">check = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">create</span> <span class="k">new</span> <span class="nb">Object</span><span class="p">()</span>
+        <span class="nv">check = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">create</span> <span class="nv">events.EventEmitter2::</span>
         <span class="nv">check.not = </span><span class="nf">(m, c) -&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">m</span> <span class="k">if</span> <span class="nx">c</span>
         <span class="nv">check.for = </span><span class="nf">(m, c) -&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">m</span> <span class="k">unless</span> <span class="nx">c</span>
         <span class="nv">check.try = </span><span class="nf">(m, f) -&gt;</span> <span class="k">try</span> <span class="nx">f</span><span class="p">()</span> <span class="k">catch</span> <span class="nx">e</span> <span class="k">then</span> <span class="nx">@</span><span class="o">not</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">e</span>
@@ -67,26 +68,26 @@ used to create an appropriate healthcare report when heartbeat
 fails gracefully to ensure the health status. This method does
 include information such as originating file and line number.
 Please refer to the implementation regarding extracted info.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@healthreport: </span><span class="nf">(error, callback) -&gt;</span>
-        <span class="nv">descriptor = </span><span class="k">new</span> <span class="nb">Object</span> <span class="nv">success: </span><span class="kc">no</span>
-        <span class="nx">assert</span> <span class="nv">stack = </span><span class="nx">require</span><span class="p">(</span><span class="s">&quot;callsite&quot;</span><span class="p">)()</span>
+        <span class="nx">assert</span> <span class="nv">descriptor = </span><span class="k">new</span> <span class="nb">Object</span> <span class="nv">success: </span><span class="kc">no</span>
         <span class="nv">generic = </span><span class="s">&quot;the health status has been rejected&quot;</span>
         <span class="nv">noFrame = </span><span class="s">&quot;no correct stack trace frame is found&quot;</span>
         <span class="nv">pattern = </span><span class="sr">/\s+at\s(.+)\s\((.+):(\d+):(\d+),.+\)/g</span>
         <span class="nv">descriptor.message = </span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">or</span> <span class="nx">generic</span>
         <span class="nx">assert</span> <span class="nv">frames = </span><span class="nx">pattern</span><span class="p">.</span><span class="nx">collect</span> <span class="nx">error</span><span class="p">.</span><span class="nx">stack</span>
-        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nv">target = </span><span class="nx">frames</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="nx">noFrame</span>
+        <span class="nv">select = </span><span class="nf">-&gt;</span> <span class="nx">frames</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">or</span> <span class="nx">frames</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nv">target = </span><span class="nx">select</span><span class="p">()),</span> <span class="nx">noFrame</span>
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">descriptor.file = </span><span class="nx">target</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">descriptor.line = </span><span class="nx">target</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">descriptor.cols = </span><span class="nx">target</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
-        <span class="k">return</span> <span class="nx">callback</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">descriptor</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Run a healthcare check on the service instance. This method
+        <span class="k">return</span> <span class="k">try</span> <span class="nx">callback</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">descriptor</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Run a healthcare check on the service instance. This method
 retrieves all the heartbeats of this service and its hierarchy
 run them in parallel, asynchronously. Once done, a callback
 will be invoked with the result object where key corresponds
 to a summary and a value to a success or failure. Also, if any
 error happens in any of the hertbeats, it reports to callback.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">healthcare: </span><span class="nf">(callback) -&gt;</span>
-        <span class="nv">adapt = </span><span class="nf">(f) =&gt;</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">heartrate</span> <span class="nx">f</span>
-        <span class="nv">bind = </span><span class="nf">(method) =&gt;</span> <span class="nx">adapt</span> <span class="nx">method</span><span class="p">.</span><span class="nx">bind</span> <span class="k">this</span>
-        <span class="nx">assert</span> <span class="nv">heartbeats = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">heartbeat</span><span class="p">()</span>
+        <span class="nv">adapt = </span><span class="nf">(f) =&gt;</span> <span class="k">return</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">heartrate</span> <span class="nx">f</span>
+        <span class="nv">bind = </span><span class="nf">(method) =&gt;</span> <span class="k">return</span> <span class="nx">adapt</span> <span class="nx">method</span><span class="p">.</span><span class="nx">bind</span> <span class="k">this</span>
+        <span class="nv">heartbeats = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">heartbeat</span><span class="p">()</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nv">indexed = </span><span class="nx">_</span><span class="p">.</span><span class="nx">indexBy</span> <span class="nx">heartbeats</span><span class="p">,</span> <span class="s">&quot;summary&quot;</span>
         <span class="nx">assert</span> <span class="nv">id = </span><span class="k">try</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
         <span class="nv">transform = </span><span class="nf">(a, v, k) -&gt;</span> <span class="nx">a</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="nx">bind</span> <span class="nx">v</span><span class="p">.</span><span class="nx">estimate</span>
@@ -95,7 +96,7 @@ error happens in any of the hertbeats, it reports to callback.</p></div></div><d
         <span class="nx">async</span><span class="p">.</span><span class="nx">parallel</span> <span class="nx">transformed</span><span class="p">,</span> <span class="nf">(error, map) -&gt;</span>
             <span class="k">return</span> <span class="nx">callback</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">map</span> <span class="k">unless</span> <span class="nx">error</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">error</span>
-            <span class="nx">callback</span> <span class="nx">error</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Define a new heartbeat monitor in the service hierarchy. It
+            <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">error</span><span class="p">;</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Define a new heartbeat monitor in the service hierarchy. It
 consists of a heartbeat descriptor and an estimation function
 that is actually invoked to determine if a service is healthy
 or not. If any of the classes in the inheritance hierarchy

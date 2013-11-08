@@ -51,13 +51,16 @@ Of course you are free to define as much scopes as you need.</p></div></div><div
     <span class="vi">@defaults.secure.cert = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../keys/cert.pem&quot;</span>
     <span class="vi">@defaults.layout = </span><span class="nv">library: </span><span class="s">&quot;library&quot;</span><span class="p">,</span> <span class="nv">config: </span><span class="s">&quot;config&quot;</span>
     <span class="vi">@defaults.session.key = </span><span class="s">&quot;granite.session.identification&quot;</span>
+    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">reboot: </span><span class="kc">false</span>
     <span class="vi">@defaults.threshold = </span><span class="nv">lag: </span><span class="mi">70</span><span class="p">,</span> <span class="nv">reason: </span><span class="s">&quot;overloaded&quot;</span>
+    <span class="vi">@defaults.memory = </span><span class="nv">limit: </span><span class="mi">256</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
     <span class="vi">@defaults.failures = </span><span class="nv">exposeExceptions: </span><span class="kc">no</span>
+    <span class="vi">@defaults.balancer = </span><span class="nv">sticky: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">ttl: </span><span class="mi">60</span>
     <span class="vi">@defaults.assets = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">opts: </span><span class="p">{}</span>
-    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">no</span>
+    <span class="vi">@defaults.kernel = </span><span class="nv">crashOnError: </span><span class="kc">yes</span>
     <span class="vi">@defaults.visual = </span><span class="nv">compression: </span><span class="kc">yes</span>
+    <span class="vi">@defaults.beacon = </span><span class="nv">interval: </span><span class="mi">60000</span>
     <span class="vi">@defaults.socket = </span><span class="s">&quot;log level&quot;</span><span class="o">:</span> <span class="mi">0</span>
-    <span class="vi">@defaults.balancer = </span><span class="nv">sticky: </span><span class="kc">yes</span>
     <span class="vi">@defaults.env.preserve = </span><span class="p">[</span><span class="s">&quot;pub&quot;</span><span class="p">]</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>One of the predefined scopes, baked into the framework. Scopes
 that are bundled with the framework are pretty standard and
 should generally cover 95% percent of the typical web needs.
@@ -75,13 +78,16 @@ Of course you are free to define as much scopes as you need.</p></div></div><div
     <span class="vi">@defaults.secure.cert = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../keys/cert.pem&quot;</span>
     <span class="vi">@defaults.layout = </span><span class="nv">library: </span><span class="s">&quot;library&quot;</span><span class="p">,</span> <span class="nv">config: </span><span class="s">&quot;config&quot;</span>
     <span class="vi">@defaults.session.key = </span><span class="s">&quot;granite.session.identification&quot;</span>
+    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">reboot: </span><span class="kc">false</span>
     <span class="vi">@defaults.threshold = </span><span class="nv">lag: </span><span class="mi">70</span><span class="p">,</span> <span class="nv">reason: </span><span class="s">&quot;overloaded&quot;</span>
+    <span class="vi">@defaults.memory = </span><span class="nv">limit: </span><span class="mi">256</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
     <span class="vi">@defaults.failures = </span><span class="nv">exposeExceptions: </span><span class="kc">no</span>
+    <span class="vi">@defaults.balancer = </span><span class="nv">sticky: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">ttl: </span><span class="mi">60</span>
     <span class="vi">@defaults.assets = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">opts: </span><span class="p">{}</span>
-    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">no</span>
+    <span class="vi">@defaults.kernel = </span><span class="nv">crashOnError: </span><span class="kc">yes</span>
     <span class="vi">@defaults.visual = </span><span class="nv">compression: </span><span class="kc">yes</span>
+    <span class="vi">@defaults.beacon = </span><span class="nv">interval: </span><span class="mi">60000</span>
     <span class="vi">@defaults.socket = </span><span class="s">&quot;log level&quot;</span><span class="o">:</span> <span class="mi">0</span>
-    <span class="vi">@defaults.balancer = </span><span class="nv">sticky: </span><span class="kc">yes</span>
     <span class="vi">@defaults.env.preserve = </span><span class="p">[</span><span class="s">&quot;pub&quot;</span><span class="p">]</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>One of the predefined scopes, baked into the framework. Scopes
 that are bundled with the framework are pretty standard and
 should generally cover 95% percent of the typical web needs.
@@ -99,13 +105,16 @@ Of course you are free to define as much scopes as you need.</p></div></div><div
     <span class="vi">@defaults.secure.cert = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../keys/cert.pem&quot;</span>
     <span class="vi">@defaults.layout = </span><span class="nv">library: </span><span class="s">&quot;library&quot;</span><span class="p">,</span> <span class="nv">config: </span><span class="s">&quot;config&quot;</span>
     <span class="vi">@defaults.session.key = </span><span class="s">&quot;granite.session.identification&quot;</span>
+    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">reboot: </span><span class="mi">100</span>
     <span class="vi">@defaults.threshold = </span><span class="nv">lag: </span><span class="mi">70</span><span class="p">,</span> <span class="nv">reason: </span><span class="s">&quot;overloaded&quot;</span>
+    <span class="vi">@defaults.memory = </span><span class="nv">limit: </span><span class="mi">256</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
     <span class="vi">@defaults.failures = </span><span class="nv">exposeExceptions: </span><span class="kc">yes</span>
+    <span class="vi">@defaults.balancer = </span><span class="nv">sticky: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">ttl: </span><span class="mi">60</span>
     <span class="vi">@defaults.assets = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">opts: </span><span class="p">{}</span>
-    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">yes</span>
+    <span class="vi">@defaults.kernel = </span><span class="nv">crashOnError: </span><span class="kc">yes</span>
     <span class="vi">@defaults.visual = </span><span class="nv">compression: </span><span class="kc">yes</span>
+    <span class="vi">@defaults.beacon = </span><span class="nv">interval: </span><span class="mi">60000</span>
     <span class="vi">@defaults.socket = </span><span class="s">&quot;log level&quot;</span><span class="o">:</span> <span class="mi">0</span>
-    <span class="vi">@defaults.balancer = </span><span class="nv">sticky: </span><span class="kc">yes</span>
     <span class="vi">@defaults.env.preserve = </span><span class="p">[</span><span class="s">&quot;pub&quot;</span><span class="p">]</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>One of the predefined scopes, baked into the framework. Scopes
 that are bundled with the framework are pretty standard and
 should generally cover 95% percent of the typical web needs.
@@ -123,11 +132,14 @@ Of course you are free to define as much scopes as you need.</p></div></div><div
     <span class="vi">@defaults.secure.cert = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../keys/cert.pem&quot;</span>
     <span class="vi">@defaults.layout = </span><span class="nv">library: </span><span class="s">&quot;library&quot;</span><span class="p">,</span> <span class="nv">config: </span><span class="s">&quot;config&quot;</span>
     <span class="vi">@defaults.session.key = </span><span class="s">&quot;granite.session.identification&quot;</span>
+    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">reboot: </span><span class="mi">100</span>
     <span class="vi">@defaults.threshold = </span><span class="nv">lag: </span><span class="mi">70</span><span class="p">,</span> <span class="nv">reason: </span><span class="s">&quot;overloaded&quot;</span>
+    <span class="vi">@defaults.memory = </span><span class="nv">limit: </span><span class="mi">256</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
     <span class="vi">@defaults.failures = </span><span class="nv">exposeExceptions: </span><span class="kc">no</span>
+    <span class="vi">@defaults.balancer = </span><span class="nv">sticky: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">ttl: </span><span class="mi">60</span>
     <span class="vi">@defaults.assets = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">opts: </span><span class="p">{}</span>
-    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">yes</span>
+    <span class="vi">@defaults.kernel = </span><span class="nv">crashOnError: </span><span class="kc">yes</span>
     <span class="vi">@defaults.visual = </span><span class="nv">compression: </span><span class="kc">yes</span>
+    <span class="vi">@defaults.beacon = </span><span class="nv">interval: </span><span class="mi">60000</span>
     <span class="vi">@defaults.socket = </span><span class="s">&quot;log level&quot;</span><span class="o">:</span> <span class="mi">0</span>
-    <span class="vi">@defaults.balancer = </span><span class="nv">sticky: </span><span class="kc">yes</span>
     <span class="vi">@defaults.env.preserve = </span><span class="p">[</span><span class="s">&quot;pub&quot;</span><span class="p">]</span></div></div></div></div></body></html>

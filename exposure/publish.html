@@ -36,6 +36,7 @@
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 
+<span class="p">{</span><span class="nx">OnlySsl</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/securing&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span>
 <span class="p">{</span><span class="nx">Healthcare</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/health&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This service exposes the entiry hierarchical structure of the
 service documentation, as they scanned and found in the current
@@ -47,16 +48,30 @@ to be used for matching HTTP requests against this service.
 Typically an HTTP pathname pattern and a domain name pattern.
 Try not to put constraints on the domain, unless necessary.
 Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@resource</span> <span class="s">&quot;/api/publish&quot;</span>
-    <span class="nx">@documentation</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Establish a heartbeat monitor. A hearbit monitor is a method
+    <span class="nx">@documentation</span> <span class="kc">yes</span>
+    <span class="nx">@compose</span> <span class="nx">OnlySsl</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block describes certain method of abrbitrary service. The
+exact process of how it is being documented depends on how the
+documented function is implemented. Please refer to <code>Document</code>
+class and its module implementation for more information on it.
+Also, see <code>Descriptor</code> compound implementation for reference!</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@GET</span> <span class="nf">(method, service, kernel) -&gt;</span>
+        <span class="nx">@relevant</span> <span class="s">&quot;ts33kr.github.io/granite/exposure/publish.html&quot;</span>
+        <span class="nx">@relevant</span> <span class="s">&quot;ts33kr.github.io/granite/membrane/document.html&quot;</span>
+        <span class="nx">@github</span> <span class="s">&quot;ts33kr&quot;</span><span class="p">,</span> <span class="s">&quot;granite&quot;</span><span class="p">,</span> <span class="s">&quot;library/exposure/publish.coffee&quot;</span>
+        <span class="nx">@synopsis</span> <span class="s">&quot;Get inventory of all APIs available in the system&quot;</span>
+        <span class="nx">@outputs</span> <span class="s">&quot;An array of objects, each describes a service&quot;</span>
+        <span class="nx">@markings</span> <span class="nv">framework: </span><span class="s">&quot;critical&quot;</span><span class="p">,</span> <span class="nv">stable: </span><span class="s">&quot;positive&quot;</span>
+        <span class="nx">@version</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">package</span><span class="p">.</span><span class="nx">version</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nx">@produces</span> <span class="s">&quot;application/json&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Establish a heartbeat monitor. A hearbit monitor is a method
 that tests whether some arbitrarty server functonality does
 what it is supposed to be. The heartbeats are all executed and
 kept on the server. A service may define any number of beats.
 The hearbeat implementation cycle is never exposed to clients.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@heartbeat</span> <span class="s">&quot;yields a consistent structure&quot;</span><span class="p">,</span> <span class="nf">(check, accept) -&gt;</span>
-        <span class="nx">request</span><span class="p">.</span><span class="nx">get</span> <span class="nx">@qualified</span><span class="p">(</span><span class="kc">no</span><span class="p">),</span> <span class="nf">(error, response, body) =&gt;</span>
+        <span class="nv">configured = </span><span class="nx">request</span><span class="p">.</span><span class="nx">defaults</span> <span class="nv">timeout: </span><span class="mi">300</span><span class="p">,</span> <span class="nv">strictSSL: </span><span class="kc">no</span>
+        <span class="nx">configured</span><span class="p">.</span><span class="nx">get</span> <span class="nx">@qualified</span><span class="p">(),</span> <span class="nf">(error, response, body) =&gt;</span>
             <span class="nv">mirror = </span><span class="nf">(obj) =&gt;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">location</span> <span class="o">is</span> <span class="nx">@location</span><span class="p">()</span>
             <span class="nv">method = </span><span class="nf">(obj) =&gt;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">method</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="o">is</span> <span class="s">&quot;GET&quot;</span>
+            <span class="nx">check</span><span class="p">.</span><span class="nx">for</span> <span class="s">&quot;wrong code&quot;</span><span class="p">,</span> <span class="nx">response</span><span class="o">?</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">is</span> <span class="mi">200</span>
             <span class="nx">check</span><span class="p">.</span><span class="nx">try</span> <span class="s">&quot;broken body&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nv">body = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">body</span>
-            <span class="nx">check</span><span class="p">.</span><span class="nx">for</span> <span class="s">&quot;wrong code&quot;</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">is</span> <span class="mi">200</span>
             <span class="nx">check</span><span class="p">.</span><span class="nx">for</span> <span class="s">&quot;wrong body&quot;</span><span class="p">,</span> <span class="nx">body</span> <span class="o">and</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">body</span>
             <span class="nx">check</span><span class="p">.</span><span class="nx">for</span> <span class="s">&quot;no service&quot;</span><span class="p">,</span> <span class="nv">id = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">body</span><span class="p">,</span> <span class="nx">mirror</span>
             <span class="nx">check</span><span class="p">.</span><span class="nx">for</span> <span class="s">&quot;no GET&quot;</span><span class="p">,</span> <span class="nv">get = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">id</span><span class="p">.</span><span class="nx">methods</span><span class="p">,</span> <span class="nx">method</span>
@@ -67,13 +82,14 @@ The hearbeat implementation cycle is never exposed to clients.</p></div></div><d
             <span class="nx">check</span><span class="p">.</span><span class="nx">for</span> <span class="s">&quot;no relevants&quot;</span><span class="p">,</span> <span class="nx">get</span><span class="p">.</span><span class="nx">relevant</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">2</span>
             <span class="nx">check</span><span class="p">.</span><span class="nx">for</span> <span class="s">&quot;no markings&quot;</span><span class="p">,</span> <span class="nx">get</span><span class="p">.</span><span class="nx">markings</span><span class="p">.</span><span class="nx">framework</span><span class="o">?</span>
             <span class="nx">check</span><span class="p">.</span><span class="nx">for</span> <span class="s">&quot;no githubs&quot;</span><span class="p">,</span> <span class="nx">get</span><span class="p">.</span><span class="nx">github</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">1</span>
-            <span class="k">return</span> <span class="nx">accept</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to invoking the API method
-implementation. Please refer to this prototype signature for
-information on the parameters it accepts. Beware, this hook
-is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">preprocess: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span>
+            <span class="k">return</span> <span class="nx">accept</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a per service middleware that gets spinned up once a
+request comes through the service. All middlewares are method
+agnostic and are being spinned up for all the HTTP methods. It
+is a good idea to break up the entiry functionality of service
+into a smaller middlewares, as they are being run in sequence.
+Be aware that the middlewares can also be inherited from BCs.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@middleware</span> <span class="nf">(request, response, resource, domain, next) -&gt;</span>
         <span class="nx">assert</span> <span class="nv">descriptions = </span><span class="nx">@collectDescriptions</span><span class="p">()</span>
-        <span class="nv">internalError = </span><span class="s">&quot;unexpected publishing error&quot;</span>
+        <span class="nv">internalError = </span><span class="s">&quot;an unexpected publishing error&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">request.records = </span><span class="nx">descriptions</span>
         <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">request</span><span class="p">.</span><span class="nx">platform</span>
         <span class="nv">getters = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">descriptions</span><span class="p">,</span> <span class="nf">(record) =&gt;</span> <span class="nf">(callback) =&gt;</span>
@@ -83,19 +99,22 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
             <span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">healthcare</span> <span class="nf">(error, measures) -&gt;</span>
                 <span class="nx">assert</span><span class="p">.</span><span class="nx">ifError</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">internalError</span>
                 <span class="nx">assert</span> <span class="nv">record.healthcare = </span><span class="nx">measures</span>
-                <span class="k">return</span> <span class="nx">callback</span> <span class="kc">undefined</span>
+                <span class="k">return</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span><span class="p">,</span> <span class="kc">undefined</span>
         <span class="k">return</span> <span class="nx">async</span><span class="p">.</span><span class="nx">parallel</span> <span class="nx">getters</span><span class="p">,</span> <span class="nx">next</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Get the contents of the resources at the established path. It
 is a good idea for this HTTP method to be idempotent. As the
 rule, this method does not have to alter any contents or data
-of the resource. Use for unobtrusive retrieval of resources.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">GET: </span><span class="nf">(request, response) -&gt;</span>
+of the resource. Use for unobtrusive retrieval of resources.
+The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">GET: </span><span class="nf">(request, response, resource, domain, session) -&gt;</span>
         <span class="nx">@push</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">request</span><span class="p">.</span><span class="nx">records</span><span class="p">,</span> <span class="nf">(record) -&gt;</span>
             <span class="nv">constructor = </span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">constructor</span>
-            <span class="nv">healthcare: </span><span class="nx">record</span><span class="p">.</span><span class="nx">healthcare</span> <span class="o">or</span> <span class="p">{}</span>
-            <span class="nv">qualified: </span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">qualified</span><span class="p">()</span>
-            <span class="nv">location: </span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">location</span><span class="p">()</span>
-            <span class="nv">identify: </span><span class="nx">constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
-            <span class="nv">patterns: </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">constructor</span><span class="p">.</span><span class="nx">resources</span><span class="p">,</span> <span class="s">&quot;source&quot;</span>
-            <span class="nv">methods: </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">record</span><span class="p">.</span><span class="nx">methods</span><span class="p">,</span> <span class="nf">(document, method) -&gt;</span>
+            <span class="nx">assert</span> <span class="nv">docs = </span><span class="nx">record</span><span class="p">.</span><span class="nx">methods</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+            <span class="nx">assert</span> <span class="nv">resources = </span><span class="nx">constructor</span><span class="p">.</span><span class="nx">resources</span>
+            <span class="nv">location: </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">location</span><span class="p">()</span><span class="si">}</span><span class="s">&quot;</span>
+            <span class="nv">qualified: </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">qualified</span><span class="p">()</span><span class="si">}</span><span class="s">&quot;</span>
+            <span class="nv">identify: </span><span class="nx">constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">toString</span><span class="p">()</span>
+            <span class="nv">healthcare: </span><span class="nx">record</span><span class="p">.</span><span class="nx">healthcare</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Object</span>
+            <span class="nv">patterns: </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">resources</span><span class="p">,</span> <span class="nf">(r) -&gt;</span> <span class="nx">r</span><span class="p">.</span><span class="nx">source</span>
+            <span class="nv">methods: </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">docs</span><span class="p">,</span> <span class="nf">(document, method) -&gt;</span>
                 <span class="nv">relevant: </span><span class="nb">document</span><span class="p">.</span><span class="nx">relevant</span><span class="p">()</span>
                 <span class="nv">markings: </span><span class="nb">document</span><span class="p">.</span><span class="nx">markings</span><span class="p">()</span>
                 <span class="nv">argument: </span><span class="nb">document</span><span class="p">.</span><span class="nx">argument</span><span class="p">()</span>
@@ -106,18 +125,7 @@ of the resource. Use for unobtrusive retrieval of resources.</p></div></div><div
                 <span class="nv">failure: </span><span class="nb">document</span><span class="p">.</span><span class="nx">failure</span><span class="p">()</span>
                 <span class="nv">outputs: </span><span class="nb">document</span><span class="p">.</span><span class="nx">outputs</span><span class="p">()</span>
                 <span class="nv">schemas: </span><span class="nb">document</span><span class="p">.</span><span class="nx">schemas</span><span class="p">()</span>
-                <span class="nv">inputs: </span><span class="nb">document</span><span class="p">.</span><span class="nx">inputs</span><span class="p">()</span>
                 <span class="nv">github: </span><span class="nb">document</span><span class="p">.</span><span class="nx">github</span><span class="p">()</span>
-                <span class="nv">notes: </span><span class="nb">document</span><span class="p">.</span><span class="nx">notes</span><span class="p">()</span>
-                <span class="nv">method: </span><span class="nx">method</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block describes certain method of abrbitrary service. The
-exact process of how it is being documented depends on how the
-documented function is implemented. Please refer to <code>Document</code>
-class and its module implementation for more information on it.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@GET</span> <span class="nf">(method, service, kernel) -&gt;</span>
-        <span class="nx">@relevant</span> <span class="s">&quot;ts33kr.github.io/granite/exposure/publish.html&quot;</span>
-        <span class="nx">@relevant</span> <span class="s">&quot;ts33kr.github.io/granite/membrane/document.html&quot;</span>
-        <span class="nx">@github</span> <span class="s">&quot;ts33kr&quot;</span><span class="p">,</span> <span class="s">&quot;granite&quot;</span><span class="p">,</span> <span class="s">&quot;library/exposure/publish.coffee&quot;</span>
-        <span class="nx">@synopsis</span> <span class="s">&quot;Get inventory of all APIs available in the system&quot;</span>
-        <span class="nx">@outputs</span> <span class="s">&quot;An array of objects, each describes a service&quot;</span>
-        <span class="nx">@markings</span> <span class="nv">framework: </span><span class="s">&quot;critical&quot;</span><span class="p">,</span> <span class="nv">stable: </span><span class="s">&quot;positive&quot;</span>
-        <span class="nx">@version</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">package</span><span class="p">.</span><span class="nx">version</span> <span class="o">or</span> <span class="kc">undefined</span>
-        <span class="nx">@produces</span> <span class="s">&quot;application/json&quot;</span></div></div></div></div></body></html>
+                <span class="nv">inputs: </span><span class="nb">document</span><span class="p">.</span><span class="nx">inputs</span><span class="p">()</span>
+                <span class="nv">remark: </span><span class="nb">document</span><span class="p">.</span><span class="nx">remark</span><span class="p">()</span>
+                <span class="nv">method: </span><span class="nx">method</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div></div></body></html>

@@ -46,4 +46,5 @@ This abstraction also aids help for the dynamic class composition system
 that needs a common point of match in the class hierarchies of the peers.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Archetype = </span><span class="nx">remote</span> <span class="nf">-&gt;</span> <span class="k">class</span> <span class="nx">Archetype</span> <span class="k">extends</span> <span class="nx">EventEmitter2</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
-mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div></div></body></html>
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div></div></body></html>

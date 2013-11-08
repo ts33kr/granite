@@ -24,6 +24,7 @@
 <span class="cm">###</span>
 
 <span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
@@ -36,53 +37,69 @@
 <span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./archetype&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This class is a content negotiation broker. It is instantiated by
 the kernel and then can be used either directly or via middleware
 to negotiate the procedure of responding to a client with the data
-using the correct protocol, meaning correct <code>Content-Type</code>, etc.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Broker = </span><span class="k">class</span> <span class="nx">Broker</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Every broker has to have a public constructor that accepts
+using the correct protocol, meaning correct <code>Content-Type</code> header.
+This also tries to correctly set the <code>Content-Length</code> header too.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Broker = </span><span class="k">class</span> <span class="nx">Broker</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Every broker has to have a public constructor that accepts
 the kernel instance as a parameter. You can override it as
 you see fit, but be sure to invoke the super constructor and
 it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Register the specified content negotiator with the broker. The
 The negotiator returns a function if it can handle the request
 and response pair. If specific negotiator cannot handle the
 pair, it should return anything other than a function object.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@associate: </span><span class="nf">(negotiator) -&gt;</span>
-        <span class="nv">registry = </span><span class="nx">@registry</span> <span class="o">or</span> <span class="p">[]</span>
-        <span class="nv">isValid = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">negotiator</span>
-        <span class="nv">invalid = </span><span class="s">&quot;Checker is not a valid method&quot;</span>
+        <span class="nv">isValid = </span><span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">negotiator</span>
+        <span class="nx">assert</span> <span class="nv">registry = </span><span class="nx">@registry</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nv">invalid = </span><span class="s">&quot;negotiator is not a function&quot;</span>
         <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">invalid</span> <span class="k">unless</span> <span class="nx">isValid</span>
-        <span class="vi">@registry = </span><span class="nx">registry</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">negotiator</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Content negotiate the request/response pair to use the correct
+        <span class="nx">assert</span> <span class="vi">@registry = </span><span class="nx">_</span><span class="p">.</span><span class="nx">clone</span> <span class="nx">registry</span>
+        <span class="nx">assert</span> <span class="nx">@registry</span><span class="p">.</span><span class="nx">unshift</span> <span class="nx">negotiator</span>
+        <span class="nx">assert</span> <span class="nx">negotiator</span> <span class="k">in</span> <span class="p">(</span><span class="nx">@registry</span> <span class="o">or</span> <span class="p">[])</span>
+        <span class="nx">assert</span> <span class="nx">negotiator</span><span class="p">.</span><span class="nx">apply</span><span class="o">?</span><span class="p">;</span> <span class="nx">negotiator</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Content negotiate the request/response pair to use the correct
 protocol. The protocol is implemented by the content negotiator
 that might or might not have been previously add to the broker.
 The negotiator returns a function if it can handle the pair.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">negotiate: </span><span class="nf">(request, response, content) -&gt;</span>
-        <span class="nv">registry = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">registry</span> <span class="o">?=</span> <span class="p">[]</span>
+        <span class="nv">registry = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">registry</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nv">anInternal = </span><span class="s">&quot;no negotiatator registry&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">registry</span><span class="p">),</span> <span class="nx">anInternal</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArguments</span> <span class="nv">params = </span><span class="nx">arguments</span>
+        <span class="nv">ending = </span><span class="nf">(fn) =&gt;</span> <span class="nx">fn</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">params</span>
         <span class="k">for</span> <span class="k">own</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">negotiator</span> <span class="k">of</span> <span class="nx">registry</span>
-            <span class="nv">bounded = </span><span class="nx">negotiator</span><span class="p">.</span><span class="nx">bind</span> <span class="k">this</span>
-            <span class="nv">flusher = </span><span class="nx">bounded</span> <span class="nx">arguments</span><span class="p">...</span>
-            <span class="nv">handles = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">flusher</span>
-            <span class="k">return</span> <span class="nx">flusher</span> <span class="nx">arguments</span><span class="p">...</span> <span class="k">if</span> <span class="nx">handles</span>
+            <span class="nx">assert</span> <span class="nv">bounded = </span><span class="nx">negotiator</span><span class="p">.</span><span class="nx">bind</span> <span class="k">this</span>
+            <span class="nv">flusher = </span><span class="nx">bounded</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span>
+            <span class="nv">handles = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">flusher</span><span class="p">)</span> <span class="o">or</span> <span class="kc">null</span>
+            <span class="k">return</span> <span class="nx">ending</span> <span class="nx">flusher</span> <span class="k">if</span> <span class="nx">handles</span> <span class="o">is</span> <span class="kc">yes</span>
         <span class="nx">@output</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">content</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Output the encoded content to the response write stream. This is
 an utility method whose implementation is tweaked to the way it
 is being used by this class. It has to do with the way this method
 writes out the <code>Content-Length</code> header deduced from encoded size.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">output: </span><span class="nf">(response, encoded) -&gt;</span>
-        <span class="nv">valid = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">encoded</span>
-        <span class="nv">areSent = </span><span class="nx">response</span><span class="p">.</span><span class="nx">headersSent</span>
-        <span class="nv">invalid = </span><span class="s">&quot;Invalid encoded content&quot;</span>
+        <span class="nv">valid = </span><span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">encoded</span>
+        <span class="nv">sent = </span><span class="nx">response</span><span class="p">.</span><span class="nx">headersSent</span> <span class="o">or</span> <span class="kc">no</span>
+        <span class="nv">invalid = </span><span class="s">&quot;invalid encoded content&quot;</span>
         <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">invalid</span> <span class="k">unless</span> <span class="nx">valid</span>
         <span class="nv">args = </span><span class="p">[</span><span class="s">&quot;Content-Length&quot;</span><span class="p">,</span> <span class="nx">encoded</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span>
-        <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="nx">args</span><span class="p">...</span> <span class="k">unless</span> <span class="nx">areSent</span>
-        <span class="nx">response</span><span class="p">.</span><span class="nx">write</span> <span class="nx">encoded</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This class is a content negotiation broker. It is instantiated by
-the kernel and then can be used either directly or via middleware
-to negotiate the procedure of responding to a client with the data
-using the correct protocol, meaning correct <code>Content-Type</code>, etc.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.JsonBroker = </span><span class="k">class</span> <span class="nx">JsonBroker</span> <span class="k">extends</span> <span class="nx">Broker</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Associate the JSON negotiator with the broker. This method
+        <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="nx">args</span><span class="p">...</span> <span class="k">unless</span> <span class="nx">sent</span>
+        <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">write</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">encoded</span><span class="si">}</span><span class="s">&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This class is a derived content negotiation broker that provides
+the support for sending native data as JSON encoded blob. This does
+support <code>Object</code> and <code>Array</code> as the root containers. If any other
+root data type is attempted - that is an error. The broker and the
+<code>sender</code> middleware are designed to work mostly with data objects.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.JsonBroker = </span><span class="k">class</span> <span class="nx">JsonBroker</span> <span class="k">extends</span> <span class="nx">Broker</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The actual flusher that serializes the JSON root object and
+fluses it down to the request. This is executed if negotiator
+successfully checks out all the criteria to invoke flusher on
+the supplied data. It should be either an array or an object.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@jsonFlusher: </span><span class="nf">(request, response, content) -&gt;</span>
+        <span class="nv">type = </span><span class="s">&quot;Content-Type&quot;</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span>
+        <span class="nv">json = </span><span class="s">&quot;application/json&quot;</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span>
+        <span class="nv">sent = </span><span class="nx">response</span><span class="p">.</span><span class="nx">headersSent</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nx">assert</span> <span class="nv">dump = </span><span class="k">try</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">JSON</span>
+        <span class="nv">doesHtml = </span><span class="nx">response</span><span class="p">.</span><span class="nx">accepts</span> <span class="sr">/html/</span><span class="p">,</span> <span class="sr">/xhtml/</span>
+        <span class="nv">spaces = </span><span class="k">if</span> <span class="nx">doesHtml</span> <span class="k">then</span> <span class="mi">4</span> <span class="k">else</span> <span class="kc">undefined</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">json</span> <span class="k">unless</span> <span class="nx">sent</span>
+        <span class="nv">jsoned = </span><span class="nf">(x) -&gt;</span> <span class="nx">dump</span> <span class="nx">x</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">spaces</span>
+        <span class="k">return</span> <span class="nx">@output</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">jsoned</span> <span class="nx">content</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Associate the JSON negotiator with the broker. This method
 checks if the content is either <code>Object</code> or <code>Array</code>, and if
 it is then it sets the appropriate <code>Content-Type</code> header and
 writes out the properly encoded JSON response to the client.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@associate</span> <span class="nf">(request, response, content) -&gt;</span>
-        <span class="nv">isArray = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">content</span>
-        <span class="nv">isObject = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">content</span>
-        <span class="k">return</span> <span class="k">unless</span> <span class="nx">isArray</span> <span class="o">or</span> <span class="nx">isObject</span>
-        <span class="nf">(request, response, content) =&gt;</span>
-            <span class="nv">type = </span><span class="s">&quot;Content-Type&quot;</span>
-            <span class="nv">json = </span><span class="s">&quot;application/json&quot;</span>
-            <span class="nv">sent = </span><span class="nx">response</span><span class="p">.</span><span class="nx">headersSent</span>
-            <span class="nv">doesHtml = </span><span class="nx">response</span><span class="p">.</span><span class="nx">accepts</span> <span class="sr">/html/</span>
-            <span class="nv">spaces = </span><span class="k">if</span> <span class="nx">doesHtml</span> <span class="k">then</span> <span class="mi">4</span> <span class="k">else</span> <span class="kc">null</span>
-            <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">json</span> <span class="k">unless</span> <span class="nx">sent</span>
-            <span class="nv">jsoned = </span><span class="nf">(x) -&gt;</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">x</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">spaces</span>
-            <span class="nx">@output</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">jsoned</span> <span class="nx">content</span></div></div></div></div></body></html>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">content</span><span class="o">?</span> <span class="o">and</span> <span class="nv">c = </span><span class="nx">content</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">or</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="p">(</span><span class="k">try</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">content</span><span class="p">))</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">response</span><span class="p">.</span><span class="nx">accepts</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">response</span><span class="p">.</span><span class="nx">write</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">jsonFlusher</span></div></div></div></div></body></html>

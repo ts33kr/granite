@@ -43,32 +43,35 @@ by the domain matching. This is the crucial piece of framework.
 It supports strictly methods defined in the HTTP specification.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Barebones = </span><span class="k">class</span> <span class="nx">Barebones</span> <span class="k">extends</span> <span class="nx">Stubs</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
-mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>These invocations establish the parameters which are going
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>These invocations establish the parameters which are going
 to be used for matching HTTP requests against this service.
 Typically an HTTP pathname pattern and a domain name pattern.
 Try not to put constraints on the domain, unless necessary.
 Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@compose</span> <span class="nx">Descriptor</span>
-    <span class="nx">@compose</span> <span class="nx">Healthcare</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should generally be used to obtain HTTP methods that
+    <span class="nx">@compose</span> <span class="nx">Healthcare</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block describes certain method of abrbitrary service. The
+exact process of how it is being documented depends on how the
+documented function is implemented. Please refer to <code>Document</code>
+class and its module implementation for more information on it.
+Also, see <code>Descriptor</code> compound implementation for reference!</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@OPTIONS</span> <span class="nf">(method, service, kernel) -&gt;</span>
+        <span class="nx">@relevant</span> <span class="s">&quot;ts33kr.github.io/granite/membrane/skeleton.html&quot;</span>
+        <span class="nx">@github</span> <span class="s">&quot;ts33kr&quot;</span><span class="p">,</span> <span class="s">&quot;granite&quot;</span><span class="p">,</span> <span class="s">&quot;library/membrane/skeleton.coffee&quot;</span>
+        <span class="nx">@remark</span> <span class="s">&quot;This method is default implemented for each service&quot;</span>
+        <span class="nx">@synopsis</span> <span class="s">&quot;Get a set of HTTP methods supported by service&quot;</span>
+        <span class="nx">@outputs</span> <span class="s">&quot;An array of supported methods, JSON or string&quot;</span>
+        <span class="nx">@markings</span> <span class="nv">framework: </span><span class="s">&quot;critical&quot;</span><span class="p">,</span> <span class="nv">stable: </span><span class="s">&quot;positive&quot;</span>
+        <span class="nx">@version</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">package</span><span class="p">.</span><span class="nx">version</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nx">@produces</span> <span class="s">&quot;application/json&quot;</span><span class="p">,</span> <span class="s">&quot;text/html&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should generally be used to obtain HTTP methods that
 are allowed on this resources. This is not the only possible way
 of implementing this method, because it usually can have a lot of
-different interpretations other than the one in the HTTP spec.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">OPTIONS: </span><span class="nf">(request, response) -&gt;</span>
-        <span class="nv">knowns = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">SUPPORTED</span>
-        <span class="nv">doesJson = </span><span class="nx">response</span><span class="p">.</span><span class="nx">accepts</span> <span class="sr">/json/</span>
+different interpretations other than the one in the HTTP spec.
+The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">OPTIONS: </span><span class="nf">(request, response, resource, domain, session) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">knowns = </span><span class="k">try</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">SUPPORTED</span>
+        <span class="nv">doesJson = </span><span class="nx">response</span><span class="p">.</span><span class="nx">accepts</span><span class="p">(</span><span class="sr">/json/</span><span class="p">)</span> <span class="o">or</span> <span class="kc">false</span>
         <span class="nv">pathname = </span><span class="k">try</span> <span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">pathname</span>
         <span class="nv">checkIfSupported = </span><span class="nf">(m) =&gt;</span> <span class="nx">@</span><span class="p">[</span><span class="nx">m</span><span class="p">]</span> <span class="o">isnt</span> <span class="nx">@unsupported</span>
         <span class="nv">supported = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">knowns</span><span class="p">,</span> <span class="nx">checkIfSupported</span>
         <span class="nv">descriptor = methods: </span><span class="nx">supported</span><span class="p">,</span> <span class="nv">resource: </span><span class="nx">pathname</span>
         <span class="k">return</span> <span class="nx">@push</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">descriptor</span> <span class="k">if</span> <span class="nx">doesJson</span>
         <span class="nv">formatted = </span><span class="nx">supported</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;\r\n&quot;</span>
-        <span class="nx">response</span><span class="p">.</span><span class="nx">send</span> <span class="nx">formatted</span><span class="p">;</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block describes certain method of abrbitrary service. The
-exact process of how it is being documented depends on how the
-documented function is implemented. Please refer to <code>Document</code>
-class and its module implementation for more information on it.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@OPTIONS</span> <span class="nf">(method, service, kernel) -&gt;</span>
-        <span class="nx">@github</span> <span class="s">&quot;ts33kr&quot;</span><span class="p">,</span> <span class="s">&quot;granite&quot;</span><span class="p">,</span> <span class="s">&quot;library/membrane/skeleton.coffee&quot;</span>
-        <span class="nx">@relevant</span> <span class="s">&quot;ts33kr.github.io/granite/membrane/skeleton.html&quot;</span>
-        <span class="nx">@notes</span> <span class="s">&quot;This method is default implemented for each service&quot;</span>
-        <span class="nx">@synopsis</span> <span class="s">&quot;Get a set of HTTP methods supported by service&quot;</span>
-        <span class="nx">@outputs</span> <span class="s">&quot;An array of supported methods, JSON or string&quot;</span>
-        <span class="nx">@markings</span> <span class="nv">framework: </span><span class="s">&quot;critical&quot;</span><span class="p">,</span> <span class="nv">stable: </span><span class="s">&quot;positive&quot;</span>
-        <span class="nx">@version</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">package</span><span class="p">.</span><span class="nx">version</span> <span class="o">or</span> <span class="kc">undefined</span>
-        <span class="nx">@produces</span> <span class="s">&quot;application/json&quot;</span><span class="p">,</span> <span class="s">&quot;text/html&quot;</span></div></div></div></div></body></html>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">send</span> <span class="nx">formatted</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div></div></body></html>

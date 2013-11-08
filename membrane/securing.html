@@ -39,7 +39,7 @@
 <span class="p">{</span><span class="nx">Duplex</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./duplex&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
 <span class="p">{</span><span class="nx">RedisClient</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./redis&quot;</span>
-<span class="nv">tools = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/tools&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an extension of the <code>Duple</code> abstract base service that
+<span class="nv">tools = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/tools&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an extension of the <code>Duplex</code> abstract base service that
 implements a dialogue sort of protection for the duplex channel.
 It means that a client who made the initial GET request must be
 ensured to be the same client that tried to connect over duplex
@@ -47,7 +47,8 @@ channel. Also, each request has a TTL for the duplex connection.
 The implementation depends on <code>RedisClient</code> and running Redis!</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.RDuplex = </span><span class="k">class</span> <span class="nx">RDuplex</span> <span class="k">extends</span> <span class="nx">Duplex</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
-mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>These invocations establish the parameters which are going
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>These invocations establish the parameters which are going
 to be used for matching HTTP requests against this service.
 Typically an HTTP pathname pattern and a domain name pattern.
 Try not to put constraints on the domain, unless necessary.
@@ -89,12 +90,13 @@ master server then deny current request with an error code. Be
 aware that this compound will be effective for all HTTP methods.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.OnlyMaster = </span><span class="k">class</span> <span class="nx">OnlyMaster</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
-mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to firing up the processing
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to firing up the processing
 of the service. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
 Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">ignition: </span><span class="nf">(request, response, next) -&gt;</span>
-        <span class="nv">str = </span><span class="nf">(address) -&gt;</span> <span class="nx">address</span><span class="p">.</span><span class="nx">address</span>
+        <span class="nv">str = </span><span class="nf">(addr) -&gt;</span> <span class="nx">addr</span><span class="o">?</span><span class="p">.</span><span class="nx">address</span> <span class="o">or</span> <span class="kc">null</span>
         <span class="nv">inbound = </span><span class="nx">request</span><span class="p">.</span><span class="nx">connection</span><span class="p">.</span><span class="nx">address</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nv">server = </span><span class="nx">@kernel</span><span class="p">.</span><span class="nx">server</span><span class="p">.</span><span class="nx">address</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nv">secure = </span><span class="nx">@kernel</span><span class="p">.</span><span class="nx">secure</span><span class="p">.</span><span class="nx">address</span><span class="p">()</span>
@@ -105,25 +107,29 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
         <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="nx">str</span><span class="p">(</span><span class="nx">inbound</span><span class="p">)</span> <span class="o">is</span> <span class="nx">master</span>
         <span class="nv">content = </span><span class="s">&quot;please use the master server&quot;</span>
         <span class="nv">reason = </span><span class="s">&quot;an attempt of direct access&quot;</span>
-        <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="mi">401</span><span class="p">,</span> <span class="nx">reason</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="mi">401</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">reason</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">end</span> <span class="nx">content</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class API stub service. Its purpose is
 providing the boilerplate for ensuring that the connection is
 going through the HTTPS channel. If a request is not going via
 SSL transport then redirect the current request to such one. Be
-aware that this compound will be effective for all HTTP methods.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.OnlySsl = </span><span class="k">class</span> <span class="nx">OnlySsl</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+aware that this compound will be effective for all HTTP methods.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.OnlySsl = </span><span class="k">class</span> <span class="nx">OnlySsl</span> <span class="k">extends</span> <span class="nx">OnlyMaster</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
-mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to firing up the processing
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to firing up the processing
 of the service. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
 Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">ignition: </span><span class="nf">(request, response, next) -&gt;</span>
-        <span class="nv">connection = </span><span class="nx">request</span><span class="o">?</span><span class="p">.</span><span class="nx">connection</span>
-        <span class="nv">encrypted = </span><span class="nx">connection</span><span class="o">?</span><span class="p">.</span><span class="nx">encrypted</span>
+        <span class="nv">connection = </span><span class="nx">request</span><span class="p">.</span><span class="nx">connection</span> <span class="o">or</span> <span class="p">{}</span>
+        <span class="nv">encrypted = </span><span class="nx">connection</span><span class="p">.</span><span class="nx">encrypted</span> <span class="o">or</span> <span class="kc">no</span>
+        <span class="nx">assert</span> <span class="nv">headers = </span><span class="nx">request</span><span class="p">.</span><span class="nx">headers</span> <span class="o">or</span> <span class="p">{}</span>
+        <span class="nv">protocol = </span><span class="nx">headers</span><span class="p">[</span><span class="s">&quot;x-forwarded-proto&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">encrypted</span>
-        <span class="nv">protectedUrl = </span><span class="nx">tools</span><span class="p">.</span><span class="nx">urlOfServer</span> <span class="kc">yes</span>
-        <span class="nv">current = </span><span class="nx">url</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">protectedUrl</span>
-        <span class="nv">current.pathname = </span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span>
-        <span class="nv">current.query = </span><span class="nx">request</span><span class="p">.</span><span class="nx">params</span>
-        <span class="nv">compiled = </span><span class="nx">url</span><span class="p">.</span><span class="nx">format</span> <span class="nx">current</span>
-        <span class="nx">response</span><span class="p">.</span><span class="nx">redirect</span> <span class="nx">compiled</span></div></div></div></div></body></html>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="nx">protocol</span> <span class="o">is</span> <span class="s">&quot;https&quot;</span>
+        <span class="nv">protectedUrl = </span><span class="nx">tools</span><span class="p">.</span><span class="nx">urlOfMaster</span> <span class="kc">yes</span>
+        <span class="nv">current = </span><span class="k">try</span> <span class="nx">url</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">protectedUrl</span>
+        <span class="nx">assert</span> <span class="nv">current.pathname = </span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span>
+        <span class="nx">assert</span> <span class="nv">current.query = </span><span class="nx">request</span><span class="p">.</span><span class="nx">params</span>
+        <span class="nx">assert</span> <span class="nv">compiled = </span><span class="nx">url</span><span class="p">.</span><span class="nx">format</span> <span class="nx">current</span>
+        <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">redirect</span> <span class="nx">compiled</span></div></div></div></div></body></html>

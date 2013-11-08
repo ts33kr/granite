@@ -33,14 +33,14 @@
 It scans the supplied directory, find all the modules there and
 return an object, where keys are names of modules minus the ext.
 This is used to build up entire module hierarchy of the framework.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.collectModules = </span><span class="nf">(directory, shallow) -&gt;</span>
-    <span class="nv">supported = </span><span class="p">[</span><span class="s">&quot;.coffee&quot;</span><span class="p">,</span> <span class="s">&quot;.js&quot;</span><span class="p">]</span>
-    <span class="nv">ext = </span><span class="nf">(name) -&gt;</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">extname</span> <span class="nx">name</span>
+    <span class="nv">ext = </span><span class="nf">(name) -&gt;</span> <span class="k">return</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">extname</span> <span class="nx">name</span>
     <span class="nv">sym = </span><span class="nf">(name) -&gt;</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">basename</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">ext</span> <span class="nx">name</span>
+    <span class="nx">assert</span> <span class="nv">supported = </span><span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span> <span class="p">[</span><span class="s">&quot;.coffee&quot;</span><span class="p">,</span> <span class="s">&quot;.js&quot;</span><span class="p">]</span>
     <span class="nv">isSupported = </span><span class="nf">(name) -&gt;</span> <span class="nx">ext</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="k">in</span> <span class="nx">supported</span>
     <span class="nv">ingest = </span><span class="nf">(x) -&gt;</span> <span class="nx">require</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">directory</span><span class="p">,</span> <span class="nx">x</span>
-    <span class="k">return</span> <span class="p">{}</span> <span class="k">unless</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span> <span class="nx">directory</span>
-    <span class="nv">scanSync = </span><span class="nx">wrench</span><span class="p">.</span><span class="nx">readdirSyncRecursive</span>
-    <span class="nv">scanSync = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readdirSync</span> <span class="k">if</span> <span class="nx">shallow</span>
+    <span class="k">return</span> <span class="nb">Object</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span> <span class="nx">directory</span>
+    <span class="nx">assert</span> <span class="nv">scanSync = </span><span class="nx">wrench</span><span class="p">.</span><span class="nx">readdirSyncRecursive</span>
+    <span class="nx">assert</span> <span class="nv">scanSync = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readdirSync</span> <span class="k">if</span> <span class="nx">shallow</span>
     <span class="nv">scanned = </span><span class="nx">scanSync</span> <span class="nx">directory</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
     <span class="nv">supported = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">scanned</span><span class="p">,</span> <span class="nx">isSupported</span>
     <span class="nv">modules = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">supported</span><span class="p">,</span> <span class="nx">ingest</span>
@@ -49,13 +49,13 @@ This is used to build up entire module hierarchy of the framework.</p></div></di
 It scans the supplied directory, find all the packages there and
 return an object, where keys are names of modules minus the ext.
 This is used to build up entire module hierarchy of the framework.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.collectPackages = </span><span class="nf">(closure, directory=&quot;library&quot;) -&gt;</span>
-    <span class="nv">stat = </span><span class="nf">(p) -&gt;</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">statSync</span> <span class="nx">fix</span> <span class="nx">p</span>
     <span class="nv">isDir = </span><span class="nf">(p) -&gt;</span> <span class="nx">stat</span><span class="p">(</span><span class="nx">p</span><span class="p">).</span><span class="nx">isDirectory</span><span class="p">()</span>
-    <span class="nv">fix = </span><span class="nf">(p) -&gt;</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">join</span> <span class="nx">directory</span><span class="p">,</span> <span class="nx">p</span>
+    <span class="nv">stat = </span><span class="nf">(p) -&gt;</span> <span class="k">return</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">statSync</span> <span class="nx">fix</span> <span class="nx">p</span>
+    <span class="nv">fix = </span><span class="nf">(p) -&gt;</span> <span class="k">return</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">join</span> <span class="nx">directory</span><span class="p">,</span> <span class="nx">p</span>
     <span class="nv">resolve = </span><span class="nf">-&gt;</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">closure</span><span class="p">,</span> <span class="nx">directory</span>
     <span class="nv">directory = </span><span class="nx">resolve</span><span class="p">()</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">closure</span>
     <span class="nv">nodes = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readdirSync</span> <span class="nx">directory</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
-    <span class="nv">directories = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">nodes</span><span class="p">,</span> <span class="nx">isDir</span>
+    <span class="nv">directories = </span><span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">nodes</span><span class="p">,</span> <span class="nx">isDir</span>
     <span class="nv">collectModules = </span><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">.</span><span class="nx">collectModules</span>
     <span class="nv">collectPackages = </span><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">.</span><span class="nx">collectPackages</span>
     <span class="nv">scanner = </span><span class="nf">(d) -&gt;</span> <span class="nx">collectPackages</span> <span class="nx">closure</span><span class="p">,</span> <span class="nx">fix</span> <span class="nx">d</span>
@@ -63,7 +63,7 @@ This is used to build up entire module hierarchy of the framework.</p></div></di
     <span class="nv">packages = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">directories</span><span class="p">,</span> <span class="nx">scanner</span>
     <span class="nv">packages = </span><span class="nx">_</span><span class="p">.</span><span class="nx">object</span> <span class="nx">symbols</span><span class="p">,</span> <span class="nx">packages</span>
     <span class="nv">modules = </span><span class="nx">collectModules</span> <span class="nx">directory</span><span class="p">,</span> <span class="kc">yes</span>
-    <span class="nx">_</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">modules</span><span class="p">,</span> <span class="nx">packages</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Traverse the hierarchy of all cached modules and try find kernel
+    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">modules</span><span class="p">,</span> <span class="nx">packages</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Traverse the hierarchy of all cached modules and try find kernel
 class that the most deep hiererachy. That is the kernel that is a
 most derived from the original one. If no such kernel can be found
 then revert to returning the original kernel embedded in framework.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.cachedKernel = </span><span class="nf">(limits) -&gt;</span>

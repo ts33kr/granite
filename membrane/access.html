@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>exposure/access</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/access"><meta name="groc-project-path" content="library/exposure/access.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/access.coffee">library/exposure/access.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<!DOCTYPE html><html lang="en"><head><title>membrane/access</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/access"><meta name="groc-project-path" content="library/membrane/access.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/access.coffee">library/membrane/access.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
 <span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
 <span class="cm">All rights reserved.</span>
 
@@ -36,19 +36,22 @@
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 
 <span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/archetype&quot;</span>
-<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An abstract base compound that provides an extensive functionality
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An abstract base compound that provides an extensive functionality
 and solution for authenticating entities against requests and some
 other processing entities that are tight into a session, such as
 the duplex providers, etc. Please refer to the implementation for
 more information on the capabilities and options of this compound.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Access = </span><span class="k">class</span> <span class="nx">Access</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
-mainly is used to exclude or account for abstract classes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Dereference the potentially existent entity from the session
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Dereference the potentially existent entity from the session
 into the supplied container, where the session is residing. It
 basically retrieves the hibernated entity, ressurects it and
 defined the appropriate getter property on supplied container.
 If the entity or session does not exist, nothing gets defined.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">dereference: </span><span class="nf">(container, callback) -&gt;</span>
         <span class="nv">sid = </span><span class="s">&quot;x-authenticate-entity&quot;</span><span class="p">;</span> <span class="nv">key = </span><span class="s">&quot;entity&quot;</span>
+        <span class="nv">isVanillaSession = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">container</span><span class="p">.</span><span class="nx">cookie</span>
+        <span class="nv">container = session: </span><span class="nx">container</span> <span class="k">if</span> <span class="nx">isVanillaSession</span>
         <span class="k">return</span> <span class="nx">callback</span><span class="p">()</span> <span class="k">unless</span> <span class="nv">session = </span><span class="nx">container</span><span class="p">.</span><span class="nx">session</span>
         <span class="k">return</span> <span class="nx">callback</span><span class="p">()</span> <span class="k">unless</span> <span class="nv">content = </span><span class="nx">session</span><span class="p">[</span><span class="nx">sid</span><span class="p">]</span>
         <span class="k">delete</span> <span class="nx">container</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">has</span> <span class="nx">container</span><span class="p">,</span> <span class="nx">key</span>
@@ -57,9 +60,11 @@ If the entity or session does not exist, nothing gets defined.</p></div></div><d
             <span class="nv">format = </span><span class="nf">(m) -&gt;</span> <span class="s">&quot;ressurection error: </span><span class="si">#{</span><span class="nx">m</span><span class="si">}</span><span class="s">&quot;</span>
             <span class="nv">masked = </span><span class="nx">format</span> <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="k">if</span> <span class="nx">error</span>
             <span class="k">return</span> <span class="nx">callback</span> <span class="nb">Error</span> <span class="nx">masked</span> <span class="k">if</span> <span class="nx">error</span>
+            <span class="nv">s = enumerable: </span><span class="kc">no</span><span class="p">,</span> <span class="nv">configurable: </span><span class="kc">yes</span>
             <span class="nv">p = enumerable: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">configurable: </span><span class="kc">yes</span>
-            <span class="nv">p.get = </span><span class="nf">-&gt;</span> <span class="k">return</span> <span class="nx">entity</span> <span class="o">or</span> <span class="kc">undefined</span>
+            <span class="nv">p.get = s.get = </span><span class="nf">-&gt;</span> <span class="nx">entity</span> <span class="o">or</span> <span class="kc">undefined</span>
             <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nx">container</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">p</span>
+            <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nx">session</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">p</span>
             <span class="nx">assert</span> <span class="nx">container</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span><span class="p">;</span> <span class="nx">callback</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Authenticate supplied entity as the authorized entity against
 the session found in the specified session container. Session
 container could be either a request or duplex socket or other
@@ -68,6 +73,8 @@ The method also saves the session once it has authenticated.</p></div></div><div
         <span class="nv">noSave = </span><span class="s">&quot;the session has not save function&quot;</span>
         <span class="nv">noSession = </span><span class="s">&quot;container has no session object&quot;</span>
         <span class="nv">message = </span><span class="s">&quot;Persisted the entity against session&quot;</span>
+        <span class="nv">isVanillaSession = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">container</span><span class="p">.</span><span class="nx">cookie</span>
+        <span class="nv">container = session: </span><span class="nx">container</span> <span class="k">if</span> <span class="nx">isVanillaSession</span>
         <span class="nx">assert</span> <span class="nv">session = </span><span class="nx">container</span><span class="o">?</span><span class="p">.</span><span class="nx">session</span><span class="p">,</span> <span class="nx">noSession</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">entity</span><span class="p">),</span> <span class="s">&quot;malformed entity&quot;</span>
         <span class="nx">@hibernateEntity</span> <span class="o">?=</span> <span class="nf">(xe, xn) -&gt;</span> <span class="nx">xn</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">xe</span>
@@ -95,7 +102,7 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
             <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">error</span>
             <span class="nx">assert</span> <span class="nv">message = </span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">or</span> <span class="nx">error</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="nx">format</span><span class="p">(</span><span class="nx">message</span><span class="p">).</span><span class="nx">red</span>
-            <span class="k">return</span> <span class="nx">next</span> <span class="nx">error</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
+            <span class="k">return</span> <span class="nx">next</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">error</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
 socket connection is going to be setup during the handshake.
 The method gets a set of parameters that maybe be useful to
 have by the actual implementation. Please remember thet the
@@ -110,4 +117,4 @@ method is asynchronously wired, so be sure to call <code>next</code>.</p></div><
             <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">error</span>
             <span class="nx">assert</span> <span class="nv">message = </span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">or</span> <span class="nx">error</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="nx">format</span><span class="p">(</span><span class="nx">message</span><span class="p">).</span><span class="nx">red</span>
-            <span class="k">return</span> <span class="nx">next</span> <span class="nx">error</span></div></div></div></div></body></html>
+            <span class="k">return</span> <span class="nx">next</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">error</span></div></div></div></div></body></html>

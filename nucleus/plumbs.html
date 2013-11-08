@@ -36,7 +36,7 @@
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 
-<span class="p">{</span><span class="nx">RedisStorage</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../exposure/session&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware is really a wrapper around the <code>Connect</code> logger
+<span class="p">{</span><span class="nx">RedisSession</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../exposure/session&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware is really a wrapper around the <code>Connect</code> logger
 that pipes all the request logs to the <code>Winston</code> instances that
 is used throughout the framework to provide logging capabilities.
 The format is takes from the <code>NConf</code> config or the default <code>dev</code>.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.logger = </span><span class="nf">(kernel) -&gt;</span>
@@ -52,14 +52,14 @@ The format is takes from the <code>NConf</code> config or the default <code>dev<
 middleware. The reason it wraps it is to automatically configure
 the session storage using the kernel and scoping configuration
 data. It is automatically connected by the kernel instance.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.session = </span><span class="nf">(kernel) -&gt;</span>
-    <span class="nv">options = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;session&quot;</span>
-    <span class="nv">redis = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;redis&quot;</span>
-    <span class="nv">noSession = </span><span class="s">&quot;No session settings in scope&quot;</span>
+    <span class="nv">redis = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;redis&quot;</span> <span class="o">or</span> <span class="mi">0</span>
+    <span class="nv">options = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;session&quot;</span> <span class="o">or</span> <span class="kc">undefined</span>
+    <span class="nv">noSession = </span><span class="s">&quot;No session settings in the scope&quot;</span>
     <span class="nv">useRedis = </span><span class="s">&quot;Using Redis session storage engine&quot;</span>
-    <span class="nv">options.store = </span><span class="nx">RedisStorage</span><span class="p">.</span><span class="nx">obtain</span><span class="p">()</span> <span class="k">if</span> <span class="nx">redis</span>
-    <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">options</span><span class="p">),</span> <span class="nx">noSession</span>
-    <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">useRedis</span><span class="p">.</span><span class="nx">blue</span> <span class="k">if</span> <span class="nx">redis</span>
-    <span class="k">return</span> <span class="nx">connect</span><span class="p">.</span><span class="nx">session</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware is a wrapper around the <code>toobusy</code> module providing
+    <span class="nv">options.store = </span><span class="nx">RedisSession</span><span class="p">.</span><span class="nx">obtain</span><span class="p">()</span> <span class="k">if</span> <span class="nx">redis</span>
+    <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">options</span><span class="p">),</span> <span class="nx">noSession</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+    <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">useRedis</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">blue</span> <span class="k">if</span> <span class="nx">redis</span>
+    <span class="k">return</span> <span class="nx">connect</span><span class="p">.</span><span class="nx">session</span> <span class="nx">options</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Object</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware is a wrapper around the <code>toobusy</code> module providing
 the functinality that helps to prevent the server shutting down due
 to the excessive load. This is done via monitoring of the event loop
 polling and rating the loop lag time. If it's too big, the request
@@ -70,9 +70,9 @@ will not be processed, but simply dropped. This is a config wrapper.</p></div></
     <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">lag</span><span class="p">),</span> <span class="nx">wrongLag</span>
     <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">reason</span><span class="p">),</span> <span class="nx">wrongReason</span>
     <span class="p">(</span><span class="nv">busy = </span><span class="nx">require</span> <span class="s">&quot;toobusy&quot;</span><span class="p">).</span><span class="nx">maxLag</span> <span class="nx">options</span><span class="p">.</span><span class="nx">lag</span>
-    <span class="nv">message = </span><span class="s">&quot;Setting threshold maximum lag to %s&quot;</span>
-    <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">message</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">options</span><span class="p">.</span><span class="nx">lag</span><span class="si">}</span><span class="s">ms&quot;</span>
-    <span class="k">return</span> <span class="nf">(request, response, next) -&gt;</span>
+    <span class="nv">message = </span><span class="s">&quot;Setting threshold maximum lag to %s ms&quot;</span>
+    <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">message</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">options</span><span class="p">.</span><span class="nx">lag</span><span class="si">}</span><span class="s">&quot;</span><span class="p">.</span><span class="nx">bold</span>
+    <span class="k">return</span> <span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nf">(request, response, next) -&gt;</span>
         <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">busy</span><span class="p">()</span> <span class="o">is</span> <span class="kc">yes</span>
         <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="mi">503</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">reason</span>
         <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">end</span> <span class="nx">options</span><span class="p">.</span><span class="nx">reason</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware uses an external library to parse the incoming
@@ -94,8 +94,7 @@ rather than writing and ending the request in a direct way.</p></div></div><div 
             <span class="nx">@emit</span> <span class="s">&quot;sending&quot;</span><span class="p">,</span> <span class="nx">content</span><span class="p">,</span> <span class="nx">typed</span><span class="p">,</span> <span class="nx">keepalive</span>
             <span class="nv">heading = </span><span class="nx">typed</span> <span class="o">and</span> <span class="o">not</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headerSent</span>
             <span class="nx">@setHeader</span> <span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="nx">typed</span> <span class="k">if</span> <span class="nx">heading</span>
-            <span class="k">return</span> <span class="nx">@write</span> <span class="nx">content</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="k">if</span> <span class="nx">typed</span><span class="o">?</span>
-            <span class="nv">negotiator = </span><span class="nx">kernel</span><span class="p">.</span><span class="nx">broker</span><span class="p">.</span><span class="nx">negotiate</span>
+            <span class="nx">assert</span> <span class="nv">negotiator = </span><span class="nx">kernel</span><span class="p">.</span><span class="nx">broker</span><span class="p">.</span><span class="nx">negotiate</span>
             <span class="nv">negotiator = </span><span class="nx">negotiator</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">broker</span>
             <span class="nx">negotiator</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">content</span>
             <span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">keepalive</span>
@@ -105,14 +104,14 @@ set to any of the values supplied when invoking this method. It is
 very useful to use this method to negiotate the content type field.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.accepts = </span><span class="nf">(kernel) -&gt;</span>
     <span class="nf">(request, response, next) -&gt;</span>
         <span class="nv">response.accepts = </span><span class="nf">(mimes...) -&gt;</span>
-            <span class="nv">accept = </span><span class="nx">request</span><span class="o">?</span><span class="p">.</span><span class="nx">headers</span><span class="o">?</span><span class="p">.</span><span class="nx">accept</span> <span class="o">or</span> <span class="s">&quot;&quot;</span>
             <span class="nv">handles = </span><span class="nf">(pattern) -&gt;</span> <span class="nx">pattern</span><span class="p">.</span><span class="nx">test</span> <span class="nx">accept</span>
             <span class="nv">patternize = </span><span class="nf">(s) -&gt;</span> <span class="k">new</span> <span class="nb">RegExp</span> <span class="nb">RegExp</span><span class="p">.</span><span class="nx">escape</span> <span class="nx">s</span>
-            <span class="nv">regexps = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">mimes</span><span class="p">,</span> <span class="nf">(x) -&gt;</span><span class="nx">_</span><span class="p">.</span><span class="nx">isRegExp</span> <span class="nx">x</span>
-            <span class="nv">strings = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">mimes</span><span class="p">,</span> <span class="nf">(x) -&gt;</span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">x</span>
-            <span class="nv">strings = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">strings</span><span class="p">,</span> <span class="nx">patternize</span>
-            <span class="nv">merged = </span><span class="nx">_</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">regexps</span><span class="p">,</span> <span class="nx">strings</span>
-            <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">merged</span><span class="p">,</span> <span class="nx">handles</span>
+            <span class="nv">accept = </span><span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">request</span><span class="o">?</span><span class="p">.</span><span class="nx">headers</span><span class="o">?</span><span class="p">.</span><span class="nx">accept</span> <span class="o">or</span> <span class="s">&quot;&quot;</span>
+            <span class="nv">regexps = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">mimes</span><span class="p">,</span> <span class="nf">(sx) -&gt;</span><span class="nx">_</span><span class="p">.</span><span class="nx">isRegExp</span> <span class="nx">sx</span>
+            <span class="nv">strings = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">mimes</span><span class="p">,</span> <span class="nf">(sx) -&gt;</span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">sx</span>
+            <span class="nv">strings = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">strings</span><span class="p">,</span> <span class="nx">patternize</span><span class="p">.</span><span class="nx">bind</span> <span class="k">this</span>
+            <span class="nx">assert</span> <span class="nv">merged = </span><span class="nx">_</span><span class="p">.</span><span class="nx">merge</span><span class="p">(</span><span class="nx">regexps</span><span class="p">,</span> <span class="nx">strings</span><span class="p">)</span> <span class="o">or</span> <span class="p">[]</span>
+            <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">merged</span><span class="p">,</span> <span class="nx">handles</span><span class="p">)</span> <span class="o">or</span> <span class="kc">undefined</span>
         <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headersSent</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A middeware that makes possible external specification of session
 bearer via HTTP headers. This basically meanins it allows for you
 to explicitly specify a session ID via the <code>X-Session-ID</code> header.
@@ -132,9 +131,9 @@ the corresponding reason phrase. This method also sets some of the
 necessary headers, such as nullary <code>Content-Length</code> and some other.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.redirect = </span><span class="nf">(kernel) -&gt;</span>
     <span class="nf">(request, response, next) -&gt;</span>
         <span class="nv">response.redirect = </span><span class="nf">(url, status) -&gt;</span>
-            <span class="nv">relocated = </span><span class="nx">status</span> <span class="o">or</span> <span class="mi">302</span>
-            <span class="nv">codes = </span><span class="nx">http</span><span class="p">.</span><span class="nx">STATUS_CODES</span>
-            <span class="nv">message = </span><span class="nx">codes</span><span class="p">[</span><span class="nx">relocated</span><span class="p">]</span>
+            <span class="nx">assert</span> <span class="nv">relocated = </span><span class="nx">status</span> <span class="o">or</span> <span class="mi">302</span>
+            <span class="nx">assert</span> <span class="nv">codes = </span><span class="nx">http</span><span class="p">.</span><span class="nx">STATUS_CODES</span>
+            <span class="nx">assert</span> <span class="nv">message = </span><span class="nx">codes</span><span class="p">[</span><span class="nx">relocated</span><span class="p">]</span>
             <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s">&quot;Location&quot;</span><span class="p">,</span> <span class="nx">url</span>
             <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s">&quot;Content-Length&quot;</span><span class="p">,</span> <span class="mi">0</span>
             <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="nx">relocated</span><span class="p">,</span> <span class="nx">message</span>

@@ -37,66 +37,22 @@
 <span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/archetype&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Descriptor of some method of arbitrary service, in a structured
 and expected way, so that it can later be used to programmatically
 process such documentation and do with it whatever is necessary.
-This approach gives unique ability to build self documented APIs.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Document = </span><span class="k">class</span> <span class="nx">Document</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the example of the method that is being
-described by this document. If you do not supply example
-this method will return you one, assuming it was set before.
-Notes are warning/beware messages about the implementation.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">notes: </span><span class="nf">(notes) -&gt;</span>
-        <span class="k">return</span> <span class="nx">@$notes</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
-        <span class="nv">noNotes = </span><span class="s">&quot;The notes is not a string&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">notes</span><span class="p">),</span> <span class="nx">noNotes</span>
-        <span class="nx">@emit</span> <span class="s">&quot;notes&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="vi">@$notes = </span><span class="nx">notes</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the inputs of the method that is being
-described by this document. If you do not supply inputs
-this method will return you one, assuming it was set before.
-Inputs is a description of the body that method expects.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">inputs: </span><span class="nf">(inputs) -&gt;</span>
-        <span class="k">return</span> <span class="nx">@$inputs</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
-        <span class="nv">noInputs = </span><span class="s">&quot;The inputs is not a string&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">inputs</span><span class="p">,</span> <span class="nx">noInputs</span>
-        <span class="nx">@emit</span> <span class="s">&quot;inputs&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="vi">@$inputs = </span><span class="nx">inputs</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the outputs of the method that is being
-described by this document. If you do not supply outputs
-this method will return you one, assuming it was set before.
-Outputs is a description of data returned by the method.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">outputs: </span><span class="nf">(outputs) -&gt;</span>
-        <span class="k">return</span> <span class="nx">@$outputs</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
-        <span class="nv">noOutputs = </span><span class="s">&quot;The outputs is not a string&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">outputs</span><span class="p">),</span> <span class="nx">noOutputs</span>
-        <span class="nx">@emit</span> <span class="s">&quot;outputs&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="vi">@$outputs = </span><span class="nx">outputs</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the description of the method that is being
-described by this document. If you do not supply description
-this method will return you one, assuming it was set before.
-Synopsis is a brief story of what this service method does.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">synopsis: </span><span class="nf">(synopsis) -&gt;</span>
-        <span class="k">return</span> <span class="nx">@$synopsis</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
-        <span class="nv">noSynopsis = </span><span class="s">&quot;The synopsis is not a string&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">synopsis</span><span class="p">),</span> <span class="nx">noSynopsis</span>
-        <span class="nx">@emit</span> <span class="s">&quot;synopsis&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="vi">@$synopsis = </span><span class="nx">synopsis</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the argument information of the method that
+This approach gives unique ability to build self documented APIs.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Document = </span><span class="k">class</span> <span class="nx">Document</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the argument information of the method that
 is being described by this document. If you do no supply any
 arguments this method will return already described arguments.
 Argument consists of name, approximate type and description.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">argument: </span><span class="nf">(identify, typeable, description) -&gt;</span>
         <span class="k">return</span> <span class="nx">@$argument</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
-        <span class="nv">noIdentify = </span><span class="s">&quot;The identify is not a string&quot;</span>
-        <span class="nv">noTypeable = </span><span class="s">&quot;The typeable is not a string&quot;</span>
-        <span class="nv">noDescription = </span><span class="s">&quot;The description is not a string&quot;</span>
+        <span class="nv">noIdentify = </span><span class="s">&quot;the identify param is not a string&quot;</span>
+        <span class="nv">noTypeable = </span><span class="s">&quot;the typeable param is not a string&quot;</span>
+        <span class="nv">noDescription = </span><span class="s">&quot;the description is not a string&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">description</span><span class="p">),</span> <span class="nx">noDescription</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">identify</span><span class="p">),</span> <span class="nx">noIdentify</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">typeable</span><span class="p">),</span> <span class="nx">noTypeable</span>
-        <span class="nx">@emit</span> <span class="s">&quot;argument&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="p">(</span><span class="nx">@$argument</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span>
+        <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="s">&quot;argument&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nx">@$argument</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span>
             <span class="nv">description: </span><span class="nx">description</span>
             <span class="nv">identify: </span><span class="nx">identify</span>
-            <span class="nv">typeable: </span><span class="nx">typeable</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the failure information of the method that
-is being described by this document. If you do no supply any
-arguments this method will return already described failures.
-Each failure consists of the expected code and reason for fail</p></div></div><div class="code"><div class="wrapper">    <span class="nv">failure: </span><span class="nf">(code, reasoning) -&gt;</span>
-        <span class="k">return</span> <span class="nx">@$failure</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
-        <span class="nv">noCode = </span><span class="s">&quot;The code is not a number&quot;</span>
-        <span class="nv">noReasoning = </span><span class="s">&quot;The reasoning is not a string&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">reasoning</span><span class="p">),</span> <span class="nx">noReasoning</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">code</span><span class="p">),</span> <span class="nx">noCode</span>
-        <span class="nx">@emit</span> <span class="s">&quot;failure&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="p">(</span><span class="nx">@$failure</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span>
-            <span class="nv">reasoning: </span><span class="nx">reasoning</span>
-            <span class="nv">code: </span><span class="nx">code</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the Github information of the method that
+            <span class="nv">typeable: </span><span class="nx">typeable</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the Github information of the method that
 is being described by this document. If you do no supply any
 arguments this method will return already described failures.
 Each consists of a username, the repository name and the path.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">github: </span><span class="nf">(username, repository, path) -&gt;</span>
@@ -106,20 +62,24 @@ Each consists of a username, the repository name and the path.</p></div></div><d
         <span class="nv">noPath = </span><span class="s">&quot;the path name must be a valid string&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">username</span><span class="p">),</span> <span class="nx">noUsername</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">repository</span><span class="p">),</span> <span class="nx">noRepository</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">path</span><span class="p">),</span> <span class="nx">noPath</span>
-        <span class="nx">@emit</span> <span class="s">&quot;github&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="p">(</span><span class="nx">@$github</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span>
+        <span class="nx">assert</span> <span class="nx">path</span> <span class="o">and</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">path</span><span class="p">),</span> <span class="nx">noPath</span>
+        <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="s">&quot;github&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nx">@$github</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span>
             <span class="nv">repository: </span><span class="nx">repository</span>
             <span class="nv">username: </span><span class="nx">username</span>
-            <span class="nv">path: </span><span class="nx">path</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the relevant information of the method that
+            <span class="nv">path: </span><span class="nx">path</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the failure information of the method that
 is being described by this document. If you do no supply any
 arguments this method will return already described failures.
-The relevant should be a string that contains a valid URL.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">relevant: </span><span class="nf">(relevant) -&gt;</span>
-        <span class="k">return</span> <span class="nx">@$relevant</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
-        <span class="nv">noRelevant = </span><span class="s">&quot;the relevant should be a string&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">relevant</span><span class="p">),</span> <span class="nx">noRelevant</span>
-        <span class="nx">@emit</span> <span class="s">&quot;relevant&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="p">(</span><span class="nx">@$relevant</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">relevant</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the produces information of the method that
+Each failure consists of the expected code and reason for fail</p></div></div><div class="code"><div class="wrapper">    <span class="nv">failure: </span><span class="nf">(code, reasoning) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$failure</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">noCode = </span><span class="s">&quot;the supplied code is not a number&quot;</span>
+        <span class="nv">noReasoning = </span><span class="s">&quot;the reasoning is not a string&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">reasoning</span><span class="p">),</span> <span class="nx">noReasoning</span>
+        <span class="nx">assert</span>  <span class="nx">code</span> <span class="o">and</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">code</span><span class="p">),</span> <span class="nx">noCode</span>
+        <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="s">&quot;failure&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nx">@$failure</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span>
+            <span class="nv">reasoning: </span><span class="nx">reasoning</span>
+            <span class="nv">code: </span><span class="nx">code</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the produces information of the method that
 is being described by this document. If you do no supply any
 arguments this method will return already described failures.
 The mimes should be args that contains a valid MIME types.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">produces: </span><span class="nf">(produces...) -&gt;</span>
@@ -127,7 +87,8 @@ The mimes should be args that contains a valid MIME types.</p></div></div><div c
         <span class="nv">notString = </span><span class="s">&quot;elements must be MIME type strings&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">produces</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">),</span> <span class="nx">notString</span>
         <span class="vi">@$produces = </span><span class="p">(</span><span class="nx">@$produces</span> <span class="o">or</span> <span class="p">[]).</span><span class="nx">concat</span> <span class="nx">produces</span>
-        <span class="nx">@emit</span> <span class="s">&quot;produces&quot;</span><span class="p">,</span> <span class="nx">@$produces</span><span class="p">,</span> <span class="nx">arguments</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the consumes information of the method that
+        <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span><span class="p">,</span> <span class="s">&quot;produces&quot;</span><span class="p">,</span> <span class="nx">@$produces</span><span class="p">,</span> <span class="nx">arguments</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">@$produces</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@$produces</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the consumes information of the method that
 is being described by this document. If you do no supply any
 arguments this method will return already described failures.
 The mimes should be args that contains a valid MIME types.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">consumes: </span><span class="nf">(consumes...) -&gt;</span>
@@ -135,28 +96,72 @@ The mimes should be args that contains a valid MIME types.</p></div></div><div c
         <span class="nv">notString = </span><span class="s">&quot;elements must be MIME type strings&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">consumes</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">),</span> <span class="nx">notString</span>
         <span class="vi">@$consumes = </span><span class="p">(</span><span class="nx">@$consumes</span> <span class="o">or</span> <span class="p">[]).</span><span class="nx">concat</span> <span class="nx">consumes</span>
-        <span class="nx">@emit</span> <span class="s">&quot;consumes&quot;</span><span class="p">,</span> <span class="nx">@$consumes</span><span class="p">,</span> <span class="nx">arguments</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the markings information of the method that
+        <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span><span class="p">,</span> <span class="s">&quot;consumes&quot;</span><span class="p">,</span> <span class="nx">@$consumes</span><span class="p">,</span> <span class="nx">arguments</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">@$consumes</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@$consumes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the relevant information of the method that
+is being described by this document. If you do no supply any
+arguments this method will return already described failures.
+The relevant should be a string that contains a valid URL.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">relevant: </span><span class="nf">(relevant) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$relevant</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">notString = </span><span class="s">&quot;a relevant should be a string&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">relevant</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">),</span> <span class="nx">notString</span>
+        <span class="vi">@$relevant = </span><span class="p">(</span><span class="nx">@$relevant</span> <span class="o">or</span> <span class="p">[]).</span><span class="nx">concat</span> <span class="nx">relevant</span>
+        <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span><span class="p">,</span> <span class="s">&quot;relevant&quot;</span><span class="p">,</span> <span class="nx">@$relevant</span><span class="p">,</span> <span class="nx">arguments</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">@$relevant</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@$relevant</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the markings information of the method that
 is being described by this document. If you do no supply any
 arguments this method will return already described failures.
 The markings should be an object of <code>marking: level</code> values.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">markings: </span><span class="nf">(markings) -&gt;</span>
         <span class="k">return</span> <span class="nx">@$markings</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
         <span class="nv">noMarkings = </span><span class="s">&quot;the markings should be a object&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">markings</span><span class="p">),</span> <span class="nx">noMarkings</span>
-        <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="p">(</span><span class="nx">@$markings</span> <span class="o">?=</span> <span class="p">{}),</span> <span class="nx">markings</span>
-        <span class="nx">@emit</span> <span class="s">&quot;markings&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the schemas information of the method that
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">@$markings</span> <span class="o">?=</span> <span class="p">{},</span> <span class="nx">markings</span>
+        <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span><span class="p">,</span> <span class="s">&quot;markings&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="nx">assert</span> <span class="nx">@$markings</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@$markings</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the schemas information of the method that
 is being described by this document. If you do no supply any
 arguments this method will return already described failures.
 The schemas should be an object of <code>slot: schema</code> values.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">schemas: </span><span class="nf">(schemas) -&gt;</span>
         <span class="k">return</span> <span class="nx">@$schemas</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
         <span class="nv">noSchemas = </span><span class="s">&quot;the schemas should be a object&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">schemas</span><span class="p">),</span> <span class="nx">noSchemas</span>
-        <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="p">(</span><span class="nx">@$schemas</span> <span class="o">?=</span> <span class="p">{}),</span> <span class="nx">schemas</span>
-        <span class="nx">@emit</span> <span class="s">&quot;schemas&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the version information of the method that
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">@$schemas</span> <span class="o">?=</span> <span class="p">{},</span> <span class="nx">schemas</span>
+        <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="s">&quot;schemas&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="nx">assert</span> <span class="nx">@$schemas</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@$schemas</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the description of the method that is being
+described by this document. If you do not supply description
+this method will return you one, assuming it was set before.
+Synopsis is a brief story of what this service method does.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">synopsis: </span><span class="nf">(synopsis) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$synopsis</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">noSynopsis = </span><span class="s">&quot;the synopsis is not a string&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">synopsis</span><span class="p">),</span> <span class="nx">noSynopsis</span>
+        <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="s">&quot;synopsis&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="k">return</span> <span class="vi">@$synopsis = </span><span class="nx">synopsis</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the version information of the method that
 is being described by this document. If you do no supply any
 arguments this method will return already described failures.
 The version should be a string with an arbitrary contents.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">version: </span><span class="nf">(version) -&gt;</span>
         <span class="k">return</span> <span class="nx">@$version</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
-        <span class="nv">noVersion = </span><span class="s">&quot;the version should be a string&quot;</span>
+        <span class="nv">noVersion = </span><span class="s">&quot;version should be a string&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">version</span><span class="p">),</span> <span class="nx">noVersion</span>
-        <span class="nx">@emit</span> <span class="s">&quot;version&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="vi">@$version = </span><span class="nx">version</span></div></div></div></div></body></html>
+        <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="s">&quot;version&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="k">return</span> <span class="vi">@$version = </span><span class="nx">version</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the outputs of the method that is being
+described by this document. If you do not supply outputs
+this method will return you one, assuming it was set before.
+Outputs is a description of data returned by the method.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">outputs: </span><span class="nf">(outputs) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$outputs</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">noOutputs = </span><span class="s">&quot;the outputs is not a string&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">outputs</span><span class="p">),</span> <span class="nx">noOutputs</span>
+        <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="s">&quot;outputs&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="k">return</span> <span class="vi">@$outputs = </span><span class="nx">outputs</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the inputs of the method that is being
+described by this document. If you do not supply inputs
+this method will return you one, assuming it was set before.
+Inputs is a description of the body that method expects.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">inputs: </span><span class="nf">(inputs) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$inputs</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">noInputs = </span><span class="s">&quot;the inputs is not a string&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">inputs</span><span class="p">),</span> <span class="nx">noInputs</span>
+        <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="s">&quot;inputs&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="k">return</span> <span class="vi">@$inputs = </span><span class="nx">inputs</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set the remark to the method that is being
+described by this document. If you do not supply example
+this method will return you one, assuming it was set before.
+Notes are warning/beware messages about the implementation.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">remark: </span><span class="nf">(remark) -&gt;</span>
+        <span class="k">return</span> <span class="nx">@$remark</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nv">noRemark = </span><span class="s">&quot;the remark is not a string&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">remark</span><span class="p">),</span> <span class="nx">noRemark</span>
+        <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="s">&quot;remark&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="k">return</span> <span class="vi">@$remark = </span><span class="nx">remark</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div></div></body></html>
