@@ -90,6 +90,22 @@ module.exports.Screenplay = class Screenplay extends Barebones
             return format t, JSON.stringify event
         method.remote.meta.event = event; method
 
+    # The awaiting directive is a lot like `autocall`, except the
+    # implementation will not be immediatelly , but rather when the
+    # specified signal is emited on the $root main service context
+    # object. Effectively, it is the same as creating the autocall
+    # that explicitly binds the event using `on` with the context.
+    @synchronize: (event, method) ->
+        invalidEvent = "an invalid event supplied"
+        assert not _.isEmpty(event), invalidEvent
+        assert method = @autocall Object(), method
+        rooted = "$root".toString().toLowerCase()
+        assert _.isObject method.remote.autocall
+        method.remote.auto = (symbol, key) -> ->
+            t = "#{rooted}.on(%s, #{symbol}.#{key})"
+            return format t, JSON.stringify event
+        method.remote.meta.event = event; method
+
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
     # method is wired in an synchronous way for greater functionality.
