@@ -61,6 +61,22 @@ module.exports.Scaled = class Scaled extends Generic
     # for more information on semantics and the way of working it.
     @identica "#{@PACKAGE.name}@#{@PACKAGE.version}"
 
+    # A configuration routine that ensures the scope config has the
+    # Seaport hub related configuration data. If so, it proceeds to
+    # retrieving that info and using it to locate and connect to a
+    # Seaport hub, which is then installed as the kernel instance
+    # variable, so that it can be accessed by the other routines.
+    @configure "access the service Seaport hub", (next) ->
+        assert _.isString host = nconf.get "hub:host"
+        assert _.isNumber port = nconf.get "hub:port"
+        assert _.isObject opts = nconf.get "hub:opts"
+        @seaport = seaport.connect host, port, opts
+        assert _.isObject(@seaport), "seaport failed"
+        assert @seaport.register?, "a broken seaport"
+        shl = "#{host}:#{port}".toString().underline
+        msg = "Locate a Seaport hub at #{shl}".blue
+        logger.info msg; return next undefined
+
     # Shutdown the kernel instance. This includes shutting down both
     # HTTP and HTTPS server that may be running, stopping the router
     # and unregistering all the services as a precauting. After that
@@ -264,22 +280,6 @@ module.exports.Scaled = class Scaled extends Generic
             message = "Seaport server failed\r\n%s"
             logger.error message.red, error.stack
             return process.exit -1
-
-    # A configuration routine that ensures the scope config has the
-    # Seaport hub related configuration data. If so, it proceeds to
-    # retrieving that info and using it to locate and connect to a
-    # Seaport hub, which is then installed as the kernel instance
-    # variable, so that it can be accessed by the other routines.
-    @configure "access the service Seaport hub", (next) ->
-        assert _.isString host = nconf.get "hub:host"
-        assert _.isNumber port = nconf.get "hub:port"
-        assert _.isObject opts = nconf.get "hub:opts"
-        @seaport = seaport.connect host, port, opts
-        assert _.isObject(@seaport), "seaport failed"
-        assert @seaport.register?, "a broken seaport"
-        shl = "#{host}:#{port}".toString().underline
-        msg = "Locate a Seaport hub at #{shl}".blue
-        logger.info msg; return next undefined
 
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
