@@ -246,6 +246,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
             assert @deployContext context, symbol
             assert @inlineAutocalls context, symbol
             context.inline -> @emit "installed", this
+            context.inline -> assert try @root = $root
             context = @compressContext context if asm
             compiled = @compileContext context if asm
             return receive context, compiled or null
