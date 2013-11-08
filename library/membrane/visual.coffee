@@ -99,10 +99,10 @@ module.exports.Screenplay = class Screenplay extends Barebones
         invalidEvent = "an invalid event supplied"
         assert not _.isEmpty(event), invalidEvent
         assert method = @autocall Object(), method
-        rooted = "$root".toString().toLowerCase()
         assert _.isObject method.remote.autocall
+        select = "$root".toString().toLowerCase()
         method.remote.auto = (symbol, key) -> ->
-            t = "#{rooted}.on(%s, #{symbol}.#{key})"
+            t = "#{select}.on(%s, #{symbol}.#{key})"
             return format t, JSON.stringify event
         method.remote.meta.event = event; method
 
