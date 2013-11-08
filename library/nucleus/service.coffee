@@ -139,7 +139,7 @@ module.exports.Service = class Service extends Archetype
         apply = (s) => (method) => method.apply this, s
         execute = => _.each @$lazy or [], apply arguments
         assert id = try @identify().toString().underline
-        m = "Executing lazy configuration for #{id}".blue
+        m = "Executing lazy configuration for #{id}".grey
         return if this.lazyexc? and this.lazyexc is yes
         logger.debug m unless (arguments.length or 0) > 0
         @lazyexc = yes unless (arguments.length or 0) > 0
