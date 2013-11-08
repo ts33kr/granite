@@ -255,6 +255,7 @@ module.exports.Duplex = class Duplex extends Preflight
         osc => @socket.emit "screening", _.omit(@, foreign), =>
             assert @consumeProviders; @consumeProviders @socket
             open = "successfully bootloaded at #{@location}"
+            @on "booted", -> @booted = yes; @duplexed = yes
             confirm = => logger.info open; @emit "booted"
             @trampoline _.omit(@, foreign), confirm
 
