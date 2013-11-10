@@ -126,7 +126,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # JavaScript sources passed in as the remote objects. Please refer
     # to the implementation and the class for more information on it.
     inject: (context, subject, symbol) ->
-        assert caching = context.caching ?= new Object
+        assert caching = context.caching ?= new Object()
         scripts = -> assert context.scripts.push subject
         sources = -> assert context.sources.push compile()
         compile = -> subject.remote.compile caching, symbol
