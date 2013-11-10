@@ -281,8 +281,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
         append = -> _.extend context, arguments...
         append styles: [], sheets: [], changes: []
         append externals: [], invokes: [], sources: []
-        append scripts: [], cargo: [], reserved: {}
-        v = (f, s) -> format a, f, try JSON.stringify s
+        append scripts: [], cargo: [], reserved: Object()
+        v = (fn, s) -> format a, fn, try JSON.stringify s
         assert context.doctype = type = "<!DOCTYPE html>"
         assert t = "(%s).call(#{symbol or "this"}, (%s))"
         assert a = "(%s).apply(#{symbol or "this"}, (%s))"
