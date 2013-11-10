@@ -69,18 +69,19 @@ module.exports.Composition = remote -> class Composition extends Object
     # each defined in the peer of the inheritance tree. Basically this
     # is a utility to asynchronously call super methods down the stack.
     # Each method must call its last parameter `next` for proceeding.
+    # Use `async` error propagation mechanism to break out of stream.
     Object.defineProperty Object::, "downstream",
-        enumerable: no, value: (definition) -> =>
+        enumerable: no, value: (def) -> (args...) =>
             fx = (f) => (a...) => f.apply @, cc(a)
             cc = (a) -> _.toArray(args).concat(a)
-            assert _.isPlainObject definition
-            targeted = _.head _.keys definition
-            callback = _.head _.values definition
+            malformed = "no POJO style definition"
+            assert _.isPlainObject def, malformed
+            assert targeted = _.head _.keys def
+            assert callback = _.head _.values def
             hierarchy = @constructor.hierarchy()
             assert hierarchy.unshift @constructor
-            assert _.isArguments args = arguments
             resolve = (c) -> c.prototype?[targeted]
-            threads = _.map hierarchy, resolve
+            assert threads = _.map hierarchy, resolve
             methods = _.filter threads, _.isFunction
             prepped = _.unique methods.reverse()
             applied = _.map prepped, (fn) -> fx fn
@@ -92,18 +93,19 @@ module.exports.Composition = remote -> class Composition extends Object
     # each defined in the peer of the inheritance tree. Basically this
     # is a utility to asynchronously call super methods up the stack.
     # Each method must call its last parameter `next` for proceeding.
+    # Use `async` error propagation mechanism to break out of stream.
     Object.defineProperty Object::, "upstream",
-        enumerable: no, value: (definition) -> =>
+        enumerable: no, value: (def) -> (args...) =>
             fx = (f) => (a...) => f.apply @, cc(a)
             cc = (a) -> _.toArray(args).concat(a)
-            assert _.isPlainObject definition
-            targeted = _.head _.keys definition
-            callback = _.head _.values definition
+            malformed = "no POJO style definition"
+            assert _.isPlainObject def, malformed
+            assert targeted = _.head _.keys def
+            assert callback = _.head _.values def
             hierarchy = @constructor.hierarchy()
             assert hierarchy.unshift @constructor
-            assert _.isArguments args = arguments
             resolve = (c) -> c.prototype?[targeted]
-            threads = _.map hierarchy, resolve
+            assert threads = _.map hierarchy, resolve
             methods = _.filter threads, _.isFunction
             prepped = _.toArray _.unique methods
             applied = _.map prepped, (fn) -> fx fn
