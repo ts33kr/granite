@@ -64,6 +64,7 @@ module.exports.RedisSession = class RedisSession extends Zombie
     # the storage to destroy a session with the specified session ID.
     # The session may or may not exist. Please refer to the `Connect`.
     destory: (sid, callback) ->
+        @emit "session-destroy", sid, callback
         assert _.isString qualified = @namespaced sid
         message = "Redis session engine error at destroy"
         assert _.isObject(@redis), "no Redis client yet"
@@ -80,6 +81,7 @@ module.exports.RedisSession = class RedisSession extends Zombie
     # The session may or may not exist. Please refer to the `Connect`.
     set: (sid, session, callback) ->
         assert encoded = JSON.stringify session
+        @emit "session-set", sid, session, callback
         assert _.isString qualified = @namespaced sid
         expire = session?.cookie?.maxAge / 1000 | 0
         expire = 86400 unless expire and expire > 0
@@ -95,6 +97,7 @@ module.exports.RedisSession = class RedisSession extends Zombie
     # the storage to retrieve a session with the specified session ID.
     # The session may or may not exist. Please refer to the `Connect`.
     get: (sid, callback) ->
+        @emit "session-get", sid, callback
         assert _.isString qualified = @namespaced sid
         message = "Redis session engine error at get"
         assert _.isObject(@redis), "no Redis client yet"
