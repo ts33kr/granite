@@ -113,10 +113,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
         context.service = @constructor.identify()
-        context.session = request.session
+        context.params = request.params or {}
         context.uuid = request: request.uuid
-        context.headers = request.headers
-        context.params = request.params
         context.qualified = @qualified()
         context.location = @location()
         context.uuid.service = @uuid
@@ -144,10 +142,10 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # and launched on the client (browser side). Please refer to the
     # implementation for greater understanding of what it does exactly.
     compileContext: (context) ->
-        script = (s) -> "<script src=\x22#{s}\x22></script>"
-        source = (s) -> "<script type=\x22#{j}\x22>#{s}</script>\n"
-        style = (s) -> "<style type=\x22#{x}\x22>#{s}</style>\n"
-        sheet = (s) -> "<link rel=\x22#{c}\x22 href=\x22#{s}\x22>"
+        script = (s) -> "\r\n<script src=\x22#{s}\x22></script>"
+        style = (s) -> "\r\n<style type=\x22#{x}\x22>#{s}</style>"
+        source = (s) -> "\r\n<script type=\x22#{j}\x22>#{s}</script>"
+        sheet = (s) -> "\r\n<link rel=\x22#{c}\x22 href=\x22#{s}\x22>"
         template = "%s<html><head>%s</head><body></body></html>"
         [x, c, j] = ["text/css", "stylesheet", "text/javascript"]
         scripts = _.map(context.scripts, script).join String()
