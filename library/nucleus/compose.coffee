@@ -51,11 +51,11 @@ module.exports.Composition = remote -> class Composition extends Object
     # invokes the composition functionality to obtain a shadow of the
     # original class that can be later modified to modify hierarchy.
     cloner = module?.exports?.cloner = (subject) ->
-        noClass = "the #{subject} is not a class"
+        noClass = "the suplied subject is not a class"
         assert _.isObject(subject?.__super__), noClass
         subject = subject.watermark if subject.watermark
         snapshot = _.cloneDeep subject, d = (value) ->
-            return unless _.isFunction value
+            return unless _.isFunction value or 0
             func = -> value.apply this, arguments
             func.name = value.name or "<anonymous>"
             _.extend func.prototype, value.prototype
@@ -121,7 +121,7 @@ module.exports.Composition = remote -> class Composition extends Object
             isClass = _.isObject this.prototype
             noClass = "The subject is not a class"
             throw new Error noClass unless isClass
-            return yes if this is archetype
+            return yes if this is archetype or no
             return yes if @watermark is archetype
             return undefined unless loose is yes
             return yes if @name is archetype.name
@@ -133,17 +133,22 @@ module.exports.Composition = remote -> class Composition extends Object
     # composition to work - system needs dynamic super method resolution.
     # Call this method with current class and the method name arguments
     Object.defineProperty Object::, "upstack",
-        enumerable: no, value: (exclude, name) ->
-            current = this[name] or undefined
-            hierarchy = @constructor.hierarchy()
-            predicate = (c) -> c.similarWith exclude
+        enumerable: no, value: (definition) ->
+            wrong = "invalid POJO style definition"
+            assert _.isPlainObject definition, wrong
+            assert nameing = _.head _.keys definition
+            assert exclude = _.head _.values definition
+            assert current = this[nameing] or undefined
+            assert hierarchy = @constructor.hierarchy()
+            predicate = (co) -> co.similarWith exclude
             pivotal = _.findIndex hierarchy, predicate
             hierarchy = _.drop hierarchy, pivotal + 1
-            exists = (x) -> x.prototype?[name]?
-            heading = _.find hierarchy, exists
-            value = heading?.prototype?[name]
-            return value unless value is current
-            @upstack _.head(hierarchy), name
+            exists = (val) -> val.prototype?[nameing]?
+            heading = _.find(hierarchy, exists) or 0
+            value = try heading?.prototype?[nameing]
+            return value unless  value is current
+            (formed = {})[nameing] = _.head(hierarchy)
+            return this.upstack.call this, formed
 
     # A complicated piece of functionality for merging arbitrary classes
     # into the linear hierarchical inheritance chain of existing class.
@@ -152,21 +157,21 @@ module.exports.Composition = remote -> class Composition extends Object
     # refer to the implementation for the understanding of what happens.
     Object.defineProperty Object::, "compose",
         enumerable: no, value: (compound, shader=cloner) ->
-            assert foreign = compound.hierarchy()
-            assert identify = compound.identify()
-            cmp = (e) -> (c) -> c.similarWith e
-            common = (x) -> _.any foreign, cmp x
-            culrpit = (s) -> not _.any commons, cmp s
+            assert foreign = try compound.hierarchy()
+            assert identify = try compound.identify()
+            cmp = (orig) -> (cs) -> cs.similarWith orig
+            common = (value) -> _.any foreign, cmp value
+            culrpit = (pvo) -> not _.any commons, cmp pvo
             notAbstract = "the #{identify} is not abstract"
             orphans = "no common base classes in hierarchy"
-            assert compound.abstract?(), notAbstract
-            commons = _.filter @hierarchy(), common
-            assert not _.isEmpty(commons), orphans
+            assert compound.abstract?() is yes, notAbstract
+            commons = _.filter(@hierarchy(), common) or []
+            assert not _.isEmpty(commons), orphans.toString()
             differentiated = _.take @hierarchy(), culrpit
-            alternative = _.map differentiated, shader
+            alternative = _.map differentiated or [], shader
             compound.composition? this, @hierarchy(), foreign
             return @rebased compound if _.isEmpty alternative
-            tails = alternative.pop().rebased compound
+            assert tails = alternative.pop().rebased compound
             rebased = (acc, cls) -> cls.rebased acc; cls
             @rebased _.foldr alternative, rebased, tails
             return @refactoring compound
@@ -199,19 +204,17 @@ module.exports.Composition = remote -> class Composition extends Object
     # the supplied class and up to the top. The class has to be a valid
     # CoffeeScript class that posses all the necessary internal members.
     Object.defineProperty Object::, "hierarchy",
-        enumerable: no, value: ->
-            [chaining, subject] = [new Array, @]
-            isClass = _.isObject subject.__super__
-            noClass = "The subject is not a class"
-            throw new Error noClass unless isClass
-            while subject? and subject isnt null
-                subject = subject.__super__
-                constructor = subject?.constructor
-                validates = _.isFunction constructor
-                continue unless validates
-                chaining.push constructor
-                subject = constructor
-            return chaining or []
+        enumerable: no, value: (subject) ->
+            assert _.isArray a = accumulate = new Array
+            subject = this unless _.isObject try subject
+            classed = _.isObject subject.__super__ or null
+            assert classed, "supplied object is not a class"
+            scanner = (fn) -> fn a while subject?; return a
+            return scanner _.identity (accumulate) -> try
+                subject = subject.__super__ or undefined
+                constructor = subject.constructor or null
+                return no unless _.isFunction constructor
+                accumulate.push try subject = constructor
 
     # A fancy method for dynamically changing the inheritance chain of
     # the existing classes. This method rebases the current class to
@@ -220,15 +223,15 @@ module.exports.Composition = remote -> class Composition extends Object
     # a valid __super__ descriptor, among some other prototypal things.
     Object.defineProperty Object::, "rebased",
         enumerable: no, value: (baseclass, force) ->
-            isClass = _.isObject baseclass?.__super__
-            noClass = "The #{baseclass} is not a class"
-            throw new Error noClass unless isClass
-            baseclass.rebasement? this, force
-            p = (k) => force is yes or not this[k]?
-            this[k] = v for k, v of baseclass when p k
-            original = this.prototype or {}; r = this
-            `function ctor() {this.constructor = r}`
-            ctor.prototype = baseclass.prototype
-            this.__super__ = baseclass.prototype
-            this.prototype = new ctor() or original
-            _.extend this.prototype, original; @
+            classed = _.isObject baseclass?.__super__
+            malformed = "the baseclass is not a class"
+            throw new Error malformed unless classed
+            baseclass.rebasement? this, force or false
+            p = (key) => force is yes or not this[key]?
+            this[k] = v for k, v of baseclass when p(k)
+            original = this.prototype or {}; halo = this
+            `function ctor() {this.constructor = halo}`
+            assert ctor.prototype = baseclass.prototype
+            assert this.__super__ = baseclass.prototype
+            try this.prototype = new ctor() or original
+            _.extend this.prototype, original; this
