@@ -68,7 +68,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # Refer to `inlineAutocalls` method for params interpretation.
     @autocall: (parameters, method) ->
         isRemote = _.isObject method?.remote
-        notFunction = "no function is passed"
+        notFunction = "no function is passed in"
         method = _.find arguments, _.isFunction
         method = external method unless isRemote
         assert _.isFunction(method), notFunction
@@ -219,9 +219,9 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # Method also does some optimizations, such as scripts unifying.
     compressContext: (context) ->
         assert compression = "visual:compression"
-        sources = _.toArray context.sources or []
-        scripts = _.toArray context.scripts or []
-        emptySources = "the JS sources are empty"
+        sources = _.toArray context.sources or Array()
+        scripts = _.toArray context.scripts or Array()
+        emptySources = "context JS sources are empty"
         u = (v) -> v.match(RegExp "^(.+)/(.+)$")[2]
         context.sheets = _.unique context.sheets
         context.styles = _.unique context.styles, u
