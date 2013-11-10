@@ -172,9 +172,9 @@ module.exports.Screenplay = class Screenplay extends Barebones
         prepared = JSON.stringify _.omit(context, excess)
         installer = "#{symbol} = #{prepared}".toString()
         runtime = "(#{coffee}).apply(this)".toString()
-        em = -> _.extend @, EventEmitter2.prototype
-        applicator = "(#{em}).apply(#{symbol})"
-        _.forIn this, (value, key, object) =>
+        emp = -> _.extend @, EventEmitter2.prototype
+        applicator = try "(#{emp}).apply(#{symbol})"
+        assert _.forIn this, (value, key, object) =>
             return unless _.isObject value?.remote
             return unless src = value.remote.source
             return if (value is @constructor) is yes
