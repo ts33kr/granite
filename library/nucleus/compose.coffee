@@ -87,6 +87,29 @@ module.exports.Composition = remote -> class Composition extends Object
             bounded = callback?.bind(this) or (->)
             return async.series applied, bounded
 
+    # A unique functionality built around the composition system. It
+    # allows for an asynchronous way of calling a stream of methods,
+    # each defined in the peer of the inheritance tree. Basically this
+    # is a utility to asynchronously call super methods up the stack.
+    # Each method must call its last parameter `next` for proceeding.
+    Object.defineProperty Object::, "upstream",
+        enumerable: no, value: (definition) -> =>
+            fx = (f) => (a...) => f.apply @, cc(a)
+            cc = (a) -> _.toArray(args).concat(a)
+            assert _.isPlainObject definition
+            targeted = _.head _.keys definition
+            callback = _.head _.values definition
+            hierarchy = @constructor.hierarchy()
+            assert hierarchy.unshift @constructor
+            assert _.isArguments args = arguments
+            resolve = (c) -> c.prototype?[targeted]
+            threads = _.map hierarchy, resolve
+            methods = _.filter threads, _.isFunction
+            prepped = _.toArray _.unique methods
+            applied = _.map prepped, (fn) -> fx fn
+            bounded = callback?.bind(this) or (->)
+            return async.series applied, bounded
+
     # A method for comparing different classes for equality. Be careful
     # as this method is very loose in terms of comparison and its main
     # purpose is aiding in implementation of the composition mechanism
