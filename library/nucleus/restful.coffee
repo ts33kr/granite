@@ -146,19 +146,19 @@ module.exports.Restful = class Restful extends Service
         missing = "a #{method} method not implemented"
         throw new Error missing unless method of this
         variables = [tokens.resource, tokens.domain]
-        headers = @upstreamAsync "headers", _.identity
+        headers = @downstream headers: -> return null
         partial = _.partial headers, request, response
         response.on "header", -> partial variables...
         assert mw = @constructor.middleware().bind this
         signature = [request, response, variables...]
-        intake = (f) => @upstreamAsync "preprocess", f
+        intake = (fn) => @downstream preprocess: fn
         go = (fn) => usp = intake fn; usp signature...
         go => mw(signature) (error, results, misc) =>
             assert expanded = _.clone variables or []
             expanded.push request.session or undefined
             this[method] request, response, expanded...
-            poststreamer = @upstreamAsync "postprocess"
-            poststreamer request, response, variables...
+            postprocess = @downstream postprocess: ->
+            postprocess request, response, variables...
 
     # Reject the request by sending an error descriptor to as the
     # response. The error descriptor is a top level object that will
@@ -172,11 +172,11 @@ module.exports.Restful = class Restful extends Service
         code = 400 unless _.isNumber(code or null)
         assert phrase = phrase or STATUS_CODES[code]
         uploader = -> response.send errors: content
-        prestreamer = @upstreamAsync "prerejection", =>
+        prerejection = @downstream prerejection: =>
             response.writeHead code, phrase; uploader()
-            poststreamer = @upstreamAsync "postrejection"
-            return poststreamer response, content
-        return prestreamer response, content
+            postrejection = @downstream postrejection: ->
+            return postrejection response, content
+        return prerejection response, content
 
     # Push the supplied content to the requester by utilizing the
     # response object. This is effectively the same as calling the
@@ -190,7 +190,7 @@ module.exports.Restful = class Restful extends Service
         assert isArray or isObject, "#{noContent}"
         try @emit "push", this, response, content
         uploader = -> return response.send content
-        prestreamer = @upstreamAsync "prepushing", =>
-            poststreamer = @upstreamAsync "postpushing"
-            uploader(); poststreamer response, content
-        return prestreamer response, content
+        assert prepushing = @downstream prepushing: =>
+            postpushing = @downstream postpushing: ->
+            uploader(); postpushing response, content
+        return prepushing response, content

@@ -67,16 +67,19 @@ module.exports.Composition = remote -> class Composition extends Object
     # A unique functionality built around the composition system. It
     # allows for an asynchronous way of calling a stream of methods,
     # each defined in the peer of the inheritance tree. Basically this
-    # is a way to asynchronously and dynamically call super methods.
+    # is a utility to asynchronously call super methods down the stack.
     # Each method must call its last parameter `next` for proceeding.
-    Object.defineProperty Object::, "upstreamAsync",
-        enumerable: no, value: (method, callback) -> =>
+    Object.defineProperty Object::, "downstream",
+        enumerable: no, value: (definition) -> =>
             fx = (f) => (a...) => f.apply @, cc(a)
             cc = (a) -> _.toArray(args).concat(a)
-            assert _.isArguments args = arguments
+            assert _.isPlainObject definition
+            targeted = _.head _.keys definition
+            callback = _.head _.values definition
             hierarchy = @constructor.hierarchy()
             assert hierarchy.unshift @constructor
-            resolve = (c) -> c.prototype?[method]
+            assert _.isArguments args = arguments
+            resolve = (c) -> c.prototype?[targeted]
             threads = _.map hierarchy, resolve
             methods = _.filter threads, _.isFunction
             prepped = _.unique methods.reverse()

@@ -258,7 +258,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         assert _.isFunction(@prelude), noPrelude
         assert _.isObject context = stock or {}
         @energizeContext.call @, context, symbol
-        prelude = @upstreamAsync "prelude", =>
+        assert prelude = @downstream prelude: =>
             assert @deployContext context, symbol
             assert @inlineAutocalls context, symbol
             context.inline -> @emit "installed", this

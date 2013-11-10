@@ -68,7 +68,7 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
         routines = mapper (value, key) -> (callback) ->
             assert _.isObject singleton = value.obtain()
             message = "Cascading headers from %s to %s @ %s"
-            headers = singleton.upstreamAsync "headers", ->
+            headers = singleton.downstream headers: ->
                 identity = value.identify().underline
                 template = [hosting, identity, key]
                 logger.debug message.grey, template...

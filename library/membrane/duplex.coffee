@@ -81,7 +81,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # The method gets a set of parameters that maybe be useful to
     # have by the actual implementation. Please remember thet the
     # method is asynchronously wired, so be sure to call `next`.
-    handshake: (context, handshake, next) -> next()
+    handshaken: (context, handshake, next) -> next()
 
     # A usable hook that gets asynchronously invoked once a new
     # channel (socket) gets past authorization phase and is rated
@@ -114,9 +114,9 @@ module.exports.Duplex = class Duplex extends Preflight
                 session = handshake.session
                 ns = new Error "no session found"
                 return accept ns, no unless session
-                upstream = @upstreamAsync "handshake", ->
+                handshaken = @downstream handshaken: ->
                     return accept undefined, yes
-                return upstream context, handshake
+                return handshaken context, downstream
 
     # An internal, static method that is used to obtain gurading
     # domains for each of the declared server site providers. Please
@@ -219,9 +219,9 @@ module.exports.Duplex = class Duplex extends Preflight
         return next undefined
 
     # An internal provider that gets automatically invoked once client
-    # establishes a protected Socket.IO channel back to the service
-    # instance at the server site. This implementation that uses the
-    # `upstreamAsync` mechanism to invoke the `connected` method at all
+    # establishes the protected Socket.IO transport back to the service
+    # instance at the server site. This implementation uses a composite
+    # `downstream` mechanism to invoke the `connected` method at every
     # peers of the inheritance hierarchy. Refer to the method for info.
     trampoline: @provider (context, callback) ->
         isocket = "Executed the trampoline on %s"
@@ -232,11 +232,11 @@ module.exports.Duplex = class Duplex extends Preflight
         logger.debug request.magenta, context.url.underline
         logger.debug isocket.magenta, callback.socket.id
         callback.socket.on "disconnect", (error) =>
-            assert.ifError error, "broken disconnect"
-            assert disengage = @upstreamAsync "disengage"
+            assert.ifError error, "a broken disconnect"
+            assert disengage = @downstream disengage: ->
             return disengage context, callback.socket
-        connected = @upstreamAsync "connected", callback
-        connected context, callback.socket; return this
+        connected = @downstream connected: callback
+        connected context, callback.socket; this
 
     # This is an external method that will be automatically executed
     # on the client site by the duplex implementation. It sets up a
@@ -314,7 +314,7 @@ module.exports.Duplex = class Duplex extends Preflight
             assert mangled = "#{@location()}/#{name}"
             mangled += "/#{nsp}" if nsp = binder.nsp
             socket.on mangled, (args..., callback) =>
-                sentence = @upstreamAsync "sentence", =>
+                sentence = @downstream sentence: =>
                     bound.call this, args..., callback
                 sentence socket, name, value, args
         return next undefined
@@ -333,7 +333,7 @@ module.exports.Duplex = class Duplex extends Preflight
         contexts = _.map [sserver, ssecure], resolve
         makeScreener = (context) => (socket) =>
             socket.on "screening", (binder, ack) =>
-                screening = @upstreamAsync "screening", =>
+                screening = @downstream screening: =>
                     bonding = [context, binder, socket, ack]
                     @publishProviders.apply this, bonding
                 screening context, socket, binder

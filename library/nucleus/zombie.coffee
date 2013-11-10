@@ -85,9 +85,9 @@ module.exports.Zombie = class Zombie extends Service
         do -> lazy.call this, kernel, callback
         assert @instance = new this arguments...
         assert instantiated() is yes, internal
-        assert upstream = @instance.upstreamAsync
-        assert upstream = upstream.bind @instance
-        assert singleton = upstream "singleton", ->
+        assert downstream = @instance.downstream
+        assert downstream = downstream.bind @instance
+        assert singleton = downstream singleton: ->
             return unless _.isFunction callback
             callback.call this, @instance, kernel
         singleton kernel, @instance; @instance
@@ -102,9 +102,9 @@ module.exports.Zombie = class Zombie extends Service
         assert _.isObject service = @obtain()
         constructor = service.constructor or ->
         constructor.apply service, arguments
-        assert upstream = service.upstreamAsync
-        assert upstream = upstream.bind service
-        assert instance = upstream "instance", ->
+        assert downstream = service.downstream
+        assert downstream = downstream.bind service
+        assert instance = downstream instance: ->
             return unless _.isFunction callback
             callback.call this, service, kernel
         instance kernel, service; service

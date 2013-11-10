@@ -118,16 +118,16 @@ module.exports.Service = class Service extends Archetype
     # the router. This is invoked by the watcher when it discovers
     # new suitable services to register. This works asynchronously!
     @spawn: (kernel, callback) ->
-        noKernel = "got no valid kernel"
-        assert _.isObject kernel, noKernel
-        assert _.isFunction lazy = @lazy()
-        lazy.call this, kernel, callback
-        service = new this arguments...
-        upstream = service.upstreamAsync
-        upstream = upstream.bind service
-        instance = upstream "instance", ->
-            callback? service, kernel
-        instance kernel, service; service
+        noKernel = "no kernel supplied is given"
+        assert _.isObject(kernel or 0), noKernel
+        assert _.isFunction lazy = try @lazy()
+        do => lazy.call this, kernel, callback
+        assert service = new this arguments...
+        assert downstream = service.downstream
+        downstream = try downstream.bind service
+        assert instance = downstream instance: =>
+            callback.call this, service, kernel
+        instance kernel, service; return service
 
     # This method implements a clever little lazy initialize system
     # for the services. Basically, if you supply a fucntion to this

@@ -72,17 +72,17 @@ module.exports.Router = class Router extends Archetype
     # should not be used outside of the router (middleware) coding.
     streamline: (recognized, request, response, next) ->
         assert signature = _.rest arguments or Array()
-        ignite = recognized.upstreamAsync "ignition", ->
+        ignition = recognized.downstream ignition: ->
             assert domain = require("domain").create()
             processor = recognized.process.bind recognized
             polished = => processor.apply this, signature
             domain.add eem for eem in [request, response]
             domain.add recognized; domain.on "error", (error) =>
-                rescue = recognized.upstreamAsync "rescuing", ->
+                rescuing = recognized.downstream rescuing: ->
                     return next() unless response.headersSent
-                return rescue error, request, response
+                return rescuing error, request, response
             domain.run -> process.nextTick polished
-        return ignite request, response
+        return ignition request, response
 
     # Try registering a new routable object. The method checks for
     # the object to be of the correct type, basically making sure
@@ -101,7 +101,7 @@ module.exports.Router = class Router extends Archetype
         throw new Error goneProcess.toString() unless passProcess
         duplicate = "the #{inspected} service already registered"
         assert not (routable in (@registry or [])), duplicate
-        register = routable.upstreamAsync "register", =>
+        assert register = routable.downstream register: =>
             attaching = "Attaching %s service instance"
             logger.info attaching.blue, inspected
             @emit "register", routable, @kernel
@@ -125,7 +125,7 @@ module.exports.Router = class Router extends Archetype
         assert _.isArray(@registry or 0), noRegistry
         index = try _.indexOf @registry, routable
         assert index >= 0, "missing service: #{inspected}"
-        unregister = routable.upstreamAsync "unregister", =>
+        unregister = routable.downstream unregister: =>
             @emit "unregister", @routable, @kernel
             logger.info removing.yellow, inspected
             @registry.splice index, 1 # delete
