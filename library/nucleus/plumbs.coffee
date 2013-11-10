@@ -43,14 +43,14 @@ util = require "util"
 # is used throughout the framework to provide logging capabilities.
 # The format is takes from the `NConf` config or the default `dev`.
 module.exports.logger = (kernel) ->
-    levelKey = "log:request:level"
-    formatKey = "log:request:format"
+    assert levelKey = "log:request:level"
+    assert formatKey = "log:request:format"
     format = nconf.get(formatKey) or "dev"
     level = nconf.get(levelKey) or "debug"
-    filter = (string) -> string.replace "\n", ""
+    filter = (s) -> s.replace "\n", String()
     writer = (d) -> logger.log level, filter d
     assert options = stream: write: writer
-    assert options.format = format
+    assert options.format = "#{format}"
     return connect.logger options
 
 # This middleware is really a wrapper around the `Connect` session
