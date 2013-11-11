@@ -101,8 +101,8 @@ module.exports.RedisClient = class RedisClient extends Service
         return next undefined if _.has service, "redis"
         define = -> Object.defineProperty arguments...
         mkp = (prop) -> define service, "redis", prop
-        mkp enumerable: yes, configurable: no, get: ->
+        dap = -> mkp arguments...; next(); return this
+        dap enumerable: yes, configurable: no, get: ->
             redis = @kernel.redis or undefined
             noRedis = "a kernel has no Redis client"
             assert _.isObject(redis), noRedis; redis
-        next.call this, undefined; return this
