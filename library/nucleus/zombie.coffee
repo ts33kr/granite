@@ -79,9 +79,9 @@ module.exports.Zombie = class Zombie extends Service
     # although there is no guarantee that this handle is initialized!
     @obtain: (kernel, callback) ->
         instantiated = => _.has @, "instance"
-        return @instance if instantiated()
-        internal = "an internal zombie error"
-        assert _.isFunction lazy = @lazy()
+        return @instance if (try instantiated())
+        internal = "got an internal zombie error"
+        assert _.isFunction lazy = try @lazy()
         do -> lazy.call this, kernel, callback
         assert @instance = new this arguments...
         assert instantiated() is yes, internal
