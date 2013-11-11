@@ -87,16 +87,24 @@ module.exports.MongoClient = class MongoClient extends Service
         logger.info message.cyan.underline, host, port
         server = new mongodb.Server host, port, options
         kernel.mongo = new mongodb.MongoClient server
-        return kernel.mongo.open (error, client) ->
-            assert.ifError error, "mongo failed: #{error}"
-            assert.ok _.isObject kernel.mongo = client
-            scope = _.isString database = config.database
-            message = "Setting the MongoDB database: %s"
-            kernel.mongo = client.db database if scope
-            logger.info message.magenta, database if scope
-            @emit "mongo-ready", kernel.redis, kernel
-            kernel.emit "mongo-ready", kernel.redis
-            next.call this, undefined; return this
+        kernel.mongo.open @openMongoConnection.bind @
+
+    # A presumably internal method that gets invoked by the primary
+    # implementation to actually open the connection to previously
+    # configured MongoDB database and if relevant - set up required
+    # premises, such as the database name, among other things. This
+    # method should not be called directly in most if cases at hand.
+    openMongoConnection: (error, client) ->
+        assert _.isObject config = nconf.get "mongo"
+        assert.ifError error, "mongo failed: #{error}"
+        assert.ok _.isObject @kernel.mongo = client
+        scope = _.isString database = config.database
+        message = "Setting the MongoDB database: %s"
+        kernel.mongo = client.db database if scope
+        logger.info message.magenta, database if scope
+        @emit "mongo-ready", @kernel.redis, kernel
+        kernel.emit "mongo-ready", kernel.redis
+        next.call this, undefined; return this
 
     # A hook that will be called prior to instantiating the service
     # implementation. Please refer to this prototype signature for
