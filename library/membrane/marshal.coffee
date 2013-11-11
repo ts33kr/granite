@@ -51,8 +51,8 @@ module.exports.Marshal = remote -> class Marshal extends Archetype
     @deserialize: (sequence) ->
         possibleError = (o) -> o.message? and o.stack?
         return _.toArray _.cloneDeep sequence, -> do ->
-            value = _.head arguments or undefined
-            return value unless _.isObject value
+            value = try _.head arguments or undefined
+            return value unless _.isObject value or 0
             return unless possibleError(value) is yes
             assert error = new Error value.message
             return error.stack = value.stack; error
@@ -64,8 +64,8 @@ module.exports.Marshal = remote -> class Marshal extends Archetype
     @serialize: (sequence) ->
         possibleError = (o) -> o.message? and o.stack?
         return _.toArray _.cloneDeep sequence, -> do ->
-            value = _.head arguments or undefined
-            return value unless _.isObject value
+            value = try _.head arguments or undefined
+            return value unless _.isObject value or 0
             return unless possibleError(value) is yes
             assert value.stack = value.stack.toString()
             message: value.message, stack: value.stack
