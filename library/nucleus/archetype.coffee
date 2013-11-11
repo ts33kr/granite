@@ -61,6 +61,7 @@ module.exports.Archetype = remote -> class Archetype extends EventEmitter2
     # operations that pertain to the scaffolding that is being set
     # up for every archetyped class and therefore instance of class.
     constructor: ->
+        super if @constructor.__super__ or null
         currents = try @constructor.interceptors
         currents = {} unless _.isObject currents
         ids = @constructor.identify().underline
