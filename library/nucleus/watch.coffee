@@ -61,7 +61,7 @@ module.exports.Watcher = class Watcher extends Archetype
     # used directly. The watcher is entirely operated by kernel
     # and therefore its the responsibility of the kernel to do
     # the management of the lifecyle of the watcher and others.
-    constructor: (@kernel) ->
+    constructor: (@kernel) -> super
 
     # This method will be invoked by the file system watcher on
     # the event when modules are either being added to the dir.

@@ -47,7 +47,7 @@ module.exports.Broker = class Broker extends Archetype
     # the kernel instance as a parameter. You can override it as
     # you see fit, but be sure to invoke the super constructor and
     # it is highly advised to store the kernel instance in object.
-    constructor: (@kernel) ->
+    constructor: (@kernel) -> super
 
     # Register the specified content negotiator with the broker. The
     # The negotiator returns a function if it can handle the request

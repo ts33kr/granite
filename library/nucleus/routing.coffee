@@ -43,7 +43,7 @@ module.exports.Router = class Router extends Archetype
     # the kernel instance as a parameter. You can override it as
     # you see fit, but be sure to invoke the super constructor and
     # it is highly advised to store the kernel instance in object.
-    constructor: (@kernel) ->
+    constructor: (@kernel) -> super
 
     # The method implements a middleware (for Connect) that looks
     # up the relevant routable and dispatches the request to the

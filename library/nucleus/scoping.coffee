@@ -86,6 +86,7 @@ module.exports.Scope = class Scope extends Archetype
     # The constructor of the scope should only associate the data.
     # The scope startup logic should be implemented in the method.
     constructor: (@tag, synopsis) ->
+        try super if @constructor.__super__
         assert _.isString(@tag), "got invalid tag"
         @synopsis = synopsis if _.isString synopsis
         noInitializer = "no scope initializer supplied"
