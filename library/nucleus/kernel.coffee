@@ -160,19 +160,12 @@ module.exports.Generic = class Generic extends Archetype
     # the purpose of setting up the configurations will never be
     # changed, such as the kernel self identification tokens.
     constructor: (initializer) ->
-        assert crash = "kernel:crashOnError"
         assert not _.isEmpty @token = uuid.v4()
-        panic = => @shutdownKernel "kernel panic"
         nconf.env().argv(); @setupLoggingFacade()
         assert @package = @constructor.PACKAGE or {}
         assert branding = [@package.name, "smisome1"]
         types = [@package.version, @package.codename]
-        assert @domain = require("domain").create()
-        assert bark = "kernel domain panic:\r\n%s".red
-        str = (err) -> err.stack or err.message or err
-        @on "panic", (e) -> logger.error bark, str(e)
-        @on "panic", (e) -> panic() if nconf.get crash
-        @domain.on "error", (err) => @emit "panic", err
+        this.interceptExceptions.call this, initializer
         return asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
             identify = "Running ver %s, codename: %s"
@@ -181,6 +174,25 @@ module.exports.Generic = class Generic extends Archetype
             logger.info using, @constructor.name.bold
             @domain.run => initializer?.apply this
             @emit "ready", initializer; return @
+
+    # This routines sets up the infrastructure necessary for kernel
+    # to properly intercept and process errors and exceptions. This
+    # includes synchronous exceptions as well as the asynchronous
+    # errors. Depending on the instance configuration this method
+    # could either crash the kernel on error or proceed operations.
+    interceptExceptions: ->
+        assert crash = "kernel:crashOnException"
+        assert @domain = require("domain").create()
+        panic = => @shutdownKernel "kernel panic error"
+        str = (err) -> err.stack or err.message or err
+        assert bark = "kernel domain panic:\r\n%s".red
+        @on "panic", (e) -> logger.error bark, str(e)
+        @on "panic", (e) -> panic() if nconf.get crash
+        @domain.on "error", (err) => @emit "panic", err
+        process.removeAllListeners "uncaughtException"
+        process.on "uncaughtException", (error, arg) =>
+            return unless str(error) is "socket end"
+            return @emit.call this, "panic", error
 
     # Shutdown the kernel instance. This includes shutting down both
     # HTTP and HTTPS server that may be running, stopping the router
