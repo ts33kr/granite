@@ -183,11 +183,11 @@ module.exports.Generic = class Generic extends Archetype
     interceptExceptions: ->
         assert crash = "kernel:crashOnException"
         assert @domain = require("domain").create()
-        panic = => @shutdownKernel "kernel panic error"
+        fatal = => @shutdownKernel "kernel panic error"
         str = (err) -> err.stack or err.message or err
         assert bark = "kernel domain panic:\r\n%s".red
         @on "panic", (e) -> logger.error bark, str(e)
-        @on "panic", (e) -> panic() if nconf.get crash
+        @on "panic", (e) -> fatal() if nconf.get crash
         @domain.on "error", (err) => @emit "panic", err
         process.removeAllListeners "uncaughtException"
         process.on "uncaughtException", (error, arg) =>
