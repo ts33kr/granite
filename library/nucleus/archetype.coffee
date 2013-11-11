@@ -61,19 +61,19 @@ module.exports.Archetype = remote -> class Archetype extends EventEmitter2
     # operations that pertain to the scaffolding that is being set
     # up for every archetyped class and therefore instance of class.
     constructor: ->
-        super if @constructor.__super__ or null
         currents = try @constructor.interceptors
         currents = [] unless _.isArray currents
         ids = @constructor.identify().underline
         msg = "Intercepting an %s event at the %s"
-        currents = try _.toArray _.unique currents
         _.each currents, (record, index, linear) =>
             {event, implement} = record or Object()
             assert _.isString event or undefined
             assert _.isFunction implement or null
             assert _.isFunction try this.on or null
             logger.debug msg, event.underline, ids
-            return try this.on event, implement
+            this._events ?= {} # event emitter bug
+            do => @removeListener event, implement
+            do => return this.on event, implement
 
     # This is a class wide directive that is really the convenient
     # wrapper that allows for a short hand attaching of handlers to
