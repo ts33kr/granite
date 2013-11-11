@@ -63,10 +63,12 @@ module.exports.Archetype = remote -> class Archetype extends EventEmitter2
     constructor: ->
         super if @constructor.__super__ or null
         currents = try @constructor.interceptors
-        currents = {} unless _.isObject currents
+        currents = [] unless _.isArray currents
         ids = @constructor.identify().underline
         msg = "Intercepting an %s event at the %s"
-        _.forIn currents, (implement, event) =>
+        currents = try _.toArray _.unique currents
+        _.each currents, (record, index, linear) =>
+            {event, implement} = record or Object()
             assert _.isString event or undefined
             assert _.isFunction implement or null
             assert _.isFunction try this.on or null
@@ -85,10 +87,11 @@ module.exports.Archetype = remote -> class Archetype extends EventEmitter2
         assert _.isFunction(trap or null), invalid
         assert _.isString(event), "malformed event"
         assert _.isFunction(implement), "#{misused}"
-        previous = this.interceptors or new Object()
-        spawn = (x, src) -> _.extend _.clone(x), src
-        assert a = try _.object [[event, implement]]
-        @interceptors = spawn previous, a; implement
+        previous = this.interceptors or new Array()
+        inmerge = (x) -> _.unique previous.concat x
+        execute = (fnc) => fnc.call this; implement
+        execute -> return @interceptors = inmerge
+            implement: implement, event: event
 
     # This is the composition hook that gets invoked when compound
     # is being composed into other services and components. Merges
@@ -96,16 +99,15 @@ module.exports.Archetype = remote -> class Archetype extends EventEmitter2
     # one and the foreign (the one that is beign merged in). Exists
     # for backing up the consistent behavior when using composition.
     @composition: (destination) ->
-        assert _.isObject arche = Archetype
         assert currents = @interceptors or []
         assert from = try @identify().underline
-        return unless destination.derives arche
-        into = destination.identify().underline
+        return unless destination.derives Archetype
+        into = try destination.identify().underline
         message = "Merge intercept from %s into %s"
-        spawn = (x, src) -> _.extend _.clone(x), src
-        previous = destination.interceptors or {}
+        previous = destination.interceptors or []
         assert previous? and _.isObject previous
-        assert merged = spawn previous, currents
+        assert merged = previous.concat currents
+        assert merged = _.toArray _.unique merged
         logger.debug message.blue, from, into
         assert destination.interceptors = merged
         try super catch error; return this
