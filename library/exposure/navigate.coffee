@@ -60,7 +60,7 @@ module.exports.Navigate = class Navigate extends Preflight
     # by the internal implementations of the various subcomponents.
     # Refer to `BowerSupport` class implementation for information.
     @bower "crossroads.js", "dist/crossroads.min.js"
-    @bower "hasher", "dist/js/hasher.min.js"
+    @bower "hasher#1.1.4", "dist/js/hasher.min.js"
 
     # Mount the supplied implementation as the hash location route
     # hanlder. The implementation is assumed to be the client site
