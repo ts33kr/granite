@@ -108,7 +108,7 @@ module.exports.MongoClient = class MongoClient extends Service
         define = -> Object.defineProperty arguments...
         mkp = (prop) -> define service, "mongo", prop
         mkp enumerable: yes, configurable: no, get: ->
-            mongo = @kernel.mongo or undefined
+            mongo = try @kernel.mongo or undefined
             noMongo = "a kernel has no Mongo client"
             assert _.isObject(mongo), noMongo; mongo
         next.call this, undefined; return this
