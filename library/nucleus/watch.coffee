@@ -116,10 +116,8 @@ module.exports.Watcher = class Watcher extends Archetype
         return if @maybeReboot path or undefined
         assert _.isString absolute = paths.resolve path
         assert _.isArray modules = @constructor.EXTENSIONS
-        resolved = require.resolve(absolute) or undefined
         extension = paths.extname(absolute) or undefined
         return unless extension in (modules or Array())
-        return unless @ensureSafety resolved or undefined
         unlink = "Unlink module at %s".cyan.toString()
         relative = paths.relative process.cwd(), path
         logger.info unlink, relative.toString().underline
