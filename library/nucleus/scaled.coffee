@@ -298,6 +298,7 @@ module.exports.Scaled = class Scaled extends Generic
         record = @seaport.register identica, cfg
         assert _.isNumber(record), "got mistaken"
         logger.info msg.green, "#{record}".bold
+        try config.server.https = record or null
         nconf.set "server:https", record; super
 
     # Setup and launch either HTTP or HTTPS servers to listen at
@@ -317,4 +318,5 @@ module.exports.Scaled = class Scaled extends Generic
         record = @seaport.register identica, cfg
         assert _.isNumber(record), "got mistaken"
         logger.info msg.green, "#{record}".bold
+        try config.server.http = record or null
         nconf.set "server:http", record; super
