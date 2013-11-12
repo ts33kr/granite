@@ -63,6 +63,7 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
     # included in the `Screenplay` context that is going to be emited
     # and deployed on the client site. Basically, use this to bring
     # in all the remote classes that you need to the remote call site.
+    # Refer to the remote compilation procedures for more information.
     @remote: (subject) ->
         assert previous = @remotes or Array()
         qualify = try subject.remote.compile
@@ -84,14 +85,69 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
         assert remotes = @constructor.remotes or []
         assert uniques = _.unique remotes or Array()
         @inject context, blob for blob in uniques
-        return next.call this, undefined
+        return do => next.call this, undefined
+
+module.exports.LToolkit = class LToolkit extends RToolkit
+
+    # This is a marker that indicates to some internal subsystems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete class implementation. This
+    # mainly is used to exclude or account for abstract classes.
+    # Once inherited from, the inheritee is not abstract anymore.
+    @abstract yes
+
+    # This server side method is called on the context prior to the
+    # context being compiled and flushed down to the client site. The
+    # method is wired in an asynchronous way for greater functionality.
+    # This is the place where you would be importing the dependencies.
+    # Pay attention that most implementations side effect the context.
+    prelude: (symbol, context, request, next) ->
+        assert jscripts = @constructor.jscripts or []
+        assert stsheets = @constructor.stsheets or []
+        assert jscripts = _.unique jscripts or Array()
+        assert stsheets = _.unique stsheets or Array()
+        assert _.isFunction context.sheets.push or null
+        assert _.isFunction context.scripts.push or null
+        context.scripts.push script for script in jscripts
+        context.sheets.push sheet for sheet in stsheets
+        return do => next.call this, undefined
+
+    # This is a preflight directive that can be used to link any
+    # arbitrary JavaScript file source. Is important do understand
+    # that this directive only compiles the appropriate statement
+    # to be transferred to the server and it is up to you to ensure
+    # the existence of that file and its ability to be downloaded.
+    @javascript: (xoptions, xdirection) ->
+        assert previous = @jscripts or Array()
+        options = _.find arguments, _.isObject
+        direction = _.find arguments, _.isString
+        indirect = "an inalid direction supplied"
+        noPrevious = "invalid previous jscripts"
+        assert _.isArray(previous), noPrevious
+        assert _.isString(direction), indirect
+        @jscripts = previous.concat direction
+
+    # This is a preflight directive that can be used to link any
+    # arbitrary CSS style file source. Is important do understand
+    # that this directive only compiles the appropriate statement
+    # to be transferred to the server and it is up to you to ensure
+    # the existence of that file and its ability to be downloaded.
+    @stylesheet: (xoptions, xdirection) ->
+        assert previous = @stsheets or Array()
+        options = _.find arguments, _.isObject
+        direction = _.find arguments, _.isString
+        indirect = "an inalid direction supplied"
+        noPrevious = "invalid previous stsheets"
+        assert _.isArray(previous), noPrevious
+        assert _.isString(direction), indirect
+        @stsheets = previous.concat direction
 
 # This abstract base class service is an extension of the Screenplay
 # family that does some further environment initialization and set
 # up. These preparations will be nececessary no matter what sort of
 # Screenplay functionality you are going to implement. Currently the
 # purpose of preflight is drawing in the remoted and Bower packages.
-module.exports.Preflight = class Preflight extends RToolkit
+module.exports.Preflight = class Preflight extends LToolkit
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
