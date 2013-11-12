@@ -59,7 +59,7 @@ module.exports.Scaled = class Scaled extends Generic
     # with data takes from the `PACKAGE` definition in a `Generic`
     # kernel. Refer to that kernel and to `identica` method there
     # for more information on semantics and the way of working it.
-    @identica "#{@PACKAGE.name}@#{@PACKAGE.version}"
+    @identica "#{@FRAMEWORK.name}@#{@FRAMEWORK.version}"
 
     # A configuration routine that ensures the scope config has the
     # Seaport hub related configuration data. If so, it proceeds to

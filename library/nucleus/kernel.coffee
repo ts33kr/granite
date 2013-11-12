@@ -65,7 +65,7 @@ module.exports.Generic = class Generic extends Archetype
     # module which is used by the kernel to draw different kinds
     # of the information and data. This could be overridden by the
     # modified kernels that are custom to arbitrary applications.
-    @PACKAGE = pkginfo(module) and module.exports
+    @FRAMEWORK = pkginfo(module) and module.exports
 
     # Create a new instance of the kernel, run all the prerequisites
     # that are necessary, do the configuration on the kernel, then
@@ -166,9 +166,9 @@ module.exports.Generic = class Generic extends Archetype
         try super if @constructor.__super__
         assert not _.isEmpty @token = uuid.v4()
         nconf.env().argv(); @setupLoggingFacade()
-        assert @package = @constructor.PACKAGE or {}
-        assert branding = [@package.name, "smisome1"]
-        types = [@package.version, @package.codename]
+        assert @framework = @constructor.FRAMEWORK
+        assert branding = [@framework.name, "smisome1"]
+        types = [@framework.version, @framework.codename]
         this.interceptExceptions.call this, initializer
         return asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
