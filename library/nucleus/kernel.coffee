@@ -99,7 +99,7 @@ module.exports.Generic = class Generic extends Archetype
     # serve the specified directory as the directory with a static
     # content. That is, it will expose it to the world (not list it).
     # The serving aspects can be configured via a passed in options.
-    serveStaticDirectory: (directory, options) ->
+    serveStaticDirectory: (directory, options={}) ->
         assert cwd = process.cwd().toString()
         solved = paths.relative cwd, directory
         notExist = "assets dir %s does not exist"
@@ -118,8 +118,8 @@ module.exports.Generic = class Generic extends Archetype
     @configure: (explain, routine) ->
         log = (o) -> logger.info "Configuring: %s", o.explain.bold
         func = (t) -> (o) -> (a...) -> log o; o.routine.apply t, a
-        run = arguments.length is 0 and _.isArray @$configure
-        assert _.isArray $configure = @$configure or new Array
+        run = arguments.length is 0 and _.isArray @$configure or 0
+        assert _.isArray $configure = @$configure or new Array()
         return (-> async.series _.map $configure, func @) if run
         return (->) if not @$configure and not arguments.length
         assert _.isFunction(routine), "invalid config routine"
@@ -387,7 +387,6 @@ module.exports.Generic = class Generic extends Archetype
         threshold = plumbs.threshold this
         @connect.use @threshold = threshold
         @connect.use @query = connect.query()
-        @connect.use @favicon = connect.favicon()
         @connect.use @compress = connect.compress()
         @connect.use @bodyParser = connect.bodyParser()
         @connect.use @cookieParser = connect.cookieParser()
@@ -411,10 +410,12 @@ module.exports.Generic = class Generic extends Archetype
         dirs = nconf.get "assets:dirs" or Array()
         opts = nconf.get "assets:opts" or Object()
         pub = -> _.find envs, (dir) -> dir is "pub"
+        established = try "#{__dirname}/../../public"
         assert _.isString(pub()), "no pub environment"
         assert _.isObject(opts), "no assets options"
         assert _.isArray(dirs), "no assets directories"
         @serveStaticDirectory d, opts for d in dirs
+        @serveStaticDirectory established, Object()
         @serveStaticDirectory pub(); return this
 
     # This method sets up the necessary internal toolkits, such as
