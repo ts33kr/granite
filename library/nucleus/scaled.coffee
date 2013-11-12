@@ -56,7 +56,7 @@ module.exports.Scaled = class Scaled extends Generic
 
     # This sets up the default identica for this kernel. It forms
     # an identica of a certain recommended format and populates it
-    # with data takes from the `PACKAGE` definition in a `Generic`
+    # with data takes from the `FRAMEWORK` definition in `Generic`
     # kernel. Refer to that kernel and to `identica` method there
     # for more information on semantics and the way of working it.
     @identica "#{@FRAMEWORK.name}@#{@FRAMEWORK.version}"
