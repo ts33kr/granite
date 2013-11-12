@@ -105,7 +105,7 @@ module.exports.Archetype = remote -> class Archetype extends EventEmitter2
         into = try destination.identify().underline
         message = "Merge intercept from %s into %s"
         previous = destination.interceptors or []
-        assert previous? and _.isObject previous
+        assert previous? and _.isArray previous
         assert merged = previous.concat currents
         assert merged = _.toArray _.unique merged
         logger.debug message.blue, from, into
