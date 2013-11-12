@@ -72,7 +72,7 @@ module.exports.Barebones = class Barebones extends Stubs
         @synopsis "Get a set of HTTP methods supported by service"
         @outputs "An array of supported methods, JSON or string"
         @markings framework: "critical", stable: "positive"
-        @version kernel.package.version or undefined
+        @version kernel.framework.version or undefined
         @produces "application/json", "text/html"
 
     # This method should generally be used to obtain HTTP methods that

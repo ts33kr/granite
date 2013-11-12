@@ -69,7 +69,7 @@ module.exports.Publish = class Publish extends Barebones
         @synopsis "Get inventory of all APIs available in the system"
         @outputs "An array of objects, each describes a service"
         @markings framework: "critical", stable: "positive"
-        @version kernel.package.version or undefined
+        @version kernel.framework.version or undefined
         @produces "application/json"
 
     # Establish a heartbeat monitor. A hearbit monitor is a method
