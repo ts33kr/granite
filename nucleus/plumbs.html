@@ -40,14 +40,14 @@
 that pipes all the request logs to the <code>Winston</code> instances that
 is used throughout the framework to provide logging capabilities.
 The format is takes from the <code>NConf</code> config or the default <code>dev</code>.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.logger = </span><span class="nf">(kernel) -&gt;</span>
-    <span class="nv">levelKey = </span><span class="s">&quot;log:request:level&quot;</span>
-    <span class="nv">formatKey = </span><span class="s">&quot;log:request:format&quot;</span>
+    <span class="nx">assert</span> <span class="nv">levelKey = </span><span class="s">&quot;log:request:level&quot;</span>
+    <span class="nx">assert</span> <span class="nv">formatKey = </span><span class="s">&quot;log:request:format&quot;</span>
     <span class="nv">format = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">formatKey</span><span class="p">)</span> <span class="o">or</span> <span class="s">&quot;dev&quot;</span>
     <span class="nv">level = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">levelKey</span><span class="p">)</span> <span class="o">or</span> <span class="s">&quot;debug&quot;</span>
-    <span class="nv">filter = </span><span class="nf">(string) -&gt;</span> <span class="nx">string</span><span class="p">.</span><span class="nx">replace</span> <span class="s">&quot;\n&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span>
+    <span class="nv">filter = </span><span class="nf">(s) -&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">replace</span> <span class="s">&quot;\n&quot;</span><span class="p">,</span> <span class="nb">String</span><span class="p">()</span>
     <span class="nv">writer = </span><span class="nf">(d) -&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">log</span> <span class="nx">level</span><span class="p">,</span> <span class="nx">filter</span> <span class="nx">d</span>
     <span class="nx">assert</span> <span class="nv">options = stream: write: </span><span class="nx">writer</span>
-    <span class="nx">assert</span> <span class="nv">options.format = </span><span class="nx">format</span>
+    <span class="nx">assert</span> <span class="nv">options.format = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">format</span><span class="si">}</span><span class="s">&quot;</span>
     <span class="k">return</span> <span class="nx">connect</span><span class="p">.</span><span class="nx">logger</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This middleware is really a wrapper around the <code>Connect</code> session
 middleware. The reason it wraps it is to automatically configure
 the session storage using the kernel and scoping configuration

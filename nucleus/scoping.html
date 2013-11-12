@@ -74,6 +74,7 @@ The kernel invokes this after the shutting down its operations.</p></div></div><
 and a synopsis (short description of the scope) parameters.
 The constructor of the scope should only associate the data.
 The scope startup logic should be implemented in the method.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@tag, synopsis) -&gt;</span>
+        <span class="k">try</span> <span class="k">super</span> <span class="k">if</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">__super__</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">@tag</span><span class="p">),</span> <span class="s">&quot;got invalid tag&quot;</span>
         <span class="vi">@synopsis = </span><span class="nx">synopsis</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">synopsis</span>
         <span class="nv">noInitializer = </span><span class="s">&quot;no scope initializer supplied&quot;</span>

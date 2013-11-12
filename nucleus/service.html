@@ -53,7 +53,7 @@ mainly is used to exclude or account for abstract classes.
 Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Every service has to have a public constructor that accepts
 the kernel instance as a parameter. You can override it as
 you see fit, but be sure to invoke the super constructor and
-it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span> <span class="vi">@uuid = </span><span class="nx">uuid</span><span class="p">.</span><span class="nx">v4</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either obtain or set the HTTP location of the current service.
+it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span> <span class="k">super</span> <span class="o">and</span> <span class="vi">@uuid = </span><span class="nx">uuid</span><span class="p">.</span><span class="nx">v4</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either obtain or set the HTTP location of the current service.
 This method is a proxy that forwards the invocation to the
 service constructor, for the purpose of easy access to service
 location when programmatically operating on the instances. Do
@@ -85,16 +85,16 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
 instance of the service, which is later will be registered in
 the router. This is invoked by the watcher when it discovers
 new suitable services to register. This works asynchronously!</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@spawn: </span><span class="nf">(kernel, callback) -&gt;</span>
-        <span class="nv">noKernel = </span><span class="s">&quot;got no valid kernel&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">noKernel</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nv">lazy = </span><span class="nx">@lazy</span><span class="p">()</span>
-        <span class="nx">lazy</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">callback</span>
-        <span class="nv">service = </span><span class="k">new</span> <span class="k">this</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="nv">upstream = </span><span class="nx">service</span><span class="p">.</span><span class="nx">upstreamAsync</span>
-        <span class="nv">upstream = </span><span class="nx">upstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">service</span>
-        <span class="nv">instance = </span><span class="nx">upstream</span> <span class="s">&quot;instance&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
-            <span class="nx">callback</span><span class="o">?</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">kernel</span>
-        <span class="nx">instance</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">service</span><span class="p">;</span> <span class="nx">service</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method implements a clever little lazy initialize system
+        <span class="nv">noKernel = </span><span class="s">&quot;no kernel supplied is given&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">kernel</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noKernel</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nv">lazy = </span><span class="k">try</span> <span class="nx">@lazy</span><span class="p">()</span>
+        <span class="nx">do</span> <span class="o">=&gt;</span> <span class="nx">lazy</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">callback</span>
+        <span class="nx">assert</span> <span class="nv">service = </span><span class="k">new</span> <span class="k">this</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="nx">assert</span> <span class="nv">downstream = </span><span class="nx">service</span><span class="p">.</span><span class="nx">downstream</span>
+        <span class="nv">downstream = </span><span class="k">try</span> <span class="nx">downstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">service</span>
+        <span class="nx">assert</span> <span class="nv">instance = </span><span class="nx">downstream</span> <span class="nv">instance: </span><span class="o">=&gt;</span>
+            <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">kernel</span>
+        <span class="nx">instance</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">service</span><span class="p">;</span> <span class="k">return</span> <span class="nx">service</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method implements a clever little lazy initialize system
 for the services. Basically, if you supply a fucntion to this
 method invocation, it will save it as a lazy config function,
 and execute it when the service is about to be spawned. But

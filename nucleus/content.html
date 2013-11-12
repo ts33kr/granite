@@ -41,7 +41,7 @@ using the correct protocol, meaning correct <code>Content-Type</code> header.
 This also tries to correctly set the <code>Content-Length</code> header too.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Broker = </span><span class="k">class</span> <span class="nx">Broker</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Every broker has to have a public constructor that accepts
 the kernel instance as a parameter. You can override it as
 you see fit, but be sure to invoke the super constructor and
-it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Register the specified content negotiator with the broker. The
+it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span> <span class="k">super</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Register the specified content negotiator with the broker. The
 The negotiator returns a function if it can handle the request
 and response pair. If specific negotiator cannot handle the
 pair, it should return anything other than a function object.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@associate: </span><span class="nf">(negotiator) -&gt;</span>

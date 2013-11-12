@@ -61,15 +61,15 @@ implement the singleton behavior pattern. Beware however that
 although you will always get an instance handle from this method
 although there is no guarantee that this handle is initialized!</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@obtain: </span><span class="nf">(kernel, callback) -&gt;</span>
         <span class="nv">instantiated = </span><span class="o">=&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">has</span> <span class="nx">@</span><span class="p">,</span> <span class="s">&quot;instance&quot;</span>
-        <span class="k">return</span> <span class="nx">@instance</span> <span class="k">if</span> <span class="nx">instantiated</span><span class="p">()</span>
-        <span class="nv">internal = </span><span class="s">&quot;an internal zombie error&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nv">lazy = </span><span class="nx">@lazy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nx">@instance</span> <span class="k">if</span> <span class="p">(</span><span class="k">try</span> <span class="nx">instantiated</span><span class="p">())</span>
+        <span class="nv">internal = </span><span class="s">&quot;got an internal zombie error&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nv">lazy = </span><span class="k">try</span> <span class="nx">@lazy</span><span class="p">()</span>
         <span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">lazy</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">callback</span>
         <span class="nx">assert</span> <span class="vi">@instance = </span><span class="k">new</span> <span class="k">this</span> <span class="nx">arguments</span><span class="p">...</span>
         <span class="nx">assert</span> <span class="nx">instantiated</span><span class="p">()</span> <span class="o">is</span> <span class="kc">yes</span><span class="p">,</span> <span class="nx">internal</span>
-        <span class="nx">assert</span> <span class="nv">upstream = </span><span class="nx">@instance</span><span class="p">.</span><span class="nx">upstreamAsync</span>
-        <span class="nx">assert</span> <span class="nv">upstream = </span><span class="nx">upstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@instance</span>
-        <span class="nx">assert</span> <span class="nv">singleton = </span><span class="nx">upstream</span> <span class="s">&quot;singleton&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+        <span class="nx">assert</span> <span class="nv">downstream = </span><span class="nx">@instance</span><span class="p">.</span><span class="nx">downstream</span>
+        <span class="nx">assert</span> <span class="nv">downstream = </span><span class="nx">downstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@instance</span>
+        <span class="nx">assert</span> <span class="nv">singleton = </span><span class="nx">downstream</span> <span class="nv">singleton: </span><span class="nf">-&gt;</span>
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">callback</span>
             <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">@instance</span><span class="p">,</span> <span class="nx">kernel</span>
         <span class="nx">singleton</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">@instance</span><span class="p">;</span> <span class="nx">@instance</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An important method whose responsibility is to create a new
@@ -81,9 +81,9 @@ new suitable services to register. This works asynchronously!</p></div></div><di
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">service = </span><span class="nx">@obtain</span><span class="p">()</span>
         <span class="nv">constructor = </span><span class="nx">service</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">or</span> <span class="nf">-&gt;</span>
         <span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">arguments</span>
-        <span class="nx">assert</span> <span class="nv">upstream = </span><span class="nx">service</span><span class="p">.</span><span class="nx">upstreamAsync</span>
-        <span class="nx">assert</span> <span class="nv">upstream = </span><span class="nx">upstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">service</span>
-        <span class="nx">assert</span> <span class="nv">instance = </span><span class="nx">upstream</span> <span class="s">&quot;instance&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+        <span class="nx">assert</span> <span class="nv">downstream = </span><span class="nx">service</span><span class="p">.</span><span class="nx">downstream</span>
+        <span class="nx">assert</span> <span class="nv">downstream = </span><span class="nx">downstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">service</span>
+        <span class="nx">assert</span> <span class="nv">instance = </span><span class="nx">downstream</span> <span class="nv">instance: </span><span class="nf">-&gt;</span>
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">callback</span>
             <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">kernel</span>
         <span class="nx">instance</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">service</span><span class="p">;</span> <span class="nx">service</span></div></div></div></div></body></html>

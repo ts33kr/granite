@@ -52,7 +52,7 @@ process by the watching. Meaning adding it to the watch
 list and enabling the hot swapping of modules and services.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@EXTENSIONS = </span><span class="p">[</span><span class="s">&quot;.js&quot;</span><span class="p">,</span> <span class="s">&quot;.coffee&quot;</span><span class="p">]</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The public constructor for the watcher. It should never be
 used directly. The watcher is entirely operated by kernel
 and therefore its the responsibility of the kernel to do
-the management of the lifecyle of the watcher and others.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method will be invoked by the file system watcher on
+the management of the lifecyle of the watcher and others.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span> <span class="k">super</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method will be invoked by the file system watcher on
 the event when modules are either being added to the dir.
 It takes care of either initial loading and registering of
 services or the hot swapping of the services that changed.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">hotSwappingAdd: </span><span class="nf">(path) -&gt;</span>

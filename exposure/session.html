@@ -52,6 +52,7 @@ implementations of some generic, engine agnostic methods.</p></div></div><div cl
 This method is supposed to be called when a session engine asks
 the storage to destroy a session with the specified session ID.
 The session may or may not exist. Please refer to the <code>Connect</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">destory: </span><span class="nf">(sid, callback) -&gt;</span>
+        <span class="nx">@emit</span> <span class="s">&quot;session-destroy&quot;</span><span class="p">,</span> <span class="nx">sid</span><span class="p">,</span> <span class="nx">callback</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">qualified = </span><span class="nx">@namespaced</span> <span class="nx">sid</span>
         <span class="nv">message = </span><span class="s">&quot;Redis session engine error at destroy&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">@redis</span><span class="p">),</span> <span class="s">&quot;no Redis client yet&quot;</span>
@@ -65,6 +66,7 @@ This method is supposed to be called when a session engine asks
 the storage to suspend a session with the specified session ID.
 The session may or may not exist. Please refer to the <code>Connect</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">set: </span><span class="nf">(sid, session, callback) -&gt;</span>
         <span class="nx">assert</span> <span class="nv">encoded = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">session</span>
+        <span class="nx">@emit</span> <span class="s">&quot;session-set&quot;</span><span class="p">,</span> <span class="nx">sid</span><span class="p">,</span> <span class="nx">session</span><span class="p">,</span> <span class="nx">callback</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">qualified = </span><span class="nx">@namespaced</span> <span class="nx">sid</span>
         <span class="nv">expire = </span><span class="nx">session</span><span class="o">?</span><span class="p">.</span><span class="nx">cookie</span><span class="o">?</span><span class="p">.</span><span class="nx">maxAge</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">|</span> <span class="mi">0</span>
         <span class="nv">expire = </span><span class="mi">86400</span> <span class="k">unless</span> <span class="nx">expire</span> <span class="o">and</span> <span class="nx">expire</span> <span class="o">&gt;</span> <span class="mi">0</span>
@@ -77,6 +79,7 @@ The session may or may not exist. Please refer to the <code>Connect</code>.</p><
 This method is supposed to be called when a session engine asks
 the storage to retrieve a session with the specified session ID.
 The session may or may not exist. Please refer to the <code>Connect</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">get: </span><span class="nf">(sid, callback) -&gt;</span>
+        <span class="nx">@emit</span> <span class="s">&quot;session-get&quot;</span><span class="p">,</span> <span class="nx">sid</span><span class="p">,</span> <span class="nx">callback</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">qualified = </span><span class="nx">@namespaced</span> <span class="nx">sid</span>
         <span class="nv">message = </span><span class="s">&quot;Redis session engine error at get&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">@redis</span><span class="p">),</span> <span class="s">&quot;no Redis client yet&quot;</span>

@@ -47,4 +47,52 @@ that needs a common point of match in the class hierarchies of the peers.</p></d
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div></div></body></html>
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a top level constructor that should be called by any
+class that inherits from Archetype, which is about every class
+in the framework. This implementation performs some important
+operations that pertain to the scaffolding that is being set
+up for every archetyped class and therefore instance of class.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">-&gt;</span>
+        <span class="nv">currents = </span><span class="k">try</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">interceptors</span>
+        <span class="nv">currents = </span><span class="p">[]</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">currents</span>
+        <span class="nv">ids = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nv">msg = </span><span class="s">&quot;Intercepting an %s event at the %s&quot;</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">currents</span><span class="p">,</span> <span class="nf">(record, index, linear) =&gt;</span>
+            <span class="p">{</span><span class="nx">event</span><span class="p">,</span> <span class="nx">implement</span><span class="p">}</span> <span class="o">=</span> <span class="nx">record</span> <span class="o">or</span> <span class="nb">Object</span><span class="p">()</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">event</span> <span class="o">or</span> <span class="kc">undefined</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">implement</span> <span class="o">or</span> <span class="kc">null</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="k">try</span> <span class="k">this</span><span class="p">.</span><span class="nx">on</span> <span class="o">or</span> <span class="kc">null</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">msg</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">underline</span><span class="p">,</span> <span class="nx">ids</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">_events</span> <span class="o">?=</span> <span class="p">{}</span> <span class="c1"># event emitter bug</span>
+            <span class="nx">do</span> <span class="o">=&gt;</span> <span class="nx">@removeListener</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">implement</span>
+            <span class="nx">do</span> <span class="o">=&gt;</span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">on</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">implement</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a class wide directive that is really the convenient
+wrapper that allows for a short hand attaching of handlers to
+the object events. The wrapper exists to provide an easy and
+declarative way of doing that, as opposed to the functional.
+The signature follows the standard event emitter convention.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@intercept: </span><span class="nf">(event, implement) -&gt;</span>
+        <span class="nv">trap = </span><span class="k">try</span> <span class="k">this</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">on</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nv">misused = </span><span class="s">&quot;please supply an event handler&quot;</span>
+        <span class="nv">invalid = </span><span class="s">&quot;got no event emitting prototype&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">trap</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">invalid</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">event</span><span class="p">),</span> <span class="s">&quot;malformed event&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">implement</span><span class="p">),</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">misused</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">previous = </span><span class="k">this</span><span class="p">.</span><span class="nx">interceptors</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nv">inmerge = </span><span class="nf">(x) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">x</span>
+        <span class="nv">execute = </span><span class="nf">(fnc) =&gt;</span> <span class="nx">fnc</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">;</span> <span class="nx">implement</span>
+        <span class="nx">execute</span> <span class="nf">-&gt;</span> <span class="k">return</span> <span class="vi">@interceptors = </span><span class="nx">inmerge</span>
+            <span class="nv">implement: </span><span class="nx">implement</span><span class="p">,</span> <span class="nv">event: </span><span class="nx">event</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is the composition hook that gets invoked when compound
+is being composed into other services and components. Merges
+together interceptors found in both hierarchies, the current
+one and the foreign (the one that is beign merged in). Exists
+for backing up the consistent behavior when using composition.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@composition: </span><span class="nf">(destination) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">currents = </span><span class="nx">@interceptors</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nx">assert</span> <span class="nv">from = </span><span class="k">try</span> <span class="nx">@identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">destination</span><span class="p">.</span><span class="nx">derives</span> <span class="nx">Archetype</span>
+        <span class="nv">into = </span><span class="k">try</span> <span class="nx">destination</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nv">message = </span><span class="s">&quot;Merge intercept from %s into %s&quot;</span>
+        <span class="nv">previous = </span><span class="nx">destination</span><span class="p">.</span><span class="nx">interceptors</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nx">assert</span> <span class="nx">previous</span><span class="o">?</span> <span class="o">and</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">previous</span>
+        <span class="nx">assert</span> <span class="nv">merged = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">currents</span>
+        <span class="nx">assert</span> <span class="nv">merged = </span><span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span> <span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">merged</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">blue</span><span class="p">,</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">into</span>
+        <span class="nx">assert</span> <span class="nv">destination.interceptors = </span><span class="nx">merged</span>
+        <span class="k">try</span> <span class="k">super</span> <span class="k">catch</span> <span class="nx">error</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div></div></body></html>

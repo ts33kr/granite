@@ -66,7 +66,7 @@ method is asynchronously wired, so be sure to call <code>next</code>.</p></div><
 socket connection is going to be setup during the handshake.
 The method gets a set of parameters that maybe be useful to
 have by the actual implementation. Please remember thet the
-method is asynchronously wired, so be sure to call <code>next</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">handshake: </span><span class="nf">(context, handshake, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
+method is asynchronously wired, so be sure to call <code>next</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">handshaken: </span><span class="nf">(context, handshake, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
 channel (socket) gets past authorization phase and is rated
 to be good to go through the screening process. This is good
 place to implementation various schemes for authorization. If
@@ -90,9 +90,9 @@ The session can normally be used as you would use req session.</p></div></div><d
                 <span class="nv">session = </span><span class="nx">handshake</span><span class="p">.</span><span class="nx">session</span>
                 <span class="nv">ns = </span><span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;no session found&quot;</span>
                 <span class="k">return</span> <span class="nx">accept</span> <span class="nx">ns</span><span class="p">,</span> <span class="kc">no</span> <span class="k">unless</span> <span class="nx">session</span>
-                <span class="nv">upstream = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;handshake&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+                <span class="nv">handshaken = </span><span class="nx">@downstream</span> <span class="nv">handshaken: </span><span class="nf">-&gt;</span>
                     <span class="k">return</span> <span class="nx">accept</span> <span class="kc">undefined</span><span class="p">,</span> <span class="kc">yes</span>
-                <span class="k">return</span> <span class="nx">upstream</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">handshake</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internal, static method that is used to obtain gurading
+                <span class="k">return</span> <span class="nx">handshaken</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">downstream</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internal, static method that is used to obtain gurading
 domains for each of the declared server site providers. Please
 refer to the Node.js documentation for more information on
 the domains and error handling itself. This method is generally
@@ -178,9 +178,9 @@ Pay attention that most implementations side effect the context.</p></div></div>
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">providing</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">providers</span><span class="p">.</span><span class="nx">push</span> <span class="nx">name</span>
         <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internal provider that gets automatically invoked once client
-establishes a protected Socket.IO channel back to the service
-instance at the server site. This implementation that uses the
-<code>upstreamAsync</code> mechanism to invoke the <code>connected</code> method at all
+establishes the protected Socket.IO transport back to the service
+instance at the server site. This implementation uses a composite
+<code>downstream</code> mechanism to invoke the <code>connected</code> method at every
 peers of the inheritance hierarchy. Refer to the method for info.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">trampoline: </span><span class="nx">@provider</span> <span class="nf">(context, callback) -&gt;</span>
         <span class="nv">isocket = </span><span class="s">&quot;Executed the trampoline on %s&quot;</span>
         <span class="nv">message = </span><span class="s">&quot;Inbound duplex connection at %s&quot;</span>
@@ -190,11 +190,11 @@ peers of the inheritance hierarchy. Refer to the method for info.</p></div></div
         <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">request</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">url</span><span class="p">.</span><span class="nx">underline</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">isocket</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span><span class="p">.</span><span class="nx">id</span>
         <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;disconnect&quot;</span><span class="p">,</span> <span class="nf">(error) =&gt;</span>
-            <span class="nx">assert</span><span class="p">.</span><span class="nx">ifError</span> <span class="nx">error</span><span class="p">,</span> <span class="s">&quot;broken disconnect&quot;</span>
-            <span class="nx">assert</span> <span class="nv">disengage = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;disengage&quot;</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">ifError</span> <span class="nx">error</span><span class="p">,</span> <span class="s">&quot;a broken disconnect&quot;</span>
+            <span class="nx">assert</span> <span class="nv">disengage = </span><span class="nx">@downstream</span> <span class="nv">disengage: </span><span class="nf">-&gt;</span>
             <span class="k">return</span> <span class="nx">disengage</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span>
-        <span class="nv">connected = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;connected&quot;</span><span class="p">,</span> <span class="nx">callback</span>
-        <span class="nx">connected</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an external method that will be automatically executed
+        <span class="nv">connected = </span><span class="nx">@downstream</span> <span class="nv">connected: </span><span class="nx">callback</span>
+        <span class="nx">connected</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span><span class="p">;</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an external method that will be automatically executed
 on the client site by the duplex implementation. It sets up a
 client end of the Socket.IO channel and creates wrapper around
 all the providers residing in the current service implementation.
@@ -260,7 +260,7 @@ for more information on when, where and how this is happening.</p></div></div><d
             <span class="nx">assert</span> <span class="nv">mangled = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">@location</span><span class="p">()</span><span class="si">}</span><span class="s">/</span><span class="si">#{</span><span class="nx">name</span><span class="si">}</span><span class="s">&quot;</span>
             <span class="nx">mangled</span> <span class="o">+=</span> <span class="s">&quot;/</span><span class="si">#{</span><span class="nx">nsp</span><span class="si">}</span><span class="s">&quot;</span> <span class="k">if</span> <span class="nv">nsp = </span><span class="nx">binder</span><span class="p">.</span><span class="nx">nsp</span>
             <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span> <span class="nx">mangled</span><span class="p">,</span> <span class="nf">(args..., callback) =&gt;</span>
-                <span class="nv">sentence = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;sentence&quot;</span><span class="p">,</span> <span class="o">=&gt;</span>
+                <span class="nv">sentence = </span><span class="nx">@downstream</span> <span class="nv">sentence: </span><span class="o">=&gt;</span>
                     <span class="nx">bound</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">args</span><span class="p">...,</span> <span class="nx">callback</span>
                 <span class="nx">sentence</span> <span class="nx">socket</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">args</span>
         <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to registering the service
@@ -276,7 +276,7 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
         <span class="nv">contexts = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="p">[</span><span class="nx">sserver</span><span class="p">,</span> <span class="nx">ssecure</span><span class="p">],</span> <span class="nx">resolve</span>
         <span class="nv">makeScreener = </span><span class="nf">(context) =&gt;</span> <span class="nf">(socket) =&gt;</span>
             <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;screening&quot;</span><span class="p">,</span> <span class="nf">(binder, ack) =&gt;</span>
-                <span class="nv">screening = </span><span class="nx">@upstreamAsync</span> <span class="s">&quot;screening&quot;</span><span class="p">,</span> <span class="o">=&gt;</span>
+                <span class="nv">screening = </span><span class="nx">@downstream</span> <span class="nv">screening: </span><span class="o">=&gt;</span>
                     <span class="nv">bonding = </span><span class="p">[</span><span class="nx">context</span><span class="p">,</span> <span class="nx">binder</span><span class="p">,</span> <span class="nx">socket</span><span class="p">,</span> <span class="nx">ack</span><span class="p">]</span>
                     <span class="nx">@publishProviders</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">bonding</span>
                 <span class="nx">screening</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">socket</span><span class="p">,</span> <span class="nx">binder</span>

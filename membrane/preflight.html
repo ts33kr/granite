@@ -51,17 +51,30 @@ purpose of preflight is drawing in the remoted and Bower packages.</p></div></di
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A directive to mark the certain remote class or object to be
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is the composition hook that gets invoked when compound
+is being composed into other services and components. Merges
+together added jscripts found in both hierarchies, the current
+one and the foreign (the one that is beign merged in). Exists
+for backing up the consistent behavior when using composition.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@composition: </span><span class="nf">(destination) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">currents = </span><span class="k">this</span><span class="p">.</span><span class="nx">jscripts</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nv">previous = </span><span class="nx">destination</span><span class="p">.</span><span class="nx">jscripts</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">destination</span><span class="p">.</span><span class="nx">derives</span> <span class="nx">RToolkit</span>
+        <span class="nx">assert</span> <span class="nx">previous</span><span class="o">?</span> <span class="o">and</span> <span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">previous</span>
+        <span class="nx">assert</span> <span class="nv">merged = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">currents</span>
+        <span class="nx">assert</span> <span class="nv">merged = </span><span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span> <span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">merged</span>
+        <span class="nx">assert</span> <span class="k">try</span> <span class="nv">destination.jscripts = </span><span class="nx">merged</span>
+        <span class="k">try</span> <span class="k">super</span> <span class="k">catch</span> <span class="nx">error</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A directive to mark the certain remote class or object to be
 included in the <code>Screenplay</code> context that is going to be emited
 and deployed on the client site. Basically, use this to bring
-in all the remote classes that you need to the remote call site.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@remote: </span><span class="nf">(subject) -&gt;</span>
-        <span class="nx">assert</span> <span class="nv">previous = </span><span class="nx">@remotes</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+in all the remote classes that you need to the remote call site.
+Refer to the remote compilation procedures for more information.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@remote: </span><span class="nf">(subject) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="nx">@jscripts</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
         <span class="nv">qualify = </span><span class="k">try</span> <span class="nx">subject</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">compile</span>
         <span class="nv">noRemote = </span><span class="s">&quot;the subject is not remote&quot;</span>
-        <span class="nv">noPrevious = </span><span class="s">&quot;invalid previous remotes&quot;</span>
+        <span class="nv">noPrevious = </span><span class="s">&quot;invalid previous jscripts&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">previous</span><span class="p">),</span> <span class="nx">noPrevious</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">qualify</span><span class="p">),</span> <span class="nx">noRemote</span>
-        <span class="vi">@remotes = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">subject</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This server side method is called on the context prior to the
+        <span class="vi">@jscripts = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">subject</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This server side method is called on the context prior to the
 context being compiled and flushed down to the client site. The
 method is wired in an asynchronous way for greater functionality.
 This is the place where you would be importing the dependencies.
@@ -69,14 +82,59 @@ Pay attention that most implementations side effect the context.</p></div></div>
         <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="o">`</span><span class="nv">assert = </span><span class="nx">chai</span><span class="p">.</span><span class="nx">assert</span><span class="o">`</span>
         <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="o">`</span><span class="nx">assert</span><span class="p">(</span><span class="nv">logger = </span><span class="nx">log</span><span class="p">)</span><span class="o">`</span>
         <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="k">try</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">enableAll</span><span class="p">()</span>
-        <span class="nx">assert</span> <span class="nv">remotes = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">remotes</span> <span class="o">or</span> <span class="p">[]</span>
-        <span class="nx">assert</span> <span class="nv">uniques = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">remotes</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">jscripts = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">jscripts</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nx">assert</span> <span class="nv">uniques = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">jscripts</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
         <span class="nx">@inject</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">blob</span> <span class="k">for</span> <span class="nx">blob</span> <span class="k">in</span> <span class="nx">uniques</span>
-        <span class="k">return</span> <span class="nx">next</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This abstract base class service is an extension of the Screenplay
+        <span class="k">return</span> <span class="nx">do</span> <span class="o">=&gt;</span> <span class="nx">next</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A complementary part of the preflight procedures that provides the
+ability to create and emit arbitrary linkage in the contexts that
+are going to be assembled within the current preflight hierarchy.
+The facilities of this toolkit should typically be used when you
+need to link to a static asset file, within any domain or path.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.LToolkit = </span><span class="k">class</span> <span class="nx">LToolkit</span> <span class="k">extends</span> <span class="nx">RToolkit</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This server side method is called on the context prior to the
+context being compiled and flushed down to the client site. The
+method is wired in an asynchronous way for greater functionality.
+This is the place where you would be importing the dependencies.
+Pay attention that most implementations side effect the context.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(symbol, context, request, next) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">jscripts = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">jscripts</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nx">assert</span> <span class="nv">stsheets = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">stsheets</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nx">assert</span> <span class="nv">jscripts = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">jscripts</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">stsheets = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">stsheets</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">context</span><span class="p">.</span><span class="nx">sheets</span><span class="p">.</span><span class="nx">push</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">context</span><span class="p">.</span><span class="nx">scripts</span><span class="p">.</span><span class="nx">push</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nx">context</span><span class="p">.</span><span class="nx">scripts</span><span class="p">.</span><span class="nx">push</span> <span class="nx">script</span> <span class="k">for</span> <span class="nx">script</span> <span class="k">in</span> <span class="nx">jscripts</span>
+        <span class="nx">context</span><span class="p">.</span><span class="nx">sheets</span><span class="p">.</span><span class="nx">push</span> <span class="nx">sheet</span> <span class="k">for</span> <span class="nx">sheet</span> <span class="k">in</span> <span class="nx">stsheets</span>
+        <span class="k">return</span> <span class="nx">do</span> <span class="o">=&gt;</span> <span class="nx">next</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a preflight directive that can be used to link any
+arbitrary JavaScript file source. Is important do understand
+that this directive only compiles the appropriate statement
+to be transferred to the server and it is up to you to ensure
+the existence of that file and its ability to be downloaded.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@javascript: </span><span class="nf">(xoptions, xdirection) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="nx">@jscripts</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nv">options = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span>
+        <span class="nv">direction = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span>
+        <span class="nv">indirect = </span><span class="s">&quot;an inalid direction supplied&quot;</span>
+        <span class="nv">noPrevious = </span><span class="s">&quot;invalid previous jscripts&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">previous</span><span class="p">),</span> <span class="nx">noPrevious</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">direction</span><span class="p">),</span> <span class="nx">indirect</span>
+        <span class="vi">@jscripts = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">direction</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a preflight directive that can be used to link any
+arbitrary CSS style file source. Is important do understand
+that this directive only compiles the appropriate statement
+to be transferred to the server and it is up to you to ensure
+the existence of that file and its ability to be downloaded.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@stylesheet: </span><span class="nf">(xoptions, xdirection) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="nx">@stsheets</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nv">options = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span>
+        <span class="nv">direction = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span>
+        <span class="nv">indirect = </span><span class="s">&quot;an inalid direction supplied&quot;</span>
+        <span class="nv">noPrevious = </span><span class="s">&quot;invalid previous stsheets&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">previous</span><span class="p">),</span> <span class="nx">noPrevious</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">direction</span><span class="p">),</span> <span class="nx">indirect</span>
+        <span class="vi">@stsheets = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">direction</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This abstract base class service is an extension of the Screenplay
 family that does some further environment initialization and set
 up. These preparations will be nececessary no matter what sort of
 Screenplay functionality you are going to implement. Currently the
-purpose of preflight is drawing in the remoted and Bower packages.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Preflight = </span><span class="k">class</span> <span class="nx">Preflight</span> <span class="k">extends</span> <span class="nx">RToolkit</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+purpose of preflight is drawing in the remoted and Bower packages.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Preflight = </span><span class="k">class</span> <span class="nx">Preflight</span> <span class="k">extends</span> <span class="nx">LToolkit</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.

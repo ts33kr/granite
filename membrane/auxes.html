@@ -59,7 +59,7 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
         <span class="nv">routines = </span><span class="nx">mapper</span> <span class="nf">(value, key) -&gt;</span> <span class="nf">(callback) -&gt;</span>
             <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">singleton = </span><span class="nx">value</span><span class="p">.</span><span class="nx">obtain</span><span class="p">()</span>
             <span class="nv">message = </span><span class="s">&quot;Cascading headers from %s to %s @ %s&quot;</span>
-            <span class="nv">headers = </span><span class="nx">singleton</span><span class="p">.</span><span class="nx">upstreamAsync</span> <span class="s">&quot;headers&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+            <span class="nv">headers = </span><span class="nx">singleton</span><span class="p">.</span><span class="nx">downstream</span> <span class="nv">headers: </span><span class="nf">-&gt;</span>
                 <span class="nv">identity = </span><span class="nx">value</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
                 <span class="nv">template = </span><span class="p">[</span><span class="nx">hosting</span><span class="p">,</span> <span class="nx">identity</span><span class="p">,</span> <span class="nx">key</span><span class="p">]</span>
                 <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">template</span><span class="p">...</span>
