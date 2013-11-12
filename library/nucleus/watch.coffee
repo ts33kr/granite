@@ -257,7 +257,7 @@ module.exports.Watcher = class Watcher extends Archetype
         formats = [notExists.grey, relative.underline]
         return unless @directoryTracking directory
         return logger.warn formats... unless exists
-        watching = "Watching %s directory for modules"
+        watching = "Watching %s directory for changes"
         logger.info watching.blue, relative.underline
         watcher = chokidar.watch directory.toString()
         watcher.on "unlink", @hotSwappingUnlink.bind @
