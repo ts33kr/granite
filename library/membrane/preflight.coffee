@@ -87,6 +87,11 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
         @inject context, blob for blob in uniques
         return do => next.call this, undefined
 
+# A complementary part of the preflight procedures that provides the
+# ability to create and emit arbitrary linkage in the contexts that
+# are going to be assembled within the current preflight hierarchy.
+# The facilities of this toolkit should typically be used when you
+# need to link to a static asset file, within any domain or path.
 module.exports.LToolkit = class LToolkit extends RToolkit
 
     # This is a marker that indicates to some internal subsystems
