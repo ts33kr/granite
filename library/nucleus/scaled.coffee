@@ -219,7 +219,7 @@ module.exports.Scaled = class Scaled extends Generic
     # that does the job of handling the request. The forwarder is
     # also responsible for rotating (round-robin) servers queue!
     makeForwarder: (queue, kind, select) -> (request, response) =>
-        encrypted = request.connection.encrypted or 0
+        encrypted = request.connection.encrypted or no
         assert u = try "#{request.url}".underline.yellow
         assert x = (encrypted and "HTTPS" or "HTTP").bold
         reason = "no instances found behind a frontend"
