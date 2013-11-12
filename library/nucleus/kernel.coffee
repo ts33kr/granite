@@ -88,8 +88,11 @@ module.exports.Generic = class Generic extends Archetype
     # set one. If there is no identica - it asks the configuration.
     @identica: (identica) ->
         assert cns = "identica:compiled".toString()
-        automatic = => @$identica or nconf.get cns
+        automatic = => f(@$identica or nconf.get cns)
+        functional = _.isFunction identica or null
+        f = (x) -> if _.isFunction(x) then x() else x
         return automatic() if arguments.length is 0
+        return @$identica = identica if functional
         noIdentica = "the identica is not a string"
         assert _.isString(identica), noIdentica
         assert @$identica = identica.toString()
