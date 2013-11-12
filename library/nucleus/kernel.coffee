@@ -192,7 +192,7 @@ module.exports.Generic = class Generic extends Archetype
         @domain.on "error", (err) => @emit "panic", err
         process.removeAllListeners "uncaughtException"
         process.on "uncaughtException", (error, arg) =>
-            return unless str(error) is "socket end"
+            return no if str(error) is "socket end"
             return @emit.call this, "panic", error
 
     # Shutdown the kernel instance. This includes shutting down both
