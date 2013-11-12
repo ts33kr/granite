@@ -59,19 +59,34 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # This is the composition hook that gets invoked when compound
+    # is being composed into other services and components. Merges
+    # together added jscripts found in both hierarchies, the current
+    # one and the foreign (the one that is beign merged in). Exists
+    # for backing up the consistent behavior when using composition.
+    @composition: (destination) ->
+        assert currents = this.jscripts or Array()
+        previous = destination.jscripts or Array()
+        return unless destination.derives RToolkit
+        assert previous? and try _.isArray previous
+        assert merged = previous.concat currents
+        assert merged = _.toArray _.unique merged
+        assert try destination.jscripts = merged
+        try super catch error; return this
+
     # A directive to mark the certain remote class or object to be
     # included in the `Screenplay` context that is going to be emited
     # and deployed on the client site. Basically, use this to bring
     # in all the remote classes that you need to the remote call site.
     # Refer to the remote compilation procedures for more information.
     @remote: (subject) ->
-        assert previous = @remotes or Array()
+        assert previous = @jscripts or Array()
         qualify = try subject.remote.compile
         noRemote = "the subject is not remote"
-        noPrevious = "invalid previous remotes"
+        noPrevious = "invalid previous jscripts"
         assert _.isArray(previous), noPrevious
         assert _.isFunction(qualify), noRemote
-        @remotes = previous.concat subject
+        @jscripts = previous.concat subject
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
@@ -82,8 +97,8 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
         context.inline -> `assert = chai.assert`
         context.inline -> `assert(logger = log)`
         context.inline -> try logger.enableAll()
-        assert remotes = @constructor.remotes or []
-        assert uniques = _.unique remotes or Array()
+        assert jscripts = @constructor.jscripts or []
+        assert uniques = _.unique jscripts or Array()
         @inject context, blob for blob in uniques
         return do => next.call this, undefined
 
