@@ -1,0 +1,8 @@
+.idea
+.idea_modules
+*.sublime-*
+node_modules
+documents
+tmp
+var
+pub
