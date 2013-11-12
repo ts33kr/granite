@@ -168,6 +168,7 @@ module.exports.Generic = class Generic extends Archetype
         assert not _.isEmpty @token = uuid.v4()
         nconf.env().argv(); @setupLoggingFacade()
         assert @framework = @constructor.FRAMEWORK
+        assert @application = @constructor.APPLICATION
         assert branding = [@framework.name, "smisome1"]
         types = [@framework.version, @framework.codename]
         this.interceptExceptions.call this, initializer
