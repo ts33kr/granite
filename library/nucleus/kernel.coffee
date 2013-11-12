@@ -66,7 +66,7 @@ module.exports.Generic = class Generic extends Archetype
     # of the information and data. This could be overridden by the
     # modified kernels that are custom to arbitrary applications.
     # This definition (package.json) should corellate to framework.
-    @FRAMEWORK = pkginfo(module) and module.exports
+    assert @FRAMEWORK = pkginfo(module) and module.exports
 
     # Create a new instance of the kernel, run all the prerequisites
     # that are necessary, do the configuration on the kernel, then
