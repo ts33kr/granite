@@ -87,14 +87,15 @@ module.exports.MongoClient = class MongoClient extends Service
         logger.info message.cyan.underline, host, port
         server = new mongodb.Server host, port, options
         kernel.mongo = new mongodb.MongoClient server
-        kernel.mongo.open @openMongoConnection.bind @
+        return kernel.mongo.open (error, client) =>
+            @openMongoConnection next, error, client
 
     # A presumably internal method that gets invoked by the primary
     # implementation to actually open the connection to previously
     # configured MongoDB database and if relevant - set up required
     # premises, such as the database name, among other things. This
     # method should not be called directly in most if cases at hand.
-    openMongoConnection: (error, client) ->
+    openMongoConnection: (next, error, client) ->
         assert _.isObject config = nconf.get "mongo"
         assert.ifError error, "mongo failed: #{error}"
         assert.ok _.isObject @kernel.mongo = client
