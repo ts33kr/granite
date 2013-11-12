@@ -76,7 +76,7 @@ module.exports.collectPackages = (closure, directory="library") ->
 # most derived from the original one. If no such kernel can be found
 # then revert to returning the original kernel embedded in framework.
 module.exports.cachedKernel = (limits) ->
-    origin = require("./kernel").Generic
+    origin = require("./scaled").Scaled
     assert _.isString limits, "no limits"
     limits = paths.resolve limits.toString()
     assert _.isObject(origin), "no kernel origin"
