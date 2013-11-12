@@ -190,7 +190,7 @@ module.exports.Scaled = class Scaled extends Generic
     # Beware howeber that is also implements the sticky session algo
     # based on setting and getting the correctly signed req cookies.
     makeSelectors: (queue, kind) -> (request, response) =>
-        encrypted = request.connection.encrypted
+        encrypted = request.connection.encrypted or no
         assert _.isNumber ttl = nconf.get "balancer:ttl"
         response.set = yes # a hack for `cookies` module
         response.getHeader = (key) -> [key.toLowerCase()]
@@ -219,15 +219,15 @@ module.exports.Scaled = class Scaled extends Generic
     # that does the job of handling the request. The forwarder is
     # also responsible for rotating (round-robin) servers queue!
     makeForwarder: (queue, kind, select) -> (request, response) =>
-        encrypted = request.connection.encrypted
-        assert u = "#{request.url}".underline.yellow
+        encrypted = request.connection.encrypted or 0
+        assert u = try "#{request.url}".underline.yellow
         assert x = (encrypted and "HTTPS" or "HTTP").bold
         reason = "no instances found behind a frontend"
         msg = "the frontend has no instances to talk to"
         assert _.isArray(queue), "got invalid proxy queue"
         response.writeHead 504, reason if _.isEmpty queue
         return response.end(msg) and no if _.isEmpty queue
-        assert proxy = select.apply this, arguments
+        assert proxy = try select.apply this, arguments
         a = "#{proxy.target.host}:#{proxy.target.port}"
         assert a = "#{a.toLowerCase().underline.yellow}"
         logger.debug "Proxy %s request %s to %s", x, u, a
