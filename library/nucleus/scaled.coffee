@@ -298,8 +298,7 @@ module.exports.Scaled = class Scaled extends Generic
         record = @seaport.register identica, cfg
         assert _.isNumber(record), "got mistaken"
         logger.info msg.green, "#{record}".bold
-        assert config?.server?.https = record
-        nconf.set config; super; return this
+        nconf.set "server:https", record; super
 
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
@@ -318,5 +317,4 @@ module.exports.Scaled = class Scaled extends Generic
         record = @seaport.register identica, cfg
         assert _.isNumber(record), "got mistaken"
         logger.info msg.green, "#{record}".bold
-        assert config?.server?.http = record
-        nconf.set config; super; return this
+        nconf.set "server:http", record; super
