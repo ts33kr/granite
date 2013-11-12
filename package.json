@@ -51,6 +51,7 @@
         "platform": "1.0.x",
         "filesize": "2.0.x",
         "chokidar": "0.6.x",
+        "pkginfo": "0.3.x",
         "cookies": "0.3.x",
         "keygrip": "0.2.x",
         "request": "2.27.x",
