@@ -43,7 +43,7 @@ mongodb = require "mongodb"
 # This is an ABC service intended to be used only as a compund. It
 # provides the ready to use Mongo client to any service that composits
 # this service in. The initialization is performed only once. If the
-# configuration environment does not contains the necessary information
+# configuration environment does not contain the necessary information
 # then this service will not attempt to setup a Mongo client at all.
 module.exports.MongoClient = class MongoClient extends Service
 
