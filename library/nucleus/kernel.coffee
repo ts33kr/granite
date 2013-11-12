@@ -91,7 +91,8 @@ module.exports.Generic = class Generic extends Archetype
         assert cns = "identica:compiled".toString()
         automatic = => f(@$identica or nconf.get cns)
         functional = _.isFunction identica or null
-        f = (x) -> if _.isFunction(x) then x() else x
+        i = (fn) => return fn.apply this, arguments
+        f = (x) => if _.isFunction x then i(x) else x
         return automatic() if arguments.length is 0
         return @$identica = identica if functional
         noIdentica = "the identica is not a string"
@@ -168,6 +169,7 @@ module.exports.Generic = class Generic extends Archetype
         assert not _.isEmpty @token = uuid.v4()
         nconf.env().argv(); @setupLoggingFacade()
         assert @framework = @constructor.FRAMEWORK
+        try @constructor.APPLICATION ?= @framework
         assert @application = @constructor.APPLICATION
         assert branding = [@framework.name, "smisome1"]
         types = [@framework.version, @framework.codename]
