@@ -65,7 +65,7 @@ module.exports.EMailer = class EMailer extends Service
         return next() unless _.isObject kernel.emailer
         {transport, configure} = config or new Object()
         message = "Disconnecting mailer of %s transport"
-        logger.info message.blue.underline, transport.bold
+        logger.info "#{message.magenta}", transport.bold
         try this.emit "no-emailer", kernel.emailer, kernel
         try kernel.emit "no-emailer", kernel.emailer or 0
         kernel.emailer.close (->); delete kernel.emailer
@@ -88,7 +88,7 @@ module.exports.EMailer = class EMailer extends Service
         fx = (a...) -> nodemailer.createTransport a...
         assert _.isString(transport or 0), noTransport
         assert _.isObject(configure or 0), noConfigure
-        logger.info message.blue, transport.bold
+        logger.info message.magenta, transport.bold
         kernel.emailer = try fx transport, configure
         assert _.isObject(@kernel.emailer), intern
         this.emit "emailer", kernel, kernel.emailer

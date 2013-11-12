@@ -63,7 +63,7 @@ module.exports.RedisClient = class RedisClient extends Service
         return next() unless _.isObject kernel.redis
         {host, port, options} = kernel.redis or Object()
         message = "Disconnecting from Redis at %s:%s"
-        logger.info message.cyan.underline, host, port
+        logger.info message.toString().cyan, host, port
         try @emit "redis-gone", kernel.redis, kernel
         try kernel.emit? "redis-gone", kernel.redis
         try kernel.redis.end(); delete kernel.redis
@@ -85,7 +85,7 @@ module.exports.RedisClient = class RedisClient extends Service
         message = "Connecting to Redis at %s:%s".toString()
         noRedis = "Something has gone wrong, no Redis client"
         assert spawner = redisio.createClient.bind redisio
-        logger.info message.cyan.underline, host, port
+        logger.info message.toString().cyan, host, port
         kernel.redis = spawner port, host, options
         assert _.isObject(kernel.redis), noRedis
         @emit "redis-ready", kernel.redis, kernel

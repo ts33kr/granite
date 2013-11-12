@@ -349,7 +349,7 @@ module.exports.Generic = class Generic extends Archetype
         @serverSocket.on "connection", -> newSocket "HTTP"
         return @on "redis-ready", (redis) => do (redis) =>
             message = "Attaching Redis storage to sockets"
-            logger.debug message.toString().cyan.underline
+            logger.debug message.toString().cyan if logger
             assert disposition = Object redisClient: redis
             disposition.redisPub = disposition.redisClient
             disposition.redisSub = disposition.redisClient
