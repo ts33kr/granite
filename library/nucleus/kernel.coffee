@@ -108,8 +108,8 @@ module.exports.Generic = class Generic extends Archetype
     serveStaticDirectory: (directory, options={}) ->
         assert cwd = process.cwd().toString()
         solved = paths.relative cwd, directory
-        notExist = "assets dir %s does not exist"
         serving = "Serving %s as static assets dir"
+        notExist = "The assets dir %s does not exist"
         fail = -> logger.warn notExist, solved.underline
         return fail() unless fs.existsSync directory
         middleware = connect.static directory, options
