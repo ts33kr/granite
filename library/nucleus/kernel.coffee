@@ -336,6 +336,7 @@ module.exports.Generic = class Generic extends Archetype
     # That is HTTP and HTTPS servers that are running and listening
     # for new connections. The kernel itself does not use the sockets
     # it just sets it up. Please refer to the Socket.IO docs for info.
+    # Also, see the `configureSocketServers` method implementation.
     setupSocketServers: ->
         assert _.isObject(sconfig = nconf.get "socket")
         logger.info "Attaching Socket.IO to HTTPS server"
