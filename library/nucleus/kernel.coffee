@@ -51,6 +51,7 @@ content = require "./content"
 plumbs = require "./plumbs"
 watch = require "./watch"
 
+{format} = require "util"
 {RedisStore} = require "socket.io"
 {Archetype} = require "./archetype"
 
@@ -182,6 +183,22 @@ module.exports.Generic = class Generic extends Archetype
             logger.info using, @constructor.name.bold
             @domain.run => initializer?.apply this
             @emit "ready", initializer; return @
+
+    # This is a little kernel registry broker that when asked to,
+    # goes to the router registry and attempts to find there the
+    # instance of the specified kind (class). If it succeeds then
+    # it returns an instance to the invoker. If not, however, it
+    # throws an assertion error about being unable to accquire.
+    accquire: (kinded) ->
+        assert ident = try kinded.identify() or null
+        error = "could not find a %s in the registry"
+        noKinded = "the supplied arg has to be class"
+        formatted = try format error, ident.toString()
+        assert _.isArray registry = @router?.registry
+        assert _.isObject(kinded.__super__), noKinded
+        look = (fxc) -> try fxc.objectOf kinded, yes
+        spoted = _.find(registry, look) or undefined
+        assert _.isObject(spoted), formatted; spoted
 
     # This routines sets up the infrastructure necessary for kernel
     # to properly intercept and process errors and exceptions. This
