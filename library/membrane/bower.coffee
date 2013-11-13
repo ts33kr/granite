@@ -144,8 +144,9 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
             assert bowerings.installed = installed
             message = "Get Bower library %s@%s at %s"
             for packet in _.values(installed or Object())
-                name = packet.pkgMeta?.name.underline
-                version = packet.pkgMeta?.version.underline
+                assert meta = packet.pkgMeta or Object()
+                name = (try meta.name.underline) or null
+                version = (try meta.version.underline) or 0
                 where = @constructor.identify().underline
                 assert variable = [name, version, where]
                 logger.debug message.cyan, variable...
