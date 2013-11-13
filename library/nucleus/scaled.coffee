@@ -166,8 +166,8 @@ module.exports.Scaled = class Scaled extends Generic
     # passed to the factory, and if so - add it to the registry
     # of available services that are rotated using round-robin.
     makeRegistrar: (queue, kind) -> (service) =>
-        assert ids = @constructor.identica()
         config = Object https: kind is "https"
+        assert ids = try @constructor.identica()
         compile = (s) -> "#{s.role}@#{s.version}"
         return undefined unless service.kind is kind
         return undefined unless compile(service) is ids
