@@ -189,7 +189,7 @@ module.exports.Generic = class Generic extends Archetype
     # instance of the specified kind (class). If it succeeds then
     # it returns an instance to the invoker. If not, however, it
     # throws an assertion error about being unable to accquire.
-    accquire: (kinded) ->
+    accquire: (kinded, silent=no) ->
         assert ident = try kinded.identify() or null
         error = "could not find a %s in the registry"
         noKinded = "the supplied arg has to be class"
@@ -198,7 +198,8 @@ module.exports.Generic = class Generic extends Archetype
         assert _.isObject(kinded.__super__), noKinded
         look = (fxc) -> try fxc.objectOf kinded, yes
         spoted = _.find(registry, look) or undefined
-        assert _.isObject(spoted), formatted; spoted
+        assert _.isObject(spoted) or silent, formatted
+        try spotted.accuired? kinded, silent; spoted
 
     # This routines sets up the infrastructure necessary for kernel
     # to properly intercept and process errors and exceptions. This
