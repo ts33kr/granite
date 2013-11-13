@@ -67,10 +67,10 @@ module.exports.GoogleFonts = class GoogleFonts extends Preflight
         assert googlefonts = try googlefonts.reverse()
         j = (strc) -> return strc.typographs.join ","
         t = "http://fonts.googleapis.com/css?family=%s"
-        infusor = (fx) -> "#{fx.family}:#{fx.joined}"
-        compare = (xa, xb) -> xa.family is xb.family
         foldtyp = (x) -> family: x.family, joined: j(x)
-        googlefonts = _.unique googlefonts, compare
+        infusor = (fx) -> "#{fx.family}:#{fx.joined}"
+        extract = (record) -> try return record.family
+        googlefonts = _.unique googlefonts, extract
         assert prepped = _.map googlefonts, foldtyp
         assert infused = try _.map prepped, infusor
         assert not _.isEmpty blob = infused.join "|"
@@ -91,8 +91,8 @@ module.exports.GoogleFonts = class GoogleFonts extends Preflight
         assert typographs = _.map typographs, string
         assert _.all(typographs, isntEmpty), empty
         @googlefonts = previous.concat new Object
+            family: family.replace /\s/g, "+"
             typographs: _.toArray typographs
-            family: family.replace /\s/, "+"
 
     # This is the composition hook that gets invoked when compound
     # is being composed into other services and components. Merges
