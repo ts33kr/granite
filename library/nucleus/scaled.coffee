@@ -299,7 +299,7 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isNumber(record), "got mistaken"
         logger.info msg.green, "#{record}".bold
         try config.server.https = record or null
-        nconf.set "server:https", record; super
+        try nconf.defaults config; return super
 
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
@@ -319,4 +319,4 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isNumber(record), "got mistaken"
         logger.info msg.green, "#{record}".bold
         try config.server.http = record or null
-        nconf.set "server:http", record; super
+        try nconf.defaults config; return super
