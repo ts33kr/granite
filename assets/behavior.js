@@ -265,6 +265,22 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "singleLineComment": ["#"],
               "name": "CoffeeScript"
             },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/emailer.coffee",
+            "projectPath": "library/membrane/emailer.coffee",
+            "targetPath": "membrane/emailer",
+            "title": "emailer"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "singleLineComment": ["#"],
+              "name": "CoffeeScript"
+            },
             "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/health.coffee",
             "projectPath": "library/membrane/health.coffee",
             "targetPath": "membrane/health",

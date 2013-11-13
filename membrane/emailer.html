@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="en"><head><title>membrane/emailer</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/emailer"><meta name="groc-project-path" content="library/membrane/emailer.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/emailer.coffee">library/membrane/emailer.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
+<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
+<span class="cm">All rights reserved.</span>
+
+<span class="cm">Redistribution and use in source and binary forms, with or without</span>
+<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="cm">   list of conditions and the following disclaimer.</span>
+<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="cm">   and/or other materials provided with the distribution.</span>
+
+<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
+<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="cm">###</span>
+
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">nodemailer = </span><span class="nx">require</span> <span class="s">&quot;nodemailer&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
+
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">nodemailer = </span><span class="nx">require</span> <span class="s">&quot;nodemailer&quot;</span>
+<span class="p">{</span><span class="nx">Service</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/service&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an ABC service intended to be used only as a compund. It
+provides the facilities to send emails from the services that mix
+this compound in. It draws the necessary configuration data, then
+sets up all the internal objects required. A mailer configuration
+is done once only, then mailer persists on the kernel and reused.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.EMailer = </span><span class="k">class</span> <span class="nx">EMailer</span> <span class="k">extends</span> <span class="nx">Service</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to unregistering the service
+implementation. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">unregister: </span><span class="nf">(kernel, router, next) -&gt;</span>
+        <span class="nv">config = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;emailer&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">emailer</span>
+        <span class="p">{</span><span class="nx">transport</span><span class="p">,</span> <span class="nx">configure</span><span class="p">}</span> <span class="o">=</span> <span class="nx">config</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Object</span><span class="p">()</span>
+        <span class="nv">message = </span><span class="s">&quot;Disconnecting mailer of %s transport&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">message</span><span class="p">.</span><span class="nx">magenta</span><span class="si">}</span><span class="s">&quot;</span><span class="p">,</span> <span class="nx">transport</span><span class="p">.</span><span class="nx">bold</span>
+        <span class="k">try</span> <span class="k">this</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;no-emailer&quot;</span><span class="p">,</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">emailer</span><span class="p">,</span> <span class="nx">kernel</span>
+        <span class="k">try</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;no-emailer&quot;</span><span class="p">,</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">emailer</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nx">kernel</span><span class="p">.</span><span class="nx">emailer</span><span class="p">.</span><span class="nx">close</span> <span class="p">(</span><span class="nf">-&gt;</span><span class="p">);</span> <span class="k">delete</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">emailer</span>
+        <span class="nx">next</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to registering the service
+implementation. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">register: </span><span class="nf">(kernel, router, next) -&gt;</span>
+        <span class="nv">config = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;emailer&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">config</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">emailer</span>
+        <span class="p">{</span><span class="nx">transport</span><span class="p">,</span> <span class="nx">configure</span><span class="p">}</span> <span class="o">=</span> <span class="nx">config</span> <span class="o">or</span> <span class="nb">Object</span><span class="p">()</span>
+        <span class="nv">noTransport = </span><span class="s">&quot;transport has to be a string&quot;</span>
+        <span class="nv">noConfigure = </span><span class="s">&quot;configure has to be a object&quot;</span>
+        <span class="nv">message = </span><span class="s">&quot;Connecting mailer via %s transport&quot;</span>
+        <span class="nv">intern = </span><span class="s">&quot;failed to initialize email transport&quot;</span>
+        <span class="nv">fx = </span><span class="nf">(a...) -&gt;</span> <span class="nx">nodemailer</span><span class="p">.</span><span class="nx">createTransport</span> <span class="nx">a</span><span class="p">...</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">transport</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noTransport</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">configure</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noConfigure</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">message</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">transport</span><span class="p">.</span><span class="nx">bold</span>
+        <span class="nv">kernel.emailer = </span><span class="k">try</span> <span class="nx">fx</span> <span class="nx">transport</span><span class="p">,</span> <span class="nx">configure</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">@kernel</span><span class="p">.</span><span class="nx">emailer</span><span class="p">),</span> <span class="nx">intern</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;emailer&quot;</span><span class="p">,</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">emailer</span>
+        <span class="nx">kernel</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;emailer&quot;</span><span class="p">,</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">emailer</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nx">next</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to instantiating the service
+implementation. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">instance: </span><span class="nf">(kernel, service, next) -&gt;</span>
+        <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">has</span> <span class="nx">service</span><span class="p">,</span> <span class="s">&quot;emailer&quot;</span>
+        <span class="nv">define = </span><span class="nf">-&gt;</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="vi">@email = </span><span class="nf">-&gt;</span> <span class="nx">service</span><span class="p">.</span><span class="nx">emailer</span><span class="p">.</span><span class="nx">sendMail</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="nv">mkp = </span><span class="nf">(prop) -&gt;</span> <span class="nx">define</span> <span class="nx">service</span><span class="p">,</span> <span class="s">&quot;emailer&quot;</span><span class="p">,</span> <span class="nx">prop</span>
+        <span class="nv">dap = </span><span class="nf">-&gt;</span> <span class="nx">mkp</span> <span class="nx">arguments</span><span class="p">...;</span> <span class="nx">next</span><span class="p">();</span> <span class="k">return</span> <span class="k">this</span>
+        <span class="nx">dap</span> <span class="nv">enumerable: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">configurable: </span><span class="kc">no</span><span class="p">,</span> <span class="nv">get: </span><span class="nf">-&gt;</span>
+            <span class="nv">emailer = </span><span class="k">try</span> <span class="nx">@kernel</span><span class="p">.</span><span class="nx">emailer</span> <span class="o">or</span> <span class="kc">undefined</span>
+            <span class="nv">missing = </span><span class="s">&quot;a kernel has no emailer client set&quot;</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">emailer</span><span class="p">),</span> <span class="nx">missing</span><span class="p">;</span> <span class="nx">emailer</span></div></div></div></div></body></html>

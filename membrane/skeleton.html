@@ -60,7 +60,7 @@ Also, see <code>Descriptor</code> compound implementation for reference!</p></di
         <span class="nx">@synopsis</span> <span class="s">&quot;Get a set of HTTP methods supported by service&quot;</span>
         <span class="nx">@outputs</span> <span class="s">&quot;An array of supported methods, JSON or string&quot;</span>
         <span class="nx">@markings</span> <span class="nv">framework: </span><span class="s">&quot;critical&quot;</span><span class="p">,</span> <span class="nv">stable: </span><span class="s">&quot;positive&quot;</span>
-        <span class="nx">@version</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">package</span><span class="p">.</span><span class="nx">version</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nx">@version</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">framework</span><span class="p">.</span><span class="nx">version</span> <span class="o">or</span> <span class="kc">undefined</span>
         <span class="nx">@produces</span> <span class="s">&quot;application/json&quot;</span><span class="p">,</span> <span class="s">&quot;text/html&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should generally be used to obtain HTTP methods that
 are allowed on this resources. This is not the only possible way
 of implementing this method, because it usually can have a lot of

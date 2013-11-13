@@ -67,7 +67,7 @@ This is used to build up entire module hierarchy of the framework.</p></div></di
 class that the most deep hiererachy. That is the kernel that is a
 most derived from the original one. If no such kernel can be found
 then revert to returning the original kernel embedded in framework.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.cachedKernel = </span><span class="nf">(limits) -&gt;</span>
-    <span class="nv">origin = </span><span class="nx">require</span><span class="p">(</span><span class="s">&quot;./kernel&quot;</span><span class="p">).</span><span class="nx">Generic</span>
+    <span class="nv">origin = </span><span class="nx">require</span><span class="p">(</span><span class="s">&quot;./scaled&quot;</span><span class="p">).</span><span class="nx">Scaled</span>
     <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">limits</span><span class="p">,</span> <span class="s">&quot;no limits&quot;</span>
     <span class="nv">limits = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">limits</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
     <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">origin</span><span class="p">),</span> <span class="s">&quot;no kernel origin&quot;</span>
