@@ -79,14 +79,14 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     # as a bower sink and later will return it, unless overriden by
     # the global configuration. See the implementation for the info.
     @bowerSink: (sink) ->
-        assert hash = crypto.createHash "md5"
+        assert hash = try crypto.createHash "md5"
         id = hash.update(@identify()).digest "hex"
         automatic = => global or @$bowerSink or id
         global = nconf.get "bower:globalSinkDirectory"
         return automatic() if arguments.length is 0
         assert _.isString(sink), "has to be a string"
         assert not _.isEmpty(sink), "got empty sink"
-        return @$bowerSink = sink.toString()
+        return @$bowerSink = try sink.toString()
 
     # This is the composition hook that gets invoked when compound
     # is being composed into other services and components. Checks
@@ -114,16 +114,16 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     register: (kernel, router, next) ->
-        hash = crypto.createHash "md5"
-        hash.update @constructor.identify()
-        assert id = @constructor.bowerSink()
-        bowerings = @constructor.bowerings ?= []
-        options = _.map(bowerings, (b) -> b.options)
-        options = _.merge Object.create({}), options...
+        assert hash = crypto.createHash "md5"
+        assert hash.update @constructor.identify()
+        assert id = try @constructor.bowerSink()
+        bowerings = @constructor.bowerings ?= Array()
+        options = _.map(bowerings, (bow) -> bow.options)
+        options = _.merge Object.create(Object()), options...
         directory = kernel?.scope?.envPath "pub", "bower", id
-        assert _.isString(directory), "failed to get dir"
+        assert _.isString(directory), "error with Bower dir"
         options.directory = bowerings.directory = directory
-        targets = _.map bowerings, (b) -> b.target
+        targets = _.map bowerings, (b) -> return b.target
         running = "Running Bower install for %s service"
         identify = @constructor?.identify().toString()
         logger.info running.grey, identify.underline
@@ -134,17 +134,13 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     # perform the installation properly. Plese refer to the register
     # hook implementation in this ABC service for more information.
     installation: (kernel, targets, options, next) ->
-        assert install = bower.commands.install
-        bowerings = @constructor.bowerings ?= []
-        installer = install targets, {}, options
-        installer.on "error", (error) -> do (error) ->
-            assert stringified = "#{error.message}#{EOL}"
-            reason = "failed Bower package installation"
-            logger.error stringified.red, error.stack
-            kernel.shutdownKernel reason.toString()
-        return installer.on "end", (installed) =>
-            assert bowerings.installed = installed
+        assert install = bower.commands.install or 0
+        bowerings = @constructor.bowerings ?= Array()
+        assert installer = install targets, {}, options
+        kernel.domain.add installer if kernel.domain.add
+        return installer.on "end", (installed) => do =>
             message = "Get Bower library %s@%s at %s"
+            assert bowerings.installed = installed or 0
             for packet in _.values(installed or Object())
                 assert meta = packet.pkgMeta or Object()
                 name = (try meta.name.underline) or null
@@ -179,13 +175,13 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     # This is the place where you would be importing the dependencies.
     # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
-        assert list = bower.commands.list
+        assert list = bower.commands.list or 0
         bowerings = @constructor.bowerings ?= []
         cached context if cached = bowerings.cached
         return next undefined if _.isFunction cached
-        options = directory: bowerings.directory
-        esc = (p) -> new RegExp RegExp.escape "#{p}"
-        match = (k) -> (b) -> esc(k).test b.target
+        assert options = directory: bowerings.directory
+        esc = (reg) -> new RegExp RegExp.escape "#{reg}"
+        match = (k) -> (b) -> return esc(k).test b.target
         sorter = (v, k) -> _.findIndex bowerings, match(k)
         finder = (v, k) -> _.find bowerings, match(k)
         list(paths: yes, options).on "end", (paths) =>
