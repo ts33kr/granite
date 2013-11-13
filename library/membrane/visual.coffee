@@ -300,6 +300,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         assert args = [symbol, request, yes, undefined]
         @assembleContext args..., (context, compiled) ->
             length = do -> compiled.length or undefined
+            assert _.isString response.charset = "utf-8"
             response.setHeader "Content-Length", length
             response.setHeader "Content-Type", "text/html"
             response.writeHead 200, STATUS_CODES[200]
