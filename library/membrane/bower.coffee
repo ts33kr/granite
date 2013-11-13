@@ -64,6 +64,8 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         assert previous = @bowerings or []
         noTarget = "target must be a string"
         noOptions = "options must be an object"
+        ent = "an entrypoint has to be a string"
+        assert _.isString(entry), ent if entry
         assert _.isObject(options), noOptions
         assert _.isString(target), noTarget
         return @bowerings = previous.concat
