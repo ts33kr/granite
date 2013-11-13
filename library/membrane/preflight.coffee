@@ -65,13 +65,13 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
     # one and the foreign (the one that is beign merged in). Exists
     # for backing up the consistent behavior when using composition.
     @composition: (destination) ->
-        assert currents = this.jscripts or Array()
-        previous = destination.jscripts or Array()
+        assert currents = this.remotes or Array()
+        previous = destination.remotes or Array()
         return unless destination.derives RToolkit
         assert previous? and try _.isArray previous
         assert merged = previous.concat currents
         assert merged = _.toArray _.unique merged
-        assert try destination.jscripts = merged
+        assert try destination.remotes = merged
         try super catch error; return this
 
     # A directive to mark the certain remote class or object to be
@@ -80,13 +80,13 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
     # in all the remote classes that you need to the remote call site.
     # Refer to the remote compilation procedures for more information.
     @remote: (subject) ->
-        assert previous = @jscripts or Array()
+        assert previous = @remotes or Array()
         qualify = try subject.remote.compile
         noRemote = "the subject is not remote"
-        noPrevious = "invalid previous jscripts"
+        noPrevious = "invalid previous remotes"
         assert _.isArray(previous), noPrevious
         assert _.isFunction(qualify), noRemote
-        @jscripts = previous.concat subject
+        this.remotes = previous.concat subject
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
@@ -97,8 +97,8 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
         context.inline -> `assert = chai.assert`
         context.inline -> `assert(logger = log)`
         context.inline -> try logger.enableAll()
-        assert jscripts = @constructor.jscripts or []
-        assert uniques = _.unique jscripts or Array()
+        assert remotes = @constructor.remotes or []
+        assert uniques = _.unique remotes or Array()
         @inject context, blob for blob in uniques
         return do => next.call this, undefined
 
