@@ -97,6 +97,8 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
         context.inline -> `assert = chai.assert`
         context.inline -> `assert(logger = log)`
         context.inline -> try logger.enableAll()
+        context.inline -> $(document).ready =>
+            this.emit "document", document, this
         assert remotes = @constructor.remotes or []
         assert uniques = _.unique remotes or Array()
         @inject context, blob for blob in uniques
