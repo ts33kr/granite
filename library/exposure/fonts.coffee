@@ -56,39 +56,6 @@ module.exports.GoogleFonts = class GoogleFonts extends Preflight
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
-    # This is the composition hook that gets invoked when compound
-    # is being composed into other services and components. Merges
-    # together added jscripts found in both hierarchies, the current
-    # one and the foreign (the one that is beign merged in). Exists
-    # for backing up the consistent behavior when using composition.
-    @composition: (destination) ->
-        assert currents = this.googlefonts or Array()
-        previous = destination.googlefonts or Array()
-        return unless destination.derives GoogleFonts
-        assert previous? and try _.isArray previous
-        assert merged = previous.concat currents
-        assert merged = _.toArray _.unique merged
-        assert try destination.googlefonts = merged
-        try super catch error finally return this
-
-    # Add the described font to the font request that is going to be
-    # compiled and emited when the context is assembled. Description
-    # of a font is formed of a font family name and a vector of the
-    # typographic descriptions, such as sizes and styles. Values in
-    # the vector can be strings or any others - all are stringified.
-    @googlefont: (family, typographs...) ->
-        string = (val) -> return val.toString()
-        isntEmpty = -> not _.isEmpty arguments...
-        assert previous = @googlefonts or Array()
-        empty = "got an empty font typograph handler"
-        assert _.isString(family), "no valid family"
-        assert _.isArray(typographs), "no typographs"
-        assert typographs = _.map typographs, string
-        assert _.all(typographs, isntEmpty), empty
-        @googlefonts = previous.concat new Object
-            typographs: _.toArray typographs
-            family: family.replace /\s/, "+"
-
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
     # method is wired in an asynchronous way for greater functionality.
@@ -108,3 +75,36 @@ module.exports.GoogleFonts = class GoogleFonts extends Preflight
         assert infused = try _.map prepped, infusor
         assert not _.isEmpty blob = infused.join "|"
         context.sheets.push format t, blob; next()
+
+    # Add the described font to the font request that is going to be
+    # compiled and emited when the context is assembled. Description
+    # of a font is formed of a font family name and a vector of the
+    # typographic descriptions, such as sizes and styles. Values in
+    # the vector can be strings or any others - all are stringified.
+    @googlefont: (family, typographs...) ->
+        string = (val) -> return val.toString()
+        isntEmpty = -> not _.isEmpty arguments...
+        assert previous = @googlefonts or Array()
+        empty = "got an empty font typograph handler"
+        assert _.isString(family), "no valid family"
+        assert _.isArray(typographs), "no typographs"
+        assert typographs = _.map typographs, string
+        assert _.all(typographs, isntEmpty), empty
+        @googlefonts = previous.concat new Object
+            typographs: _.toArray typographs
+            family: family.replace /\s/, "+"
+
+    # This is the composition hook that gets invoked when compound
+    # is being composed into other services and components. Merges
+    # together added jscripts found in both hierarchies, the current
+    # one and the foreign (the one that is beign merged in). Exists
+    # for backing up the consistent behavior when using composition.
+    @composition: (destination) ->
+        assert currents = this.googlefonts or Array()
+        previous = destination.googlefonts or Array()
+        return unless destination.derives GoogleFonts
+        assert previous? and try _.isArray previous
+        assert merged = previous.concat currents
+        assert merged = _.toArray _.unique merged
+        assert try destination.googlefonts = merged
+        try super catch error finally return this
