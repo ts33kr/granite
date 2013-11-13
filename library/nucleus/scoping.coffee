@@ -53,12 +53,12 @@ module.exports.Scope = class Scope extends Archetype
     # implementation takes care only of loading the proper config.
     # The kernel invokes this prior to proceeding its operations.
     incorporate: (kernel) ->
-        nconf.defaults(@defaults or @constructor.DEFAULTS or {})
-        nconf.overrides(@overrides or @constructor.OVERRIDES or {})
         assert fpath = "#{nconf.get "layout:config"}/#{@tag}.json"
         logger.info "Incorporating up the #{@tag.bold} scope".cyan
         logger.info "Assuming the #{fpath.underline} config".cyan
         exists = fs.existsSync fpath; nconf.file fpath if exists
+        nconf.defaults(@defaults or @constructor.DEFAULTS or {})
+        nconf.overrides(@overrides or @constructor.OVERRIDES or {})
         for directory in nconf.get("env:dirs") or new Array
             assert _.isNumber mode = nconf.get "env:mode"
             msg = "Environment mkdir at %s with 0%s mode".yellow
