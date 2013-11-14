@@ -110,9 +110,9 @@ module.exports.Duplex = class Duplex extends Preflight
         Response::setHeader = (name, value) -> undefined
         Response::end = (data, encoding) -> undefined
         cookies handshake, response = new Response, =>
-            session handshake, response, =>
-                session = handshake.session
-                ns = new Error "no session found"
+            session handshake, response, (parameter) =>
+                session = handshake.session or null
+                ns = new Error "no session detected"
                 return accept ns, no unless session
                 handshaken = @downstream handshaken: ->
                     return accept undefined, yes
@@ -130,11 +130,11 @@ module.exports.Duplex = class Duplex extends Preflight
         assert _.isFunction i = Marshal.deserialize
         location = "Breakpoint at @#{method}#%s"
         message = "Error running provider:\r\n%s"
-        guarded.on "error", (error) ->
+        guarded.on "error", (error, optional) ->
             logger.error location.red, identify
             logger.error message.red, error.stack
             socket.emit "exception", o([error])...
-            try socket.disconnect?()
+            try socket.disconnect?() catch error
         return guarded
 
     # A utility method to mark the certain function as the provider.
