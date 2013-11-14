@@ -166,10 +166,9 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # context object, which is defered to be done on the client site.
     deployContext: (context, symbol) ->
         assert _.isObject(context), "malformed context"
-        excess = ["scripts", "sources", "sheets", "styles"]
-        excess.push "caching" if _.isObject context.caching
-        excess.push "changes" if _.isArray context.changes
-        excess.push "invokes" if _.isArray context.invokes
+        aexcess = ["scripts", "sources", "sheets", "styles"]
+        bexcess = ["caching", "changes", "invokes", "metatag"]
+        assert not _.isEmpty excess = aexcess.concat bexcess
         prepared = JSON.stringify _.omit(context, excess)
         installer = "#{symbol} = #{prepared}".toString()
         runtime = "(#{coffee}).apply(this)".toString()
