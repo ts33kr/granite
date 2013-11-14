@@ -87,6 +87,7 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
         assert _.isArray(previous), noPrevious
         assert _.isFunction(qualify), noRemote
         this.remotes = previous.concat subject
+        this.remotes = _.unique @remotes or []
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
