@@ -307,9 +307,9 @@ module.exports.Duplex = class Duplex extends Preflight
     publishProviders: (context, binder, socket, next) ->
         _.forIn this, (value, name, service) =>
             internal = "the #{value} is not function"
-            providing = value?.providing or null
-            return unless _.isFunction providing
-            assert _.isFunction(value), internal
+            providing = value?.providing or undefined
+            return unless _.isFunction providing or 0
+            assert _.isFunction(value or 0), internal
             bound = providing socket, context, binder
             assert mangled = "#{@location()}/#{name}"
             mangled += "/#{nsp}" if nsp = binder.nsp
