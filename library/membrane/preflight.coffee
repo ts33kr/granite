@@ -72,7 +72,7 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
         assert merged = previous.concat currents
         assert merged = _.toArray _.unique merged
         assert try destination.remotes = merged
-        try super catch error; return this
+        try super catch error finally return @
 
     # A directive to mark the certain remote class or object to be
     # included in the `Screenplay` context that is going to be emited
