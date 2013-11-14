@@ -247,7 +247,7 @@ module.exports.Scaled = class Scaled extends Generic
         assert _.isArray(queue), "got invalid proxy queue"
         response.writeHead 504, reason if _.isEmpty queue
         return response.end(msg) and no if _.isEmpty queue
-        assert proxy = select.apply this, arguments
+        assert proxy = try select.apply this, arguments
         a = "#{proxy.target.host}:#{proxy.target.port}"
         assert a = "#{a.toLowerCase().underline.yellow}"
         logger.debug "Proxy %s upgrade %s to %s", x, u, a
