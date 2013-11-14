@@ -239,8 +239,8 @@ module.exports.Scaled = class Scaled extends Generic
     # is required for WebSockets and other similar transports to
     # perform its operation correctly in a distributed environment.
     makeUpgraders: (queue, kind, select) -> (request, response) =>
-        encrypted = request.connection.encrypted
-        assert u = "#{request.url}".underline.yellow
+        encrypted = request.connection.encrypted or no
+        assert u = try "#{request.url}".underline.yellow
         assert x = (encrypted and "HTTPS" or "HTTP").bold
         reason = "no instances found behind a frontend"
         msg = "the frontend has no instances to talk to"
