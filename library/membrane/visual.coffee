@@ -264,6 +264,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
             context.inline -> @emit "installed", this
             context.inline -> assert try @root = $root
             context.inline -> (@root.eco ?= []).push @
+            context.inline -> this.externals.push "root"
             context.inline -> this.externals.push "eco"
             context.inline -> assert @broadcast = ->
                 this.root.emit.apply $root, arguments
