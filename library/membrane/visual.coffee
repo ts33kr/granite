@@ -142,6 +142,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # and launched on the client (browser side). Please refer to the
     # implementation for greater understanding of what it does exactly.
     compileContext: (context) ->
+        meta = (content) -> "\r\n<meta #{content.toString()}>"
         script = (s) -> "\r\n<script src=\x22#{s}\x22></script>"
         style = (s) -> "\r\n<style type=\x22#{x}\x22>#{s}</style>"
         source = (s) -> "\r\n<script type=\x22#{j}\x22>#{s}</script>"
@@ -152,9 +153,11 @@ module.exports.Screenplay = class Screenplay extends Barebones
         changes = _.map(context.changes, source).join String()
         sources = _.map(context.sources, source).join String()
         invokes = _.map(context.invokes, source).join String()
+        metatag = _.map(context.metatag, meta).join String()
         sheets = _.map(context.sheets, sheet).join String()
         styles = _.map(context.styles, style).join String()
-        joined = sheets + styles + scripts + changes + sources
+        assert _.isString joined = metatag + sheets + styles
+        assert _.isString joined += scripts + changes + sources
         format template, context.doctype, joined + invokes
 
     # This is an internal routine that performs a very important task
@@ -278,8 +281,8 @@ module.exports.Screenplay = class Screenplay extends Barebones
     energizeContext: (context, symbol) ->
         append = -> _.extend context, arguments...
         append styles: [], sheets: [], changes: []
+        append scripts: [], metatag: [], reserved: {}
         append externals: [], invokes: [], sources: []
-        append scripts: [], cargo: [], reserved: Object()
         v = (fn, s) -> format a, fn, try JSON.stringify s
         assert context.doctype = type = "<!DOCTYPE html>"
         assert t = "(%s).call(#{symbol or "this"}, (%s))"

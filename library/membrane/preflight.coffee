@@ -126,13 +126,34 @@ module.exports.LToolkit = class LToolkit extends RToolkit
     prelude: (symbol, context, request, next) ->
         assert jscripts = @constructor.jscripts or []
         assert stsheets = @constructor.stsheets or []
+        assert metatags = @constructor.metatags or []
         assert jscripts = _.unique jscripts or Array()
         assert stsheets = _.unique stsheets or Array()
+        assert metatags = _.unique metatags or Array()
         assert _.isFunction context.sheets.push or null
         assert _.isFunction context.scripts.push or null
+        assert _.isFunction context.metatag.push or null
+        context.metatag.push mettag for mettag in metatags
         context.scripts.push script for script in jscripts
         context.sheets.push sheet for sheet in stsheets
         return do => next.call this, undefined
+
+    # This is a preflight directive that can be used to generate and
+    # emit meta tags for the client browser. The directive expects a
+    # aggregate definition (an object) whose key/value pairs will be
+    # diretly corellated as parameter name and value for a meta tag
+    # definition. Any number of pairs (parameters) may be supplied.
+    @metatag: (aggregate) ->
+        failed = "param has to be the plain object"
+        noPrevious = "got invalid previous metatags"
+        assert previous = @metatags or new Array()
+        assert _.isEmpty a = accumulate = new Array
+        assert _.isArray(previous or 0), noPrevious
+        assert _.isPlainObject(aggregate), failed
+        f = (val, key) -> "#{key}=\x22#{val}\x22"
+        _.map aggregate, (v, k) -> a.push f(v, k)
+        assert _.isString j = accumulate.join " "
+        @metatags = previous.concat j.toString()
 
     # This is a preflight directive that can be used to link any
     # arbitrary JavaScript file source. Is important do understand
