@@ -169,6 +169,7 @@ module.exports.LToolkit = class LToolkit extends RToolkit
         assert _.isArray(previous), noPrevious
         assert _.isString(direction), indirect
         @jscripts = previous.concat direction
+        assert @jscripts = _.unique @jscripts
 
     # This is a preflight directive that can be used to link any
     # arbitrary CSS style file source. Is important do understand
@@ -184,6 +185,7 @@ module.exports.LToolkit = class LToolkit extends RToolkit
         assert _.isArray(previous), noPrevious
         assert _.isString(direction), indirect
         @stsheets = previous.concat direction
+        assert @stsheets = _.unique @stsheets
 
 # This abstract base class service is an extension of the Screenplay
 # family that does some further environment initialization and set
