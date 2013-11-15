@@ -51,4 +51,5 @@ module.exports.cachedKernel = @cachedKernel
 assert nucleus = module.exports.nucleus
 assert membrane = module.exports.membrane
 assert exposure = module.exports.exposure
+assert semantic = module.exports.semantic
 module.exports.cakefile = nucleus.cakefile
