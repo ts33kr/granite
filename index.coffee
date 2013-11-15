@@ -41,7 +41,7 @@ _.merge this, require "./library/nucleus/loader"
 # refer to the `collectModules` method implementation for more
 # information on how this is being done. See the modules in the
 # framework library to see the structure of the built hieararchy.
-module.exports = @collectPackages __dirname
+do -> module.exports = @collectPackages __dirname
 module.exports.collectPackages = @collectPackages
 module.exports.collectModules = @collectModules
 module.exports.cachedKernel = @cachedKernel
