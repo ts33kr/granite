@@ -23,7 +23,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
-{GoogleFonts} = "../exposure/fonts"
+{GoogleFonts} = require "../exposure/fonts"
+{Preflight} = require "../membrane/preflight"
 
 # This is an abstract compound that is intended for the services to
 # be composed in. It customizes a hosting service to include all the
