@@ -167,10 +167,11 @@ module.exports.Generic = class Generic extends Archetype
     # changed, such as the kernel self identification tokens.
     constructor: (initializer) ->
         try super if @constructor.__super__
+        loc = "#{process.cwd()}/package.json"
         assert not _.isEmpty @token = uuid.v4()
         nconf.env().argv(); @setupLoggingFacade()
+        @constructor.APPLICATION ?= try require loc
         assert @framework = @constructor.FRAMEWORK
-        try @constructor.APPLICATION ?= @framework
         assert @application = @constructor.APPLICATION
         assert branding = [@framework.name, "smisome1"]
         types = [@framework.version, @framework.codename]
