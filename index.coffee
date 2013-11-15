@@ -33,7 +33,8 @@ fs = require "fs"
 
 # This construction loads up the framework loader module and extends
 # the current `this` object with the methods found in the loader for
-# convenient access by the implementation further below. Refer to it.
+# convenient access by the implementation further below. Refer to the
+# implementation of the loader for more information on how it works.
 _.merge this, require "./library/nucleus/loader"
 
 # Build up the entire module hierarchy of the framework. Please do
@@ -48,8 +49,14 @@ module.exports.cachedKernel = @cachedKernel
 # Do some aliasing after asserting that the basic components of the
 # framework is indeed loaded and are not missing. This is precaution
 # to make sure that the framework is in usable state, once is loaded.
+# You can refer to this definitions from the outside of the framework.
 assert nucleus = module.exports.nucleus
 assert membrane = module.exports.membrane
 assert exposure = module.exports.exposure
 assert semantic = module.exports.semantic
+
+# Alias the cakefile routine for the easy access to the primary way
+# of referencing the built in Cakefile library, which is standard.
+# You should generally prefer the cakefile module facilities over
+# any other build too, including rolling out the tools of your own.
 module.exports.cakefile = nucleus.cakefile
