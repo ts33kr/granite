@@ -65,7 +65,7 @@ module.exports.Flavoured = class Flavoured extends Preflight
     # client browser, unless some else, overriding options are set.
     @javascript "javascript/semantic.min.js"
     @stylesheet "css/semantic.min.css"
-    @stylesheet "css/framework.css"
+    @stylesheet "css/flavour.css"
 
     # This block define a set of meta tags that specify or tweak
     # the way a client browser treats the content that it has got
