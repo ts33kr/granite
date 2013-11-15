@@ -23,15 +23,15 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
-{GoogleFonts} = require "../exposure/fonts"
 {Preflight} = require "../membrane/preflight"
+{GoogleFonts} = require "../exposure/fonting"
 
 # This is an abstract compound that is intended for the services to
 # be composed in. It customizes a hosting service to include all the
 # prerequisites necessary to properly make usage of the Semantic UI
 # frontend framework that atre shipped within the primary framework.
 # This frontend scaffolding is used to style the provided components.
-module.exports.Flavour = class Flavour extends Preflight
+module.exports.Semantic = class Semantic extends Preflight
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -62,7 +62,7 @@ module.exports.Flavour = class Flavour extends Preflight
     # client browser, unless some else, overriding options are set.
     @javascript "javascript/semantic.min.js"
     @stylesheet "css/semantic.min.css"
-    @stylesheet "css/flavour.css"
+    @stylesheet "css/semantic.uix.css"
 
     # This block define a set of meta tags that specify or tweak
     # the way a client browser treats the content that it has got
