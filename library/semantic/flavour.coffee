@@ -23,10 +23,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
-assert = require "assert"
-granite = require "granite"
-pkginfo = require "pkginfo"
-
 {GoogleFonts} = "../exposure/fonts"
 
 # This is an abstract compound that is intended for the services to
