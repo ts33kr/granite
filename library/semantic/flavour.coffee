@@ -27,7 +27,6 @@ assert = require "assert"
 granite = require "granite"
 pkginfo = require "pkginfo"
 
-{Auxiliaries} = "../membrane/auxes"
 {GoogleFonts} = "../exposure/fonts"
 
 # This is an abstract compound that is intended for the services to
