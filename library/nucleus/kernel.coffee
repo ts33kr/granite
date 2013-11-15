@@ -67,7 +67,14 @@ module.exports.Generic = class Generic extends Archetype
     # of the information and data. This could be overridden by the
     # modified kernels that are custom to arbitrary applications.
     # This definition (package.json) should corellate to framework.
-    assert @FRAMEWORK = pkginfo(module) and module.exports
+    assert @FRAMEWORK = pkginfo.read(module).package
+
+    # This static property should contain the loaded NPM package
+    # module which is used by the kernel to draw different kinds
+    # of the information and data. This could be overridden by the
+    # modified kernels that are custom to arbitrary applications.
+    # This definition (package.json) should corellate to application.
+    assert @APPLICATION = pkginfo.read(0, process.cwd()).package
 
     # Create a new instance of the kernel, run all the prerequisites
     # that are necessary, do the configuration on the kernel, then
@@ -167,10 +174,8 @@ module.exports.Generic = class Generic extends Archetype
     # changed, such as the kernel self identification tokens.
     constructor: (initializer) ->
         try super if @constructor.__super__
-        loc = "#{process.cwd()}/package.json"
         assert not _.isEmpty @token = uuid.v4()
         nconf.env().argv(); @setupLoggingFacade()
-        @constructor.APPLICATION ?= try require loc
         assert @framework = @constructor.FRAMEWORK
         assert @application = @constructor.APPLICATION
         assert branding = [@framework.name, "smisome1"]
