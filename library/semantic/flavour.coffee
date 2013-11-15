@@ -53,7 +53,7 @@ module.exports.Flavoured = class Flavoured extends Preflight
     # setup with help of Google Fonts API and a corresponding class
     # that implement the functionality, which is the `GooglFonts`.
     @googlefont "Open Sans", "300italic", 300, 400, 700
-    @googlefont "Source Sans Pro", 400, 700
+    @googlefont "Source Sans Pro", 300, 400, 700
 
     # This block here defines a set of assets, such as CSS styles
     # or JavaScript files that will be included on every context
