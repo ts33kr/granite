@@ -270,7 +270,7 @@ module.exports.Generic = class Generic extends Archetype
     # directories. Please refer to the `Watcher` implementation for
     # more information on its operations and configuration routines.
     setupHotloadWatcher: ->
-        assert @watcher = do => new watch.Watcher this
+        assert @watcher = new watch.Watcher this
         subjects = nconf.get("watch:dirs") or undefined
         config = nconf.get("layout:config") or undefined
         library = nconf.get("layout:library") or undefined
