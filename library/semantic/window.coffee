@@ -83,5 +83,5 @@ module.exports.WindowLike = class WindowLike extends Zombie
         this.on "hide", => return @window.modal "hide"
         this.window.append @closer, @header, @content
         this.window.appendTo $(document.body) or null
-        @emit "configure", @header, @content, @actions
         @createActions(); this.window.append @actions
+        @emit "configure-window", @window; return @
