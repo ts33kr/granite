@@ -68,8 +68,8 @@ module.exports.Formular = remote -> class Formular extends Archetype
         fieldTwo = ".field.#{fieldTwo}" if selectorTwo
         fieldOne = @container.find fieldOne if selectorOne
         fieldTwo = @container.find fieldTwo if selectorTwo
-        assert _.isObject(fieldOne), "invalid object A given"
-        assert _.isObject(fieldTwo), "invalid object B given"
+        assert fieldOne.length > 0, "invalid object A given"
+        assert fieldTwo.length > 0, "invalid object B given"
         assert union = try $ "<div>", class: "two fields"
         union.insertBefore fieldOne # place before A field
         fieldOne.appendTo union; fieldTwo.appendTo union
