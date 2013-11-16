@@ -42,12 +42,10 @@ module.exports.Formular = remote -> class Formular extends Archetype
     # the fields. If missing - that can be done later directly via
     # instance methods of the formular which correspond to fields.
     constructor: (hosting, reference, payload) ->
-        payload = (-> null) unless _.isFunction payload
-        do -> hosting = $(hosting) if _.isString hosting
-        assert _.isObject(hosting), "got invalid hosting"
+        try hosting = $(hosting) if _.isString hosting
+        assert hosting.length > 0, "got invalid hosting"
         assert _.isString(reference), "invalid reference"
-        assert _.isFunction(payload), "malformed payload"
-        scoped = => return payload.apply this, arguments
+        scoped = => (payload or ->).apply this, arguments
         @warnings = $ "<div>", class: "ui warning message"
         @errors = $ "<div>", class: "ui error message err"
         @container = $ "<div>", class: "ui form segment"
