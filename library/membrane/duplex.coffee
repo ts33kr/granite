@@ -248,17 +248,16 @@ module.exports.Duplex = class Duplex extends Preflight
         try @socket = io.connect @duplex, options catch error
             message = "blew up Socket.IO: #{error.message}"
             error.message = message.toString(); throw error
-        foreign = (v, k) => v.socket or k in (@externals or [])
         failed = "failed to establish the Socket.IO connection"
         assert _.isFunction(@socket.emit), failed; @feedback()
         osc = (listener) => @socket.on "connect", listener
-        osc => @socket.emit "screening", _.omit(@, foreign), =>
+        osc => @socket.emit "screening", _.pick(@, @snapshot), =>
             assert @consumeProviders; @consumeProviders @socket
             open = "successfully bootloaded at #{@location}"
             @on "booted", -> @booted = yes; @duplexed = yes
             @on "booted", -> $root.emit "attached", this
             confirm = => logger.info open; @emit "booted"
-            @trampoline _.omit(@, foreign), confirm
+            @trampoline _.pick(@, @snapshot), confirm
 
     # An externally exposed method that is a part of the bootloader
     # implementation. It sets up the communication feedback mechanism

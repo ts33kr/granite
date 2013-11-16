@@ -259,6 +259,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
         assert _.isObject context = stock or {}
         @energizeContext.call @, context, symbol
         assert prelude = @downstream prelude: =>
+            context.snapshot = try _.keys context
             assert @deployContext context, symbol
             assert @inlineAutocalls context, symbol
             context.inline -> @emit "installed", this
