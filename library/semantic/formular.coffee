@@ -53,8 +53,7 @@ module.exports.Formular = remote -> class Formular extends Archetype
         @container = $ "<div>", class: "ui form segment"
         @container.append @errors, @warnings # invisible
         @container.appendTo(hosting); scoped @container
-        this.emit "configure-form", @container, @payload
-        @hosting = hosting; @reference = reference; this
+        @hosting = hosting; @reference = reference; @
 
     # Group the two previously created fields (passed by either as
     # direct object or the selectors) into a one horizontal field
