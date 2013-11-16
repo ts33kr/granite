@@ -64,8 +64,8 @@ module.exports.Formular = remote -> class Formular extends Archetype
     groupTwoFields: (fieldOne, fieldTwo) ->
         selectorOne = fieldOne and _.isString fieldOne
         selectorTwo = fieldTwo and _.isString fieldTwo
-        fieldOne += ".field".toString() if selectorOne
-        fieldTwo += ".field".toString() if selectorTwo
+        fieldOne = ".field.#{fieldOne}" if selectorOne
+        fieldTwo = ".field.#{fieldTwo}" if selectorTwo
         fieldOne = @container.find fieldOne if selectorOne
         fieldTwo = @container.find fieldTwo if selectorTwo
         assert _.isObject(fieldOne), "invalid object A given"
