@@ -79,7 +79,7 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
     # and deployed on the client site. Basically, use this to bring
     # in all the remote classes that you need to the remote call site.
     # Refer to the remote compilation procedures for more information.
-    @remote: (subject) ->
+    @transfer: (subject) ->
         assert previous = @remotes or Array()
         qualify = try subject.remote.compile
         noRemote = "the subject is not remote"
@@ -221,7 +221,7 @@ module.exports.Preflight = class Preflight extends LToolkit
     # is going to be implemented. Most of these libraries required
     # by the internal implementations of the various subcomponents.
     # Refer to `RToolkit` class implementation for the information.
-    @remote Composition
-    @remote Extending
-    @remote Archetype
-    @remote Marshal
+    @transfer Composition
+    @transfer Extending
+    @transfer Archetype
+    @transfer Marshal

@@ -24,7 +24,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 {Zombie} = require "../nucleus/zombie"
-{external} = require "../membrane/remote"
+{remote} = require "../membrane/remote"
+{Archetype} = require "../nucleus/archetype"
 {Preflight} = require "../membrane/preflight"
 {GoogleFonts} = require "../exposure/fonting"
 
@@ -33,21 +34,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # working with the forms that are presented to take in and process
 # the user entered data, structured in a certain, prediciatable way.
 # Please refer to the implementation for information on how to use.
-module.exports.Formular = class Formular extends Zombie
-
-    # These invocations establish the parameters which are going
-    # to be used for matching HTTP requests against this service.
-    # Typically an HTTP pathname pattern and a domain name pattern.
-    # Try not to put constraints on the domain, unless necessary.
-    # Also, the compounds for the composition system belong here.
-    @compose Preflight
+module.exports.Formular = remote -> class Formular extends Archetype
 
     # This is the initialization method that creates a form within
     # the specified hosting element (or selector) and then runs the
     # payload function (if supplied) that should fill the form with
     # the fields. If missing - that can be done later directly via
     # instance methods of the formular which correspond to fields.
-    automatic: external (hosting, reference, payload) ->
+    constructor: (hosting, reference, payload) ->
         payload = (-> null) unless _.isFunction payload
         do -> hosting = $(hosting) if _.isString hosting
         assert _.isObject(hosting), "got invalid hosting"
@@ -67,7 +61,7 @@ module.exports.Formular = class Formular extends Zombie
     # that is going to equally share the space between two fields.
     # This method is going to internally insert the grouper right
     # before the first field and them move both fields to grouper.
-    groupTwoFields: external (fieldOne, fieldTwo) ->
+    groupTwoFields: (fieldOne, fieldTwo) ->
         selectorOne = fieldOne and _.isString fieldOne
         selectorTwo = fieldTwo and _.isString fieldTwo
         fieldOne += ".field".toString() if selectorOne
@@ -85,7 +79,7 @@ module.exports.Formular = class Formular extends Zombie
     # while it is being typed in. The field has the asterisk to it
     # and can optionally attach an icon to the field (recommended).
     # In other ways, it is structurally equal to `starred` field.
-    hidden: external (identity, synopsis, icon) ->
+    hidden: (identity, synopsis, icon) ->
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input = $ "<input>", type: "password"
         field = $("<div>", class: "field").appendTo @container
@@ -104,7 +98,7 @@ module.exports.Formular = class Formular extends Zombie
     # either required or has some remarks to it or simply indicates
     # an elevated attention to the field. Oterwise, it is a simple
     # textual field that can optionally be tagged with a left icon.
-    starred: external (identity, synopsis, icon) ->
+    starred: (identity, synopsis, icon) ->
         assert _.isObject input = $ "<input>", type: "text"
         assert _.isObject label = $ "<label>", class: "label"
         field = $("<div>", class: "field").appendTo @container
@@ -123,7 +117,7 @@ module.exports.Formular = class Formular extends Zombie
     # It is usually a good idea for indicating options selection
     # or agreement to some legal terms and conditions. The field
     # that it creates is rendered as inline (see semantic man).
-    checkbox: external (identity, synopsis, onpos, onneg) ->
+    checkbox: (identity, synopsis, onpos, onneg) ->
         assert _.isString what = "ui checkbox".toString()
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input = $ "<input>", type: "checkbox"
@@ -140,7 +134,7 @@ module.exports.Formular = class Formular extends Zombie
     # can be tagged by an icon on the left side of the field. It is
     # a good idea to use such a field for inputting sorts data that
     # is not strictly required, but is usually optional, as example.
-    regular: external (identity, synopsis, icon) ->
+    regular: (identity, synopsis, icon) ->
         assert _.isObject input = $ "<input>", type: "text"
         assert _.isObject label = $ "<label>", class: "label"
         field = $("<div>", class: "field").appendTo @container
