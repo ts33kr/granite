@@ -276,14 +276,15 @@ module.exports.Generic = class Generic extends Archetype
     # more information on its operations and configuration routines.
     setupHotloadWatcher: ->
         assert @watcher = new watch.Watcher this
-        subjects = nconf.get("watch:dirs") or undefined
-        config = nconf.get("layout:config") or undefined
-        library = nconf.get("layout:library") or undefined
-        assert _.isArray(subjects), "no watch configuration"
-        assert _.isString(library), "no library layout is set"
-        assert _.isString(config), "no config layout is set"
-        assert watch = @watcher.watchDirectory.bind @watcher
+        subjects = nconf.get("watch:dirs") or null
+        config = nconf.get("layout:config") or null
+        library = nconf.get("layout:library") or null
+        assert _.isArray(subjects), "no watch configured"
+        assert _.isString(library), "no library layout"
+        assert _.isString(config), "no config layout"
+        watch = @watcher.watchDirectory.bind @watcher
         watch paths.resolve __dirname, "../exposure"
+        watch paths.resolve __dirname, "../semantic"
         watch directory for directory in subjects
         watch library; watch config; return this
 
@@ -444,7 +445,7 @@ module.exports.Generic = class Generic extends Archetype
         pub = -> _.find envs, (dir) -> dir is "pub"
         established = try "#{__dirname}/../../public"
         assert _.isString(pub()), "no pub environment"
-        assert _.isObject(opts), "no assets options"
+        assert _.isObject(opts), "wrong assets options"
         assert _.isArray(dirs), "no assets directories"
         @serveStaticDirectory d, opts for d in dirs
         @serveStaticDirectory established, Object()
