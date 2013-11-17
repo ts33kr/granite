@@ -67,6 +67,7 @@ module.exports.Formular = remote -> class Formular extends Archetype
     # with an error tag, which makes its validity visually distinct.
     messages: (heading) ->
         assert @container.removeClass "warning error"
+        @errors.detach(); @warnings.prependTo @container
         @warnings.empty(); list = $ "<ul>", class: "list"
         h = $("<div>", class: "header").appendTo @warnings
         h.text heading.toString(); list.appendTo @warnings
