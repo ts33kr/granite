@@ -36,6 +36,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # Please refer to the implementation for information on how to use.
 module.exports.Formular = remote -> class Formular extends Archetype
 
+    # This is a marker that indicates to some internal subsystems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete class implementation. This
+    # mainly is used to exclude or account for abstract classes.
+    # Once inherited from, the inheritee is not abstract anymore.
+    @abstract yes
+
     # This is the initialization method that creates a form within
     # the specified hosting element (or selector) and then runs the
     # payload function (if supplied) that should fill the form with
@@ -53,92 +60,45 @@ module.exports.Formular = remote -> class Formular extends Archetype
         @container.appendTo(hosting); scoped @container
         @hosting = hosting; @reference = reference; @
 
-    # Group the two previously created fields (passed by either as
-    # direct object or the selectors) into a one horizontal field
-    # that is going to equally share the space between two fields.
-    # This method is going to internally insert the grouper right
-    # before the first field and them move both fields to grouper.
-    groupTwoFields: (fieldOne, fieldTwo) ->
-        selectorOne = fieldOne and _.isString fieldOne
-        selectorTwo = fieldTwo and _.isString fieldTwo
-        fieldOne = ".field.#{fieldOne}" if selectorOne
-        fieldTwo = ".field.#{fieldTwo}" if selectorTwo
-        fieldOne = @container.find fieldOne if selectorOne
-        fieldTwo = @container.find fieldTwo if selectorTwo
-        assert fieldOne.length > 0, "invalid object A given"
-        assert fieldTwo.length > 0, "invalid object B given"
-        assert union = try $ "<div>", class: "two fields"
-        union.insertBefore fieldOne # place before A field
-        fieldOne.appendTo union; fieldTwo.appendTo union
+    # This is a part of the formular protocol. This method allows
+    # you to upload all the fields from a vector of objects, each
+    # of whom describes each field in the formular; its value and
+    # errors or warnings that it may have attached to it. This is
+    # like deserializing the outputed form data from transferable.
+    upload: (sequence) ->
+        assert fields = @container.find(".field") or []
+        compare = (id) -> (hand) -> hand.identity is id
+        sieve = (seq) -> _.filter seq, (value) -> value
+        sieve _.map fields, (value, index, iteratee) ->
+            assert _.isObject value = $(value) or null
+            input = value?.find("input") or undefined
+            identity = $(value).data("identity") or 0
+            handle = _.find sequence, compare identity
+            return unless input and input.length is 1
+            return unless _.isPlainObject handle or 0
+            return unless _.isString identity or null
+            $(input).attr checked: handle.checked or 0
+            $(input).val try handle.value or undefined
+            value.data "warning", handle.warning or 0
+            value.data "error", handle.error; handle
 
-    # Create a field that is typically would be used to enter the
-    # password or similar information that should not be displayed
-    # while it is being typed in. The field has the asterisk to it
-    # and can optionally attach an icon to the field (recommended).
-    # In other ways, it is structurally equal to `starred` field.
-    hidden: (identity, synopsis, icon) ->
-        assert _.isObject label = $ "<label>", class: "label"
-        assert _.isObject input = $ "<input>", type: "password"
-        field = $("<div>", class: "field").appendTo @container
-        wrap = $ "<div>", class: "icon input ui left labeled"
-        assert corner = $ "<div>", class: "ui corner label"
-        assert asterisk = $ "<i>", class: "icon asterisk"
-        assert icon = $ "<i>", class: "icon #{icon}" if icon
-        assert input.attr placeholder: synopsis.toString()
-        try $(field).data "identity", identity.toString()
-        field.addClass try identity.toString() if identity
-        field.append label, wrap; corner.append asterisk
-        wrap.append input, icon or null, corner; field
-
-    # Create a regular textual field that is however marked by star
-    # (astetisk) on its right, that usually indicated the field is
-    # either required or has some remarks to it or simply indicates
-    # an elevated attention to the field. Oterwise, it is a simple
-    # textual field that can optionally be tagged with a left icon.
-    starred: (identity, synopsis, icon) ->
-        assert _.isObject input = $ "<input>", type: "text"
-        assert _.isObject label = $ "<label>", class: "label"
-        field = $("<div>", class: "field").appendTo @container
-        wrap = $ "<div>", class: "icon input ui left labeled"
-        assert corner = $ "<div>", class: "ui corner label"
-        assert asterisk = $ "<i>", class: "icon asterisk"
-        assert icon = $ "<i>", class: "icon #{icon}" if icon
-        assert input.attr placeholder: synopsis.toString()
-        try $(field).data "identity", identity.toString()
-        field.addClass try identity.toString() if identity
-        field.append label, wrap; corner.append asterisk
-        wrap.append input, icon or null, corner; field
-
-    # Create an inlined checkbox field that looks like a checkbox
-    # with a text string attached next to it (on the right side).
-    # It is usually a good idea for indicating options selection
-    # or agreement to some legal terms and conditions. The field
-    # that it creates is rendered as inline (see semantic man).
-    checkbox: (identity, synopsis, onpos, onneg) ->
-        assert _.isString what = "ui checkbox".toString()
-        assert _.isObject label = $ "<label>", class: "label"
-        assert _.isObject input = $ "<input>", type: "checkbox"
-        field = $("<div>", class: "field").appendTo @container
-        wrap = $ "<div>", class: what; field.addClass "inline"
-        try $(field).data "identity", identity.toString()
-        field.addClass try identity.toString() if identity
-        input.appendTo wrap; field.append wrap.append label
-        $(wrap).checkbox onEnable: onpos, onDisable: onneg
-        label.text synopsis.toString(); return field
-
-    # This method creates the most basic textual field. It does not
-    # contain anything other that the field itself. Optionally this
-    # can be tagged by an icon on the left side of the field. It is
-    # a good idea to use such a field for inputting sorts data that
-    # is not strictly required, but is usually optional, as example.
-    regular: (identity, synopsis, icon) ->
-        assert _.isObject input = $ "<input>", type: "text"
-        assert _.isObject label = $ "<label>", class: "label"
-        field = $("<div>", class: "field").appendTo @container
-        wrap = $ "<div>", class: "icon input ui left labeled"
-        assert icon = $ "<i>", class: "icon #{icon}" if icon
-        assert input.attr placeholder: synopsis.toString()
-        try $(field).data "identity", identity.toString()
-        field.addClass try identity.toString() if identity
-        field.append label, wrap; input.appendTo wrap
-        if icon then wrap.append icon else no; field
+    # This is a part of the formular protocol. This methods allows
+    # you to download all the fields into a vector of object, each
+    # of whom describes each field in the formular; its value and
+    # errors or warnings that it may have attached to it. This is
+    # like serializing the inputted form data into a transferable.
+    download: ->
+        assert fields = @container.find(".field") or []
+        sieve = (seq) -> _.filter seq, (value) -> value
+        sieve _.map fields, (value, index, iteratee) ->
+            assert _.isObject value = $(value) or null
+            input = value?.find("input") or undefined
+            identity = $(value).data("identity") or 0
+            return unless input and input.length is 1
+            return unless _.isString identity or null
+            assert _.isPlainObject handle = new Object
+            handle.identity = try identity.toString()
+            handle.value = $(input).val() or undefined
+            handle.checked = try $(input).is ":checked"
+            do -> handle.warning = value.data "warning"
+            handle.error = value.data "error"; handle
