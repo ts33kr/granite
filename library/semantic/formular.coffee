@@ -60,6 +60,27 @@ module.exports.Formular = remote -> class Formular extends Archetype
         @container.appendTo(hosting); scoped @container
         @hosting = hosting; @reference = reference; @
 
+    # This method is intended for rendering error messages attached
+    # to the fields. It traverses all of the fields and see if any
+    # of the fields have warning metadata attached to it. If so, a
+    # warning is added to the list of messages and the field marked
+    # with an error tag, which makes its validity visually distinct.
+    messages: (heading) ->
+        assert @container.removeClass "warning error"
+        @warnings.empty(); list = $ "<ul>", class: "list"
+        h = $("<div>", class: "header").appendTo @warnings
+        h.text heading.toString(); list.appendTo @warnings
+        assert fields = @container.find(".field") or []
+        sieve = (seq) -> _.filter seq, (value) -> value
+        sieve _.map fields, (value, index, iteratee) =>
+            assert _.isObject value = $(value) or null
+            warning = value.data("warning") or undefined
+            value.removeClass "error" if value.is ".error"
+            return if not warning? or _.isEmpty warning
+            value.addClass "error"; notice = $ "<li>"
+            notice.appendTo(list).text "#{warning}"
+            @container.addClass "warning"; value
+
     # This is a part of the formular protocol. This method allows
     # you to upload all the fields from a vector of objects, each
     # of whom describes each field in the formular; its value and
