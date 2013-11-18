@@ -59,7 +59,7 @@ module.exports.Formular = remote -> class Formular extends Archetype
         assert _.isPlainObject(object), "no #{id} object"
         conditions = -> (object.checked or false) is yes
         functional = -> check.call object, object.value
-        expression = -> check.test object.value or null
+        expression = -> check.test object.value or ""
         select = _.isBoolean(check) and not conditions()
         method = _.isFunction(check) and not functional()
         regexp = _.isRegExp(check) and not expression()
