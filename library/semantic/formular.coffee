@@ -49,6 +49,7 @@ module.exports.Formular = remote -> class Formular extends Archetype
     # the fields. If missing - that can be done later directly via
     # instance methods of the formular which correspond to fields.
     constructor: (hosting, reference, payload) ->
+        assert this.hide = => return @container.hide()
         try hosting = $(hosting) if _.isString hosting
         assert hosting.length > 0, "got invalid hosting"
         assert _.isString(reference), "invalid reference"
