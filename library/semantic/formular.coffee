@@ -23,6 +23,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+_ = require "lodash"
+assert = require "assert"
+
 {Zombie} = require "../nucleus/zombie"
 {remote} = require "../membrane/remote"
 {Archetype} = require "../nucleus/archetype"
@@ -42,6 +45,26 @@ module.exports.Formular = remote -> class Formular extends Archetype
     # mainly is used to exclude or account for abstract classes.
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
+
+    # This is a polymorphic, simple yet powerfull validation tool
+    # that is intended to be used primarily on the server site for
+    # the purpose of validating data that came in from a formular.
+    # It is adapted to the formular protocol, attuned to specific
+    # data protocol that is used inside of it. Reference a coding.
+    @validator: (data) -> (id, check, message) ->
+        assert _.isArray(data), "got invalid data object"
+        assert _.isString(id), "got invalid identification"
+        assert _.isString(message), "got no fail message"
+        object = _.find data, (rec) -> rec.identity is id
+        assert _.isPlainObject(object), "no #{id} object"
+        conditions = -> (object.checked or false) is yes
+        functional = -> check.call object, object.value
+        expression = -> check.test object.value or null
+        select = _.isBoolean(check) and not conditions()
+        method = _.isFunction(check) and not functional()
+        regexp = _.isRegExp(check) and not expression()
+        failure = (method or regexp or select) or false
+        return object.warning = message if failure
 
     # This is the initialization method that creates a form within
     # the specified hosting element (or selector) and then runs the
@@ -110,7 +133,7 @@ module.exports.Formular = remote -> class Formular extends Archetype
     # of whom describes each field in the formular; its value and
     # errors or warnings that it may have attached to it. This is
     # like serializing the inputted form data into a transferable.
-    download: ->
+    download: (reset) ->
         assert fields = @container.find(".field") or []
         sieve = (seq) -> _.filter seq, (value) -> value
         sieve _.map fields, (value, index, iteratee) ->
@@ -123,5 +146,6 @@ module.exports.Formular = remote -> class Formular extends Archetype
             handle.identity = try identity.toString()
             handle.value = $(input).val() or undefined
             handle.checked = try $(input).is ":checked"
+            value.data warning: 0, error: null if reset
             do -> handle.warning = value.data "warning"
             handle.error = value.data "error"; handle
