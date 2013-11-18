@@ -66,6 +66,7 @@ module.exports.Shipped = remote -> class Shipped extends Formular
         assert _.isObject input = $ "<input>", type: "password"
         field = $("<div>", class: "field").appendTo @container
         wrap = $ "<div>", class: "icon input ui left labeled"
+        input.on "input", -> do -> field.removeClass "error"
         assert corner = $ "<div>", class: "ui corner label"
         assert asterisk = $ "<i>", class: "icon asterisk"
         assert icon = $ "<i>", class: "icon #{icon}" if icon
@@ -85,6 +86,7 @@ module.exports.Shipped = remote -> class Shipped extends Formular
         assert _.isObject label = $ "<label>", class: "label"
         field = $("<div>", class: "field").appendTo @container
         wrap = $ "<div>", class: "icon input ui left labeled"
+        input.on "input", -> do -> field.removeClass "error"
         assert corner = $ "<div>", class: "ui corner label"
         assert asterisk = $ "<i>", class: "icon asterisk"
         assert icon = $ "<i>", class: "icon #{icon}" if icon
@@ -105,6 +107,7 @@ module.exports.Shipped = remote -> class Shipped extends Formular
         assert _.isObject input = $ "<input>", type: "checkbox"
         field = $("<div>", class: "field").appendTo @container
         wrap = $ "<div>", class: what; field.addClass "inline"
+        input.on "input", -> do -> field.removeClass "error"
         try $(field).data "identity", identity.toString()
         field.addClass try identity.toString() if identity
         input.appendTo wrap; field.append wrap.append label
@@ -121,6 +124,7 @@ module.exports.Shipped = remote -> class Shipped extends Formular
         assert _.isObject label = $ "<label>", class: "label"
         field = $("<div>", class: "field").appendTo @container
         wrap = $ "<div>", class: "icon input ui left labeled"
+        input.on "input", -> do -> field.removeClass "error"
         assert icon = $ "<i>", class: "icon #{icon}" if icon
         assert input.attr placeholder: synopsis.toString()
         try $(field).data "identity", identity.toString()
