@@ -120,7 +120,7 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         bowerings = @constructor.bowerings ?= Array()
         options = _.map(bowerings, (bow) -> bow.options)
         options = _.merge Object.create(Object()), options...
-        directory = kernel?.scope?.envPath "pub", "bower", id
+        directory = kernel.scope.managed "pub", "bower", id
         assert _.isString(directory), "error with Bower dir"
         options.directory = bowerings.directory = directory
         targets = _.map bowerings, (b) -> return b.target
