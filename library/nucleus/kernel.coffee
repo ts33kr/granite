@@ -244,8 +244,8 @@ module.exports.Generic = class Generic extends Archetype
             try @secureSocket.close() if @secureSocket?
             try @serverSocket.close() if @serverSocket?
             shutdown = "Shutting the kernel instance down"
-            logger.warn shutdown.red; @emit "shutdown"
-            @scope?.disperse(); @domain?.dispose()
+            logger.warn shutdown.red; this.emit "shutdown"
+            @scope?.disintegrate(); @domain?.dispose()
             return process.exit -1
 
     # The important internal routine that sets up and configures a

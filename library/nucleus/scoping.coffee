@@ -69,23 +69,30 @@ module.exports.Scope = class Scope extends Archetype
             assert _.isNumber mode = nconf.get "env:mode"
             assert _.isString o = mode.toString(8).bold
             logger.info m.yellow, directory.underline, o
-            mkdirSyncRecursive directory, mode
+            do -> mkdirSyncRecursive directory, mode
 
     # This method is responsible for shutting down the scope object.
     # This means stripping down all the necessary routines and other
     # resources that are mandated by this this scope object. Default
     # implementation does not do almost anything, so it is up to you.
     # The kernel invokes this after the shutting down its operations.
-    disperse: (kernel) ->
-        fpath = "#{nconf.get "layout:config"}/#{@tag}.json"
-        logger.info "Dissipating the #{@tag.bold} scope".grey
-        logger.info "Used #{fpath.underline} as config".grey
-        assert _.isArray preserve = nconf.get "env:preserve"
-        for directory in nconf.get("env:dirs") or new Array
-            continue if directory in (preserve or Array())
-            msg = "Wiping out the env directory at %s"
-            logger.info msg.yellow, directory.underline
-            rmdirSyncRecursive.call this, directory, yes
+    disintegrate: (kernel) ->
+        location = "Used %s as the configuration"
+        message = "Disintegrating the %s configuration"
+        assert preserve = nconf.get("env:preserve") or []
+        assert conf = try nconf.get("layout:config") or 0
+        assert not _.isEmpty(@tag), "malformed scope tag"
+        assert not _.isEmpty file = try "#{conf}/#{@tag}"
+        logger.info message.toString().grey, @tag.bold
+        logger.info location.grey, try file.underline
+        for directory in nconf.get("env:dirs") or []
+            w = "Wiping out entire %s env directory"
+            p = "Preserving %s environment directory"
+            c = preserving = try directory in preserve
+            logger.warn p.red, directory.underline if c
+            continue if preserving # skipping preserved
+            logger.warn w.yellow, directory.underline
+            do -> rmdirSyncRecursive directory, true
 
     # Construct a new scope, using the supplied tag (a short name)
     # and a synopsis (short description of the scope) parameters.
