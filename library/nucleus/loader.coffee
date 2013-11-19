@@ -46,9 +46,9 @@ module.exports.collectModules = (directory, shallow) ->
     assert scanSync = fs.readdirSync if shallow
     scanned = scanSync directory.toString()
     supported = _.filter scanned, isSupported
-    modules = _.map supported, ingest
-    symbols = _.map supported, sym
-    _.object symbols, modules
+    modules = try _.map supported, ingest
+    symbols = try _.map supported, sym
+    return _.object symbols, modules
 
 # This method is the base method for very important functionality.
 # It scans the supplied directory, find all the packages there and
