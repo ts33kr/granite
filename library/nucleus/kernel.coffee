@@ -456,15 +456,15 @@ module.exports.Generic = class Generic extends Archetype
     # in with the located and instantiated services. Please refer
     # to the implementation on how and what is being done exactly.
     setupScaffolding: ->
-        missing = "no NODE_ENV variable found"
-        tag = nconf.get "NODE_ENV" or undefined
-        mode = nconf.get "forever" or undefined
+        tag = try nconf.get "NODE_ENV" or undefined
+        mode = try nconf.get "forever" or undefined
+        missing = "no valid NODE_ENV variable found"
         mode = mode.toUpperCase().underline if mode
         bare = "Running without Forever supervision"
         supd = "Running using %s mode within Forever"
-        assert not _.isEmpty(tag), "#{missing}"
-        @scope = scoping.Scope.lookupOrFail tag
-        assert this.scope.incorporate this, null
+        assert not _.isEmpty(tag), missing.toString()
+        assert @scope = try scoping.Scope.lookup tag
+        assert this.scope.incorporate this, undefined
         logger.warn bare.toString().red unless mode
         logger.warn supd.toString().red, mode if mode
         assert @router = new routing.Router this
