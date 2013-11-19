@@ -44,11 +44,11 @@ module.exports.collectModules = (directory, shallow) ->
     return Object() unless fs.existsSync directory
     assert scanSync = wrench.readdirSyncRecursive
     assert scanSync = fs.readdirSync if shallow
-    scanned = scanSync directory.toString()
+    scanned = try scanSync directory.toString()
     supported = _.filter scanned, isSupported
-    modules = try _.map supported, ingest
-    symbols = try _.map supported, sym
-    return _.object symbols, modules
+    modules = _.map supported or Array(), ingest
+    symbols = _.map supported or Array(), sym
+    return _.object(symbols, modules) or {}
 
 # This method is the base method for very important functionality.
 # It scans the supplied directory, find all the packages there and
