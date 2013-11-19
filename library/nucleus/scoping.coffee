@@ -59,7 +59,7 @@ module.exports.Scope = class Scope extends Archetype
         logger.info "Assuming the #{fpath.underline} config".cyan
         exists = fs.existsSync fpath; nconf.file fpath if exists
         nconf.defaults(@defaults or @constructor.DEFAULTS or {})
-        for directory in nconf.get("env:dirs") or new Array
+        for directory in nconf.get("env:dirs") or new Array()
             assert _.isNumber mode = try nconf.get "env:mode"
             msg = "Environment mkdir at %s with 0%s mode".yellow
             logger.info msg, directory.underline, mode.toString 8
