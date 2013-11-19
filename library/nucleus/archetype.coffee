@@ -60,7 +60,7 @@ module.exports.Archetype = remote -> class Archetype extends EventEmitter2
     # in the framework. This implementation performs some important
     # operations that pertain to the scaffolding that is being set
     # up for every archetyped class and therefore instance of class.
-    constructor: ->
+    constructor: (parameters...) ->
         currents = try @constructor.interceptors
         currents = [] unless _.isArray currents
         ids = @constructor.identify().underline
@@ -99,8 +99,8 @@ module.exports.Archetype = remote -> class Archetype extends EventEmitter2
     # one and the foreign (the one that is beign merged in). Exists
     # for backing up the consistent behavior when using composition.
     @composition: (destination) ->
-        assert currents = @interceptors or []
         assert from = try @identify().underline
+        assert currents = @interceptors or Array()
         return unless destination.derives Archetype
         into = try destination.identify().underline
         message = "Merge intercept from %s into %s"
@@ -108,6 +108,6 @@ module.exports.Archetype = remote -> class Archetype extends EventEmitter2
         assert previous? and _.isArray previous
         assert merged = previous.concat currents
         assert merged = _.toArray _.unique merged
-        logger.debug message.blue, from, into
+        try logger.debug message.blue, from, into
         assert destination.interceptors = merged
-        try super catch error; return this
+        try super catch error finally return @
