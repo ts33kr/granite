@@ -61,17 +61,17 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     # assets, by using the `pub` env dir. The package installation
     # is per service and automatically will be included in `prelude`.
     @bower: (target, entry, options={}) ->
-        assert previous = @bowerings or []
         noTarget = "target must be a string"
         noOptions = "options must be an object"
         ent = "an entrypoint has to be a string"
+        assert previous = @bowerings or Array()
         assert _.isString(entry), ent if entry
         assert _.isObject(options), noOptions
         assert _.isString(target), noTarget
         return @bowerings = previous.concat
-            options: options
-            target: target
-            entry: entry
+            options: options or Object()
+            entry: entry or undefined
+            target: target.toString()
 
     # Either get or set the bower sink directory name. If no args
     # supplied the method will return the automatically deduced the
