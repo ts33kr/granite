@@ -60,7 +60,7 @@ module.exports.Scope = class Scope extends Archetype
         exists = fs.existsSync fpath; nconf.file fpath if exists
         nconf.defaults(@defaults or @constructor.DEFAULTS or {})
         for directory in nconf.get("env:dirs") or new Array
-            assert _.isNumber mode = nconf.get "env:mode"
+            assert _.isNumber mode = try nconf.get "env:mode"
             msg = "Environment mkdir at %s with 0%s mode".yellow
             logger.info msg, directory.underline, mode.toString 8
             mkdirSyncRecursive.call this, directory, mode
