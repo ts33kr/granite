@@ -47,6 +47,25 @@ fs = require "fs"
 # Please refer to the documentation of the methods for more info.
 module.exports.Scope = class Scope extends Archetype
 
+    # Construct a new scope, using the supplied tag (a short name)
+    # and a synopsis (short description of the scope) parameters.
+    # The constructor of the scope should only associate the data.
+    # The scope startup logic should be implemented in the method.
+    # At its end the constructor automatically add to a registry.
+    constructor: (@tag, @synopsis, xinitialize) ->
+        try super if _.isFunction @constructor.__super__
+        @registry = @constructor.REGISTRY ?= new Object()
+        @synopsis = "unknown" unless _.isString @synopsis
+        assert _.isString(@synopsis), "no valid synopsis"
+        assert _.isObject(@registry), "cannot get registry"
+        assert _.isString(@tag), "received an invalid tag"
+        initialize = _.find arguments or [], _.isFunction
+        initialize.call this if _.isFunction initialize
+        exists = @registry[tag.toString().toUpperCase()]
+        assert not exists, "a #{@tag} scope already exists"
+        @directory = __dirname unless _.isString @directory
+        @registry[@tag.toString().toUpperCase()] = this
+
     # This method is responsible for starting up the scope object.
     # This means initialization of all its necessary routines and
     # setting up whatever this scope needs to set. The default
@@ -93,34 +112,6 @@ module.exports.Scope = class Scope extends Archetype
             continue if preserving # skipping preserved
             logger.warn w.yellow, directory.underline
             do -> rmdirSyncRecursive directory, true
-
-    # Construct a new scope, using the supplied tag (a short name)
-    # and a synopsis (short description of the scope) parameters.
-    # The constructor of the scope should only associate the data.
-    # The scope startup logic should be implemented in the method.
-    constructor: (@tag, synopsis) ->
-        try super if @constructor.__super__
-        assert _.isString(@tag), "got invalid tag"
-        @synopsis = synopsis if _.isString synopsis
-        noInitializer = "no scope initializer supplied"
-        @directory = @constructor.DIRECTORY or __dirname
-        initializer = try _.find arguments, _.isFunction
-        assert _.isFunction initializer, noInitializer
-        initializer?.apply this, [@tag, synopsis]
-        @pushToRegistry yes, @tag.toUpperCase()
-
-    # Push the current scope instance into the global registry
-    # of scopes, unless this instance already exists there. This
-    # registry exists for easing looking up the scope by its tag.
-    # You may provide a number of aliaes for this scope instance.
-    pushToRegistry: (override, aliases...) ->
-        registry = @constructor.REGISTRY ?= new Object()
-        assert _.isObject(registry), "got no scope registry"
-        existent = (tag) -> tag of registry and not override
-        valids = _.filter aliases, (a) -> not existent(a)
-        assert not existent(@tag), "current scope exists"
-        do -> registry[alias] = this for alias in valids
-        assert _.isObject registry[@tag] = this; this
 
     # Lookup the possibly existent scope with one of the following
     # alises as a tag. If no matching candidates exist, the method
