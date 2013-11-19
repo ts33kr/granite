@@ -91,7 +91,7 @@ module.exports.Scope = class Scope extends Archetype
         @synopsis = synopsis if _.isString synopsis
         noInitializer = "no scope initializer supplied"
         @directory = @constructor.DIRECTORY or __dirname
-        initializer = _.find arguments, _.isFunction
+        initializer = try _.find arguments, _.isFunction
         assert _.isFunction initializer, noInitializer
         initializer?.apply this, [@tag, synopsis]
         @pushToRegistry yes, @tag.toUpperCase()
