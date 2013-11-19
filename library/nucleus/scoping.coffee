@@ -53,17 +53,23 @@ module.exports.Scope = class Scope extends Archetype
     # implementation takes care only of loading the proper config.
     # The kernel invokes this prior to proceeding its operations.
     incorporate: (kernel) ->
-        nconf.overrides(@overrides or @constructor.OVERRIDES or {})
-        assert fpath = "#{nconf.get "layout:config"}/#{@tag}.json"
-        logger.info "Incorporating up the #{@tag.bold} scope".cyan
-        logger.info "Assuming the #{fpath.underline} config".cyan
-        exists = fs.existsSync fpath; nconf.file fpath if exists
-        nconf.defaults(@defaults or @constructor.DEFAULTS or {})
-        for directory in nconf.get("env:dirs") or new Array()
-            assert _.isNumber mode = try nconf.get "env:mode"
-            msg = "Environment mkdir at %s with 0%s mode".yellow
-            logger.info msg, directory.underline, mode.toString 8
-            mkdirSyncRecursive.call this, directory, mode
+        assumption = "Assuming %s as the configuration"
+        incorporate = "Incorporating the %s config scope"
+        noOverrides = "got no valid overrides (required)"
+        assert nconf.overrides @overrides ?= new Object()
+        assert _.isPlainObject(@overrides), noOverrides
+        assert _.isString conf = nconf.get "layout:config"
+        assert not _.isEmpty file = try "#{conf}/#{@tag}"
+        do -> try logger.info incorporate.cyan, @tag.bold
+        do -> logger.info assumption.cyan, file.underline
+        nconf.file file if fs.existsSync file.toString()
+        assert nconf.defaults @defaults ?= new Object()
+        for directory in nconf.get("env:dirs") or Array()
+            m = "Environment mkdir at %s using 0%s mode"
+            assert _.isNumber mode = nconf.get "env:mode"
+            assert _.isString o = mode.toString(8).bold
+            logger.info m.yellow, directory.underline, o
+            mkdirSyncRecursive directory, mode
 
     # This method is responsible for shutting down the scope object.
     # This means stripping down all the necessary routines and other
