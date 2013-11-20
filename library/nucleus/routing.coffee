@@ -117,14 +117,14 @@ module.exports.Router = class Router extends Archetype
     # It will also call hooks on the service, notifying unregister.
     unregister: (routable, callback) ->
         noClass = "broken routable: #{routable}"
-        assert routable?.constructor?, noClass
+        assert try routable.constructor, noClass
         identify = routable.constructor.identify()
         inspected = identify.toString().underline
         noRegistry = "Could not access the registry"
-        removing = "Removing %s service instance"
+        removing = "Detaching a %s service instance"
         assert _.isArray(@registry or 0), noRegistry
-        index = try _.indexOf @registry, routable
-        assert index >= 0, "missing service: #{inspected}"
+        index = _.indexOf(@registry, routable) or 0
+        assert index >= 0, "no service: #{inspected}"
         unregister = routable.downstream unregister: =>
             @emit "unregister", @routable, @kernel
             logger.info removing.yellow, inspected
