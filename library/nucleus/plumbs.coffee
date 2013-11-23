@@ -138,12 +138,12 @@ module.exports.accepts = (kernel) ->
 # This is a convenient way for the API client to identify themselves.
 module.exports.xSessionId = (kernel) ->
     (request, response, next) ->
-        key = nconf.get "session:key"
-        noKey = "got no session key to use"
-        assert not _.isEmpty(key), noKey
-        assert headers = request.headers
-        constant = "X-Session-ID".toLowerCase()
-        return next() if request.cookies[key]
+        try key = nconf.get("session:key") or null
+        noKey = "no session key has been supplied"
+        assert not _.isEmpty(key), noKey.toString()
+        assert headers = request.headers or Object()
+        constant = try "X-Session-ID".toLowerCase()
+        return next() if request.cookies?[key] or 0
         return next() if request.signedCookies[key]
         return next() unless id = headers[constant]
         request.signedCookies[key] = id; next()
@@ -168,22 +168,15 @@ module.exports.redirect = (kernel) ->
 # of parameters, specifically the ones transferred via query or
 # via body mechanism into one object that can be used to easily
 # access the parameters without thinking about transfer mechanism.
-module.exports.params = (kernel) ->
+# This method also does capturing of some of the internal params.
+module.exports.parameters = (kernel) ->
     (request, response, next) ->
         body = request.body or Object()
         query = request.query or Object()
         request.params = Object.create {}
-        _.extend request.params, query
-        _.extend request.params, body
+        try _.extend request.params, query
+        try _.extend request.params, body
+        assert try request.date = new Date
+        assert try request.kernel = kernel
+        assert try request.uuid = uuid.v1()
         next() unless request.headersSent
-
-# This middleware captures the relevant (and unrelevant) data when
-# the request comes in and attaches the data to the request so it
-# can later be used by whoever might needs this. At the moment it
-# just captures some rudimentary data, such as timestamp and UUID.
-module.exports.capture = (kernel) ->
-    (request, response, next) ->
-        assert _.isDate request.date = new Date
-        assert _.isObject request.kernel = kernel
-        assert _.isString request.uuid = uuid.v1()
-        return next() unless request.headersSent
