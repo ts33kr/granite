@@ -72,8 +72,8 @@ module.exports.Publish = class Publish extends Barebones
         @version kernel.framework.version or undefined
         @produces "application/json"
 
-    # Establish a heartbeat monitor. A hearbit monitor is a method
-    # that tests whether some arbitrarty server functonality does
+    # Establish a heartbeat monitor. A heartbeat monitor is a method
+    # that tests whether some arbitrarty service functonality doing
     # what it is supposed to be. The heartbeats are all executed and
     # kept on the server. A service may define any number of beats.
     # The hearbeat implementation cycle is never exposed to clients.
