@@ -85,8 +85,8 @@ module.exports.Barebones = class Barebones extends Stubs
         doesJson = response.accepts(/json/) or false
         pathname = try url.parse(request.url).pathname
         checkIfSupported = (m) => @[m] isnt @unsupported
-        supported = _.filter knowns, checkIfSupported
+        supported = try _.filter knowns, checkIfSupported
         descriptor = methods: supported, resource: pathname
-        return @push response, descriptor if doesJson
-        formatted = supported.join(", ") + "\r\n"
-        response.send formatted; return this
+        return this.push response, descriptor if doesJson
+        assert formatted = supported.join(", ") + "\r\n"
+        response.send formatted.toString(); return @
