@@ -67,6 +67,21 @@ module.exports.session = (kernel) ->
     logger.info useRedis.toString().blue if redis
     return connect.session options or new Object
 
+# This middleware uses an external library to parse the incoming
+# user agent identification string into a platform description
+# object. If the user agent string is absent from the requesting
+# entity then the platform will not be defined on request object.
+module.exports.platform = (kernel) ->
+    (request, response, next) ->
+        intern = "could not parse the platform data"
+        noParser = "platform parsing library failure"
+        assert _.isFunction(platform?.parse), noParser
+        agent = request.headers["user-agent"] or null
+        return next() if not agent or _.isEmpty agent
+        request.platform = try platform.parse agent
+        assert _.isObject(request.platform), intern
+        return next() unless request.headersSent
+
 # This middleware is a wrapper around the `toobusy` module providing
 # the functinality that helps to prevent the server shutting down due
 # to the excessive load. This is done via monitoring of the event loop
@@ -85,21 +100,6 @@ module.exports.threshold = (kernel) ->
         return next() unless busy() is yes
         response.writeHead 503, options.reason
         return response.end options.reason
-
-# This middleware uses an external library to parse the incoming
-# user agent identification string into a platform description
-# object. If the user agent string is absent from the requesting
-# entity then the platform will not be defined on request object.
-module.exports.platform = (kernel) ->
-    (request, response, next) ->
-        intern = "could not parse the platform data"
-        noParser = "platform parsing library failure"
-        assert _.isFunction(platform?.parse), noParser
-        agent = request.headers["user-agent"] or null
-        return next() if not agent or _.isEmpty agent
-        request.platform = try platform.parse agent
-        assert _.isObject(request.platform), intern
-        return next() unless request.headersSent
 
 # A middleware that adds a `send` method to the response object.
 # This allows for automatic setting of `Content-Type` headers
