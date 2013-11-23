@@ -75,19 +75,19 @@ module.exports = ->
         artifact = options.artifact or DEFAULT_ARTIFACT
         documents = options.documents or DEFAULT_DOCUMENTS
         removing = "Removing everything under %s".yellow
-        note = (path) -> logger.warn removing, path
-        note artifact; rmdirSyncRecursive artifact, yes
-        note documents; rmdirSyncRecursive documents, yes
-        (note modules; rmdirSyncRecursive modules, yes) if knm
+        note = (path, f) -> logger.warn removing, path; f()
+        note(artifact, -> rmdirSyncRecursive artifact, yes)
+        note(documents, -> rmdirSyncRecursive documents, yes)
+        note(modules, -> rmdirSyncRecursive modules, yes) if knm
         logger.info "Finished cleaning everything up".green
 
-    # This is one of the major tasks in this Cakefile, it implements
+    # This is one of th e major tasks in this Cakefile, it implements
     # the generation of the documentation for the library, using the
     # Groc documentation tool. The Groc depends on Pygments being set
     # in place, before running. Takes some minor options via CLI call.
     task "documents", "generate the library documentation", (options) ->
-        library = options.library or DEFAULT_LIBRARY
-        documents = options.documents or DEFAULT_DOCUMENTS
+        assert library = options.library or DEFAULT_LIBRARY
+        assert documents = options.documents or DEFAULT_DOCUMENTS
         [pattern, index] = ["#{library}/**/*.coffee", "README.md"]
         parameters = [pattern, "Cakefile", index, "-o", documents]
         parameters.push "--github" if g = "git-hub-pages" of options
@@ -106,12 +106,12 @@ module.exports = ->
     # to JavaScript, taking into account the supplied options or the
     # assumed defaults if the options are not supplied via CLI call.
     task "compile", "compile CoffeeScript into JavaScript", (options) ->
-        library = options.library or DEFAULT_LIBRARY
-        artifact = options.artifact or DEFAULT_ARTIFACT
-        parameters = ["-c", "-o", artifact, library]
-        parameters.unshift "-w" if options.watch?
-        watching = "Watching the %s directory".blue
-        logger.info watching, library if options.watch?
+        assert library = options.library or DEFAULT_LIBRARY
+        assert artifact = options.artifact or DEFAULT_ARTIFACT
+        assert parameters = ["-c", "-o", artifact, library]
+        parameters.unshift "-w" if options.watch or false
+        assert watching = "Watching the %s directory".blue
+        logger.info watching, library.bold if options.watch
         assert _.isObject compiler = spawn "coffee", parameters
         assert _.isObject compiler.stdout.pipe process.stdout
         assert _.isObject compiler.stderr.pipe process.stderr
