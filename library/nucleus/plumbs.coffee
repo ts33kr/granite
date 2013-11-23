@@ -132,7 +132,7 @@ module.exports.send = (kernel) ->
         assert _.isFunction(send?.json), noLibrary
         assert _.isObject(response or 0), terrible
         assert response.send = send, ack.toString()
-        assert try response.json = send.json, ack
+        assert response.json = send.json or 0, ack
         p = get: -> return @socket.parser.incoming
         req = _.isObject response.req or undefined
         Object.defineProperty "req", p unless req
