@@ -100,25 +100,6 @@ module.exports.negotiate = (kernel) ->
         assert _.isObject(request.negotiate), ack
         return next() unless request.headersSent
 
-# This middleware is a wrapper around the `toobusy` module providing
-# the functinality that helps to prevent the server shutting down due
-# to the excessive load. This is done via monitoring of the event loop
-# polling and rating the loop lag time. If it's too big, the request
-# will not be processed, but simply dropped. This is a config wrapper.
-module.exports.threshold = (kernel) ->
-    options = try nconf.get "threshold"
-    wrongReason = "got no threshold reason"
-    wrongLag = "no valid lag time specified"
-    assert _.isNumber(options?.lag), wrongLag
-    assert _.isString(options?.reason), wrongReason
-    (busy = require "toobusy").maxLag options.lag
-    message = "Setting threshold maximum lag to %s ms"
-    logger.info message.magenta, "#{options.lag}".bold
-    return (request, response, next, additional) ->
-        return next undefined unless busy() is yes
-        response.writeHead 503, options.reason
-        return response.end options.reason
-
 # A middleware that adds a `send` method to the response object.
 # This allows for automatic setting of `Content-Type` headers
 # based on the content that is being sent away. Use this method
@@ -132,11 +113,28 @@ module.exports.send = (kernel) ->
         assert _.isFunction(send?.json), noLibrary
         assert _.isObject(response or 0), terrible
         assert response.send = send, ack.toString()
-        assert response.json = send.json or 0, ack
-        p = get: -> return @socket.parser.incoming
-        req = _.isObject response.req or undefined
-        Object.defineProperty "req", p unless req
+        assert response.json = send.json spaces: 4
+        response.req = request unless response.req
         return next() unless request.headersSent
+
+# This middleware is a wrapper around the `toobusy` module providing
+# the functinality that helps to prevent the server shutting down due
+# to the excessive load. This is done via monitoring of the event loop
+# polling and rating the loop lag time. If it's too big, the request
+# will not be processed, but simply dropped. This is a config wrapper.
+module.exports.threshold = (kernel) ->
+    wrongReason = "no threshold reason supplied"
+    wrongLagTime = "no valid lag time specified"
+    options = nconf.get("threshold") or Object()
+    assert _.isNumber(options?.lag), wrongLagTime
+    assert _.isString(options?.reason), wrongReason
+    (busy = require "toobusy").maxLag options.lag
+    message = "Setting threshold maximum lag to %s ms"
+    logger.info message.magenta, "#{options.lag}".bold
+    return (request, response, next, additional) ->
+        return next undefined unless busy() is yes
+        response.writeHead 503, options.reason
+        return response.end options.reason
 
 # This plumbing add an `accepts` method onto the HTTP resonse object
 # which check if the request/response pair has an HTTP accept header
