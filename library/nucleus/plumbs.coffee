@@ -36,6 +36,7 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+{Negotiator} = require "negotiator"
 {RedisSession} = require "../exposure/session"
 
 # This middleware is really a wrapper around the `Connect` logger
@@ -80,6 +81,22 @@ module.exports.platform = (kernel) ->
         return next() if not agent or _.isEmpty agent
         request.platform = try platform.parse agent
         assert _.isObject(request.platform), intern
+        return next() unless request.headersSent
+
+# This middleware uses an external library to parse the incoming
+# request metadata and then coerce it by using the standards to
+# a queriable form. This queriable forms allows to negotiate for
+# media types, accepted encoding, accepted language and so on.
+# Middleware can be used to serve the most appropriare content.
+module.exports.negotiate = (kernel) ->
+    (request, response, next) ->
+        ack = "could not instantiate a negotiator"
+        terrible = "no valid request object found"
+        noLibrary = "could not load negotiator lib"
+        assert _.isObject(Negotiator), noLibrary
+        assert _.isObject(request or 0), terrible
+        request.negotiate = n = Negotiator request
+        assert _.isObject(request.negotiate), ack
         return next() unless request.headersSent
 
 # This middleware is a wrapper around the `toobusy` module providing
@@ -163,7 +180,7 @@ module.exports.redirect = (kernel) ->
             response.setHeader "Location", url
             response.setHeader "Content-Length", 0
             response.writeHead relocated, message
-            return response.end undefined
+            return try response.end undefined
         next() unless request.headersSent
 
 # This middleware is a little handy utility that merges the set
