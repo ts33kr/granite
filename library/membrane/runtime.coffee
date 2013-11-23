@@ -40,6 +40,7 @@ util = require "util"
 # CoffeeScript runtime definitions. This is necessary to properly
 # initialize the remote call site, because the source code capture
 # mechanism is not able to capture these, when emited by compiler.
+# These definitions should generally be safe, being idempotent.
 module.exports.coffee = `function () {
     __slice = [].slice
     __hasProp = {}.hasOwnProperty
