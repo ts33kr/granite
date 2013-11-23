@@ -74,8 +74,8 @@ module.exports.Restful = class Restful extends Service
         assert _.isString(synopsis), "got no synopsis"
         assert _.isFunction(limitation), noLimitation
         assert limitation.length >= 3, wrongSignature
-        assert _.isArray inherted = @$condition or []
-        return @$condition = inherted.concat
+        assert _.isArray inherited = @$condition or []
+        return @$condition = inherited.concat
             limitation: limitation
             synopsis: synopsis
 
