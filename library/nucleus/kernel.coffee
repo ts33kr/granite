@@ -47,7 +47,6 @@ bundles = require "./bundles"
 routing = require "./routing"
 service = require "./service"
 scoping = require "./scoping"
-content = require "./content"
 plumbs = require "./plumbs"
 watch = require "./watch"
 

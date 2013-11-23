@@ -160,22 +160,24 @@ module.exports.Restful = class Restful extends Service
             postprocess = @downstream postprocess: ->
             postprocess request, response, variables...
 
-    # Reject the request by sending an error descriptor to as the
+    # Reject the request by sending an error descriptor object as a
     # response. The error descriptor is a top level object that will
-    # embed the supplied content object inside of itself. Optionally
-    # you can supply the failing code and an HTTP response phrase.
+    # embed the rejection information inside of itself. Optionally
+    # you can supply the HTTP code that corresponds to a rejection.
     # Please use this methods rather than sending errors directly!
-    reject: (response, content, code, phrase) ->
-        noContent = "content has to be an object"
-        assert _.isObject(content or 0), noContent
-        try @emit "reject", this, response, content
-        code = 400 unless _.isNumber(code or null)
-        assert phrase = phrase or STATUS_CODES[code]
-        uploader = -> response.send errors: content
+    reject: (response, content, code, keepalive) ->
+        code = 400 unless _.isNumber code or null
+        noContent = "the content has to be an object"
+        corrupted = "response prototype is corrupted"
+        assert _.isObject(response), "got no response"
+        assert _.isFunction(response.send), corrupted
+        assert _.isObject(content or null), noContent
+        upload = -> return response.send code, content
+        try this.emit.call this, "reject", arguments...
         prerejection = @downstream prerejection: =>
-            response.writeHead code, phrase; uploader()
+            process.nextTick -> do -> try upload()
             postrejection = @downstream postrejection: ->
-            return postrejection response, content
+            postrejection.call this, response, content
         return prerejection response, content
 
     # Push the supplied content to the requester by utilizing the
@@ -183,14 +185,18 @@ module.exports.Restful = class Restful extends Service
     # `response.send` directly, but this method is wired into the
     # system of service hooks. Refer to the original sender for
     # more information on how the content is encoded and passed.
-    push: (response, content) ->
-        isArray = content? and _.isArray content
-        isObject = content? and _.isObject content
-        noContent = "no valid root content supplied"
-        assert isArray or isObject, "#{noContent}"
-        try @emit "push", this, response, content
-        uploader = -> return response.send content
+    push: (response, content, code, keepalive) ->
+        code = 200 unless _.isNumber code or null
+        ok = _.isArray(content) or _.isObject(content)
+        corrupted = "a response prototype is corrupted"
+        carrier = "has to be either an object or array"
+        assert _.isObject(response), "got no response"
+        assert _.isFunction(response.send), corrupted
+        assert content and ok is yes, carrier.toString()
+        try this.emit.call this, "push", arguments...
+        upload = -> return response.send code, content
         assert prepushing = @downstream prepushing: =>
+            process.nextTick -> do -> try upload()
             postpushing = @downstream postpushing: ->
-            uploader(); postpushing response, content
+            postpushing.call this, response, content
         return prepushing response, content
