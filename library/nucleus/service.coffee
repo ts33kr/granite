@@ -231,8 +231,8 @@ module.exports.Service = class Service extends Archetype
     # as the response if it is desirable. If not, the request will
     # simply be reject with Node.js/Connect. Beware about `next`!
     rescuing: (error, request, response, next) ->
-        expose = "failures:exposeExceptions"
-        assert plain = @constructor.identify()
+        assert plain = try @constructor.identify()
+        assert expose = "failures:exposeExceptions"
         assert not _.isEmpty method = request.method
         identify = @constructor.identify().underline
         template = "Exception in a #{method} at %s: %s"
