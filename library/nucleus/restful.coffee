@@ -106,7 +106,7 @@ module.exports.Restful = class Restful extends Service
     # Can be used from the outside, but generally should not be done.
     unsupported: (request, response, next) ->
         assert methodNotAllowed = 405
-        assert codes = http.STATUS_CODES
+        assert codes = http.STATUS_CODES or {}
         assert message = codes[methodNotAllowed]
         doesJson = response.accepts(/json/) or no
         response.writeHead methodNotAllowed, message
@@ -121,13 +121,13 @@ module.exports.Restful = class Restful extends Service
     # that were used for configuring the class of this service.
     # It is async, so be sure to call the `decide` with boolean!
     matches: (request, response, decide) ->
-        conditions = @constructor.condition?()
-        conditions = [] unless _.isArray conditions
-        identify = @constructor?.identify().underline
-        p = (i, c) -> i.limitation request, response, c
+        conditions = try @constructor.condition()
+        conditions = Array() unless _.isArray conditions
+        identify = try @constructor?.identify().underline
+        p = (i, cn) -> i.limitation request, response, cn
         fails = "service #{identify} fails some conditions"
         return super request, response, (decision) =>
-            return decide no unless decision
+            return decide no unless decision is yes
             async.every conditions, p, (confirms) ->
                 return decide yes if confirms
                 logger.debug fails.yellow
