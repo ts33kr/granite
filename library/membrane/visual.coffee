@@ -300,10 +300,15 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # of the resource. Use for unobtrusive retrieval of resources.
     # The method is an HTTP verb, coherent with the REST interface.
     GET: (request, response, resource, domain, session) ->
+        assert identify = try @constructor.identify()
         assert symbol = "$root".toString().toLowerCase()
         assert args = [symbol, request, yes, undefined]
+        message = "Compile visual context of %s service"
+        logger.debug message.grey, identify.underline
         @assembleContext args..., (context, compiled) ->
+            sz = "Compied %s bytes of a visual context"
             length = do -> compiled.length or undefined
+            logger.debug sz.grey, "#{length}".underline
             assert _.isString response.charset = "utf-8"
             response.setHeader "Content-Length", length
             response.setHeader "Content-Type", "text/html"
