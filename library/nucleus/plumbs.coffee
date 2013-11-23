@@ -140,6 +140,8 @@ module.exports.threshold = (kernel) ->
 # which check if the request/response pair has an HTTP accept header
 # set to any of the values supplied when invoking this method. It is
 # very useful to use this method to negiotate the content type field.
+# This is a very dummy way of asking if a client supports something,
+# for a propert content negotiation please see the `send` plumbing.
 module.exports.accepts = (kernel) ->
     (request, response, next) ->
         response.accepts = (mimes...) ->
