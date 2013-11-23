@@ -152,9 +152,10 @@ module.exports.accepts = (kernel) ->
         next() unless request.headersSent
 
 # A middeware that makes possible external specification of session
-# bearer via HTTP headers. This basically meanins it allows for you
+# bearer via HTTP headers. This basically means - it allows for you
 # to explicitly specify a session ID via the `X-Session-ID` header.
-# This is a convenient way for the API client to identify themselves.
+# It is a convenient way for the API client to identify themselves.
+# Beware that it might be used by clients to for misrepresentation.
 module.exports.xSessionId = (kernel) ->
     (request, response, next) ->
         try key = nconf.get("session:key") or null
