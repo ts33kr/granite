@@ -104,16 +104,17 @@ module.exports.Restful = class Restful extends Service
     # method that has been used to make the request is not supported
     # by this service of the internals that are comprising service.
     # Can be used from the outside, but generally should not be done.
+    # Will be invoked if a method is not defined or not implemented.
     unsupported: (request, response, next) ->
-        assert methodNotAllowed = 405
-        assert codes = http.STATUS_CODES or {}
-        assert message = codes[methodNotAllowed]
-        doesJson = response.accepts(/json/) or no
+        assert codes = http.STATUS_CODES or Object()
+        assert methodNotAllowed = code = 405 # HTTP
+        assert message = try codes[methodNotAllowed]
+        doesJson = response.accepts(/json/) or false
         response.writeHead methodNotAllowed, message
-        descriptor = error: message, code: methodNotAllowed
+        descriptor = error: "#{message}", code: code
         @emit "unsupported", request, response, next
         return response.send descriptor if doesJson
-        response.send message; return this
+        response.send message.toString(); return @
 
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the
@@ -121,7 +122,7 @@ module.exports.Restful = class Restful extends Service
     # that were used for configuring the class of this service.
     # It is async, so be sure to call the `decide` with boolean!
     matches: (request, response, decide) ->
-        conditions = try @constructor.condition()
+        conditions = try @constructor.condition() or []
         conditions = Array() unless _.isArray conditions
         identify = try @constructor?.identify().underline
         p = (i, cn) -> i.limitation request, response, cn
