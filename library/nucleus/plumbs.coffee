@@ -113,8 +113,8 @@ module.exports.threshold = (kernel) ->
     (busy = require "toobusy").maxLag options.lag
     message = "Setting threshold maximum lag to %s ms"
     logger.info message.magenta, "#{options.lag}".bold
-    return do -> (request, response, next) ->
-        return next() unless busy() is yes
+    return (request, response, next, additional) ->
+        return next undefined unless busy() is yes
         response.writeHead 503, options.reason
         return response.end options.reason
 
