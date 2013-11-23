@@ -147,7 +147,6 @@ module.exports.Generic = class Generic extends Archetype
     # Be careful about the relations between methods when overriding.
     @makeKernelSetup: (options) -> ->
         assert @options = _.cloneDeep options
-        @broker = new content.JsonBroker this
         assert _.isObject(@options), "no options"
         manifest = "Using %s as instance identica"
         message = "Booted up framework kernel instance"
