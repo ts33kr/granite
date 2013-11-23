@@ -92,11 +92,13 @@ module.exports.threshold = (kernel) ->
 # entity then the platform will not be defined on request object.
 module.exports.platform = (kernel) ->
     (request, response, next) ->
+        intern = "could not parse the platform data"
         noParser = "platform parsing library failure"
         assert _.isFunction(platform?.parse), noParser
         agent = request.headers["user-agent"] or null
         return next() if not agent or _.isEmpty agent
         request.platform = try platform.parse agent
+        assert _.isObject(request.platform), intern
         return next() unless request.headersSent
 
 # A middleware that adds a `send` method to the response object.
