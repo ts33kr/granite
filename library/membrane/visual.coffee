@@ -304,11 +304,11 @@ module.exports.Screenplay = class Screenplay extends Barebones
         assert symbol = "$root".toString().toLowerCase()
         assert args = [symbol, request, yes, undefined]
         message = "Compile visual context of %s service"
+        sizing = "Compied %s bytes of a visual context"
         logger.debug message.grey, identify.underline
         @assembleContext args..., (context, compiled) ->
-            sz = "Compied %s bytes of a visual context"
             length = do -> compiled.length or undefined
-            logger.debug sz.grey, "#{length}".underline
+            logger.debug sizing.grey, "#{length}".bold
             assert _.isString response.charset = "utf-8"
             response.setHeader "Content-Length", length
             response.setHeader "Content-Type", "text/html"
