@@ -29,6 +29,7 @@ uuid = require "node-uuid"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
+send = require "response-send"
 platform = require "platform"
 colors = require "colors"
 nconf = require "nconf"
@@ -122,17 +123,20 @@ module.exports.threshold = (kernel) ->
 # This allows for automatic setting of `Content-Type` headers
 # based on the content that is being sent away. Use this method
 # rather than writing and ending the request in a direct way.
-module.exports.sender = (kernel) ->
+# Is implemented using the external `response-send` library.
+module.exports.send = (kernel) ->
     (request, response, next) ->
-        response.send = (content, keepalive, typed) ->
-            @emit "sending", content, typed, keepalive
-            heading = typed and not request.headerSent
-            @setHeader "Content-Type", typed if heading
-            assert negotiator = kernel.broker.negotiate
-            negotiator = negotiator.bind kernel.broker
-            negotiator request, response, content
-            response.end() unless keepalive
-        next() unless request.headersSent
+        ack = "could not attach a response sender"
+        noLibrary = "could not load sender library"
+        terrible = "no valid response object found"
+        assert _.isFunction(send?.json), noLibrary
+        assert _.isObject(response or 0), terrible
+        assert response.send = send, ack.toString()
+        assert try response.json = send.json, ack
+        p = get: -> return @socket.parser.incoming
+        req = _.isObject response.req or undefined
+        Object.defineProperty "req", p unless req
+        return next() unless request.headersSent
 
 # This plumbing add an `accepts` method onto the HTTP resonse object
 # which check if the request/response pair has an HTTP accept header
@@ -172,6 +176,7 @@ module.exports.xSessionId = (kernel) ->
 # This redirects to the supplied URL with the 302 status code and
 # the corresponding reason phrase. This method also sets some of the
 # necessary headers, such as nullary `Content-Length` and some other.
+# The redirected-to URL should be a valid, qualified URL to send to.
 module.exports.redirect = (kernel) ->
     (request, response, next) ->
         response.redirect = (url, status) ->

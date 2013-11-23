@@ -429,8 +429,8 @@ module.exports.Generic = class Generic extends Archetype
         @connect.use @redirect = plumbs.redirect this
         @connect.use @session = plumbs.session this
         @connect.use @accepts = plumbs.accepts this
-        @connect.use @sender = plumbs.sender this
         @connect.use @logger = plumbs.logger this
+        @connect.use @send = plumbs.send this
         @connect.use @middleware; return this
 
     # Setup a set of appropriate Connect middlewares that will take

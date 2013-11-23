@@ -43,6 +43,7 @@
         "forever-monitor": "1.2.x",
         "eventemitter2": "0.4.x",
         "coffee-script": "1.6.x",
+        "response-send": "0.0.x",
         "stack-trace": "0.0.x",
         "http-proxy": "0.10.x",
         "nodemailer": "0.5.x",
