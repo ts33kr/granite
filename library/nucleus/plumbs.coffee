@@ -51,7 +51,7 @@ module.exports.logger = (kernel) ->
     writer = (d) -> logger.log level, filter d
     assert options = stream: write: writer
     assert options.format = "#{format}"
-    return connect.logger options
+    return try connect.logger options
 
 # This middleware is really a wrapper around the `Connect` session
 # middleware. The reason it wraps it is to automatically configure
