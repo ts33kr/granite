@@ -117,7 +117,7 @@ module.exports.Router = class Router extends Archetype
     # It will also call hooks on the service, notifying unregister.
     unregister: (routable, callback) ->
         noClass = "broken routable: #{routable}"
-        assert try routable.constructor, noClass
+        assert routable.constructor or 0, noClass
         identify = routable.constructor.identify()
         inspected = identify.toString().underline
         noRegistry = "Could not access the registry"
