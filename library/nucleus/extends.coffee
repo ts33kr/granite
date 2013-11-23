@@ -48,37 +48,6 @@ fs = require "fs"
 # Some of them depend on other subsystems, such as dynamic composition.
 module.exports.Extending = remote -> class Extending extends Object
 
-    # Extend the native RegExp object to implement method for escaping
-    # a supplied string. Escaping here means substituting all the RE
-    # characters so that it can be used inside of the regular expression
-    # pattern. The implementation was borrowed from StackOverflow thread.
-    RegExp.escape = (string) ->
-        noString = "please supply valid input"
-        assert not _.isEmpty(string), noString
-        primary = /[-\/\\^$*+?.()|[\]{}]/g
-        string.replace primary, "\\$&"
-
-    # Extend the native RegExp object to implement method for unescaping
-    # a supplied string. Unscaping here means substituting all the RE back
-    # characters so that it cannot be used inside of the regular expression
-    # pattern. The implementation was borrowed from StackOverflow thread.
-    RegExp::unescape = ->
-        noString = "cannot retrieve RE source"
-        assert not _.isEmpty(@source), noString
-        string = @source.replace /\\\//g, "/"
-        return string.replace /[\$\^]/g, ""
-
-    # Collect all the matches of the regular expression against of the
-    # supplied string. This method basically gathers all the matches that
-    # sequentially matches against the input string and packs them into
-    # an array which is handed to the invoker. Be sure to set the G flag.
-    RegExp::collect = (string) ->
-        matches = new Array undefined
-        noString = "got no string supplied"
-        assert _.isString(string), noString
-        matches.push m while m = @exec string
-        assert matches; return matches
-
     # Determine if the object that is bound to this invocation is a
     # subclass of the supplied archetype class (as argument). Of course
     # it is assumed that you should be invoking this method only on the
@@ -144,3 +113,34 @@ module.exports.Extending = remote -> class Extending extends Object
             assert _.isBoolean(boolean), wrong
             return @$abstract = this if boolean
             delete @$abstract; @$abstract is @
+
+    # Extend the native RegExp object to implement method for escaping
+    # a supplied string. Escaping here means substituting all the RE
+    # characters so that it can be used inside of the regular expression
+    # pattern. The implementation was borrowed from StackOverflow thread.
+    RegExp.escape = (string) ->
+        noString = "please supply valid input"
+        assert not _.isEmpty(string), noString
+        primary = /[-\/\\^$*+?.()|[\]{}]/g
+        string.replace primary, "\\$&"
+
+    # Extend the native RegExp object to implement method for unescaping
+    # a supplied string. Unscaping here means substituting all the RE back
+    # characters so that it cannot be used inside of the regular expression
+    # pattern. The implementation was borrowed from StackOverflow thread.
+    RegExp::unescape = ->
+        noString = "cannot retrieve RE source"
+        assert not _.isEmpty(@source), noString
+        string = @source.replace /\\\//g, "/"
+        return string.replace /[\$\^]/g, ""
+
+    # Collect all the matches of the regular expression against of the
+    # supplied string. This method basically gathers all the matches that
+    # sequentially matches against the input string and packs them into
+    # an array which is handed to the invoker. Be sure to set the G flag.
+    RegExp::collect = (string) ->
+        matches = new Array undefined
+        noString = "got no string supplied"
+        assert _.isString(string), noString
+        matches.push m while m = @exec string
+        assert matches; return matches
