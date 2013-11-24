@@ -95,25 +95,33 @@ module.exports.Document = class Document extends Archetype
 
     # Either get or set the produces information of the method that
     # is being described by this document. If you do no supply any
-    # arguments this method will return already described failures.
+    # arguments this method will return already described produces.
     # The mimes should be args that contains a valid MIME types.
+    # The invocation signature is splat, to natually suport vector.
     produces: (produces...) ->
-        return @$produces if arguments.length is 0
-        notString = "elements must be MIME type strings"
-        assert _.all(produces, _.isString), notString
+        return @$produces or [] if arguments.length is 0
+        internal = "an internal, implementational error"
+        typ = "all of elements must be MIME type strings"
+        assert produces and _.isArray(produces), internal
+        assert _.all(produces, _.isString), typ.toString()
         @$produces = (@$produces or []).concat produces
+        @$produces = _.toArray _.unique @$produces or []
         @emit.call @, "produces", @$produces, arguments
         assert _.isArray @$produces; return @$produces
 
     # Either get or set the consumes information of the method that
     # is being described by this document. If you do no supply any
-    # arguments this method will return already described failures.
+    # arguments this method will return already described consumes.
     # The mimes should be args that contains a valid MIME types.
+    # The invocation signature is splat, to natually suport vector.
     consumes: (consumes...) ->
-        return @$consumes if arguments.length is 0
-        notString = "elements must be MIME type strings"
-        assert _.all(consumes, _.isString), notString
+        return @$consumes or [] if arguments.length is 0
+        internal = "an internal, implementational error"
+        typ = "all of elements must be MIME type strings"
+        assert consumes and _.isArray(consumes), internal
+        assert _.all(consumes, _.isString), typ.toString()
         @$consumes = (@$consumes or []).concat consumes
+        @$consumes = _.toArray _.unique @$consumes or []
         @emit.call @, "consumes", @$consumes, arguments
         assert _.isArray @$consumes; return @$consumes
 
