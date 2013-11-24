@@ -40,12 +40,14 @@ util = require "util"
 # and expected way, so that it can later be used to programmatically
 # process such documentation and do with it whatever is necessary.
 # This approach gives unique ability to build self documented APIs.
+# So this class is basically a typed, programmatic data storage.
 module.exports.Document = class Document extends Archetype
 
     # Either get or set the argument information of the method that
     # is being described by this document. If you do no supply any
     # arguments this method will return already described arguments.
     # Argument consists of name, approximate type and description.
+    # The information is being stored as a structured data object.
     argument: (identify, typeable, description) ->
         return @$argument if arguments.length is 0
         noIdentify = "the identify param is not a string"
@@ -62,8 +64,9 @@ module.exports.Document = class Document extends Archetype
 
     # Either get or set the Github information of the method that
     # is being described by this document. If you do no supply any
-    # arguments this method will return already described failures.
+    # arguments this method will return already described Github.
     # Each consists of a username, the repository name and the path.
+    # The information is being stored as a structured data object.
     github: (username, repository, path) ->
         return @$github if arguments.length is 0
         noUsername = "the username must be a string"
@@ -82,6 +85,7 @@ module.exports.Document = class Document extends Archetype
     # is being described by this document. If you do no supply any
     # arguments this method will return already described failures.
     # Each failure consists of the expected code and reason for fail
+    # The information is being stored as a structured data object.
     failure: (code, reasoning) ->
         return @$failure if arguments.length is 0
         noCode = "the supplied code is not a number"
