@@ -201,7 +201,7 @@ module.exports.Service = class Service extends Archetype
     @resource: (pattern) ->
         assert identify = @identify().underline.toString()
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
-        pattern = regexify pattern if _.isString pattern
+        pattern = try regexify pattern if _.isString pattern
         inspected = pattern.unescape()?.underline or pattern
         associate = "Associating #{inspected} resource with %s"
         notRegexp = "The #{inspected} is not a valid regexp"
@@ -217,7 +217,7 @@ module.exports.Service = class Service extends Archetype
     @domain: (pattern) ->
         assert identify = @identify().underline.toString()
         regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
-        pattern = regexify pattern if _.isString pattern
+        pattern = try regexify pattern if _.isString pattern
         inspected = pattern.unescape()?.underline or pattern
         associate = "Associating #{inspected} domain with %s"
         notRegexp = "The #{inspected} is not a valid regexp"
@@ -257,7 +257,7 @@ module.exports.Service = class Service extends Archetype
         hostname = _.first request.headers.host.split ":"
         pdomain = (p) -> gdomain = hostname.match p
         presource = (p) -> gresource = pathname.match p
-        pdomain = _.find(domains, pdomain) or null
+        pdomain = try _.find(domains, pdomain) or null
         presource = _.find(resources, presource) or null
         assert gdomain isnt null, "missing the domain"
         assert gresource isnt null, "missing resource"
@@ -276,7 +276,7 @@ module.exports.Service = class Service extends Archetype
         hostname = _.first request.headers.host.split ":"
         pdomain = (pattern) -> pattern.test hostname
         presource = (pattern) -> pattern.test pathname
-        domainOk = _.some(domains, pdomain) or no
+        domainOk = try _.some(domains, pdomain) or no
         resourceOk = _.some(resources, presource) or no
         matches = domainOk is yes and resourceOk is yes
         @emit "matches", matches, request, response
