@@ -157,8 +157,13 @@ module.exports.Document = class Document extends Archetype
     # described by this document. If you do not supply description
     # this method will return you one, assuming it was set before.
     # Synopsis is a brief story of what this service method does.
+    # The argument could be a function, see coding for that one.
     synopsis: (synopsis) ->
-        return @$synopsis if arguments.length is 0
+        fn = _.isFunction(x = @$synopsis) and x
+        auto = => if fn then x.call this else x
+        assigns = => assert @$synopsis = synopsis
+        return auto() if arguments.length is 0
+        return assigns() if _.isFunction synopsis
         noSynopsis = "the synopsis is not a string"
         assert _.isString(synopsis), noSynopsis
         @emit.call this, "synopsis", arguments...
@@ -168,9 +173,14 @@ module.exports.Document = class Document extends Archetype
     # is being described by this document. If you do no supply any
     # arguments this method will return already described failures.
     # The version should be a string with an arbitrary contents.
+    # The argument could be a function, see coding for that one.
     version: (version) ->
-        return @$version if arguments.length is 0
-        noVersion = "version should be a string"
+        fn = _.isFunction(x = @$version) and x
+        auto = => if fn then x.call this else x
+        assigns = => assert @$version = version
+        return auto() if arguments.length is 0
+        return assigns() if _.isFunction version
+        noVersion = "the version is not a string"
         assert _.isString(version), noVersion
         @emit.call this, "version", arguments...
         return @$version = version.toString()
@@ -179,8 +189,13 @@ module.exports.Document = class Document extends Archetype
     # described by this document. If you do not supply outputs
     # this method will return you one, assuming it was set before.
     # Outputs is a description of data returned by the method.
+    # The argument could be a function, see coding for that one.
     outputs: (outputs) ->
-        return @$outputs if arguments.length is 0
+        fn = _.isFunction(x = @$outputs) and x
+        auto = => if fn then x.call this else x
+        assigns = => assert @$outputs = outputs
+        return auto() if arguments.length is 0
+        return assigns() if _.isFunction outputs
         noOutputs = "the outputs is not a string"
         assert _.isString(outputs), noOutputs
         @emit.call this, "outputs", arguments...
@@ -190,8 +205,13 @@ module.exports.Document = class Document extends Archetype
     # described by this document. If you do not supply inputs
     # this method will return you one, assuming it was set before.
     # Inputs is a description of the body that method expects.
+    # The argument could be a function, see coding for that one.
     inputs: (inputs) ->
-        return @$inputs if arguments.length is 0
+        fn = _.isFunction(x = @$inputs) and x
+        auto = => if fn then x.call this else x
+        assigns = => assert @$inputs = inputs
+        return auto() if arguments.length is 0
+        return assigns() if _.isFunction inputs
         noInputs = "the inputs is not a string"
         assert _.isString(inputs), noInputs
         @emit.call this, "inputs", arguments...
@@ -201,8 +221,13 @@ module.exports.Document = class Document extends Archetype
     # described by this document. If you do not supply example
     # this method will return you one, assuming it was set before.
     # Notes are warning/beware messages about the implementation.
+    # The argument could be a function, see coding for that one.
     remark: (remark) ->
-        return @$remark if arguments.length is 0
+        fn = _.isFunction(x = @$remark) and x
+        auto = => if fn then x.call this else x
+        assigns = => assert @$remark = remark
+        return auto() if arguments.length is 0
+        return assigns() if _.isFunction remark
         noRemark = "the remark is not a string"
         assert _.isString(remark), noRemark
         @emit.call this, "remark", arguments...
