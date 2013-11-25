@@ -149,7 +149,7 @@ module.exports.Document = class Document extends Archetype
     # is being described by this document. If you do no supply any
     # arguments this method will return already described failures.
     # The markings should be an object of `marking: level` values.
-    # The supplied markings will be concatenated with a previous.
+    # All supplied markings will be concatenated with a previous.
     markings: (markings) ->
         return @$markings or {} if arguments.length is 0
         external = "the method signature expects an object"
