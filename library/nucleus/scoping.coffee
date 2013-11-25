@@ -101,7 +101,7 @@ module.exports.Scope = class Scope extends Archetype
         assert preserve = nconf.get("env:preserve") or []
         assert conf = try nconf.get("layout:config") or 0
         assert not _.isEmpty(@tag), "malformed scope tag"
-        assert not _.isEmpty file = try "#{conf}/#{@tag}"
+        assert not _.isEmpty file = "#{conf}/#{@tag}.json"
         logger.info message.toString().grey, @tag.bold
         logger.info location.grey, try file.underline
         for directory in nconf.get("env:dirs") or []
