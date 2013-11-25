@@ -101,10 +101,10 @@ module.exports.MongoClient = class MongoClient extends Service
         assert.ok _.isObject @kernel.mongo = client
         scope = _.isString database = config.database
         message = "Setting the MongoDB database: %s"
-        kernel.mongo = client.db database if scope
+        @kernel.mongo = client.db database if scope
         logger.info message.magenta, database if scope
-        @emit "mongo-ready", @kernel.redis, kernel
-        kernel.emit "mongo-ready", kernel.redis
+        @emit "mongo-ready", @kernel.redis, @kernel
+        @kernel.emit "mongo-ready", @kernel.redis
         next.call this, undefined; return this
 
     # A hook that will be called prior to instantiating the service
