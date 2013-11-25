@@ -57,7 +57,7 @@ module.exports.Document = class Document extends Archetype
         assert _.isString(identify), noIdentify
         assert _.isString(typeable), noTypeable
         @emit.call this, "argument", arguments...
-        return (@$argument ?= []).push
+        @$argument = (@$argument or []).concat
             description: description
             identify: identify
             typeable: typeable
@@ -76,7 +76,7 @@ module.exports.Document = class Document extends Archetype
         assert _.isString(repository), noRepository
         assert path and _.isString(path), noPath
         @emit.call this, "github", arguments...
-        return (@$github ?= []).push
+        @$github = (@$github or []).concat
             repository: repository
             username: username
             path: path
@@ -86,15 +86,18 @@ module.exports.Document = class Document extends Archetype
     # arguments this method will return already described failures.
     # Each failure consists of the expected code and reason for fail
     # The information is being stored as a structured data object.
-    failure: (code, reasoning) ->
+    failure: (code, reasoning, explain) ->
         return @$failure if arguments.length is 0
+        noExp = "the explanation has to be a string"
         noCode = "the supplied code is not a number"
         noReasoning = "the reasoning is not a string"
+        assert(_.isString(explain), noExp) if explain
         assert _.isString(reasoning), noReasoning
         assert  code and _.isNumber(code), noCode
         @emit.call this, "failure", arguments...
-        return (@$failure ?= []).push
+        @$failure = (@$failure or []).concat
             reasoning: reasoning
+            explain: explain
             code: code
 
     # Either get or set the produces information of the method that
