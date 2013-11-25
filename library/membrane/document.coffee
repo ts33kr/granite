@@ -149,25 +149,17 @@ module.exports.Document = class Document extends Archetype
     # is being described by this document. If you do no supply any
     # arguments this method will return already described failures.
     # The markings should be an object of `marking: level` values.
+    # The supplied markings will be concatenated with a previous.
     markings: (markings) ->
-        return @$markings if arguments.length is 0
-        noMarkings = "the markings should be a object"
-        assert _.isObject(markings), noMarkings
-        assert _.extend @$markings ?= {}, markings
-        @emit.call @, "markings", arguments...
-        assert @$markings; return @$markings
-
-    # Either get or set the schemas information of the method that
-    # is being described by this document. If you do no supply any
-    # arguments this method will return already described failures.
-    # The schemas should be an object of the `slot: schema` values.
-    schemas: (schemas) ->
-        return @$schemas if arguments.length is 0
-        noSchemas = "the schemas should be a object"
-        assert _.isObject(schemas), noSchemas
-        assert _.extend @$schemas ?= {}, schemas
-        @emit.call this, "schemas", arguments...
-        assert @$schemas; return @$schemas
+        return @$markings or {} if arguments.length is 0
+        external = "the method signature expects an object"
+        type = "all of the elements must be valid strings"
+        assert markings and _.isObject(markings), external
+        assert _.all(_.values(markings), _.isString), type
+        assert previous = _.clone @$markings or new Object
+        @$markings = try _.extend previous or {}, markings
+        @emit.call @, "markings", @$markings, arguments
+        assert _.isObject @$markings; return @$markings
 
     # Either get or set the description of the method that is being
     # described by this document. If you do not supply description
