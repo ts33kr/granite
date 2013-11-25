@@ -78,7 +78,7 @@ module.exports.Scope = class Scope extends Archetype
         assert nconf.overrides @overrides ?= new Object()
         assert _.isPlainObject(@overrides), noOverrides
         assert _.isString conf = nconf.get "layout:config"
-        assert not _.isEmpty file = try "#{conf}/#{@tag}"
+        assert not _.isEmpty file = "#{conf}/#{@tag}.json"
         do -> try logger.info incorporate.cyan, @tag.bold
         do -> logger.info assumption.cyan, file.underline
         nconf.file file if fs.existsSync file.toString()
