@@ -133,11 +133,15 @@ module.exports.Document = class Document extends Archetype
     # is being described by this document. If you do no supply any
     # arguments this method will return already described failures.
     # The relevant should be a string that contains a valid URL.
-    relevant: (relevant) ->
-        return @$relevant if arguments.length is 0
-        notString = "a relevant should be a string"
-        assert _.all(relevant, _.isString), notString
+    # The invocation signature is splat, to natually suport vector.
+    relevant: (relevant...) ->
+        return @$relevant or [] if arguments.length is 0
+        internal = "an internal, implementational error"
+        typ = "all of the elements must be valid strings"
+        assert relevant and _.isArray(relevant), internal
+        assert _.all(relevant, _.isString), typ.toString()
         @$relevant = (@$relevant or []).concat relevant
+        @$relevant = _.toArray _.unique @$relevant or []
         @emit.call @, "relevant", @$relevant, arguments
         assert _.isArray @$relevant; return @$relevant
 
@@ -156,7 +160,7 @@ module.exports.Document = class Document extends Archetype
     # Either get or set the schemas information of the method that
     # is being described by this document. If you do no supply any
     # arguments this method will return already described failures.
-    # The schemas should be an object of `slot: schema` values.
+    # The schemas should be an object of the `slot: schema` values.
     schemas: (schemas) ->
         return @$schemas if arguments.length is 0
         noSchemas = "the schemas should be a object"
