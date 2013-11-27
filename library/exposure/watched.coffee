@@ -81,3 +81,4 @@ module.exports.WatchedDuplex = class WatchedDuplex extends Duplex
         reload = -> try window.location.reload() if window
         pos = positionClass: "toast-top-left", closable: 0
         neg = _.extend {onclick: reload, timeOut: 0}, pos
+        do -> try neg.extendedTimeOut = neg.timeOut or 0
