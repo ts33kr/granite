@@ -43,7 +43,7 @@ util = require "util"
 # Please refer to the implementation for greater understanding!
 # The method knows how to recursively compile class hierarchies.
 compiler = module.exports.compiler = (caching, symbol) ->
-    noSymbol = "symbol must be non empty"
+    noSymbol = "a symbol must be non empty"
     @symbol = symbol unless _.isEmpty symbol
     assert not _.isEmpty(@symbol), noSymbol
     return new String if @symbol of caching
@@ -51,7 +51,7 @@ compiler = module.exports.compiler = (caching, symbol) ->
     return f() unless _.isObject @compiled
     hierarchy = try @compiled.hierarchy?()
     assert _.isArray(hierarchy), "no hierarchy"
-    hasRemote = (x) -> _.isObject x.remote
+    hasRemote = (val) -> _.isObject val.remote
     compilation = (x) -> x.remote.compile caching
     areRemote = _.filter hierarchy, hasRemote
     compiled = _.map areRemote, compilation
@@ -70,8 +70,9 @@ remote = module.exports.remote = (wrapper) ->
     assert _.isFunction(wrapper), noWrapper
     assert wrapper.length is 0, invalidArgs
     try compiled = wrapper() catch error
-        msg = "compilation failed: #{error.message}"
-        error.message = msg.toString(); throw error
+        message = error.message.toString()
+        msg = "compilation failed: #{message}"
+        error.message = "#{msg}"; throw error
     assert compiled.remote = Object.create {}
     assert compiled.remote.compiled = compiled
     assert compiled.remote.compile = compiler
@@ -86,8 +87,8 @@ remote = module.exports.remote = (wrapper) ->
 # only necessary for properly capturing classes. Please refer to
 # the `remote` method for info, since it is relevant here as well.
 external = module.exports.external = (compiled) ->
-    notFunction = "the compiled is not a function"
-    wrongCompiled = "do not use external with classes"
+    notFunction = "a compiled is not a function"
+    wrongCompiled = "using external with classes"
     assert.ok _.isFunction(compiled), notFunction
     assert not compiled.__super__?, wrongCompiled
     wrapper = "function() { return #{compiled} }"
