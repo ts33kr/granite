@@ -67,8 +67,8 @@ module.exports.WatchedDuplex = class WatchedDuplex extends Duplex
     # socket object. When that happens, this code sucks up to the
     # socket events that indicate successful and fail conditions.
     # When either one is happens, it emits the `toastr` notice.
-    watchdog: @awaiting "socketing", (socket) ->
-        assert _.isPlainObject ack = try new Object()
+    attachWatchdog: @awaiting "socketing", (socket, location) ->
+        assert _.isPlainObject ack = container = Object()
         assert c = con = "established a server connection"
         assert l = lst = "server connection has been lost"
         assert s = srv = "exception occured on the server"
