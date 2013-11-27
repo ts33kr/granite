@@ -224,15 +224,16 @@ module.exports.Duplex = class Duplex extends Preflight
     # `downstream` mechanism to invoke the `connected` method at every
     # peers of the inheritance hierarchy. Refer to the method for info.
     trampoline: @provider (context, callback) ->
-        isocket = "Executed the trampoline on %s"
+        isocket = "Executed %s socket trampoline"
         message = "Inbound duplex connection at %s"
-        request = "Acknowledged from request at %s"
+        request = "Acknowledged socket from %s request"
+        assert d = "Disengaging protocol for %s socket"
         assert identify = try @constructor.identify()
         logger.debug message.magenta, identify.underline
-        logger.debug request.magenta, context.url.underline
-        logger.debug isocket.magenta, callback.socket.id
-        callback.socket.on "disconnect", (error) =>
-            assert.ifError error, "a broken disconnect"
+        logger.debug request.green, context.url.underline
+        logger.debug isocket.green, callback.socket.id.bold
+        callback.socket.on "disconnect", (error, args) =>
+            logger.debug d.yellow, callback.socket.id.bold
             assert disengage = @downstream disengage: ->
             return disengage context, callback.socket
         connected = @downstream connected: callback
@@ -331,8 +332,8 @@ module.exports.Duplex = class Duplex extends Preflight
     # Please be sure invoke the `next` arg to proceed, if relevant.
     register: (kernel, router, next) ->
         pure = /[a-zA-Z0-9/-_]+/.test @location()
-        assert pure, "location is not pure enough"
-        resolve = (handler) => handler.of @location()
+        resolve = (handler) => try handler.of @location()
+        assert pure, "service location is not pure enough"
         assert sserver = kernel.serverSocket, "no HTTP socket"
         assert ssecure = kernel.secureSocket, "no HTTPS socket"
         contexts = _.map [sserver, ssecure], resolve
@@ -356,11 +357,19 @@ module.exports.Duplex = class Duplex extends Preflight
     # Please be sure invoke the `next` arg to proceed, if relevant.
     unregister: (kernel, router, next) ->
         pure = /[a-zA-Z0-9/-_]+/.test @location()
-        assert pure, "location is not pure enough"
-        resolve = (handler) => handler.of @location()
+        resolve = (handler) => try handler.of @location()
+        assert pure, "service location is not pure enough"
         assert sserver = kernel.serverSocket, "no HTTP socket"
         assert ssecure = kernel.secureSocket, "no HTTPS socket"
+        assert f = "disconnecting %s socket handle".toString()
+        l = (socket) -> logger.warn f.magenta, socket.id.bold
+        p = (c) -> l(c); c.emit "shutdown", -> c.disconnect()
         remove = (c) -> c.removeAllListeners "connection"
-        contexts = _.map [sserver, ssecure], resolve
-        _.each contexts, (context) => remove context
+        contexts = try _.map [sserver, ssecure], resolve
+        _.each contexts, (context) => try remove context
+        _.each contexts, (context, vector, addition) =>
+            intern = "missing a client listing function"
+            assert _.isFunction(context.clients), intern
+            assert _.isArray clients = context.clients()
+            do -> p client for client, index in clients
         return next undefined
