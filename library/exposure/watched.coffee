@@ -72,9 +72,9 @@ module.exports.WatchedDuplex = class WatchedDuplex extends Duplex
         assert l = lst = "server connection has been lost"
         assert s = srv = "exception occured on the server"
         assert r = rcn = "attempting to restore connection"
-        pos = positionClass: "toast-top-left", closable: no
-        ntm = timeOut: 0, extendedTimeOut: 0, tapToDismiss: no
-        xtm = timeOut: 3000, extendedTimeOut: 1000 # see duplex
+        pos = positionClass: "toast-top-left", closable: null
+        ntm = timeOut: 0, extendedTimeOut: 0, tapToDismiss: 0
+        xtm = timeOut: 3000, extendedTimeOut: 1000 # a duplex
         assert _.extend object, pos for object in [ntm, xtm]
         socket.on "connect", -> $(".toast-warning").remove()
         recon = _.debounce (-> toastr.info r, null, xtm), 500
