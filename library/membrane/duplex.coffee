@@ -269,6 +269,7 @@ module.exports.Duplex = class Duplex extends Preflight
         i = "please see browser console for information"
         p = "an exception happend at the server provider"
         c = "error raised during socket connection: %s, #{i}"
+        connected = "established connection at #{@location}"
         connecting = "attempting connection at #{@location}"
         disconnect = "lost socket connection at #{@location}"
         reconnecting = "attempting to reconnect at #{@location}"
@@ -277,6 +278,7 @@ module.exports.Duplex = class Duplex extends Preflight
         @socket.on "disconnect", -> logger.error disconnect
         @socket.on "connecting", -> logger.info connecting
         @socket.on "exception", (e) -> logger.error p, e
+        @socket.on "connect", -> logger.info connected
         @socket.on "error", (e) -> logger.error c, e
 
     # An external routine that will be invoked once a both way duplex
