@@ -55,6 +55,13 @@ module.exports.WatchedDuplex = class WatchedDuplex extends Duplex
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # This block here defines a set of Bower dependencies that are
+    # going to be necessary no matter what sort of functionality is
+    # is going to be implemented. Most of these libraries required
+    # by the internal implementations of the various subcomponents.
+    # Refer to `BowerSupport` class implementation for information.
+    @bower "toastr"
+
     # This method awaits for the `socketing` signal that is emited
     # by the `Duplex` implementation once it successfuly creates a
     # socket object. When that happens, this code sucks up to the
