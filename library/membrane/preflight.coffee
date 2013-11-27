@@ -214,6 +214,7 @@ module.exports.Preflight = class Preflight extends LToolkit
     @bower "loglevel"
     @bower "lodash"
     @bower "jquery"
+    @bower "toastr"
     @bower "chai"
 
     # This block here defines a set of remote dependencies that are
