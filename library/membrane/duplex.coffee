@@ -248,6 +248,7 @@ module.exports.Duplex = class Duplex extends Preflight
         try @socket = io.connect @duplex, options catch error
             message = "blew up Socket.IO: #{error.message}"
             error.message = message.toString(); throw error
+        @emit "socketing", this.socket, this.duplex, options
         failed = "failed to establish the Socket.IO connection"
         assert _.isFunction(@socket.emit), failed; @feedback()
         osc = (listener) => @socket.on "connect", listener
