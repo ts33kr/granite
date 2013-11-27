@@ -244,7 +244,10 @@ module.exports.Duplex = class Duplex extends Preflight
     # all the providers residing in the current service implementation.
     # Refer to other `Duplex` methods for understanding what goes on.
     bootloader: @autocall z: +101, ->
-        options = new Object reconnect: no, url: @duplex
+        options = new Object reconnect: yes, url: @duplex
+        _.extend options, "reconnection delay": 3000 # millis
+        _.extend options, "reconnection limit": 3000 # linear
+        _.extend options, "max reconnection attempts": 99999
         try @socket = io.connect @duplex, options catch error
             message = "blew up Socket.IO: #{error.message}"
             error.message = message.toString(); throw error

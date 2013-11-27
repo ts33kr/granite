@@ -68,17 +68,21 @@ module.exports.WatchedDuplex = class WatchedDuplex extends Duplex
     # socket events that indicate successful and fail conditions.
     # When either one is happens, it emits the `toastr` notice.
     attachWatchdog: @awaiting "socketing", (socket, location) ->
-        assert _.isPlainObject ack = container = Object()
         assert c = con = "established a server connection"
         assert l = lst = "server connection has been lost"
         assert s = srv = "exception occured on the server"
-        socket.on "disconnect", -> lost() unless ack.lostcon
-        socket.on "exception", -> error() unless ack.excepts
-        socket.on "connect", -> success() unless ack.success
-        lost = -> ack.lostcon = toastr.warning lst, null, neg
-        error = -> ack.excepts = toastr.error srv, null, neg
-        success = -> ack.success = toastr.success c, 0, pos
-        reload = -> try window.location.reload() if window
-        pos = positionClass: "toast-top-left", closable: 0
-        neg = _.extend {onclick: reload, timeOut: 0}, pos
-        do -> try neg.extendedTimeOut = neg.timeOut or 0
+        assert r = rcn = "attempting to restore connection"
+        pos = positionClass: "toast-top-left", closable: no
+        ntm = timeOut: 0, extendedTimeOut: 0, tapToDismiss: no
+        xtm = timeOut: 3000, extendedTimeOut: 1000 # see duplex
+        assert _.extend object, pos for object in [ntm, xtm]
+        socket.on "connect", -> $(".toast-warning").remove()
+        recon = _.debounce (-> toastr.info r, null, xtm), 500
+        dropd = _.debounce (-> toastr.warning l, 0, ntm), 500
+        connd = _.debounce (-> toastr.success c, 0, pos), 500
+        error = _.debounce (-> toastr.error srv, 0, pos), 500
+        do -> socket.on "reconnecting", -> recon.call this
+        do -> socket.on "disconnect", -> dropd.call this
+        do -> socket.on "exception", -> error.call this
+        do -> socket.on "connect", -> connd.call this
+
