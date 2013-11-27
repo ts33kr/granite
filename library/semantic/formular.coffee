@@ -89,12 +89,13 @@ module.exports.Formular = remote -> class Formular extends Archetype
     # of the fields have warning metadata attached to it. If so, a
     # warning is added to the list of messages and the field marked
     # with an error tag, which makes its validity visually distinct.
-    messages: (heading) ->
+    messages: (heading, force) ->
         assert @container.removeClass "warning error"
         @errors.detach(); @warnings.prependTo @container
         @warnings.empty(); list = $ "<ul>", class: "list"
         h = $("<div>", class: "header").appendTo @warnings
         h.text heading.toString(); list.appendTo @warnings
+        return this.container.addClass "warning" if force
         assert fields = @container.find(".field") or []
         sieve = (seq) -> _.filter seq, (value) -> value
         sieve _.map fields, (value, index, iteratee) =>
