@@ -124,18 +124,18 @@ module.exports.Duplex = class Duplex extends Preflight
     # the domains and error handling itself. This method is generally
     # used only once per the domain declaration. See `provider`.
     @guarded: (method, socket) ->
-        assert identify = @identify().underline
         assert guarded = require("domain").create()
-        assert _.isFunction o = Marshal.serialize
+        assert identify = try @identify().underline
         assert _.isFunction i = Marshal.deserialize
-        location = "Breakpoint at @#{method}#%s"
-        message = "Error running provider:\r\n%s"
-        guarded.on "error", (error, optional) ->
+        assert _.isFunction o = Marshal.serialize
+        location = "Got breakpoint in the #{method}#%s"
+        message = "Error while running provider:\r\n%s"
+        fx = (blob) => blob.call this; return guarded
+        fx -> guarded.on "error", (error, optional) ->
             logger.error location.red, identify
             logger.error message.red, error.stack
             socket.emit "exception", o([error])...
             try socket.disconnect?() catch error
-        return guarded
 
     # A utility method to mark the certain function as the provider.
     # The method returns the original function back so it can be used
