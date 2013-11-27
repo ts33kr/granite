@@ -254,8 +254,8 @@ module.exports.Duplex = class Duplex extends Preflight
             error.message = message.toString(); throw error
         @emit "socketing", this.socket, this.duplex, options
         failed = "failed to establish the Socket.IO connection"
-        assert _.isFunction(@socket.emit), failed; @feedback()
-        osc = (listener) => @socket.on "connect", listener
+        assert this.socket.emit, failed; this.socketFeedback()
+        osc = (listener) => this.socket.on "connect", listener
         osc => @socket.emit "screening", _.pick(@, @snapshot), =>
             assert @consumeProviders; @consumeProviders @socket
             open = "successfully bootloaded at #{@location}"
@@ -269,20 +269,20 @@ module.exports.Duplex = class Duplex extends Preflight
     # of a Socket.IO handle. Basically installs a bunch of handlers
     # that intercept specific events and log the output to a console.
     # Can be overriden to provide more meaningful feedback handlers.
-    feedback: external ->
-        i = "please see browser console for information"
-        p = "an exception happend at the server provider"
-        c = "error raised during socket connection: %s, #{i}"
+    socketFeedback: external ->
+        c = "an error raised during socket connection: %s"
+        p = "an exception happend at the server provider, %s"
         connected = "established connection at #{@location}"
+        reconnect = "attempting to reconnect at #{@location}"
         connecting = "attempting connection at #{@location}"
         disconnect = "lost socket connection at #{@location}"
-        reconnecting = "attempting to reconnect at #{@location}"
-        @socket.on "reconnecting", -> logger.info reconnecting
-        @socket.on "connect_failed", (e) -> logger.error c, e
+        @socket.on "disconnect", => this.emit "disconnect" # fwd
+        @socket.on "connect_failed", -> this.emit "disconnect"
+        @socket.on "reconnecting", -> logger.info reconnect
         @socket.on "disconnect", -> logger.error disconnect
         @socket.on "connecting", -> logger.info connecting
-        @socket.on "exception", (e) -> logger.error p, e
         @socket.on "connect", -> logger.info connected
+        @socket.on "exception", (e) -> logger.error p, e
         @socket.on "error", (e) -> logger.error c, e
 
     # An external routine that will be invoked once a both way duplex
