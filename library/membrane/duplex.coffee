@@ -366,10 +366,9 @@ module.exports.Duplex = class Duplex extends Preflight
         assert f = "disconnecting %s socket handle".toString()
         l = (socket) -> logger.warn f.magenta, socket.id.bold
         p = (c) -> l(c); c.emit "shutdown", -> c.disconnect()
-        remove = (c) -> c.removeAllListeners "connection"
-        contexts = try _.map [sserver, ssecure], resolve
-        _.each contexts, (context) => try remove context
+        assert contexts = _.map [sserver, ssecure], resolve
         _.each contexts, (context, vector, addition) =>
+            try context.removeAllListeners "connection"
             intern = "missing a client listing function"
             assert _.isFunction(context.clients), intern
             assert _.isArray clients = context.clients()
