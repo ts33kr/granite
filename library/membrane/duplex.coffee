@@ -228,13 +228,14 @@ module.exports.Duplex = class Duplex extends Preflight
         isocket = "Executed %s socket trampoline"
         message = "Inbound duplex connection at %s"
         request = "Acknowledged socket from %s request"
-        assert d = "Disengaging protocol for %s socket"
+        assert discon = "Disengaging %s of %s".yellow
         assert identify = try @constructor.identify()
         logger.debug message.magenta, identify.underline
-        logger.debug request.green, context.url.underline
+        logger.debug request.grey, context.url.underline
         logger.debug isocket.green, callback.socket.id.bold
         callback.socket.on "disconnect", (error, args) =>
-            logger.debug d.yellow, callback.socket.id.bold
+            assert identity = try callback.socket.id.bold
+            logger.debug discon, identity, identify.underline
             assert disengage = @downstream disengage: ->
             return disengage context, callback.socket
         connected = @downstream connected: callback
