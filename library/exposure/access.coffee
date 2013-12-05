@@ -74,6 +74,7 @@ module.exports.Access = class Access extends Barebones
             p.get = s.get = -> entity or undefined
             Object.defineProperty container, key, p
             Object.defineProperty session, key, p
+            @emit "ressurect", container, entity
             assert container[key]?; callback()
 
     # Authenticate supplied entity as the authorized entity against
@@ -99,6 +100,7 @@ module.exports.Access = class Access extends Barebones
             assert session.random = _.random 0, 1, yes
             logger.debug message.blue; session.touch()
             session.save => @dereference container, ->
+                @emit "hibernate", container, entity
                 return callback undefined, content
 
     # A hook that will be called prior to firing up the processing
@@ -112,6 +114,7 @@ module.exports.Access = class Access extends Barebones
         logger.debug "Ingition dereferencing at #{id}"
         success = "Got valid ignition entity at #{id}"
         try @dereference request, (error, supply) ->
+            @emit "entity-ignition", arguments...
             succeeded = _.isObject request.entity
             logger.debug success.green if succeeded
             return next undefined if _.isEmpty error
@@ -130,6 +133,7 @@ module.exports.Access = class Access extends Barebones
         logger.debug "Handshake dereferencing at #{id}"
         success = "Got valid handshake entity at #{id}"
         try @dereference handshake, (error, supply) ->
+            @emit "entity-handshake", arguments...
             succeeded = _.isObject handshake.entity
             logger.debug success.green if succeeded
             return next undefined if _.isEmpty error
