@@ -99,7 +99,7 @@ module.exports.Access = class Access extends Barebones
             session.cookie.maxAge = 2628000000 if rme
             assert session.random = _.random 0, 1, yes
             logger.debug message.blue; session.touch()
-            session.save => @dereference container, ->
+            session.save => @dereference container, =>
                 @emit "hibernate", container, entity
                 return callback undefined, content
 
