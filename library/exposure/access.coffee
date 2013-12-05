@@ -65,7 +65,7 @@ module.exports.Access = class Access extends Barebones
         return callback() unless content = session[sid]
         delete container[key] if _.has container, key
         @ressurectEntity ?= (xc, xn) -> xn null, xc
-        @ressurectEntity content, (error, entity) ->
+        @ressurectEntity content, (error, entity) =>
             format = (m) -> "ressurection error: #{m}"
             masked = format error.message if error
             return callback Error masked if error
@@ -113,7 +113,7 @@ module.exports.Access = class Access extends Barebones
         format = (m) -> "ingition access error: #{m}"
         logger.debug "Ingition dereferencing at #{id}"
         success = "Got valid ignition entity at #{id}"
-        try @dereference request, (error, supply) ->
+        try @dereference request, (error, supply) =>
             @emit "entity-ignition", arguments...
             succeeded = _.isObject request.entity
             logger.debug success.green if succeeded
@@ -132,7 +132,7 @@ module.exports.Access = class Access extends Barebones
         format = (m) -> "handshake access error: #{m}"
         logger.debug "Handshake dereferencing at #{id}"
         success = "Got valid handshake entity at #{id}"
-        try @dereference handshake, (error, supply) ->
+        try @dereference handshake, (error, supply) =>
             @emit "entity-handshake", arguments...
             succeeded = _.isObject handshake.entity
             logger.debug success.green if succeeded
