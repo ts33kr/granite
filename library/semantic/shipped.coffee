@@ -64,6 +64,7 @@ module.exports.Shipped = remote -> class Shipped extends Formular
     hidden: (identity, synopsis, icon) ->
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input = $ "<input>", type: "password"
+        assert _.isObject input.attr name: identity.toString()
         field = $("<div>", class: "field").appendTo @container
         wrap = $ "<div>", class: "icon input ui left labeled"
         input.on "input", -> do -> field.removeClass "error"
@@ -84,6 +85,7 @@ module.exports.Shipped = remote -> class Shipped extends Formular
     starred: (identity, synopsis, icon) ->
         assert _.isObject input = $ "<input>", type: "text"
         assert _.isObject label = $ "<label>", class: "label"
+        assert _.isObject input.attr name: identity.toString()
         field = $("<div>", class: "field").appendTo @container
         wrap = $ "<div>", class: "icon input ui left labeled"
         input.on "input", -> do -> field.removeClass "error"
@@ -105,6 +107,7 @@ module.exports.Shipped = remote -> class Shipped extends Formular
         assert _.isString what = "ui checkbox".toString()
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input = $ "<input>", type: "checkbox"
+        assert _.isObject input.attr name: identity.toString()
         field = $("<div>", class: "field").appendTo @container
         wrap = $ "<div>", class: what; field.addClass "inline"
         input.on "input", -> do -> field.removeClass "error"
@@ -122,6 +125,7 @@ module.exports.Shipped = remote -> class Shipped extends Formular
     regular: (identity, synopsis, icon) ->
         assert _.isObject input = $ "<input>", type: "text"
         assert _.isObject label = $ "<label>", class: "label"
+        assert _.isObject input.attr name: identity.toString()
         field = $("<div>", class: "field").appendTo @container
         wrap = $ "<div>", class: "icon input ui left labeled"
         input.on "input", -> do -> field.removeClass "error"
