@@ -115,7 +115,8 @@ module.exports.Restful = class Restful extends Service
         shadow = request.shadow or Object.create this
         execute = -> implement.apply shadow, capture
         return execute() if _.isObject request.shadow
-        assert _.isObject request.shadow = shadow
+        assert _.isObject try request.shadow = shadow
+        _.extend shadow, __isolated: yes, __origin: @
         _.extend shadow, response: try weak response
         _.extend shadow, request: try weak request
         s = get: -> try request.session or undefined
