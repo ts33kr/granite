@@ -80,11 +80,13 @@ module.exports.Policies = class Policies extends Barebones
     policy: (privilege, parameters..., callback) ->
         noCallback = "please supply a receiver callback"
         noPrivilege = "please supply a privilege string"
+        barebones = "this is not isolated or spinned off"
         assert _.isFunction(callback or 0), noCallback
         assert _.isString(privilege or 0), noPrivilege
         assert _.isArray(parameters), "signature error"
         assert _.isObject envelope = Object.create this
         assert qualifiers = @entityQualifiers? envelope
+        assert _.isObject(this.__origin or 0), barebones
         g = (z) -> z.inspector.apply envelope, parameters
         cmp = (sample) -> sample.toString() in qualifiers
         matches = (z, cb) -> envelope.decision = cb; g(z)
