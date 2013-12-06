@@ -107,7 +107,7 @@ module.exports.Restful = class Restful extends Service
     # under the shadow of the real service instance. The process is
     # idempotent. Please refer to the implementation of this method
     # and to the implementation of the `Duplex` for the information.
-    @spinoff: (implement) -> (req, res, trailings...) ->
+    @spinoff: (implement) -> (request, response, signed) ->
         message = "Spinned off HTTP request at %s"
         noImplement = "no valid implementation body"
         assert _.isFunction(implement), noImplement
@@ -116,11 +116,11 @@ module.exports.Restful = class Restful extends Service
         execute = -> implement.apply shadow, capture
         return execute() if _.isObject request.shadow
         assert _.isObject request.shadow = shadow
-        _.extend shadow, response: weak(res) or res
-        _.extend shadow, request: weak(req) or req
+        _.extend shadow, response: try weak response
+        _.extend shadow, request: try weak request
         s = get: -> try request.session or undefined
         e = get: -> try request.entity or undefined
-        logger.debug message.grey, req.url.toString()
+        logger.debug message.grey, try request.url
         Object.defineProperty shadow, "session", s
         Object.defineProperty shadow, "entity", e
         @emit "spinoff", capture...; execute()
@@ -164,10 +164,10 @@ module.exports.Restful = class Restful extends Service
     # to the RFC, and if so, dispatch it onto corresponding method
     # defined in the subclass of this abstract base class. Default
     # implementation of each method will throw a not implemented.
-    process: (request, response, next) ->
+    process: @spinoff (request, response, next) ->
         method = request.method.toUpperCase()
-        assert _.isPlainObject tokens = super
         known = method in @constructor.SUPPORTED
+        tokens = Service::process.apply @, arguments
         return @unsupported arguments... unless known
         missing = "a #{method} method not implemented"
         throw new Error missing unless method of this
