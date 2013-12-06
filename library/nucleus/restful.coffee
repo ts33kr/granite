@@ -107,7 +107,7 @@ module.exports.Restful = class Restful extends Service
     # under the shadow of the real service instance. The process is
     # idempotent. Please refer to the implementation of this method
     # and to the implementation of the `Duplex` for the information.
-    @spinoff: (implement) -> (req, res, rs, dm) ->
+    @spinoff: (implement) -> (req, res, trailings...) ->
         message = "Spinned off HTTP request at %s"
         noImplement = "no valid implementation body"
         assert _.isFunction(implement), noImplement
@@ -118,7 +118,6 @@ module.exports.Restful = class Restful extends Service
         assert _.isObject request.shadow = shadow
         _.extend shadow, response: weak(res) or res
         _.extend shadow, request: weak(req) or req
-        _.extend shadow, resources: rs, domains: dm
         s = get: -> try request.session or undefined
         e = get: -> try request.entity or undefined
         logger.debug message.grey, req.url.toString()
