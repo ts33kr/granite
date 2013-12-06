@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 url = require "url"
 http = require "http"
 util = require "util"
+weak = require "weak"
 async = require "async"
 assert = require "assert"
 colors = require "colors"
@@ -99,6 +100,31 @@ module.exports.Restful = class Restful extends Service
         assert implement.length >= 3, wrongSignature
         assert _.isArray inherited = @$middleware or []
         @$middleware = inherited.concat implement; @
+
+    # An experimental spinoff engine that is based on the isolated
+    # providers concept. Basically, an HTTP verb or the middleware
+    # that is decorated with this method will be isolated to be run
+    # under the shadow of the real service instance. The process is
+    # idempotent. Please refer to the implementation of this method
+    # and to the implementation of the `Duplex` for the information.
+    @spinoff: (implement) -> (req, res, rs, dm) ->
+        message = "Spinned off HTTP request at %s"
+        noImplement = "no valid implementation body"
+        assert _.isFunction(implement), noImplement
+        assert _.isArguments capture = arguments or 0
+        shadow = request.shadow or Object.create this
+        execute = -> implement.apply shadow, capture
+        return execute() if _.isObject request.shadow
+        assert _.isObject request.shadow = shadow
+        _.extend shadow, response: weak(res) or res
+        _.extend shadow, request: weak(req) or req
+        _.extend shadow, resources: rs, domains: dm
+        s = get: -> try request.session or undefined
+        e = get: -> try request.entity or undefined
+        logger.debug message.grey, req.url.toString()
+        Object.defineProperty shadow, "session", s
+        Object.defineProperty shadow, "entity", e
+        @emit "spinoff", capture...; execute()
 
     # This method is intended for indicating to a client that the
     # method that has been used to make the request is not supported
