@@ -28,12 +28,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 {Preflight} = require "../membrane/preflight"
 {GoogleFonts} = require "../exposure/fonting"
 
-# This is an abstract base class compound that exhibist the zombi
-# behavior. It is intended as the abstraction to build windowed
-# auxiliary services upon it. Basically, if you have an service
+# This is an abstract base class compound that exhibist the zombie
+# behavior. It is intended as the abstraction to build window-ish
+# auxiliary services upon it. Basically, if you have thhe service
 # that needs to be presented as a window (modal) and is used like
 # zombie, then this class can be used to reduce the boilerplate.
-module.exports.WindowLike = class WindowLike extends Zombie
+module.exports.ModalBased = class ModalBased extends Zombie
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
