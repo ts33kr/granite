@@ -123,7 +123,7 @@ module.exports.Publish = class Publish extends Barebones
     # of the resource. Use for unobtrusive retrieval of resources.
     # The method is an HTTP verb, coherent with the REST interface.
     GET: (request, response, resource, domain, session) ->
-        @push response, _.map request.records, (record) ->
+        @push _.map @request.records, (record, records) ->
             constructor = record.service.constructor
             assert docs = record.methods or Array()
             assert resources = constructor.resources

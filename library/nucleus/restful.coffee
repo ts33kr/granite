@@ -192,38 +192,40 @@ module.exports.Restful = class Restful extends Service
     # embed the rejection information inside of itself. Optionally
     # you can supply the HTTP code that corresponds to a rejection.
     # Please use this methods rather than sending errors directly!
-    reject: (response, content, code, keepalive) ->
+    reject: (content, code, keepalive) ->
         code = 400 unless _.isNumber code or null
         noContent = "the content has to be an object"
         corrupted = "response prototype is corrupted"
-        assert _.isObject(response), "got no response"
-        assert _.isFunction(response.send), corrupted
+        assert _.isObject(@response), "got no response"
+        assert _.isFunction(@response.send), corrupted
         assert _.isObject(content or null), noContent
-        upload = -> return response.send code, content
-        try this.emit.call this, "reject", arguments...
+        assert this.__isolated, "broken spin off engine"
+        @emit "reject", @response, content, code, keepalive
+        upload = => return @response.send code, content
         prerejection = @downstream prerejection: =>
             process.nextTick -> do -> try upload()
             postrejection = @downstream postrejection: ->
-            postrejection.call this, response, content
-        return prerejection response, content
+            return postrejection @response, content
+        return prerejection @response, content
 
     # Push the supplied content to the requester by utilizing the
     # response object. This is effectively the same as calling the
     # `response.send` directly, but this method is wired into the
     # system of service hooks. Refer to the original sender for
     # more information on how the content is encoded and passed.
-    push: (response, content, code, keepalive) ->
+    push: (content, code, keepalive) ->
         code = 200 unless _.isNumber code or null
-        ok = _.isArray(content) or _.isObject(content)
         corrupted = "a response prototype is corrupted"
         carrier = "has to be either an object or array"
-        assert _.isObject(response), "got no response"
-        assert _.isFunction(response.send), corrupted
+        ok = _.isArray(content) or _.isObject(content)
+        assert _.isObject(@response), "got no response"
+        assert _.isFunction(@response.send), corrupted
         assert content and ok is yes, carrier.toString()
-        try this.emit.call this, "push", arguments...
-        upload = -> return response.send code, content
+        assert this.__isolated, "broken spin off engine"
+        @emit "push", @response, content, code, keepalive
+        upload = => return @response.send code, content
         assert prepushing = @downstream prepushing: =>
             process.nextTick -> do -> try upload()
             postpushing = @downstream postpushing: ->
-            postpushing.call this, response, content
-        return prepushing response, content
+            return postpushing @response, content
+        return prepushing @response, content
