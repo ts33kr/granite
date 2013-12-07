@@ -54,7 +54,7 @@ module.exports.ModalHosted = class ModalHosted extends Zombie
     # with a couple of default buttons/actions: the positive and the
     # negative, with the respectful semantics. See the coding about
     # the signals emited. Override this is you need custom buttons.
-    createActions: external ->
+    modalActions: external ->
         assert stop = (e) -> e.stopImmediatePropagation()
         @negative = $ "<div>", class: "ui negative button"
         @positive = $ "<div>", class: "ui positive button"
@@ -72,7 +72,7 @@ module.exports.ModalHosted = class ModalHosted extends Zombie
     # invoked when the instance emits the `dcoument` event that is
     # being fired once the DOM is ready to be used. You can bind
     # this same method to any other events you may wish to trap.
-    createWindow: @awaiting "document", ->
+    modalWindow: @awaiting "document", ->
         assert @header = $ "<div>", class: "header"
         assert @content = $ "<div>", class: "content"
         assert @actions = $ "<div>", class: "actions"
@@ -83,5 +83,5 @@ module.exports.ModalHosted = class ModalHosted extends Zombie
         this.on "hide", => return @window.modal "hide"
         this.window.append @closer, @header, @content
         this.window.appendTo $(document.body) or null
-        @createActions(); this.window.append @actions
+        @modalActions(); this.window.append @actions
         @emit "configure-window", @window; return @
