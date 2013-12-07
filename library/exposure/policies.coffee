@@ -78,9 +78,9 @@ module.exports.Policies = class Policies extends Barebones
     # arbitrary params that will be passed to each conditionals.
     # The trailing argument must be a callback accepting result.
     policy: (privilege, parameters..., callback) ->
+        barebones = "scope not isolated or spinned off"
         noCallback = "please supply a receiver callback"
         noPrivilege = "please supply a privilege string"
-        barebones = "this is not isolated or spinned off"
         assert _.isFunction(callback or 0), noCallback
         assert _.isString(privilege or 0), noPrivilege
         assert _.isArray(parameters), "signature error"
