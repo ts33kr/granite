@@ -51,7 +51,7 @@ module.exports.Semantic = class Semantic extends Preflight
     # site. The fonts are employed by the means of the external CSS
     # stylesheet. However, the fonts are requested, downloaded and
     # setup with help of Google Fonts API and a corresponding class
-    # that implement the functionality, which is the `GooglFonts`.
+    # that implement the functionality, which is the `GoogleFonts`.
     @googlefont "Open Sans", "300italic", 300, 400, 700
     @googlefont "Source Sans Pro", 300, 400, 700
 
