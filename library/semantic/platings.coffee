@@ -44,6 +44,23 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # This method is invoked once the `success` event goes off in
+    # the sercvice. This event could be fired after the component
+    # receives a response after the form submission, if it was a
+    # success. This implementation hides the actualy form, shows
+    # the generic acknowledgement memo regarding succeeded form.
+    respondedWithSuccess: @awaiting "success", ->
+        this.paragraph.text "The information you entered in
+        to the form has been successfully submitted. Please
+        press the okay button to close this window and carry
+        on whatever you were doing prior to filling a form."
+        acknowledge = $ "<div>", class: "ui positive button"
+        acknowledge.append $ "<i>", class: "checkmark icon"
+        assert acknowledge.addClass "right labeled icon"
+        $(acknowledge).click => this.window.modal "hide"
+        acknowledge.prepend $("<span>").text "okay"
+        acknowledge.appendTo @actions; return this
+
     # This method is invoked once the `positive` event goes off in
     # the service. This event is fired once the positive action is
     # actived. That usually means a user pressing the okay button.
@@ -83,20 +100,3 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
         @forms = new Shipped @content, "sign-up-form"
         @emit "populate-form", disabler, enabler
         @on "negative", => try closer().click()
-
-    # This method is invoked once the `success` event goes off in
-    # the sercvice. This event could be fired after the component
-    # receives a response after the form submission, if it was a
-    # success. This implementation hides the actualy form, shows
-    # the generic acknowledgement memo regarding succeeded form.
-    respondedWithSuccess: @awaiting "success", ->
-        this.paragraph.text "The information you entered in
-        to the form has been successfully submitted. Please
-        press the okay button to close this window and carry
-        on whatever you were doing prior to filling a form."
-        acknowledge = $ "<div>", class: "ui positive button"
-        acknowledge.append $ "<i>", class: "checkmark icon"
-        assert acknowledge.addClass "right labeled icon"
-        $(acknowledge).click => this.window.modal "hide"
-        acknowledge.prepend $("<span>").text "okay"
-        acknowledge.appendTo @actions; return this
