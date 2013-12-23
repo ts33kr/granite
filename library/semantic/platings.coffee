@@ -44,12 +44,12 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
-    # This method is invoked once the `success` event goes off in
-    # the sercvice. This event could be fired after the component
+    # This method is invoked once the `successful` event goes off
+    # at a service. This event could be fired after the component
     # receives a response after the form submission, if it was a
     # success. This implementation hides the actualy form, shows
     # the generic acknowledgement memo regarding succeeded form.
-    respondedWithSuccess: @awaiting "success", ->
+    respondedWithSuccess: @awaiting "successful", ->
         this.paragraph.text "The information you entered in
         to the form has been successfully submitted. Please
         press the okay button to close this window and carry
