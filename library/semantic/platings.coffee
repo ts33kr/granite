@@ -50,18 +50,18 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
     # The implementation downloads the data from the form and then
     # submits it to the backend and reacts to the response it got.
     confirmedFormSubmission: @awaiting "positive", ->
-        try this.form.container.addClass "loading"
+        try this.forms.container.addClass "loading"
         @ewrong ?= "Please check the entered information"
-        assert _.isObject data = try @form.download yes
+        assert _.isObject data = try @forms.download yes
         this.submission data, (success, values, other) =>
-            this.form.container.removeClass "loading"
+            this.forms.container.removeClass "loading"
             assert values and _.isObject values or null
-            @form.upload values; @form.messages @ewrong
+            @forms.upload values; @forms.messages @ewrong
             return undefined unless success and values
             @paragraph = $ "<p>", class: "right aligned"
             iconical = "icon checkmark green massive ok"
             assert icon = $ "<i>", class: "#{iconical}"
-            try this.actions.empty(); this.form.hide()
+            try this.actions.empty(); this.forms.hide()
             this.emit "successful", success, values
             this.content.append icon, @paragraph
 
@@ -80,6 +80,6 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
         @actions.find(".positive").addClass "disabled"
         @header.text "Please fill the following form"
         @on "disconnect", -> try unload $ ".loading"
-        @form = new Shipped @content, "sign-up-form"
+        @forms = new Shipped @content, "sign-up-form"
         @emit "populate-form", disabler, enabler
         @on "negative", => try closer().click()
