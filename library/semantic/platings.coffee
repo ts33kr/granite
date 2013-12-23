@@ -70,7 +70,7 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
         try this.forms.container.addClass "loading"
         @ewrong ?= "Please check the entered information"
         assert _.isObject data = try @forms.download yes
-        this.issueSubmission data, (success, values) =>
+        this.issuedSubmission data, (success, values) =>
             this.forms.container.removeClass "loading"
             assert values and _.isObject values or null
             @forms.upload values; @forms.messages @ewrong
