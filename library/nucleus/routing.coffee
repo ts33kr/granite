@@ -53,8 +53,10 @@ module.exports.Router = class Router extends Archetype
     middleware: (request, response, next) ->
         assert incoming = "#{request.url.underline}"
         p = (i, c) -> i.matches request, response, c
+        final = (service) -> service.abstract() is no
         signature = arguments if _.isArguments arguments
-        async.detectSeries @registry, p, (recognized) =>
+        implemented = _.toArray _.filter @registry, final
+        async.detectSeries implemented, p, (recognized) =>
             missing = "Request %s does not match any service"
             logger.debug missing.grey, incoming unless recognized?
             return next undefined unless _.isObject recognized
