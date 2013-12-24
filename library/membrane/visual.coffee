@@ -90,6 +90,21 @@ module.exports.Screenplay = class Screenplay extends Barebones
             return format t, JSON.stringify event
         method.remote.meta.event = event; method
 
+    # The exclusive directive is a lot like `awaiting`, except it
+    # removes all the event listeners that could have been binded
+    # to the event. And only once that has been done, it binds the
+    # supplied listener to the event, which will make it the only
+    # listener of that event at the point of a method invocation.
+    @exclusive: (event, method) ->
+        assert method = @awaiting event, method
+        method.remote.auto = (symbol, key) -> ->
+            k = "#{symbol}.removeAllListeners(%s)"
+            t = "#{symbol}.on(%s, #{symbol}.#{key})"
+            binder = format t, JSON.stringify event
+            killer = format k, JSON.stringify event
+            "(#{killer}; #{binder})".toString()
+        method.remote.meta.event = event; method
+
     # The awaiting directive is a lot like `autocall`, except the
     # implementation will not be immediatelly , but rather when the
     # specified signal is emited on the $root main service context
