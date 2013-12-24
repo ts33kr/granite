@@ -45,7 +45,7 @@ compose = require "./../nucleus/compose"
 {STATUS_CODES} = require "http"
 {Barebones} = require "./skeleton"
 {remote, external} = require "./remote"
-{Surrogate} = require "./surrogate"
+{VisualBillet} = require "./billets"
 {coffee} = require "./runtime"
 
 # This is an abstract service that provides the unique functionality
@@ -53,7 +53,7 @@ compose = require "./../nucleus/compose"
 # its dependencies, such as classes and class hierarchies and even more.
 # This ABC constitutes a primary tool for writing UI/UX with Granite.
 # Please consult the implementation for more information on the system.
-module.exports.Screenplay = class Screenplay extends Surrogate
+module.exports.Screenplay = class Screenplay extends VisualBillet
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
