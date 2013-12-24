@@ -45,6 +45,7 @@ compose = require "./../nucleus/compose"
 {STATUS_CODES} = require "http"
 {Barebones} = require "./skeleton"
 {remote, external} = require "./remote"
+{Surrogate} = require "./surrogate"
 {coffee} = require "./runtime"
 
 # This is an abstract service that provides the unique functionality
@@ -52,7 +53,7 @@ compose = require "./../nucleus/compose"
 # its dependencies, such as classes and class hierarchies and even more.
 # This ABC constitutes a primary tool for writing UI/UX with Granite.
 # Please consult the implementation for more information on the system.
-module.exports.Screenplay = class Screenplay extends Barebones
+module.exports.Screenplay = class Screenplay extends Surrogate
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -61,101 +62,11 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
-    # Use this static method to mark up the remote/external methods
-    # that need to be automaticalled called, once everything is set
-    # on the client site and before the entrypoint gets executed. It
-    # is a get idea to place generic or setup code in the autocalls.
-    # Refer to `inlineAutocalls` method for params interpretation.
-    @autocall: (parameters, method) ->
-        isRemote = _.isObject method?.remote
-        notFunction = "no function is passed in"
-        method = _.find arguments, _.isFunction
-        method = external method unless isRemote
-        assert _.isFunction(method), notFunction
-        parameters = {} unless _.isObject parameters
-        method.remote.autocall = parameters; method
-
-    # The awaiting directive is a lot like `autocall`, except the
-    # implementation will not be immediatelly , but rather when the
-    # specified signal is emited on the current context (service)
-    # object. Effectively, it is the same as creating the autocall
-    # that explicitly binds the event using `on` with the context.
-    @awaiting: (event, method) ->
-        invalidEvent = "an invalid event supplied"
-        assert not _.isEmpty(event), invalidEvent
-        assert method = @autocall Object(), method
-        assert _.isObject method.remote.autocall
-        method.remote.auto = (symbol, key) -> ->
-            t = "#{symbol}.on(%s, #{symbol}.#{key})"
-            return format t, JSON.stringify event
-        method.remote.meta.event = event; method
-
-    # The exclusive directive is a lot like `awaiting`, except it
-    # removes all the event listeners that could have been binded
-    # to the event. And only once that has been done, it binds the
-    # supplied listener to the event, which will make it the only
-    # listener of that event at the point of a method invocation.
-    @exclusive: (event, method) ->
-        assert method = @awaiting event, method
-        fx = (fn) -> method.remote.auto = fn; method
-        fx method.remote.auto = (symbol, key) -> ->
-            k = "#{symbol}.removeAllListeners(%s)"
-            t = "#{symbol}.on(%s, #{symbol}.#{key})"
-            binder = format t, JSON.stringify event
-            killer = format k, JSON.stringify event
-            "(#{killer}; #{binder})".toString()
-
-    # The awaiting directive is a lot like `autocall`, except the
-    # implementation will not be immediatelly , but rather when the
-    # specified signal is emited on the $root main service context
-    # object. Effectively, it is the same as creating the autocall
-    # that explicitly binds the event using `on` with the context.
-    @synchronize: (event, method) ->
-        invalidEvent = "an invalid event supplied"
-        assert not _.isEmpty(event), invalidEvent
-        assert method = @autocall Object(), method
-        assert _.isObject method.remote.autocall
-        select = "$root".toString().toLowerCase()
-        method.remote.auto = (symbol, key) -> ->
-            t = "#{select}.on(%s, #{symbol}.#{key})"
-            return format t, JSON.stringify event
-        method.remote.meta.event = event; method
-
-    # This server side method is called on the context prior to the
-    # context being compiled and flushed down to the client site. The
-    # method is wired in an synchronous way for greater functionality.
-    # This is the place where you would be importing the dependencies.
-    # Pay attention that most implementations side effect the context.
-    prelude: (symbol, context, request, next) ->
-        context.service = @constructor.identify()
-        context.params = request.params or {}
-        context.uuid = request: request.uuid
-        context.qualified = @qualified()
-        context.location = @location()
-        context.uuid.service = @uuid
-        context.url = request.url
-        return next.call this
-
-    # Use this method in the `prelude` scope to bring dependencies into
-    # the scope. This method supports JavaScript scripts as a link or
-    # JavaScript sources passed in as the remote objects. Please refer
-    # to the implementation and the class for more information on it.
-    inject: (context, subject, symbol) ->
-        assert caching = context.caching ?= new Object()
-        scripts = -> assert context.scripts.push subject
-        sources = -> assert context.sources.push compile()
-        compile = -> subject.remote.compile caching, symbol
-        invalid = "not a remote object and not a JS link"
-        assert _.isObject(context), "got invalid context"
-        compilable = _.isFunction subject.remote?.compile
-        return scripts.call this if _.isString subject
-        return sources.call this if compilable
-        throw new Error invalid.toString()
-
     # This is an internal routine that performs the task of compiling
     # a screenplay context into a valid HTML document to be rendered
     # and launched on the client (browser side). Please refer to the
     # implementation for greater understanding of what it does exactly.
+    # The resulting value is a string with compiled JavaScript code.
     compileContext: (context) ->
         meta = (content) -> "\r\n<meta #{content.toString()}>"
         script = (s) -> "\r\n<script src=\x22#{s}\x22></script>"
@@ -177,8 +88,9 @@ module.exports.Screenplay = class Screenplay extends Barebones
 
     # This is an internal routine that performs a very important task
     # of deploying the context onto the call (client) site. It also
-    # includes merging all the remoted defined in the services with a
+    # includes merging all the remotes defined in the services with a
     # context object, which is defered to be done on the client site.
+    # It basically embedds all the internals pieces to create context.
     deployContext: (context, symbol) ->
         assert _.isObject(context), "malformed context"
         aexcess = ["scripts", "sources", "sheets", "styles"]
@@ -206,6 +118,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # from top to bottom (the ordering is important) and issue an
     # autocall for each remote/external method that is marked with
     # an autocall decorator and therefore must be called on site.
+    # Please refer to the code for info, it is not very linear.
     inlineAutocalls: (context, symbol) ->
         hierarchy = @constructor?.hierarchy?()
         noHierarchy = "could not scan the hierarchy"
