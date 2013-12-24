@@ -97,13 +97,13 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # listener of that event at the point of a method invocation.
     @exclusive: (event, method) ->
         assert method = @awaiting event, method
-        method.remote.auto = (symbol, key) -> ->
+        fx = (fn) -> method.remote.auto = fn; method
+        fx method.remote.auto = (symbol, key) -> ->
             k = "#{symbol}.removeAllListeners(%s)"
             t = "#{symbol}.on(%s, #{symbol}.#{key})"
             binder = format t, JSON.stringify event
             killer = format k, JSON.stringify event
             "(#{killer}; #{binder})".toString()
-        method.remote.meta.event = event; method
 
     # The awaiting directive is a lot like `autocall`, except the
     # implementation will not be immediatelly , but rather when the
