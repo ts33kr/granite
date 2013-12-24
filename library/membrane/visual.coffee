@@ -53,6 +53,7 @@ compose = require "./../nucleus/compose"
 # its dependencies, such as classes and class hierarchies and even more.
 # This ABC constitutes a primary tool for writing UI/UX with Granite.
 # Please consult the implementation for more information on the system.
+# Also, please reference parent class for the important external APIs.
 module.exports.Screenplay = class Screenplay extends VisualBillet
 
     # This is a marker that indicates to some internal subsystems
