@@ -63,7 +63,7 @@ module.exports.Duplex = class Duplex extends Preflight
     @abstract yes
 
     # A usable hook that gets asynchronously invoked once a new
-    # channel (socket) gets connected and acknowledges by the server.
+    # channel (socket) gets connected and acknowledged by a server.
     # The method gets a set of parameters that maybe be useful to
     # have by the actual implementation. Please remember thet the
     # method is asynchronously wired, so be sure to call `next`.
