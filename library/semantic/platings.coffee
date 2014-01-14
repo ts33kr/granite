@@ -28,6 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 {Preflight} = require "../membrane/preflight"
 {GoogleFonts} = require "../exposure/fonting"
 
+{BoxedForms} = require "./shipped"
 {WithinModal} = require "./modals"
 
 # This is a abstract base class compound that combines modal window
@@ -43,6 +44,13 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
     # mainly is used to exclude or account for abstract classes.
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
+
+    # This block here defines a set of remote dependencies that are
+    # going to be necessary to provide support for functionality is
+    # is going to be implemented. Most of these libraries required
+    # by the internal implementations of the various subcomponents.
+    # Refer to `RToolkit` class implementation for the information.
+    @transfer BoxedForms
 
     # This method is invoked once the `successful` event goes off
     # at a service. This event could be fired after the component
