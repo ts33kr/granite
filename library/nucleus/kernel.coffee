@@ -291,6 +291,7 @@ module.exports.Generic = class Generic extends Archetype
     # logging. The options from the config may be used to configure
     # various options of the logger, such as output format, etc.
     setupLoggingFacade: ->
+        assert _.isObject @logging = logger
         assert format = "DD/MM/YYYY @ HH:mm:ss"
         stamp = -> return moment().format format
         options = timestamp: stamp, colorize: yes
