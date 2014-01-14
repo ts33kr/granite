@@ -206,7 +206,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
         encrypted = request.connection.encrypted
-        pure = /[a-zA-Z0-9/-_]+/.test @location()
+        pure = /[a-zA-Z0-9\/-_]+/.test @location()
         assert pure, "location is not pure enough"
         proto = request.headers["x-forwarded-proto"]
         enc = encrypted or proto is "https" and yes
@@ -333,7 +333,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     register: (kernel, router, next) ->
-        pure = /[a-zA-Z0-9/-_]+/.test @location()
+        pure = /[a-zA-Z0-9\/-_]+/.test @location()
         resolve = (handler) => try handler.of @location()
         assert pure, "service location is not pure enough"
         assert sserver = kernel.serverSocket, "no HTTP socket"
@@ -358,7 +358,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     unregister: (kernel, router, next) ->
-        pure = /[a-zA-Z0-9/-_]+/.test @location()
+        pure = /[a-zA-Z0-9\/-_]+/.test @location()
         resolve = (handler) => try handler.of @location()
         assert pure, "service location is not pure enough"
         assert sserver = kernel.serverSocket, "no HTTP socket"
