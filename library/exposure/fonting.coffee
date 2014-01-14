@@ -66,7 +66,7 @@ module.exports.GoogleFonts = class GoogleFonts extends Preflight
         assert _.isArray(googlefonts), "invalid fonts"
         assert googlefonts = try googlefonts.reverse()
         j = (strc) -> return strc.typographs.join ","
-        t = "http://fonts.googleapis.com/css?family=%s"
+        t = "https://fonts.googleapis.com/css?family=%s"
         foldtyp = (x) -> family: x.family, joined: j(x)
         infusor = (fx) -> "#{fx.family}:#{fx.joined}"
         extract = (record) -> try return record.family

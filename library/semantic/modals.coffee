@@ -79,7 +79,7 @@ module.exports.WithinModal = class WithinModal extends Zombie
         assert this.window = $ "<div>", class: "ui modal"
         assert this.closer = $ "<i>", class: "close icon"
         @assembleModalActions(); @window.append @actions
-        this.window.append @closer, @header, @content
+        this.window.prepend @closer, @header, @content
         this.window.appendTo $(document.body) or null
         this.on "toggle", => this.window.modal "toggle"
         this.on "show", => return @window.modal "show"
