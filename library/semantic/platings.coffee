@@ -93,10 +93,10 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
         enabler = -> selector().removeClass "disabled"
         selector = => @window.find ".positive.button"
         closer = => return @window.find ".close.icon"
+        @forms = new BoxedForms @content, "sign-up-form"
         @window.addClass "modal-form semantic-flavour"
         @actions.find(".positive").addClass "disabled"
         @header.text "Please fill the following form"
         @on "disconnect", -> try unload $ ".loading"
-        @forms = new Shipped @content, "sign-up-form"
         @emit "populate-form", disabler, enabler
         @on "negative", => try closer().click()
