@@ -72,8 +72,8 @@ module.exports.Composition = cc -> class Composition extends Object
     # Use `async` error propagation mechanism to break out of stream.
     Object.defineProperty Object::, "downstream",
         enumerable: no, value: (def) -> (args...) =>
-            fx = (f) => (a...) => f.apply @, cc(a)
-            cc = (a) -> _.toArray(args).concat(a)
+            cca = (a) -> _.toArray(args).concat(a)
+            fxc = (f) => (a...) => f.apply @, cca(a)
             malformed = "no POJO style definition"
             assert _.isPlainObject def, malformed
             assert targeted = _.head _.keys def
@@ -84,7 +84,7 @@ module.exports.Composition = cc -> class Composition extends Object
             assert threads = _.map hierarchy, resolve
             methods = _.filter threads, _.isFunction
             prepped = _.unique methods.reverse()
-            applied = _.map prepped, (fn) -> fx fn
+            applied = _.map prepped, (fn) -> fxc fn
             bounded = callback?.bind(this) or (->)
             return async.series applied, bounded
 
@@ -96,8 +96,8 @@ module.exports.Composition = cc -> class Composition extends Object
     # Use `async` error propagation mechanism to break out of stream.
     Object.defineProperty Object::, "upstream",
         enumerable: no, value: (def) -> (args...) =>
-            fx = (f) => (a...) => f.apply @, cc(a)
-            cc = (a) -> _.toArray(args).concat(a)
+            cca = (a) -> _.toArray(args).concat(a)
+            fxc = (f) => (a...) => f.apply @, cca(a)
             malformed = "no POJO style definition"
             assert _.isPlainObject def, malformed
             assert targeted = _.head _.keys def
@@ -108,7 +108,7 @@ module.exports.Composition = cc -> class Composition extends Object
             assert threads = _.map hierarchy, resolve
             methods = _.filter threads, _.isFunction
             prepped = _.toArray _.unique methods
-            applied = _.map prepped, (fn) -> fx fn
+            applied = _.map prepped, (fn) -> fxc fn
             bounded = callback?.bind(this) or (->)
             return async.series applied, bounded
 
