@@ -27,7 +27,7 @@ _ = require "lodash"
 assert = require "assert"
 
 {Zombie} = require "../nucleus/zombie"
-{remote} = require "../membrane/remote"
+{remote, cc} = require "../membrane/remote"
 {Archetype} = require "../nucleus/archetype"
 {Preflight} = require "../membrane/preflight"
 {GoogleFonts} = require "../exposure/fonting"
@@ -37,7 +37,7 @@ assert = require "assert"
 # working with the forms that are presented to take in and process
 # the user entered data, structured in a certain, prediciatable way.
 # Please refer to the implementation for information on how to use.
-module.exports.Formular = remote -> class Formular extends Archetype
+module.exports.Formular = cc -> class Formular extends Archetype
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

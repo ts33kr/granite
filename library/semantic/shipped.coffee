@@ -24,7 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 {Zombie} = require "../nucleus/zombie"
-{remote} = require "../membrane/remote"
+{remote, cc} = require "../membrane/remote"
 {Archetype} = require "../nucleus/archetype"
 {Preflight} = require "../membrane/preflight"
 {GoogleFonts} = require "../exposure/fonting"
@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # shipped controls (field and inputs) cobered in the Semantic manual.
 # Plese refer to the implementation for the usage information. Also,
 # see the methods to get the idea of what is available and what not.
-module.exports.Shipped = remote -> class Shipped extends Formular
+module.exports.Shipped = cc -> class Shipped extends Formular
 
     # Group the two previously created fields (passed by either as
     # direct object or the selectors) into a one horizontal field
