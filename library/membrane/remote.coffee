@@ -37,34 +37,12 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-# An internal method that will be bolted on the remote objects.
-# Knows how to compile the citizens to be transferred onto the
-# foreign environments under the specified or inherited symbol.
-# Please refer to the implementation for greater understanding!
-# The method knows how to recursively compile class hierarchies.
-compiler = module.exports.compiler = (caching, symbol) ->
-    noSymbol = "a symbol must be non empty"
-    @symbol = symbol unless _.isEmpty symbol
-    assert not _.isEmpty(@symbol), noSymbol
-    return new String if @symbol of caching
-    f = => "var #{@symbol} = (#{@source})()"
-    return f() unless _.isObject @compiled
-    hierarchy = try @compiled.hierarchy?()
-    assert _.isArray(hierarchy), "no hierarchy"
-    hasRemote = (val) -> _.isObject val.remote
-    compilation = (x) -> x.remote.compile caching
-    areRemote = _.filter hierarchy, hasRemote
-    compiled = _.map areRemote, compilation
-    bases = compiled.reverse().join EOL + EOL
-    assembled = "#{bases}#{EOL + EOL}#{f()}"
-    return caching[@symbol] = assembled
-
 # A decorator style of routine that is used to capture the
 # source code of classes, functions and other first class
 # citizens for later transportation on the other environment.
 # Typically this would be the browser JS engine environment.
 # Call it with an empty function argument wrapping target.
-remote = module.exports.remote = (wrapper) ->
+module.exports.remote = module.exports.cc = (wrapper) ->
     noWrapper = "wrapper must be a function"
     invalidArgs = "wrapper cannot have arguments"
     assert _.isFunction(wrapper), noWrapper
@@ -86,7 +64,7 @@ remote = module.exports.remote = (wrapper) ->
 # arguments functional closure over the compiled routines that is
 # only necessary for properly capturing classes. Please refer to
 # the `remote` method for info, since it is relevant here as well.
-external = module.exports.external = (compiled) ->
+module.exports.external = module.exports.ec = (compiled) ->
     notFunction = "a compiled is not a function"
     wrongCompiled = "using external with classes"
     assert.ok _.isFunction(compiled), notFunction
@@ -99,3 +77,25 @@ external = module.exports.external = (compiled) ->
     assert compiled.remote.meta ?= Object()
     compiled.remote.symbol = compiled.name
     assert _.isFunction compiled; compiled
+
+# An internal method that will be bolted on the remote objects.
+# Knows how to compile the citizens to be transferred onto the
+# foreign environments under the specified or inherited symbol.
+# Please refer to the implementation for greater understanding!
+# The method knows how to recursively compile class hierarchies.
+compiler = module.exports.compiler = (caching, symbol) ->
+    noSymbol = "a symbol must be non empty"
+    @symbol = symbol unless _.isEmpty symbol
+    assert not _.isEmpty(@symbol), noSymbol
+    return new String if @symbol of caching
+    f = => "var #{@symbol} = (#{@source})()"
+    return f() unless _.isObject @compiled
+    hierarchy = try @compiled.hierarchy?()
+    assert _.isArray(hierarchy), "no hierarchy"
+    hasRemote = (val) -> _.isObject val.remote
+    compilation = (x) -> x.remote.compile caching
+    areRemote = _.filter hierarchy, hasRemote
+    compiled = _.map areRemote, compilation
+    bases = compiled.reverse().join EOL + EOL
+    assembled = "#{bases}#{EOL + EOL}#{f()}"
+    return caching[@symbol] = assembled
