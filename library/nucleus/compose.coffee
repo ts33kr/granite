@@ -36,14 +36,14 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-{remote} = require "../membrane/remote"
+{cc, ec} = require "../membrane/remote"
 
 # This class contains the definition of the dynamic recomposition
 # system. The reason this class exists is to encapsulate this system
 # and make it possible to use it on the remote call site. The system
 # is a derivative approach from the mixin. It allows to dynamically
 # recombinate the inheritance tree to include any number of compounds.
-module.exports.Composition = remote -> class Composition extends Object
+module.exports.Composition = cc -> class Composition extends Object
 
     # This method exists as a complementary part of the composition
     # system. The cloner is an implementation of the shader that is
