@@ -49,8 +49,8 @@ compose = require "./../nucleus/compose"
 {Marshal} = require "./marshal"
 
 # This abstract base class can be used as either a direct parent or
-# a compount to the `Screenplay` abstract service. It provides the
-# unique ability of half duplex data exchange between the external
+# a compound to the `Screenplay` abstract service. It provides the
+# unique ability of half duplex communications between the external
 # code that is executed on the call site via `Screenplay` facility
 # and an instance of the service that resides on the server site.
 module.exports.Duplex = class Duplex extends Preflight
