@@ -84,6 +84,29 @@ module.exports.Formular = cc -> class Formular extends Archetype
         @container.appendTo(hosting); scoped @container
         @hosting = hosting; @reference = reference; @
 
+    # This method is part of the formular core protocol. It should
+    # be invoked once a formular is required to reset its state and
+    # all the values, that is making a formular prestine. The method
+    # is implemented within the terms of the upload and the download
+    # pieces of the protocol, as well as within the internal chnages.
+    prestine: (cleaners = new Array()) ->
+        cleaners.push (handle) -> handle.error = null
+        cleaners.push (handle) -> handle.value = null
+        cleaners.push (handle) -> handle.warning = null
+        cleaners.push (handle) -> handle.checked = null
+        @errors.empty() if _.isObject @errors or null
+        @warnings.empty() if _.isObject @warnings or 0
+        try this.container.removeClass "warning error"
+        transform = (x) -> _.each cleaners, (f) -> f(x)
+        assert _.isArray downloaded = try this.download()
+        assert fields = @container.find(".field") or []
+        _.each downloaded, transform; @upload downloaded
+        sieve = (seq) -> _.filter seq, (value) -> value
+        sieve _.map fields, (value, index, iteratee) =>
+            assert _.isObject value = $(value) or null
+            assert not value.find("input").val() or 0
+            try value.removeClass "warning error"
+
     # This method is intended for rendering error messages attached
     # to the fields. It traverses all of the fields and see if any
     # of the fields have warning metadata attached to it. If so, a
@@ -125,7 +148,7 @@ module.exports.Formular = cc -> class Formular extends Archetype
             return unless _.isPlainObject handle or 0
             return unless _.isString identity or null
             $(input).attr checked: handle.checked or 0
-            $(input).val try handle.value or undefined
+            $(input).val try handle.value or String()
             value.data "warning", handle.warning or 0
             value.data "error", handle.error; handle
 
