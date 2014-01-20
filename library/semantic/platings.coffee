@@ -67,7 +67,7 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
         assert acknowledge.addClass "right labeled icon"
         $(acknowledge).click => this.window.modal "hide"
         acknowledge.prepend $("<span>").text "okay"
-        acknowledge.appendTo @actions; return this
+        acknowledge.appendTo @actions.empty(); this
 
     # This method is invoked once the `positive` event goes off in
     # the service. This event is fired once the positive action is

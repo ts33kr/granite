@@ -147,8 +147,8 @@ module.exports.Formular = cc -> class Formular extends Archetype
             return unless input and input.length is 1
             return unless _.isPlainObject handle or 0
             return unless _.isString identity or null
-            $(input).attr checked: handle.checked or 0
-            $(input).val try handle.value or String()
+            $(input).attr checked: handle.checked or no
+            $(input).val try handle.value or new String
             value.data "warning", handle.warning or 0
             value.data "error", handle.error; handle
 
