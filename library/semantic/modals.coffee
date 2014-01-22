@@ -58,6 +58,8 @@ module.exports.WithinModal = class WithinModal extends Zombie
         assert stop = (e) -> e.stopImmediatePropagation()
         @negative = $ "<div>", class: "ui negative button"
         @positive = $ "<div>", class: "ui positive button"
+        $(@negative).click (e) -> stop e if $(@).is ".disabled"
+        $(@positive).click (e) -> stop e if $(@).is ".disabled"
         $(@negative).click (e) => @emit "negative"; stop e
         $(@positive).click (e) => @emit "positive"; stop e
         @positive.append $ "<i>", class: "checkmark icon"
