@@ -57,7 +57,7 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
     # receives a response after the form submission, if it was a
     # success. This implementation hides the actualy form, shows
     # the generic acknowledgement memo regarding succeeded form.
-    respondedWithSuccess: @awaiting "successful", ->
+    successfullyAcknowledged: @awaiting "acknowledged", ->
         this.paragraph.text "The information you entered in
         to the form has been successfully submitted. Please
         press the okay button to close this window and carry
@@ -74,7 +74,7 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
     # actived. That usually means a user pressing the okay button.
     # The implementation downloads the data from the form and then
     # submits it to the backend and reacts to the response it got.
-    confirmedFormSubmission: @awaiting "positive", ->
+    confirmedFormsSubmission: @awaiting "positive", ->
         try this.forms.container.addClass "loading"
         @ewrong ?= "Please check the entered information"
         assert _.isObject data = try @forms.download yes
@@ -87,7 +87,7 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
             iconical = "icon checkmark green massive ok"
             assert icon = $ "<i>", class: "#{iconical}"
             try this.actions.empty(); this.forms.hide()
-            this.emit "successful", success, values
+            this.emit "acknowledged", success, values
             this.content.append icon, @paragraph
 
     # This method is invoked once the `configure-window` events goes
