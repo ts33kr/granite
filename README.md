@@ -62,6 +62,8 @@ Use http://ts33kr.github.io/granite for browsing.
   that hide or carry away the interactions between the client and
   the server. It completely frees your of routine and allows to
   focus only on what matters, not on the code required for code.
+  See [membrane/duplex.coffee](library/membrane/duplex.coffee)
+  for both, implementation and usage.
 
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
