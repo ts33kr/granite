@@ -53,7 +53,7 @@ Use http://ts33kr.github.io/granite for browsing.
   declarative style to keep the syntax clean, when you have a lot
   of different building blocks mixed into your class. Please see
   [nucleus/compose.coffee](library/nucleus/compose.coffee) for
-  the implementation coding.
+  the composition system implementation coding.
 
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
