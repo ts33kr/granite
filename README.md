@@ -63,7 +63,7 @@ Use http://ts33kr.github.io/granite for browsing.
   the server. It completely frees your of routine and allows to
   focus only on what matters, not on the code required for code.
   See [membrane/visual.coffee](library/membrane/visual.coffee)
-  for both, the implementation and the usage.
+  and the related for an implementation boilerplate.
 
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
