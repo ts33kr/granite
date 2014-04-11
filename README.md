@@ -45,6 +45,16 @@ also strongly encourage you to browse over the project source codes
 and discover missing pieces there that are missing from documentation.
 Use http://ts33kr.github.io/granite for browsing.
 
+  + A unique extension to the object system, written using pure
+  CoffeeScript that allows for completely transparent and dynamic
+  multiple inheritance, modelled similar to the mixin concept. It
+  allows you to build modular pieces of functionality that can be
+  reused in any class. The system is unobtrusive and makes use of
+  declarative style to keep the syntax clean, when you have a lot
+  of different building blocks mixed into your class. Please see
+  [nucleus/compose.coffee](library/nucleus/compose.coffee) for
+  the implementation coding.
+
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
 of some of the specifics regarding its usage. The first and foremost
