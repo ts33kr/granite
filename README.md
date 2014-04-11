@@ -33,6 +33,18 @@ in order to provide enterprise level design and make the factor of
 the reusable code sky high. It also embeds in or provides support for
 the community standard sort of toolkits, such as NPM and Bower managers.
 
+##Highlights
+In this paragraph we will give you a brief overview of the features
+that make Granite what it is. Most of the highlights will refer to
+the files containing source code, either as a part of implementation
+or as a usage example, please bear with us on this one, as it is the
+most up-to-date sort of documentation that we have, due to the fact
+that our project is very rapidly evolving and enhancing, changing.
+Below follows a bullet-list of highlights currently implemented. We
+also strongly encourage you to browse over the project source codes
+and discover missing pieces there that are missing from documentation.
+Use http://ts33kr.github.io/granite for browsing.
+
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
 of some of the specifics regarding its usage. The first and foremost
