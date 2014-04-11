@@ -55,6 +55,14 @@ Use http://ts33kr.github.io/granite for browsing.
   [nucleus/compose.coffee](library/nucleus/compose.coffee) for
   the composition system implementation coding.
 
+  + Natively keeping client-side and server-side code within the
+  same class, naturally co-existing and interacting between two
+  remote scopes. Allows for a massively superior way of building
+  abstractions that abstract away the whole patterns and protocols
+  that hide or carry away the interactions between the client and
+  the server. It completely frees your of routine and allows to
+  focus only on what matters, not on the code required for code.
+
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
 of some of the specifics regarding its usage. The first and foremost
