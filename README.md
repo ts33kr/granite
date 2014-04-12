@@ -74,7 +74,7 @@ Use http://ts33kr.github.io/granite for browsing.
   [Socket.IO](http://socket.io) to implement it. Please refer to
   [membrane/duplex.coffee](library/membrane/duplex.coffee) and
   [membrane/bilateral.coffee](library/membrane/bilateral.coffee)
-  for the reference coding.
+  for the reference coding and info.
 
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
