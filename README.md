@@ -65,6 +65,17 @@ Use http://ts33kr.github.io/granite for browsing.
   See [membrane/visual.coffee](library/membrane/visual.coffee)
   and the related for an implementation boilerplate.
 
+  + A bi-directional and real time communication channel that is
+  entirely transparent to a developer - it looks just like a usual
+  method invocation, with all the guts: parameters, callbacks and
+  so on. All of the client/server transportation complexities are
+  hidden under the hood, without the need of every touching them.
+  The channel uses latest, state-of-the-art technologies, such as
+  [Socket.IO](http://socket.io) to implement it. Please refer to
+  [membrane/duplex.coffee](library/membrane/duplex.coffee) and
+  [membrane/bilateral.coffee](library/membrane/bilateral.coffee)
+  for the reference: implementation and usage, both.
+
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
 of some of the specifics regarding its usage. The first and foremost
