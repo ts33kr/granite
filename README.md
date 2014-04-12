@@ -86,6 +86,17 @@ Use http://ts33kr.github.io/granite for browsing.
   configuration for creating and discovering new services. See
   [exposure/publish.coffee](library/exposure/publish.coffee).
 
+  + A production grade load balancing and failover clustering
+  provided right out of the box. Delivered by technology called
+  [Seaport](https://github.com/substack/seaport) it provides a
+  lot of advanced functionality, such as the node autodiscovery
+  and no need for initial configuration. It allows to dynamically
+  create star-like topologies in a matter of seconds, supporting
+  any order of brinding nodes up (master and slaves). The shipped
+  balancing algorithm is a simple, session-sticky round robin. See
+  [nucleus/scaled.coffee](library/nucleus/scaled.coffee) file for
+  the scalable kernel implementation.
+
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
 of some of the specifics regarding its usage. The first and foremost
