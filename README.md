@@ -107,6 +107,17 @@ Use http://ts33kr.github.io/granite for browsing.
   in a configurable maner. For the implementation coding see
   [membrane/bower.coffee](library/membrane/bower.coffee).
 
+  + An out of the box configuration system allows you to consume
+  configuration data (files) right away, wihtout setting up any
+  sort of boilerplate. The system is based on a well known package
+  called [NConf](https://github.com/flatiron/nconf). Refer to the
+  [nucleus/scoping.coffee](library/nucleus/scoping.coffee) to get
+  some idea about the implementation. On top of this, there are a
+  set of tools shipped out of the box that make good use of this,
+  such as [MongoDB](www.mongodb.org) and [Redis](http://redis.io)
+  clients (components) that can be mixed into your service and
+  used right away, without having to think about configuration.
+
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
 of some of the specifics regarding its usage. The first and foremost
