@@ -83,8 +83,8 @@ Use http://ts33kr.github.io/granite for browsing.
   declarative documentation and testing subsystems wired into it.
   Everything is built around an exceptionally strong object model
   and makes uses of an automatic wiring that requires zero level
-  configuration for creating and discovering new services. Please
-  see [exposure/publish.coffee](library/exposure/publish.coffee)
+  configuration for creating and discovering new services. See
+  [exposure/publish.coffee](library/exposure/publish.coffee).
 
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
