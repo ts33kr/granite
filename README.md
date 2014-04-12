@@ -135,4 +135,4 @@ targeted towards the end users, such as user guide or manual are not
 there just yet. So you have to be ready to go digging deep into code.
 What should be also mentioned is that framework is under the active
 development and we would appreciate the feedback very much. So you
-can always can on a friendly support ready to give you a hand with it!
+can always count on a friendly support ready to give you a hand with it!
