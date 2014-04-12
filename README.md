@@ -76,6 +76,16 @@ Use http://ts33kr.github.io/granite for browsing.
   [membrane/bilateral.coffee](library/membrane/bilateral.coffee)
   for the reference coding and info.
 
+  + A strong layer for implementing conventional application APIs.
+  The REST architecture is shipped out of the box, with posibility
+  of deep customization to fit in any architecture on top of HTTP.
+  Has a built in support for advanced features, like the embedded
+  declarative documentation and testing subsystems wired into it.
+  Everything is built around an exceptionally strong object model
+  and makes uses of an automatic wiring that requires zero level
+  configuration for creating and discovering new services. Please
+  see [exposure/publish.coffee](library/exposure/publish.coffee)
+
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
 of some of the specifics regarding its usage. The first and foremost
