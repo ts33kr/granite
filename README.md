@@ -104,7 +104,7 @@ Use http://ts33kr.github.io/granite for browsing.
   to provide the flexible ability to embed the frontend dependencies
   directly into your components. The dependencies are intelligently
   resolved and automatically satisfied during the node bootloaing;
-  in a configurable maner. For the implementation coding please see
+  in a configurable maner. For the implementation coding see
   [membrane/bower.coffee](library/membrane/bower.coffee).
 
 ##Disclaimer
