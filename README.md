@@ -114,7 +114,7 @@ Use http://ts33kr.github.io/granite for browsing.
   [nucleus/scoping.coffee](library/nucleus/scoping.coffee) to get
   some idea about the implementation. On top of this, there are a
   set of tools shipped out of the box that make good use of this,
-  such as [MongoDB](www.mongodb.org) and [Redis](http://redis.io)
+  such as [MongoDB](http://mongodb.org) and [Redis](http://redis.io)
   clients (components) that can be mixed into your service and
   used right away, without having to think about configuration.
 
