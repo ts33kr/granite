@@ -97,6 +97,16 @@ Use http://ts33kr.github.io/granite for browsing.
   [nucleus/scaled.coffee](library/nucleus/scaled.coffee) file for
   the scalable kernel implementation.
 
+  + Due to the strong objective design principles, it is extremely
+  easy to write components (classes) that contain the client side
+  coding as well as the server side coding. Both naturally and most
+  natively coexisting and interacting. The frontend package system
+  [Bower](http://bower.io) is built right into the framework in order
+  to provide the unique ability to embeded frontend dependencies
+  directly to your components. The dependencies are intelligently
+  resolved and automatically satisfied during the node bootloaing.
+  The broad spectrum of configuration flexibilities are provided.
+
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
 of some of the specifics regarding its usage. The first and foremost
