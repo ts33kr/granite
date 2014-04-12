@@ -99,13 +99,13 @@ Use http://ts33kr.github.io/granite for browsing.
 
   + Due to the strong objective design principles, it is extremely
   easy to write components (classes) that contain the client side
-  coding as well as the server side coding. Both naturally and most
-  natively coexisting and interacting. The frontend package system
+  coding as well as the server side coding. A frontend package manager
   [Bower](http://bower.io) is built right into the framework in order
-  to provide the unique ability to embeded frontend dependencies
-  directly to your components. The dependencies are intelligently
+  to provide the flexible ability to embed the frontend dependencies
+  directly into your components. The dependencies are intelligently
   resolved and automatically satisfied during the node bootloaing;
-  in a configurable maner.
+  in a configurable maner. For the implementation coding please see
+  [membrane/bower.coffee](library/membrane/bower.coffee).
 
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
