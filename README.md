@@ -104,8 +104,8 @@ Use http://ts33kr.github.io/granite for browsing.
   [Bower](http://bower.io) is built right into the framework in order
   to provide the unique ability to embeded frontend dependencies
   directly to your components. The dependencies are intelligently
-  resolved and automatically satisfied during the node bootloaing.
-  The broad spectrum of configuration flexibilities are provided.
+  resolved and automatically satisfied during the node bootloaing in
+  a configurable maner.
 
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
