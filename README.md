@@ -118,6 +118,15 @@ Use http://ts33kr.github.io/granite for browsing.
   clients (components) that can be mixed into your service and
   used right away, without having to think about configuration.
 
+  + Extremely viable kernel built into the framework. An application
+  (node) is automatically reloaded in case of an unexpected crash or
+  error and has extensive configuration capabilities as to reacting
+  to the unexpected conditions. The technology is based on something
+  called [forever](https://github.com/nodejitsu/forever). On top of
+  this, the framework has a built in memory monitor that watcher an
+  application to not exceed the configured limit and reloads an app
+  if it does so.
+
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
 of some of the specifics regarding its usage. The first and foremost
