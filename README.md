@@ -125,7 +125,8 @@ Use http://ts33kr.github.io/granite for browsing.
   called [forever](https://github.com/nodejitsu/forever). On top of
   this, the framework has a built in memory monitor that watcher an
   application to not exceed the configured limit and reloads an app
-  if it does so.
+  if it does so. See [exposure/memory.coffee](library/exposure/memory.coffee)
+  for the monitor implementation coding and information.
 
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
