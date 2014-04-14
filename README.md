@@ -123,7 +123,7 @@ Use http://ts33kr.github.io/granite for browsing.
   error and has extensive configuration capabilities as to reacting
   to the unexpected conditions. The technology is based on something
   called [forever](https://github.com/nodejitsu/forever). On top of
-  this, the framework has a built in memory monitor that watcher an
+  this, the framework has a built in memory monitor that watches an
   application to not exceed the configured limit and reloads an app
   if it does so. See [exposure/memory.coffee](library/exposure/memory.coffee)
   for the monitor implementation coding and information.
