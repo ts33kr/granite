@@ -42,7 +42,7 @@ most up-to-date sort of documentation that we have, due to the fact
 that our project is young and its design changes and evoles rapidly.
 Below follows a bullet-list of highlights currently implemented. We
 also strongly encourage you to browse over the project source codes
-and discover missing pieces there that are missing from documentation.
+and discover more pieces there, ones that haven't been documented yet.
 Use http://ts33kr.github.io/granite for browsing.
 
   + A unique extension to the object system, written using pure
