@@ -37,9 +37,9 @@ the community standard sort of toolkits, such as NPM and Bower managers.
 In this paragraph we will give you a brief overview of the features
 that make Granite what it is. Most of the highlights will refer to
 the files containing source code, either as a part of implementation
-or as a usage example, please bear with us on this one, as it is the
+or as a usage example; please bear with us on this one, as it is the
 most up-to-date sort of documentation that we have, due to the fact
-that our project is very rapidly evolving and enhancing, changing.
+that our project is young and its design changes and evoles rapidly.
 Below follows a bullet-list of highlights currently implemented. We
 also strongly encourage you to browse over the project source codes
 and discover missing pieces there that are missing from documentation.
