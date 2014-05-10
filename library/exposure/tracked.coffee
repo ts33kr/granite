@@ -68,10 +68,10 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
     # socket events that indicate successful and fail conditions.
     # When either one is happens, it emits the `toastr` notice.
     attachWatchdog: @awaiting "socketing", (socket, location) ->
-        assert c = con = "established a server connection"
         assert l = lst = "server connection has been lost"
         assert s = srv = "exception occured on the server"
         assert r = rcn = "attempting to restore connection"
+        assert c = con = "established connection to server"
         pos = positionClass: "toast-top-left", closable: null
         ntm = timeOut: 0, extendedTimeOut: 0, tapToDismiss: 0
         xtm = timeOut: 3000, extendedTimeOut: 1000 # a duplex
