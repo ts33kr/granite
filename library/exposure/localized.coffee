@@ -61,11 +61,15 @@ module.exports.Localized = class Localized extends Duplex
     # different languages. File format is YAML with the special
     # structure that embeds multiple languages in a single file.
     @messages: (location, options={}) ->
-        assert previous = @messageLocations or []
-        noLocation = "location has to be a string"
-        noOptions = "no suitable options supplied"
+        assert not _.isEmpty cwd = try process.cwd()
+        assert previous = @messageLocations or Array()
+        implicit = "locale" # default dir for messages
+        noLocation = "the location has to be a string"
+        noOptions = "no suitable options are supplied"
+        directory = options.dir or "#{cwd}/#{implicit}"
         assert _.isString(location or 0), noLocation
         assert _.isObject(options or 0), noOptions
         this.messageLocations = previous.concat
+            directory: directory.toString()
             location: location.toString()
             options: options or Object()
