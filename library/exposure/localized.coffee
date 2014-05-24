@@ -64,13 +64,8 @@ module.exports.Localized = class Localized extends Duplex
         assert previous = @messageLocations or []
         noLocation = "location has to be a string"
         noOptions = "no suitable options supplied"
-        noLocale = "locale directory misconfigured"
-        locale = try nconf.get "translation:locale"
-        assert not _.isEmpty(locale or 0), noLocale
         assert _.isString(location or 0), noLocation
         assert _.isObject(options or 0), noOptions
-        residence = options.residence or locale
         this.messageLocations = previous.concat
-            residenence: residence or null
             location: location.toString()
             options: options or Object()
