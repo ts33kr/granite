@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>membrane/visual</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/visual"><meta name="groc-project-path" content="library/membrane/visual.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/visual.coffee">library/membrane/visual.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>membrane/visual</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/visual"><meta name="groc-project-path" content="library/membrane/visual.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/visual.coffee">library/membrane/visual.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#111;:&#116;&#x73;&#51;&#x33;&#x6b;&#x72;&#64;gm&#97;&#x69;&#x6c;&#46;&#99;&#111;&#109;">&#116;&#x73;&#51;&#x33;&#x6b;&#x72;&#64;gm&#97;&#x69;&#x6c;&#46;&#99;&#111;&#109;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
@@ -45,79 +43,22 @@
 <span class="p">{</span><span class="nx">STATUS_CODES</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
 <span class="p">{</span><span class="nx">remote</span><span class="p">,</span> <span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./remote&quot;</span>
-<span class="p">{</span><span class="nx">coffee</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./runtime&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract service that provides the unique functionality
+<span class="p">{</span><span class="nx">VisualBillet</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./billets&quot;</span>
+<span class="p">{</span><span class="nx">coffee</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./runtime&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract service that provides the unique functionality
 of rendering the server side store code on the client side with all
 its dependencies, such as classes and class hierarchies and even more.
 This ABC constitutes a primary tool for writing UI/UX with Granite.
-Please consult the implementation for more information on the system.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Screenplay = </span><span class="k">class</span> <span class="nx">Screenplay</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+Please consult the implementation for more information on the system.
+Also, please reference parent class for the important external APIs.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Screenplay = </span><span class="k">class</span> <span class="nx">Screenplay</span> <span class="k">extends</span> <span class="nx">VisualBillet</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Use this static method to mark up the remote/external methods
-that need to be automaticalled called, once everything is set
-on the client site and before the entrypoint gets executed. It
-is a get idea to place generic or setup code in the autocalls.
-Refer to <code>inlineAutocalls</code> method for params interpretation.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@autocall: </span><span class="nf">(parameters, method) -&gt;</span>
-        <span class="nv">isRemote = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">method</span><span class="o">?</span><span class="p">.</span><span class="nx">remote</span>
-        <span class="nv">notFunction = </span><span class="s">&quot;no function is passed in&quot;</span>
-        <span class="nv">method = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span>
-        <span class="nv">method = </span><span class="nx">external</span> <span class="nx">method</span> <span class="k">unless</span> <span class="nx">isRemote</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">method</span><span class="p">),</span> <span class="nx">notFunction</span>
-        <span class="nv">parameters = </span><span class="p">{}</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">parameters</span>
-        <span class="nv">method.remote.autocall = </span><span class="nx">parameters</span><span class="p">;</span> <span class="nx">method</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The awaiting directive is a lot like <code>autocall</code>, except the
-implementation will not be immediatelly , but rather when the
-specified signal is emited on the current context (service)
-object. Effectively, it is the same as creating the autocall
-that explicitly binds the event using <code>on</code> with the context.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@awaiting: </span><span class="nf">(event, method) -&gt;</span>
-        <span class="nv">invalidEvent = </span><span class="s">&quot;an invalid event supplied&quot;</span>
-        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">event</span><span class="p">),</span> <span class="nx">invalidEvent</span>
-        <span class="nx">assert</span> <span class="nv">method = </span><span class="nx">@autocall</span> <span class="nb">Object</span><span class="p">(),</span> <span class="nx">method</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">method</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">autocall</span>
-        <span class="nv">method.remote.auto = </span><span class="nf">(symbol, key) -&gt;</span> <span class="nf">-&gt;</span>
-            <span class="nv">t = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">symbol</span><span class="si">}</span><span class="s">.on(%s, </span><span class="si">#{</span><span class="nx">symbol</span><span class="si">}</span><span class="s">.</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">)&quot;</span>
-            <span class="k">return</span> <span class="nx">format</span> <span class="nx">t</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">event</span>
-        <span class="nv">method.remote.meta.event = </span><span class="nx">event</span><span class="p">;</span> <span class="nx">method</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The awaiting directive is a lot like <code>autocall</code>, except the
-implementation will not be immediatelly , but rather when the
-specified signal is emited on the $root main service context
-object. Effectively, it is the same as creating the autocall
-that explicitly binds the event using <code>on</code> with the context.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@synchronize: </span><span class="nf">(event, method) -&gt;</span>
-        <span class="nv">invalidEvent = </span><span class="s">&quot;an invalid event supplied&quot;</span>
-        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">event</span><span class="p">),</span> <span class="nx">invalidEvent</span>
-        <span class="nx">assert</span> <span class="nv">method = </span><span class="nx">@autocall</span> <span class="nb">Object</span><span class="p">(),</span> <span class="nx">method</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">method</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">autocall</span>
-        <span class="nv">select = </span><span class="s">&quot;$root&quot;</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">toLowerCase</span><span class="p">()</span>
-        <span class="nv">method.remote.auto = </span><span class="nf">(symbol, key) -&gt;</span> <span class="nf">-&gt;</span>
-            <span class="nv">t = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">select</span><span class="si">}</span><span class="s">.on(%s, </span><span class="si">#{</span><span class="nx">symbol</span><span class="si">}</span><span class="s">.</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">)&quot;</span>
-            <span class="k">return</span> <span class="nx">format</span> <span class="nx">t</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">event</span>
-        <span class="nv">method.remote.meta.event = </span><span class="nx">event</span><span class="p">;</span> <span class="nx">method</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This server side method is called on the context prior to the
-context being compiled and flushed down to the client site. The
-method is wired in an synchronous way for greater functionality.
-This is the place where you would be importing the dependencies.
-Pay attention that most implementations side effect the context.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(symbol, context, request, next) -&gt;</span>
-        <span class="nv">context.service = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
-        <span class="nv">context.params = </span><span class="nx">request</span><span class="p">.</span><span class="nx">params</span> <span class="o">or</span> <span class="p">{}</span>
-        <span class="nv">context.uuid = request: </span><span class="nx">request</span><span class="p">.</span><span class="nx">uuid</span>
-        <span class="nv">context.qualified = </span><span class="nx">@qualified</span><span class="p">()</span>
-        <span class="nv">context.location = </span><span class="nx">@location</span><span class="p">()</span>
-        <span class="nv">context.uuid.service = </span><span class="nx">@uuid</span>
-        <span class="nv">context.url = </span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span>
-        <span class="k">return</span> <span class="nx">next</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Use this method in the <code>prelude</code> scope to bring dependencies into
-the scope. This method supports JavaScript scripts as a link or
-JavaScript sources passed in as the remote objects. Please refer
-to the implementation and the class for more information on it.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">inject: </span><span class="nf">(context, subject, symbol) -&gt;</span>
-        <span class="nx">assert</span> <span class="nv">caching = </span><span class="nx">context</span><span class="p">.</span><span class="nx">caching</span> <span class="o">?=</span> <span class="k">new</span> <span class="nb">Object</span><span class="p">()</span>
-        <span class="nv">scripts = </span><span class="nf">-&gt;</span> <span class="nx">assert</span> <span class="nx">context</span><span class="p">.</span><span class="nx">scripts</span><span class="p">.</span><span class="nx">push</span> <span class="nx">subject</span>
-        <span class="nv">sources = </span><span class="nf">-&gt;</span> <span class="nx">assert</span> <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">push</span> <span class="nx">compile</span><span class="p">()</span>
-        <span class="nv">compile = </span><span class="nf">-&gt;</span> <span class="nx">subject</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">compile</span> <span class="nx">caching</span><span class="p">,</span> <span class="nx">symbol</span>
-        <span class="nv">invalid = </span><span class="s">&quot;not a remote object and not a JS link&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">context</span><span class="p">),</span> <span class="s">&quot;got invalid context&quot;</span>
-        <span class="nv">compilable = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">subject</span><span class="p">.</span><span class="nx">remote</span><span class="o">?</span><span class="p">.</span><span class="nx">compile</span>
-        <span class="k">return</span> <span class="nx">scripts</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">subject</span>
-        <span class="k">return</span> <span class="nx">sources</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span> <span class="k">if</span> <span class="nx">compilable</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">invalid</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an internal routine that performs the task of compiling
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an internal routine that performs the task of compiling
 a screenplay context into a valid HTML document to be rendered
 and launched on the client (browser side). Please refer to the
-implementation for greater understanding of what it does exactly.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">compileContext: </span><span class="nf">(context) -&gt;</span>
+implementation for greater understanding of what it does exactly.
+The resulting value is a string with compiled JavaScript code.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">compileContext: </span><span class="nf">(context) -&gt;</span>
+        <span class="nv">meta = </span><span class="nf">(content) -&gt;</span> <span class="s">&quot;\r\n&lt;meta </span><span class="si">#{</span><span class="nx">content</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span><span class="si">}</span><span class="s">&gt;&quot;</span>
         <span class="nv">script = </span><span class="nf">(s) -&gt;</span> <span class="s">&quot;\r\n&lt;script src=\x22</span><span class="si">#{</span><span class="nx">s</span><span class="si">}</span><span class="s">\x22&gt;&lt;/script&gt;&quot;</span>
         <span class="nv">style = </span><span class="nf">(s) -&gt;</span> <span class="s">&quot;\r\n&lt;style type=\x22</span><span class="si">#{</span><span class="nx">x</span><span class="si">}</span><span class="s">\x22&gt;</span><span class="si">#{</span><span class="nx">s</span><span class="si">}</span><span class="s">&lt;/style&gt;&quot;</span>
         <span class="nv">source = </span><span class="nf">(s) -&gt;</span> <span class="s">&quot;\r\n&lt;script type=\x22</span><span class="si">#{</span><span class="nx">j</span><span class="si">}</span><span class="s">\x22&gt;</span><span class="si">#{</span><span class="nx">s</span><span class="si">}</span><span class="s">&lt;/script&gt;&quot;</span>
@@ -128,18 +69,20 @@ implementation for greater understanding of what it does exactly.</p></div></div
         <span class="nv">changes = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">changes</span><span class="p">,</span> <span class="nx">source</span><span class="p">).</span><span class="nx">join</span> <span class="nb">String</span><span class="p">()</span>
         <span class="nv">sources = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">,</span> <span class="nx">source</span><span class="p">).</span><span class="nx">join</span> <span class="nb">String</span><span class="p">()</span>
         <span class="nv">invokes = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">invokes</span><span class="p">,</span> <span class="nx">source</span><span class="p">).</span><span class="nx">join</span> <span class="nb">String</span><span class="p">()</span>
+        <span class="nv">metatag = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">metatag</span><span class="p">,</span> <span class="nx">meta</span><span class="p">).</span><span class="nx">join</span> <span class="nb">String</span><span class="p">()</span>
         <span class="nv">sheets = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">sheets</span><span class="p">,</span> <span class="nx">sheet</span><span class="p">).</span><span class="nx">join</span> <span class="nb">String</span><span class="p">()</span>
         <span class="nv">styles = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">styles</span><span class="p">,</span> <span class="nx">style</span><span class="p">).</span><span class="nx">join</span> <span class="nb">String</span><span class="p">()</span>
-        <span class="nv">joined = </span><span class="nx">sheets</span> <span class="o">+</span> <span class="nx">styles</span> <span class="o">+</span> <span class="nx">scripts</span> <span class="o">+</span> <span class="nx">changes</span> <span class="o">+</span> <span class="nx">sources</span>
-        <span class="nx">format</span> <span class="nx">template</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">doctype</span><span class="p">,</span> <span class="nx">joined</span> <span class="o">+</span> <span class="nx">invokes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an internal routine that performs a very important task
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">joined = </span><span class="nx">metatag</span> <span class="o">+</span> <span class="nx">sheets</span> <span class="o">+</span> <span class="nx">styles</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">joined</span> <span class="o">+=</span> <span class="nx">scripts</span> <span class="o">+</span> <span class="nx">changes</span> <span class="o">+</span> <span class="nx">sources</span>
+        <span class="nx">format</span> <span class="nx">template</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">doctype</span><span class="p">,</span> <span class="nx">joined</span> <span class="o">+</span> <span class="nx">invokes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an internal routine that performs a very important task
 of deploying the context onto the call (client) site. It also
-includes merging all the remoted defined in the services with a
-context object, which is defered to be done on the client site.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">deployContext: </span><span class="nf">(context, symbol) -&gt;</span>
+includes merging all the remotes defined in the services with a
+context object, which is defered to be done on the client site.
+It basically embedds all the internals pieces to create context.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">deployContext: </span><span class="nf">(context, symbol) -&gt;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">context</span><span class="p">),</span> <span class="s">&quot;malformed context&quot;</span>
-        <span class="nv">excess = </span><span class="p">[</span><span class="s">&quot;scripts&quot;</span><span class="p">,</span> <span class="s">&quot;sources&quot;</span><span class="p">,</span> <span class="s">&quot;sheets&quot;</span><span class="p">,</span> <span class="s">&quot;styles&quot;</span><span class="p">]</span>
-        <span class="nx">excess</span><span class="p">.</span><span class="nx">push</span> <span class="s">&quot;caching&quot;</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">context</span><span class="p">.</span><span class="nx">caching</span>
-        <span class="nx">excess</span><span class="p">.</span><span class="nx">push</span> <span class="s">&quot;changes&quot;</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">context</span><span class="p">.</span><span class="nx">changes</span>
-        <span class="nx">excess</span><span class="p">.</span><span class="nx">push</span> <span class="s">&quot;invokes&quot;</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">context</span><span class="p">.</span><span class="nx">invokes</span>
+        <span class="nv">aexcess = </span><span class="p">[</span><span class="s">&quot;scripts&quot;</span><span class="p">,</span> <span class="s">&quot;sources&quot;</span><span class="p">,</span> <span class="s">&quot;sheets&quot;</span><span class="p">,</span> <span class="s">&quot;styles&quot;</span><span class="p">]</span>
+        <span class="nv">bexcess = </span><span class="p">[</span><span class="s">&quot;caching&quot;</span><span class="p">,</span> <span class="s">&quot;changes&quot;</span><span class="p">,</span> <span class="s">&quot;invokes&quot;</span><span class="p">,</span> <span class="s">&quot;metatag&quot;</span><span class="p">]</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">excess = </span><span class="nx">aexcess</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">bexcess</span>
         <span class="nv">prepared = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">_</span><span class="p">.</span><span class="nx">omit</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">excess</span><span class="p">)</span>
         <span class="nv">installer = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">symbol</span><span class="si">}</span><span class="s"> = </span><span class="si">#{</span><span class="nx">prepared</span><span class="si">}</span><span class="s">&quot;</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
         <span class="nv">runtime = </span><span class="s">&quot;(</span><span class="si">#{</span><span class="nx">coffee</span><span class="si">}</span><span class="s">).apply(this)&quot;</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
@@ -156,10 +99,11 @@ context object, which is defered to be done on the client site.</p></div></div><
             <span class="nx">assert</span> <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">push</span> <span class="s">&quot;\r\n</span><span class="si">#{</span><span class="nx">set</span><span class="si">}</span><span class="s">\r\n&quot;</span>
         <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">unshift</span> <span class="nx">applicator</span>
         <span class="nx">context</span><span class="p">.</span><span class="nx">changes</span><span class="p">.</span><span class="nx">unshift</span> <span class="nx">installer</span>
-        <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">unshift</span> <span class="nx">runtime</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Issue the autocalls into the context. Traverse the hierarchy
+        <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">unshift</span> <span class="nx">runtime</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Issue the autocalls into the context. Traverse the hierarchy
 from top to bottom (the ordering is important) and issue an
 autocall for each remote/external method that is marked with
-an autocall decorator and therefore must be called on site.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">inlineAutocalls: </span><span class="nf">(context, symbol) -&gt;</span>
+an autocall decorator and therefore must be called on site.
+Please refer to the code for info, it is not very linear.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">inlineAutocalls: </span><span class="nf">(context, symbol) -&gt;</span>
         <span class="nv">hierarchy = </span><span class="nx">@constructor</span><span class="o">?</span><span class="p">.</span><span class="nx">hierarchy</span><span class="o">?</span><span class="p">()</span>
         <span class="nv">noHierarchy = </span><span class="s">&quot;could not scan the hierarchy&quot;</span>
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">hierarchy</span><span class="p">),</span> <span class="nx">noHierarchy</span>
@@ -178,7 +122,7 @@ an autocall decorator and therefore must be called on site.</p></div></div><div 
             <span class="k">return</span> <span class="nx">uns</span><span class="p">()</span> <span class="k">if</span> <span class="nx">value</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">autocall</span><span class="p">.</span><span class="nx">unshift</span>
             <span class="k">return</span> <span class="nx">context</span><span class="p">.</span><span class="nx">invokes</span><span class="p">.</span><span class="nx">push</span> <span class="nx">formatted</span>
         <span class="nv">sorter = </span><span class="nf">(invoke) -&gt;</span> <span class="k">return</span> <span class="nx">invoke</span><span class="p">.</span><span class="nx">priority</span> <span class="o">or</span> <span class="mi">0</span>
-        <span class="nv">context.invokes = </span><span class="nx">_</span><span class="p">.</span><span class="nx">sortBy</span> <span class="nx">context</span><span class="p">.</span><span class="nx">invokes</span><span class="p">,</span> <span class="nx">sorter</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internal routine that is called on the context object prior
+        <span class="nv">context.invokes = </span><span class="nx">_</span><span class="p">.</span><span class="nx">sortBy</span> <span class="nx">context</span><span class="p">.</span><span class="nx">invokes</span><span class="p">,</span> <span class="nx">sorter</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An internal routine that is called on the context object prior
 to flushing it down to the client. This method gathers all the
 JS sources in the context and minifies &amp; compresses those into
 one blob using the library called UglifyJS2. See it for info.
@@ -194,7 +138,7 @@ Method also does some optimizations, such as scripts unifying.</p></div></div><d
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nv">sources = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">sources</span>
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">sources</span><span class="p">),</span> <span class="nx">emptySources</span>
         <span class="k">return</span> <span class="nx">context</span> <span class="k">unless</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="nx">compression</span>
-        <span class="k">return</span> <span class="nx">@contextReduction</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">sources</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is the place where actual context sources minification
+        <span class="k">return</span> <span class="nx">@contextReduction</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">sources</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is the place where actual context sources minification
 and reduction takes place. This method invokes the UglifyJS2
 on the previously preprocessed sources and the re-emerges it
 in the context in place of the originals. This method also
@@ -208,7 +152,7 @@ takes care of the compression cache, which is very important.</p></div></div><di
         <span class="nx">assert</span> <span class="nv">minify = </span><span class="nx">require</span><span class="p">(</span><span class="s">&quot;uglify-js&quot;</span><span class="p">).</span><span class="nx">minify</span>
         <span class="nv">minified = </span><span class="nx">minify</span> <span class="nx">sources</span><span class="p">,</span> <span class="nv">fromString: </span><span class="kc">yes</span>
         <span class="p">(</span><span class="nx">@ccache</span> <span class="o">?=</span> <span class="p">{})[</span><span class="nx">digest</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nx">minified</span><span class="p">.</span><span class="nx">code</span><span class="p">]</span>
-        <span class="nv">context.sources = </span><span class="nx">@ccache</span><span class="p">[</span><span class="nx">digest</span><span class="p">];</span> <span class="nx">context</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Assemble a new remoting context for the current service. This
+        <span class="nv">context.sources = </span><span class="nx">@ccache</span><span class="p">[</span><span class="nx">digest</span><span class="p">];</span> <span class="nx">context</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Assemble a new remoting context for the current service. This
 creates a proper empty context that conforms to the necessary
 restrictions. Then it runs the internal machinery to fill the
 context with the service and request related data and events.
@@ -218,26 +162,28 @@ Optionally, a existent object can be transformed into context.</p></div></div><d
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">context = </span><span class="nx">stock</span> <span class="o">or</span> <span class="p">{}</span>
         <span class="nx">@energizeContext</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">symbol</span>
         <span class="nx">assert</span> <span class="nv">prelude = </span><span class="nx">@downstream</span> <span class="nv">prelude: </span><span class="o">=&gt;</span>
+            <span class="nv">context.snapshot = </span><span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">keys</span> <span class="nx">context</span>
             <span class="nx">assert</span> <span class="nx">@deployContext</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">symbol</span>
             <span class="nx">assert</span> <span class="nx">@inlineAutocalls</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">symbol</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="nx">@emit</span> <span class="s">&quot;installed&quot;</span><span class="p">,</span> <span class="k">this</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="nx">assert</span> <span class="k">try</span> <span class="vi">@root = </span><span class="nx">$root</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="nx">@root</span><span class="p">.</span><span class="nx">eco</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">@</span>
+            <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">externals</span><span class="p">.</span><span class="nx">push</span> <span class="s">&quot;root&quot;</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">externals</span><span class="p">.</span><span class="nx">push</span> <span class="s">&quot;eco&quot;</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="nx">assert</span> <span class="vi">@broadcast = </span><span class="nf">-&gt;</span>
                 <span class="k">this</span><span class="p">.</span><span class="nx">root</span><span class="p">.</span><span class="nx">emit</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">$root</span><span class="p">,</span> <span class="nx">arguments</span>
             <span class="nv">context = </span><span class="nx">@compressContext</span> <span class="nx">context</span> <span class="k">if</span> <span class="nx">asm</span>
             <span class="nv">compiled = </span><span class="nx">@compileContext</span> <span class="nx">context</span> <span class="k">if</span> <span class="nx">asm</span>
             <span class="k">return</span> <span class="nx">receive</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">compiled</span> <span class="o">or</span> <span class="kc">null</span>
-        <span class="k">return</span> <span class="nx">prelude</span> <span class="nx">symbol</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">request</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internally used routine, part of the context assembly proc.
+        <span class="k">return</span> <span class="nx">prelude</span> <span class="nx">symbol</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">request</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An internally used routine, part of the context assembly proc.
 It is used to extend either a fresh or passed in stock object
 with all the commodities that should be present on contexts.
 This includes utilitiy methods and member definitions that all
 of the internal and external codebase depends and relies on.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">energizeContext: </span><span class="nf">(context, symbol) -&gt;</span>
         <span class="nv">append = </span><span class="nf">-&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
         <span class="nx">append</span> <span class="nv">styles: </span><span class="p">[],</span> <span class="nv">sheets: </span><span class="p">[],</span> <span class="nv">changes: </span><span class="p">[]</span>
+        <span class="nx">append</span> <span class="nv">scripts: </span><span class="p">[],</span> <span class="nv">metatag: </span><span class="p">[],</span> <span class="nv">reserved: </span><span class="p">{}</span>
         <span class="nx">append</span> <span class="nv">externals: </span><span class="p">[],</span> <span class="nv">invokes: </span><span class="p">[],</span> <span class="nv">sources: </span><span class="p">[]</span>
-        <span class="nx">append</span> <span class="nv">scripts: </span><span class="p">[],</span> <span class="nv">cargo: </span><span class="p">[],</span> <span class="nv">reserved: </span><span class="nb">Object</span><span class="p">()</span>
         <span class="nv">v = </span><span class="nf">(fn, s) -&gt;</span> <span class="nx">format</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">fn</span><span class="p">,</span> <span class="k">try</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">s</span>
         <span class="nx">assert</span> <span class="nv">context.doctype = type = </span><span class="s">&quot;&lt;!DOCTYPE html&gt;&quot;</span>
         <span class="nx">assert</span> <span class="nv">t = </span><span class="s">&quot;(%s).call(</span><span class="si">#{</span><span class="nx">symbol</span> <span class="o">or</span> <span class="s">&quot;this&quot;</span><span class="si">}</span><span class="s">, (%s))&quot;</span>
@@ -246,15 +192,21 @@ of the internal and external codebase depends and relies on.</p></div></div><div
         <span class="nv">pusher = </span><span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">push</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span>
         <span class="nv">context.inline = </span><span class="nf">(implement) -&gt;</span> <span class="nx">pusher</span> <span class="nx">i</span><span class="p">(</span><span class="nx">implement</span><span class="p">)</span>
         <span class="nv">context.varargs = </span><span class="nf">(s...) -&gt;</span> <span class="nx">pusher</span> <span class="nx">v</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">last</span><span class="p">(</span><span class="nx">s</span><span class="p">),</span> <span class="nx">s</span><span class="p">)</span>
-        <span class="nv">context.transit = </span><span class="nf">(x, f) -&gt;</span> <span class="nx">pusher</span> <span class="nx">format</span> <span class="nx">t</span><span class="p">,</span> <span class="nx">f</span><span class="p">,</span> <span class="nx">x</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Get the contents of the resources at the established path. It
+        <span class="nv">context.transit = </span><span class="nf">(x, f) -&gt;</span> <span class="nx">pusher</span> <span class="nx">format</span> <span class="nx">t</span><span class="p">,</span> <span class="nx">f</span><span class="p">,</span> <span class="nx">x</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Get the contents of the resources at the established path. It
 is a good idea for this HTTP method to be idempotent. As the
 rule, this method does not have to alter any contents or data
 of the resource. Use for unobtrusive retrieval of resources.
 The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">GET: </span><span class="nf">(request, response, resource, domain, session) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">try</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nv">symbol = </span><span class="s">&quot;$root&quot;</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">toLowerCase</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nv">args = </span><span class="p">[</span><span class="nx">symbol</span><span class="p">,</span> <span class="nx">request</span><span class="p">,</span> <span class="kc">yes</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">]</span>
+        <span class="nv">message = </span><span class="s">&quot;Compile visual context of %s service&quot;</span>
+        <span class="nv">sizing = </span><span class="s">&quot;Compied %s bytes of a visual context&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">underline</span>
         <span class="nx">@assembleContext</span> <span class="nx">args</span><span class="p">...,</span> <span class="nf">(context, compiled) -&gt;</span>
             <span class="nv">length = </span><span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">compiled</span><span class="p">.</span><span class="nx">length</span> <span class="o">or</span> <span class="kc">undefined</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">sizing</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">length</span><span class="si">}</span><span class="s">&quot;</span><span class="p">.</span><span class="nx">bold</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">response.charset = </span><span class="s">&quot;utf-8&quot;</span>
             <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s">&quot;Content-Length&quot;</span><span class="p">,</span> <span class="nx">length</span>
             <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s">&quot;text/html&quot;</span>
             <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="mi">200</span><span class="p">,</span> <span class="nx">STATUS_CODES</span><span class="p">[</span><span class="mi">200</span><span class="p">]</span>

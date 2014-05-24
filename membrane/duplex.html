@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>membrane/duplex</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/duplex"><meta name="groc-project-path" content="library/membrane/duplex.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/duplex.coffee">library/membrane/duplex.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>membrane/duplex</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/duplex"><meta name="groc-project-path" content="library/membrane/duplex.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/duplex.coffee">library/membrane/duplex.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;a&#105;l&#x74;&#111;:&#x74;&#115;&#x33;&#51;&#107;&#114;&#64;&#103;&#x6d;&#x61;&#x69;&#108;&#46;&#x63;&#x6f;m">&#x74;&#115;&#x33;&#51;&#107;&#114;&#64;&#103;&#x6d;&#x61;&#x69;&#108;&#46;&#x63;&#x6f;m</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
@@ -46,35 +44,35 @@
 <span class="p">{</span><span class="nx">remote</span><span class="p">,</span> <span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./remote&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
 <span class="p">{</span><span class="nx">Preflight</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./preflight&quot;</span>
-<span class="p">{</span><span class="nx">Marshal</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./marshal&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This abstract base class can be used as either a direct parent or
-a compount to the <code>Screenplay</code> abstract service. It provides the
-unique ability of half duplex data exchange between the external
+<span class="p">{</span><span class="nx">Marshal</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./marshal&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This abstract base class can be used as either a direct parent or
+a compound to the <code>Screenplay</code> abstract service. It provides the
+unique ability of half duplex communications between the external
 code that is executed on the call site via <code>Screenplay</code> facility
-and an instance of the service that resides on the server site.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Duplex = </span><span class="k">class</span> <span class="nx">Duplex</span> <span class="k">extends</span> <span class="nx">Preflight</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+and an instance of the service that resides on the server site.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Duplex = </span><span class="k">class</span> <span class="nx">Duplex</span> <span class="k">extends</span> <span class="nx">Preflight</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
-channel (socket) gets connected and acknowledges by the server.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
+channel (socket) gets connected and acknowledged by a server.
 The method gets a set of parameters that maybe be useful to
 have by the actual implementation. Please remember thet the
-method is asynchronously wired, so be sure to call <code>next</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">connected: </span><span class="nf">(context, socket, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a socket
+method is asynchronously wired, so be sure to call <code>next</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">connected: </span><span class="nf">(context, socket, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a socket
 gets disconnected after it has passes through the connection.
 The method gets a set of parameters that maybe be useful to
 have by the actual implementation. Please remember thet the
-method is asynchronously wired, so be sure to call <code>next</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">disengage: </span><span class="nf">(context, socket, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
+method is asynchronously wired, so be sure to call <code>next</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">disengage: </span><span class="nf">(context, socket, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
 socket connection is going to be setup during the handshake.
 The method gets a set of parameters that maybe be useful to
 have by the actual implementation. Please remember thet the
-method is asynchronously wired, so be sure to call <code>next</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">handshaken: </span><span class="nf">(context, handshake, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
+method is asynchronously wired, so be sure to call <code>next</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">handshaken: </span><span class="nf">(context, handshake, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
 channel (socket) gets past authorization phase and is rated
 to be good to go through the screening process. This is good
 place to implementation various schemes for authorization. If
-you wish to decline, just don't call <code>next</code> and close socket.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">screening: </span><span class="nf">(context, socket, binder, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a sentence
+you wish to decline, just don't call <code>next</code> and close socket.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">screening: </span><span class="nf">(context, socket, binder, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a sentence
 comes through an opened channel. This happens every time when
 a client tries to invoke a server site provider method. This
 is a good place to validate if an invocation is legitimate or
-not. If you do not invoke <code>next</code> then the call won't happen!</p></div></div><div class="code"><div class="wrapper">    <span class="nv">sentence: </span><span class="nf">(socket, name, provider, args, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internal method that is wired into the Socket.IO context to
+not. If you do not invoke <code>next</code> then the call won't happen!</p></div></div><div class="code"><div class="wrapper">    <span class="nv">sentence: </span><span class="nf">(socket, name, provider, args, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An internal method that is wired into the Socket.IO context to
 take care of the very first socket authorization. This happens
 during the handshake phase. This method checks that handshake
 contains correct session requsities and restores the session!
@@ -86,29 +84,30 @@ The session can normally be used as you would use req session.</p></div></div><d
         <span class="nv">Response::setHeader = </span><span class="nf">(name, value) -&gt;</span> <span class="kc">undefined</span>
         <span class="nv">Response::end = </span><span class="nf">(data, encoding) -&gt;</span> <span class="kc">undefined</span>
         <span class="nx">cookies</span> <span class="nx">handshake</span><span class="p">,</span> <span class="nv">response = </span><span class="k">new</span> <span class="nx">Response</span><span class="p">,</span> <span class="o">=&gt;</span>
-            <span class="nx">session</span> <span class="nx">handshake</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="o">=&gt;</span>
-                <span class="nv">session = </span><span class="nx">handshake</span><span class="p">.</span><span class="nx">session</span>
-                <span class="nv">ns = </span><span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;no session found&quot;</span>
+            <span class="nx">session</span> <span class="nx">handshake</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nf">(parameter) =&gt;</span>
+                <span class="nv">session = </span><span class="nx">handshake</span><span class="p">.</span><span class="nx">session</span> <span class="o">or</span> <span class="kc">null</span>
+                <span class="nv">ns = </span><span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;no session detected&quot;</span>
                 <span class="k">return</span> <span class="nx">accept</span> <span class="nx">ns</span><span class="p">,</span> <span class="kc">no</span> <span class="k">unless</span> <span class="nx">session</span>
                 <span class="nv">handshaken = </span><span class="nx">@downstream</span> <span class="nv">handshaken: </span><span class="nf">-&gt;</span>
                     <span class="k">return</span> <span class="nx">accept</span> <span class="kc">undefined</span><span class="p">,</span> <span class="kc">yes</span>
-                <span class="k">return</span> <span class="nx">handshaken</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">downstream</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internal, static method that is used to obtain gurading
+                <span class="k">return</span> <span class="nx">handshaken</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">downstream</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An internal, static method that is used to obtain gurading
 domains for each of the declared server site providers. Please
 refer to the Node.js documentation for more information on
 the domains and error handling itself. This method is generally
 used only once per the domain declaration. See <code>provider</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@guarded: </span><span class="nf">(method, socket) -&gt;</span>
-        <span class="nx">assert</span> <span class="nv">identify = </span><span class="nx">@identify</span><span class="p">().</span><span class="nx">underline</span>
-        <span class="nx">assert</span> <span class="nv">guarded = </span><span class="nx">require</span><span class="p">(</span><span class="s">&quot;domain&quot;</span><span class="p">).</span><span class="nx">create</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nv">o = </span><span class="nx">Marshal</span><span class="p">.</span><span class="nx">serialize</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nv">i = </span><span class="nx">Marshal</span><span class="p">.</span><span class="nx">deserialize</span>
-        <span class="nv">location = </span><span class="s">&quot;Breakpoint at @</span><span class="si">#{</span><span class="nx">method</span><span class="si">}</span><span class="err">#</span><span class="s">%s&quot;</span>
-        <span class="nv">message = </span><span class="s">&quot;Error running provider:\r\n%s&quot;</span>
-        <span class="nx">guarded</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="nf">(error) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">guarded = </span><span class="nx">require</span><span class="p">(</span><span class="s">&quot;domain&quot;</span><span class="p">).</span><span class="nx">create</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">try</span> <span class="nx">@identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">guarded</span><span class="p">,</span> <span class="nv">body: </span><span class="nx">method</span><span class="p">,</span> <span class="nv">socket: </span><span class="nx">socket</span>
+        <span class="nv">location = </span><span class="s">&quot;Got breakpoint in the </span><span class="si">#{</span><span class="nx">method</span><span class="si">}</span><span class="err">#</span><span class="s">%s&quot;</span>
+        <span class="nv">message = </span><span class="s">&quot;Error while running provider:\r\n%s&quot;</span>
+        <span class="nv">fx = </span><span class="nf">(blob) =&gt;</span> <span class="nx">blob</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">;</span> <span class="k">return</span> <span class="nx">guarded</span>
+        <span class="nx">fx</span> <span class="nf">-&gt;</span> <span class="nx">guarded</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="nf">(error, optional) -&gt;</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="nx">location</span><span class="p">.</span><span class="nx">red</span><span class="p">,</span> <span class="nx">identify</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span><span class="p">,</span> <span class="nx">error</span><span class="p">.</span><span class="nx">stack</span>
             <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;exception&quot;</span><span class="p">,</span> <span class="nx">o</span><span class="p">([</span><span class="nx">error</span><span class="p">])...</span>
-            <span class="k">try</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">disconnect</span><span class="o">?</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nx">guarded</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A utility method to mark the certain function as the provider.
+            <span class="k">try</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">disconnect</span><span class="o">?</span><span class="p">()</span> <span class="k">catch</span> <span class="nx">error</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A utility method to mark the certain function as the provider.
 The method returns the original function back so it can be used
 as the normal function, nothing disrupts that. When function is
 marked as a provider, it will be exposed via Socket.IO channel
@@ -123,7 +122,7 @@ that this compound sets up: a half duplex web sockets channel.</p></div></div><d
         <span class="nv">method.provider = </span><span class="nx">parameters</span> <span class="o">or</span> <span class="p">{}</span>
         <span class="nv">method.isolation = </span><span class="nf">-&gt;</span> <span class="k">return</span> <span class="k">this</span>
         <span class="nv">method.providing = </span><span class="nx">applicator</span>
-        <span class="nv">method.origin = </span><span class="k">this</span><span class="p">;</span> <span class="nx">method</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a modification of the <code>provider</code> method that slightly
+        <span class="nv">method.origin = </span><span class="k">this</span><span class="p">;</span> <span class="nx">method</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a modification of the <code>provider</code> method that slightly
 changes the scoping/bind for the provider body implementation.
 Upon the provider invocation, this variation creates a shadow
 object derives from the services, therefore isolating calling
@@ -135,12 +134,12 @@ scope to this object that has all the socket and session set.</p></div></div><di
             <span class="k">return</span> <span class="nx">pci</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">pci = </span><span class="nx">socket</span><span class="p">.</span><span class="nx">shadow</span>
             <span class="nx">assert</span> <span class="k">this</span> <span class="o">isnt</span> <span class="nx">constructor</span><span class="p">,</span> <span class="s">&quot;scoping error&quot;</span>
             <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">shadow = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">create</span> <span class="k">this</span>
-            <span class="nv">isolating = </span><span class="s">&quot;Isolating provider call in %s&quot;</span>
-            <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">isolating</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">socket</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="s">&quot;</span>
+            <span class="nx">assert</span> <span class="nv">isolating = </span><span class="s">&quot;Isolated provider call in %s&quot;</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">isolating</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
             <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">shadow</span><span class="p">,</span> <span class="nv">__isolated: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">__origin: </span><span class="k">this</span>
             <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">shadow</span><span class="p">,</span> <span class="nv">session: </span><span class="nx">session</span><span class="p">,</span> <span class="nv">binder: </span><span class="nx">binder</span>
             <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">shadow</span><span class="p">,</span> <span class="nv">socket: </span><span class="nx">weak</span><span class="p">(</span><span class="nx">socket</span><span class="p">)</span> <span class="o">or</span> <span class="nx">socket</span>
-            <span class="nx">assert</span> <span class="nx">shadow</span><span class="p">.</span><span class="nx">socket</span><span class="p">;</span> <span class="nv">socket.shadow = </span><span class="nx">shadow</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An important method that pertains to the details of internal
+            <span class="nx">assert</span> <span class="nx">shadow</span><span class="p">.</span><span class="nx">socket</span><span class="p">;</span> <span class="nv">socket.shadow = </span><span class="nx">shadow</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An important method that pertains to the details of internal
 duplex implementation. This method is used to produce a wrapper
 around the provider invocation procedure. This wrapping is of
 protective nature. It also exposes some goodies for the provider.
@@ -160,13 +159,13 @@ Such as Socket.IO handle, session if available and the context.</p></div></div><
             <span class="nx">assert</span> <span class="nv">respond.session = socket.session = </span><span class="nx">session</span>
             <span class="nx">assert</span> <span class="nv">respond.binder = socket.binder = </span><span class="nx">binder</span>
             <span class="nx">assert</span> <span class="nv">respond.socket = socket.socket = </span><span class="nx">socket</span>
-            <span class="k">return</span> <span class="nx">execute</span> <span class="nx">parameters</span><span class="p">...,</span> <span class="nx">respond</span><span class="p">,</span> <span class="nx">session</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This server side method is called on the context prior to the
+            <span class="k">return</span> <span class="nx">execute</span> <span class="nx">parameters</span><span class="p">...,</span> <span class="nx">respond</span><span class="p">,</span> <span class="nx">session</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This server side method is called on the context prior to the
 context being compiled and flushed down to the client site. The
 method is wired in an synchronous way for greater functionality.
 This is the place where you would be importing the dependencies.
 Pay attention that most implementations side effect the context.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(symbol, context, request, next) -&gt;</span>
         <span class="nv">encrypted = </span><span class="nx">request</span><span class="p">.</span><span class="nx">connection</span><span class="p">.</span><span class="nx">encrypted</span>
-        <span class="nv">pure = </span><span class="sr">/[a-zA-Z0-9/-_]+/</span><span class="p">.</span><span class="nx">test</span> <span class="nx">@location</span><span class="p">()</span>
+        <span class="nv">pure = </span><span class="sr">/[a-zA-Z0-9\/-_]+/</span><span class="p">.</span><span class="nx">test</span> <span class="nx">@location</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nx">pure</span><span class="p">,</span> <span class="s">&quot;location is not pure enough&quot;</span>
         <span class="nv">proto = </span><span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s">&quot;x-forwarded-proto&quot;</span><span class="p">]</span>
         <span class="nv">enc = </span><span class="nx">encrypted</span> <span class="o">or</span> <span class="nx">proto</span> <span class="o">is</span> <span class="s">&quot;https&quot;</span> <span class="o">and</span> <span class="kc">yes</span>
@@ -177,59 +176,66 @@ Pay attention that most implementations side effect the context.</p></div></div>
             <span class="nv">providing = </span><span class="nx">value</span><span class="o">?</span><span class="p">.</span><span class="nx">providing</span> <span class="o">or</span> <span class="kc">null</span>
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">providing</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">providers</span><span class="p">.</span><span class="nx">push</span> <span class="nx">name</span>
-        <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internal provider that gets automatically invoked once client
+        <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An internal provider that gets automatically invoked once client
 establishes the protected Socket.IO transport back to the service
 instance at the server site. This implementation uses a composite
 <code>downstream</code> mechanism to invoke the <code>connected</code> method at every
 peers of the inheritance hierarchy. Refer to the method for info.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">trampoline: </span><span class="nx">@provider</span> <span class="nf">(context, callback) -&gt;</span>
-        <span class="nv">isocket = </span><span class="s">&quot;Executed the trampoline on %s&quot;</span>
+        <span class="nv">isocket = </span><span class="s">&quot;Executed %s socket trampoline&quot;</span>
         <span class="nv">message = </span><span class="s">&quot;Inbound duplex connection at %s&quot;</span>
-        <span class="nv">request = </span><span class="s">&quot;Acknowledged from request at %s&quot;</span>
+        <span class="nv">request = </span><span class="s">&quot;Acknowledged socket from %s request&quot;</span>
+        <span class="nx">assert</span> <span class="nv">discon = </span><span class="s">&quot;Disengaging %s of %s&quot;</span><span class="p">.</span><span class="nx">yellow</span>
         <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">try</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">underline</span>
-        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">request</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">url</span><span class="p">.</span><span class="nx">underline</span>
-        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">isocket</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span><span class="p">.</span><span class="nx">id</span>
-        <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;disconnect&quot;</span><span class="p">,</span> <span class="nf">(error) =&gt;</span>
-            <span class="nx">assert</span><span class="p">.</span><span class="nx">ifError</span> <span class="nx">error</span><span class="p">,</span> <span class="s">&quot;a broken disconnect&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">request</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">url</span><span class="p">.</span><span class="nx">underline</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">isocket</span><span class="p">.</span><span class="nx">green</span><span class="p">,</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">bold</span>
+        <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;disconnect&quot;</span><span class="p">,</span> <span class="nf">(error, args) =&gt;</span>
+            <span class="nx">assert</span> <span class="nv">identity = </span><span class="k">try</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">bold</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">discon</span><span class="p">,</span> <span class="nx">identity</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">underline</span>
             <span class="nx">assert</span> <span class="nv">disengage = </span><span class="nx">@downstream</span> <span class="nv">disengage: </span><span class="nf">-&gt;</span>
             <span class="k">return</span> <span class="nx">disengage</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span>
         <span class="nv">connected = </span><span class="nx">@downstream</span> <span class="nv">connected: </span><span class="nx">callback</span>
-        <span class="nx">connected</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span><span class="p">;</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an external method that will be automatically executed
+        <span class="nx">connected</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">socket</span><span class="p">;</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an external method that will be automatically executed
 on the client site by the duplex implementation. It sets up a
 client end of the Socket.IO channel and creates wrapper around
 all the providers residing in the current service implementation.
 Refer to other <code>Duplex</code> methods for understanding what goes on.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">bootloader: </span><span class="nx">@autocall</span> <span class="nv">z: </span><span class="o">+</span><span class="mi">101</span><span class="p">,</span> <span class="nf">-&gt;</span>
-        <span class="nv">options = </span><span class="k">new</span> <span class="nb">Object</span> <span class="nv">reconnect: </span><span class="kc">no</span><span class="p">,</span> <span class="nv">url: </span><span class="nx">@duplex</span>
+        <span class="nv">options = </span><span class="k">new</span> <span class="nb">Object</span> <span class="nv">reconnect: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">url: </span><span class="nx">@duplex</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">options</span><span class="p">,</span> <span class="s">&quot;reconnection delay&quot;</span><span class="o">:</span> <span class="mi">3000</span> <span class="c1"># millis</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">options</span><span class="p">,</span> <span class="s">&quot;reconnection limit&quot;</span><span class="o">:</span> <span class="mi">3000</span> <span class="c1"># linear</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">options</span><span class="p">,</span> <span class="s">&quot;max reconnection attempts&quot;</span><span class="o">:</span> <span class="mi">99999</span>
         <span class="k">try</span> <span class="vi">@socket = </span><span class="nx">io</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">@duplex</span><span class="p">,</span> <span class="nx">options</span> <span class="k">catch</span> <span class="nx">error</span>
             <span class="nv">message = </span><span class="s">&quot;blew up Socket.IO: </span><span class="si">#{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="si">}</span><span class="s">&quot;</span>
             <span class="nv">error.message = </span><span class="nx">message</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span> <span class="k">throw</span> <span class="nx">error</span>
-        <span class="nv">foreign = </span><span class="nf">(v, k) =&gt;</span> <span class="nx">v</span><span class="p">.</span><span class="nx">socket</span> <span class="o">or</span> <span class="nx">k</span> <span class="k">in</span> <span class="p">(</span><span class="nx">@externals</span> <span class="o">or</span> <span class="p">[])</span>
+        <span class="nx">@emit</span> <span class="s">&quot;socketing&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">socket</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">duplex</span><span class="p">,</span> <span class="nx">options</span>
         <span class="nv">failed = </span><span class="s">&quot;failed to establish the Socket.IO connection&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">@socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">),</span> <span class="nx">failed</span><span class="p">;</span> <span class="nx">@feedback</span><span class="p">()</span>
-        <span class="nv">osc = </span><span class="nf">(listener) =&gt;</span> <span class="nx">@socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connect&quot;</span><span class="p">,</span> <span class="nx">listener</span>
-        <span class="nx">osc</span> <span class="o">=&gt;</span> <span class="nx">@socket</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;screening&quot;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">omit</span><span class="p">(</span><span class="nx">@</span><span class="p">,</span> <span class="nx">foreign</span><span class="p">),</span> <span class="o">=&gt;</span>
+        <span class="nx">assert</span> <span class="k">this</span><span class="p">.</span><span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">,</span> <span class="nx">failed</span><span class="p">;</span> <span class="k">this</span><span class="p">.</span><span class="nx">socketFeedback</span><span class="p">()</span>
+        <span class="nv">osc = </span><span class="nf">(listener) =&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connect&quot;</span><span class="p">,</span> <span class="nx">listener</span>
+        <span class="nx">osc</span> <span class="o">=&gt;</span> <span class="nx">@socket</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;screening&quot;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pick</span><span class="p">(</span><span class="nx">@</span><span class="p">,</span> <span class="nx">@snapshot</span><span class="p">),</span> <span class="o">=&gt;</span>
             <span class="nx">assert</span> <span class="nx">@consumeProviders</span><span class="p">;</span> <span class="nx">@consumeProviders</span> <span class="nx">@socket</span>
             <span class="nv">open = </span><span class="s">&quot;successfully bootloaded at </span><span class="si">#{</span><span class="nx">@location</span><span class="si">}</span><span class="s">&quot;</span>
             <span class="nx">@</span><span class="kc">on</span> <span class="s">&quot;booted&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="vi">@booted = </span><span class="kc">yes</span><span class="p">;</span> <span class="vi">@duplexed = </span><span class="kc">yes</span>
             <span class="nx">@</span><span class="kc">on</span> <span class="s">&quot;booted&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">$root</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;attached&quot;</span><span class="p">,</span> <span class="k">this</span>
             <span class="nv">confirm = </span><span class="o">=&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">open</span><span class="p">;</span> <span class="nx">@emit</span> <span class="s">&quot;booted&quot;</span>
-            <span class="nx">@trampoline</span> <span class="nx">_</span><span class="p">.</span><span class="nx">omit</span><span class="p">(</span><span class="nx">@</span><span class="p">,</span> <span class="nx">foreign</span><span class="p">),</span> <span class="nx">confirm</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An externally exposed method that is a part of the bootloader
+            <span class="nx">@trampoline</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pick</span><span class="p">(</span><span class="nx">@</span><span class="p">,</span> <span class="nx">@snapshot</span><span class="p">),</span> <span class="nx">confirm</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An externally exposed method that is a part of the bootloader
 implementation. It sets up the communication feedback mechanism
 of a Socket.IO handle. Basically installs a bunch of handlers
 that intercept specific events and log the output to a console.
-Can be overriden to provide more meaningful feedback handlers.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">feedback: </span><span class="nx">external</span> <span class="nf">-&gt;</span>
-        <span class="nv">i = </span><span class="s">&quot;please see browser console for information&quot;</span>
-        <span class="nv">p = </span><span class="s">&quot;an exception happend at the server provider&quot;</span>
-        <span class="nv">c = </span><span class="s">&quot;error raised during socket connection: %s, </span><span class="si">#{</span><span class="nx">i</span><span class="si">}</span><span class="s">&quot;</span>
+Can be overriden to provide more meaningful feedback handlers.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">socketFeedback: </span><span class="nx">external</span> <span class="nf">-&gt;</span>
+        <span class="nv">c = </span><span class="s">&quot;an error raised during socket connection: %s&quot;</span>
+        <span class="nv">p = </span><span class="s">&quot;an exception happend at the server provider, %s&quot;</span>
+        <span class="nv">connected = </span><span class="s">&quot;established connection at </span><span class="si">#{</span><span class="nx">@location</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">reconnect = </span><span class="s">&quot;attempting to reconnect at </span><span class="si">#{</span><span class="nx">@location</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nv">connecting = </span><span class="s">&quot;attempting connection at </span><span class="si">#{</span><span class="nx">@location</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nv">disconnect = </span><span class="s">&quot;lost socket connection at </span><span class="si">#{</span><span class="nx">@location</span><span class="si">}</span><span class="s">&quot;</span>
-        <span class="nv">reconnecting = </span><span class="s">&quot;attempting to reconnect at </span><span class="si">#{</span><span class="nx">@location</span><span class="si">}</span><span class="s">&quot;</span>
-        <span class="nx">@socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;reconnecting&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">reconnecting</span>
-        <span class="nx">@socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connect_failed&quot;</span><span class="p">,</span> <span class="nf">(e) -&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">e</span>
+        <span class="nx">@socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;disconnect&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;disconnect&quot;</span> <span class="c1"># fwd</span>
+        <span class="nx">@socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connect_failed&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;disconnect&quot;</span>
+        <span class="nx">@socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;reconnecting&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">reconnect</span>
         <span class="nx">@socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;disconnect&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="nx">disconnect</span>
         <span class="nx">@socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connecting&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">connecting</span>
+        <span class="nx">@socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connect&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">connected</span>
         <span class="nx">@socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;exception&quot;</span><span class="p">,</span> <span class="nf">(e) -&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="nx">p</span><span class="p">,</span> <span class="nx">e</span>
-        <span class="nx">@socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="nf">(e) -&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">e</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An external routine that will be invoked once a both way duplex
+        <span class="nx">@socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="nf">(e) -&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">e</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An external routine that will be invoked once a both way duplex
 channel is established at the client site. This will normally
 unroll and set up all the providers that were deployed by the
 server site in the transferred context. Refer to the server
@@ -246,16 +252,16 @@ method called <code>publishProviders</code> for more information on it.</p></div
                 <span class="nx">assert</span> <span class="nv">mangled = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">@location</span><span class="si">}</span><span class="s">/</span><span class="si">#{</span><span class="nx">provider</span><span class="si">}</span><span class="s">&quot;</span>
                 <span class="nx">mangled</span> <span class="o">+=</span> <span class="s">&quot;/</span><span class="si">#{</span><span class="nx">nsp</span><span class="si">}</span><span class="s">&quot;</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">nsp = </span><span class="nx">@nsp</span>
                 <span class="nv">deliver = </span><span class="o">=&gt;</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">i</span><span class="p">(</span><span class="nx">arguments</span><span class="p">)</span>
-                <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span> <span class="nx">mangled</span><span class="p">,</span> <span class="nx">o</span><span class="p">(</span><span class="nx">parameters</span><span class="p">)...,</span> <span class="nx">deliver</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>After a both ways duplex channel has been established between
+                <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span> <span class="nx">mangled</span><span class="p">,</span> <span class="nx">o</span><span class="p">(</span><span class="nx">parameters</span><span class="p">)...,</span> <span class="nx">deliver</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>After a both ways duplex channel has been established between
 the client site and the server side, this method will be invoked
 in order to attach all of the providers founds in this service
 to the opened channel. Refer to the <code>register</code> implementation
 for more information on when, where and how this is happening.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">publishProviders: </span><span class="nf">(context, binder, socket, next) -&gt;</span>
         <span class="nx">_</span><span class="p">.</span><span class="nx">forIn</span> <span class="k">this</span><span class="p">,</span> <span class="nf">(value, name, service) =&gt;</span>
             <span class="nv">internal = </span><span class="s">&quot;the </span><span class="si">#{</span><span class="nx">value</span><span class="si">}</span><span class="s"> is not function&quot;</span>
-            <span class="nv">providing = </span><span class="nx">value</span><span class="o">?</span><span class="p">.</span><span class="nx">providing</span> <span class="o">or</span> <span class="kc">null</span>
-            <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">providing</span>
-            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">value</span><span class="p">),</span> <span class="nx">internal</span>
+            <span class="nv">providing = </span><span class="nx">value</span><span class="o">?</span><span class="p">.</span><span class="nx">providing</span> <span class="o">or</span> <span class="kc">undefined</span>
+            <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">providing</span> <span class="o">or</span> <span class="mi">0</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">value</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">internal</span>
             <span class="nv">bound = </span><span class="nx">providing</span> <span class="nx">socket</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">binder</span>
             <span class="nx">assert</span> <span class="nv">mangled = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">@location</span><span class="p">()</span><span class="si">}</span><span class="s">/</span><span class="si">#{</span><span class="nx">name</span><span class="si">}</span><span class="s">&quot;</span>
             <span class="nx">mangled</span> <span class="o">+=</span> <span class="s">&quot;/</span><span class="si">#{</span><span class="nx">nsp</span><span class="si">}</span><span class="s">&quot;</span> <span class="k">if</span> <span class="nv">nsp = </span><span class="nx">binder</span><span class="p">.</span><span class="nx">nsp</span>
@@ -263,14 +269,14 @@ for more information on when, where and how this is happening.</p></div></div><d
                 <span class="nv">sentence = </span><span class="nx">@downstream</span> <span class="nv">sentence: </span><span class="o">=&gt;</span>
                     <span class="nx">bound</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">args</span><span class="p">...,</span> <span class="nx">callback</span>
                 <span class="nx">sentence</span> <span class="nx">socket</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">args</span>
-        <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to registering the service
+        <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to registering the service
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
 Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">register: </span><span class="nf">(kernel, router, next) -&gt;</span>
-        <span class="nv">pure = </span><span class="sr">/[a-zA-Z0-9/-_]+/</span><span class="p">.</span><span class="nx">test</span> <span class="nx">@location</span><span class="p">()</span>
-        <span class="nx">assert</span> <span class="nx">pure</span><span class="p">,</span> <span class="s">&quot;location is not pure enough&quot;</span>
-        <span class="nv">resolve = </span><span class="nf">(handler) =&gt;</span> <span class="nx">handler</span><span class="p">.</span><span class="nx">of</span> <span class="nx">@location</span><span class="p">()</span>
+        <span class="nv">pure = </span><span class="sr">/[a-zA-Z0-9\/-_]+/</span><span class="p">.</span><span class="nx">test</span> <span class="nx">@location</span><span class="p">()</span>
+        <span class="nv">resolve = </span><span class="nf">(handler) =&gt;</span> <span class="k">try</span> <span class="nx">handler</span><span class="p">.</span><span class="nx">of</span> <span class="nx">@location</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nx">pure</span><span class="p">,</span> <span class="s">&quot;service location is not pure enough&quot;</span>
         <span class="nx">assert</span> <span class="nv">sserver = </span><span class="nx">kernel</span><span class="p">.</span><span class="nx">serverSocket</span><span class="p">,</span> <span class="s">&quot;no HTTP socket&quot;</span>
         <span class="nx">assert</span> <span class="nv">ssecure = </span><span class="nx">kernel</span><span class="p">.</span><span class="nx">secureSocket</span><span class="p">,</span> <span class="s">&quot;no HTTPS socket&quot;</span>
         <span class="nv">contexts = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="p">[</span><span class="nx">sserver</span><span class="p">,</span> <span class="nx">ssecure</span><span class="p">],</span> <span class="nx">resolve</span>
@@ -285,17 +291,24 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
             <span class="nx">assert</span> <span class="nv">applied = </span><span class="nx">@authorization</span> <span class="nx">context</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">authorization</span> <span class="nx">applied</span><span class="p">.</span><span class="nx">bind</span> <span class="k">this</span>
             <span class="k">return</span> <span class="nx">context</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connection&quot;</span><span class="p">,</span> <span class="nx">screener</span>
-        <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to unregistering the service
+        <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to unregistering the service
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
 Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">unregister: </span><span class="nf">(kernel, router, next) -&gt;</span>
-        <span class="nv">pure = </span><span class="sr">/[a-zA-Z0-9/-_]+/</span><span class="p">.</span><span class="nx">test</span> <span class="nx">@location</span><span class="p">()</span>
-        <span class="nx">assert</span> <span class="nx">pure</span><span class="p">,</span> <span class="s">&quot;location is not pure enough&quot;</span>
-        <span class="nv">resolve = </span><span class="nf">(handler) =&gt;</span> <span class="nx">handler</span><span class="p">.</span><span class="nx">of</span> <span class="nx">@location</span><span class="p">()</span>
+        <span class="nv">pure = </span><span class="sr">/[a-zA-Z0-9\/-_]+/</span><span class="p">.</span><span class="nx">test</span> <span class="nx">@location</span><span class="p">()</span>
+        <span class="nv">resolve = </span><span class="nf">(handler) =&gt;</span> <span class="k">try</span> <span class="nx">handler</span><span class="p">.</span><span class="nx">of</span> <span class="nx">@location</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nx">pure</span><span class="p">,</span> <span class="s">&quot;service location is not pure enough&quot;</span>
         <span class="nx">assert</span> <span class="nv">sserver = </span><span class="nx">kernel</span><span class="p">.</span><span class="nx">serverSocket</span><span class="p">,</span> <span class="s">&quot;no HTTP socket&quot;</span>
         <span class="nx">assert</span> <span class="nv">ssecure = </span><span class="nx">kernel</span><span class="p">.</span><span class="nx">secureSocket</span><span class="p">,</span> <span class="s">&quot;no HTTPS socket&quot;</span>
-        <span class="nv">remove = </span><span class="nf">(c) -&gt;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">removeAllListeners</span> <span class="s">&quot;connection&quot;</span>
-        <span class="nv">contexts = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="p">[</span><span class="nx">sserver</span><span class="p">,</span> <span class="nx">ssecure</span><span class="p">],</span> <span class="nx">resolve</span>
-        <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">contexts</span><span class="p">,</span> <span class="nf">(context) =&gt;</span> <span class="nx">remove</span> <span class="nx">context</span>
+        <span class="nx">assert</span> <span class="nv">f = </span><span class="s">&quot;disconnecting %s socket handle&quot;</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nv">l = </span><span class="nf">(socket) -&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">f</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">bold</span>
+        <span class="nv">p = </span><span class="nf">(c) -&gt;</span> <span class="nx">l</span><span class="p">(</span><span class="nx">c</span><span class="p">);</span> <span class="nx">c</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;shutdown&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">contexts = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="p">[</span><span class="nx">sserver</span><span class="p">,</span> <span class="nx">ssecure</span><span class="p">],</span> <span class="nx">resolve</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">contexts</span><span class="p">,</span> <span class="nf">(context, vector, addition) =&gt;</span>
+            <span class="k">try</span> <span class="nx">context</span><span class="p">.</span><span class="nx">removeAllListeners</span> <span class="s">&quot;connection&quot;</span>
+            <span class="nv">intern = </span><span class="s">&quot;missing a client listing function&quot;</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">clients</span><span class="p">),</span> <span class="nx">intern</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nv">clients = </span><span class="nx">context</span><span class="p">.</span><span class="nx">clients</span><span class="p">()</span>
+            <span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">p</span> <span class="nx">client</span> <span class="k">for</span> <span class="nx">client</span><span class="p">,</span> <span class="nx">index</span> <span class="k">in</span> <span class="nx">clients</span>
         <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span></div></div></div></div></body></html>

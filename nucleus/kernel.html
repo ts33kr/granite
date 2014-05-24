@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>nucleus/kernel</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/kernel"><meta name="groc-project-path" content="library/nucleus/kernel.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/kernel.coffee">library/nucleus/kernel.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>nucleus/kernel</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/kernel"><meta name="groc-project-path" content="library/nucleus/kernel.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/kernel.coffee">library/nucleus/kernel.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;&#x69;&#x6c;&#x74;&#x6f;:&#x74;&#115;3&#51;&#107;&#114;&#64;&#x67;&#109;&#97;i&#108;&#x2e;&#99;&#111;&#109;">&#x74;&#115;3&#51;&#107;&#114;&#64;&#x67;&#109;&#97;i&#108;&#x2e;&#99;&#111;&#109;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
 <span class="nv">moment = </span><span class="nx">require</span> <span class="s">&quot;moment&quot;</span>
@@ -47,28 +45,32 @@
 <span class="nv">routing = </span><span class="nx">require</span> <span class="s">&quot;./routing&quot;</span>
 <span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;./service&quot;</span>
 <span class="nv">scoping = </span><span class="nx">require</span> <span class="s">&quot;./scoping&quot;</span>
-<span class="nv">content = </span><span class="nx">require</span> <span class="s">&quot;./content&quot;</span>
 <span class="nv">plumbs = </span><span class="nx">require</span> <span class="s">&quot;./plumbs&quot;</span>
 <span class="nv">watch = </span><span class="nx">require</span> <span class="s">&quot;./watch&quot;</span>
 
+<span class="p">{</span><span class="nx">format</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 <span class="p">{</span><span class="nx">RedisStore</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;socket.io&quot;</span>
-<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./archetype&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a primary gateway interface for the framework. This class
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./archetype&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a primary gateway interface for the framework. This class
 provides methods and routines necessary to bootstrap the framework
 and the end user application constructed within the framework. It
 is both an abstract base class as well as a ready to use bootstrap.
-Please refer to the documentation of the methods for more info.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Generic = </span><span class="k">class</span> <span class="nx">Generic</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This static property should contain the loaded NPM package
+Please refer to the documentation of the methods for more info.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Generic = </span><span class="k">class</span> <span class="nx">Generic</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This static property should contain the loaded NPM package
 module which is used by the kernel to draw different kinds
 of the information and data. This could be overridden by the
 modified kernels that are custom to arbitrary applications.
-This definition (package.json) should corellate to framework.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">assert</span> <span class="vi">@FRAMEWORK = </span><span class="nx">pkginfo</span><span class="p">(</span><span class="nx">module</span><span class="p">)</span> <span class="o">and</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Create a new instance of the kernel, run all the prerequisites
+This definition (package.json) should corellate to framework.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">assert</span> <span class="vi">@FRAMEWORK = </span><span class="nx">pkginfo</span><span class="p">.</span><span class="nx">read</span><span class="p">(</span><span class="nx">module</span><span class="p">).</span><span class="nx">package</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This static property should contain the loaded NPM package
+module which is used by the kernel to draw different kinds
+of the information and data. This could be overridden by the
+modified kernels that are custom to arbitrary applications.
+This definition (package.json) should corellate to application.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">assert</span> <span class="vi">@APPLICATION = </span><span class="nx">pkginfo</span><span class="p">.</span><span class="nx">read</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()).</span><span class="nx">package</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Create a new instance of the kernel, run all the prerequisites
 that are necessary, do the configuration on the kernel, then
 boot it up, using the hostname and port parameters from config.
 Please use this static method instead of manually launching up.
-Refer to the static method <code>makeKernelSetup</code> for information.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@bootstrap: </span><span class="nf">(options={}) -&gt;</span> <span class="k">new</span> <span class="k">this</span> <span class="nx">@makeKernelSetup</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The kernel preemption routine is called once the kernel has
+Refer to the static method <code>makeKernelSetup</code> for information.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@bootstrap: </span><span class="nf">(options={}) -&gt;</span> <span class="k">new</span> <span class="k">this</span> <span class="nx">@makeKernelSetup</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The kernel preemption routine is called once the kernel has
 passed the initial launching and configuration phase, but is
 yet to start up the router, connect services and instantiate
 an actual application. This method gets passes continuation
-that does that. The method can either invoke it or omit it.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">kernelPreemption: </span><span class="nf">(continuation) -&gt;</span> <span class="nx">continuation</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either get or set an identica token. This token is application
+that does that. The method can either invoke it or omit it.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">kernelPreemption: </span><span class="nf">(continuation) -&gt;</span> <span class="nx">continuation</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Either get or set an identica token. This token is application
 identification string of a free form, but usually formed by a
 app name plus a verion after the at sign. If no arguments are
 supplied, the method will get identica, otherwise - attempt to
@@ -83,19 +85,19 @@ set one. If there is no identica - it asks the configuration.</p></div></div><di
         <span class="nv">noIdentica = </span><span class="s">&quot;the identica is not a string&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">identica</span><span class="p">),</span> <span class="nx">noIdentica</span>
         <span class="nx">assert</span> <span class="vi">@$identica = </span><span class="nx">identica</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nx">@emit</span><span class="o">?</span> <span class="s">&quot;identica&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Create and wire in an appropriate Connext middleware that will
+        <span class="k">return</span> <span class="nx">@emit</span><span class="o">?</span> <span class="s">&quot;identica&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Create and wire in an appropriate Connext middleware that will
 serve the specified directory as the directory with a static
 content. That is, it will expose it to the world (not list it).
 The serving aspects can be configured via a passed in options.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">serveStaticDirectory: </span><span class="nf">(directory, options={}) -&gt;</span>
         <span class="nx">assert</span> <span class="nv">cwd = </span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">().</span><span class="nx">toString</span><span class="p">()</span>
         <span class="nv">solved = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">relative</span> <span class="nx">cwd</span><span class="p">,</span> <span class="nx">directory</span>
-        <span class="nv">notExist = </span><span class="s">&quot;assets dir %s does not exist&quot;</span>
         <span class="nv">serving = </span><span class="s">&quot;Serving %s as static assets dir&quot;</span>
+        <span class="nv">notExist = </span><span class="s">&quot;The assets dir %s does not exist&quot;</span>
         <span class="nv">fail = </span><span class="nf">-&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">notExist</span><span class="p">,</span> <span class="nx">solved</span><span class="p">.</span><span class="nx">underline</span>
         <span class="k">return</span> <span class="nx">fail</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span> <span class="nx">directory</span>
         <span class="nv">middleware = </span><span class="nx">connect</span><span class="p">.</span><span class="nx">static</span> <span class="nx">directory</span><span class="p">,</span> <span class="nx">options</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">serving</span><span class="p">.</span><span class="nx">cyan</span><span class="p">,</span> <span class="nx">solved</span><span class="p">.</span><span class="nx">underline</span>
-        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">middleware</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An embedded system for adding ad-hoc configuration routines.
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">middleware</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An embedded system for adding ad-hoc configuration routines.
 Supply the reasoning and the routine and this method will add
 that routine to the configuration stack, to be launched once
 the kernel boots up. With no arguments it returns the launcher.
@@ -109,13 +111,12 @@ This is a convenient way of running additions config routines.</p></div></div><d
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">routine</span><span class="p">),</span> <span class="s">&quot;invalid config routine&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">explain</span><span class="p">),</span> <span class="s">&quot;no explanation given&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="nx">@$configure</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="k">new</span> <span class="nb">Object</span>
-            <span class="nv">explain: </span><span class="nx">explain</span><span class="p">,</span> <span class="nv">routine: </span><span class="nx">routine</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The complementary part of the kernel launching protocol. It is
+            <span class="nv">explain: </span><span class="nx">explain</span><span class="p">,</span> <span class="nv">routine: </span><span class="nx">routine</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The complementary part of the kernel launching protocol. It is
 invoked by the bootstrapping routine to do the actual kernel
 launch. If you are going to override the bootstrap procedures
 then override this static method, rather than the <code>bootstrap</code>.
 Be careful about the relations between methods when overriding.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@makeKernelSetup: </span><span class="nf">(options) -&gt;</span> <span class="nf">-&gt;</span>
         <span class="nx">assert</span> <span class="vi">@options = </span><span class="nx">_</span><span class="p">.</span><span class="nx">cloneDeep</span> <span class="nx">options</span>
-        <span class="vi">@broker = </span><span class="k">new</span> <span class="nx">content</span><span class="p">.</span><span class="nx">JsonBroker</span> <span class="k">this</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">@options</span><span class="p">),</span> <span class="s">&quot;no options&quot;</span>
         <span class="nv">manifest = </span><span class="s">&quot;Using %s as instance identica&quot;</span>
         <span class="nv">message = </span><span class="s">&quot;Booted up framework kernel instance&quot;</span>
@@ -134,7 +135,7 @@ Be careful about the relations between methods when overriding.</p></div></div><
             <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">@setupHotloadWatcher</span><span class="p">()</span>
             <span class="nx">assert</span> <span class="nv">identica = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identica</span><span class="p">()</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">manifest</span><span class="p">,</span> <span class="nx">identica</span><span class="p">.</span><span class="nx">bold</span>
-            <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The public constructor of the kernel instrances. Generally
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The public constructor of the kernel instrances. Generally
 you should neither use it directly, not override. It serves
 the purpose of setting up the configurations will never be
 changed, such as the kernel self identification tokens.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(initializer) -&gt;</span>
@@ -142,19 +143,32 @@ changed, such as the kernel self identification tokens.</p></div></div><div clas
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="vi">@token = </span><span class="nx">uuid</span><span class="p">.</span><span class="nx">v4</span><span class="p">()</span>
         <span class="nx">nconf</span><span class="p">.</span><span class="nx">env</span><span class="p">().</span><span class="nx">argv</span><span class="p">();</span> <span class="nx">@setupLoggingFacade</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="vi">@framework = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">FRAMEWORK</span>
-        <span class="k">try</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">APPLICATION</span> <span class="o">?=</span> <span class="nx">@framework</span>
         <span class="nx">assert</span> <span class="vi">@application = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">APPLICATION</span>
         <span class="nx">assert</span> <span class="nv">branding = </span><span class="p">[</span><span class="nx">@framework</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="s">&quot;smisome1&quot;</span><span class="p">]</span>
         <span class="nv">types = </span><span class="p">[</span><span class="nx">@framework</span><span class="p">.</span><span class="nx">version</span><span class="p">,</span> <span class="nx">@framework</span><span class="p">.</span><span class="nx">codename</span><span class="p">]</span>
         <span class="k">this</span><span class="p">.</span><span class="nx">interceptExceptions</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">initializer</span>
         <span class="k">return</span> <span class="nx">asciify</span> <span class="nx">branding</span><span class="p">...,</span> <span class="nf">(error, banner) =&gt;</span>
             <span class="nx">util</span><span class="p">.</span><span class="nx">puts</span> <span class="nx">banner</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">blue</span> <span class="k">unless</span> <span class="nx">error</span>
-            <span class="nv">identify = </span><span class="s">&quot;Running ver %s, codename: %s&quot;</span>
+            <span class="nv">identify = </span><span class="s">&quot;Running version %s, codename: %s&quot;</span>
             <span class="nv">using = </span><span class="s">&quot;Using %s class as the kernel type&quot;</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">underline</span><span class="p">,</span> <span class="nx">types</span><span class="p">...</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">using</span><span class="p">,</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">name</span><span class="p">.</span><span class="nx">bold</span>
             <span class="nx">@domain</span><span class="p">.</span><span class="nx">run</span> <span class="o">=&gt;</span> <span class="nx">initializer</span><span class="o">?</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span>
-            <span class="nx">@emit</span> <span class="s">&quot;ready&quot;</span><span class="p">,</span> <span class="nx">initializer</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This routines sets up the infrastructure necessary for kernel
+            <span class="nx">@emit</span> <span class="s">&quot;ready&quot;</span><span class="p">,</span> <span class="nx">initializer</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a little kernel registry broker that when asked to,
+goes to the router registry and attempts to find there the
+instance of the specified kind (class). If it succeeds then
+it returns an instance to the invoker. If not, however, it
+throws an assertion error about being unable to accquire.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">accquire: </span><span class="nf">(kinded, silent=no) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">ident = </span><span class="k">try</span> <span class="nx">kinded</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nv">error = </span><span class="s">&quot;could not find a %s in the registry&quot;</span>
+        <span class="nv">noKinded = </span><span class="s">&quot;the supplied arg has to be class&quot;</span>
+        <span class="nv">formatted = </span><span class="k">try</span> <span class="nx">format</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">ident</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nv">registry = </span><span class="nx">@router</span><span class="o">?</span><span class="p">.</span><span class="nx">registry</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">kinded</span><span class="p">.</span><span class="nx">__super__</span><span class="p">),</span> <span class="nx">noKinded</span>
+        <span class="nv">look = </span><span class="nf">(fxc) -&gt;</span> <span class="k">try</span> <span class="nx">fxc</span><span class="p">.</span><span class="nx">objectOf</span> <span class="nx">kinded</span><span class="p">,</span> <span class="kc">yes</span>
+        <span class="nv">spoted = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">registry</span><span class="p">,</span> <span class="nx">look</span><span class="p">)</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">spoted</span><span class="p">)</span> <span class="o">or</span> <span class="nx">silent</span><span class="p">,</span> <span class="nx">formatted</span>
+        <span class="k">try</span> <span class="nx">spotted</span><span class="p">.</span><span class="nx">accuired</span><span class="o">?</span> <span class="nx">kinded</span><span class="p">,</span> <span class="nx">silent</span><span class="p">;</span> <span class="nx">spoted</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This routines sets up the infrastructure necessary for kernel
 to properly intercept and process errors and exceptions. This
 includes synchronous exceptions as well as the asynchronous
 errors. Depending on the instance configuration this method
@@ -170,7 +184,7 @@ could either crash the kernel on error or proceed operations.</p></div></div><di
         <span class="nx">process</span><span class="p">.</span><span class="nx">removeAllListeners</span> <span class="s">&quot;uncaughtException&quot;</span>
         <span class="nx">process</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;uncaughtException&quot;</span><span class="p">,</span> <span class="nf">(error, arg) =&gt;</span>
             <span class="k">return</span> <span class="kc">no</span> <span class="k">if</span> <span class="nx">str</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="o">is</span> <span class="s">&quot;socket end&quot;</span>
-            <span class="k">return</span> <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="s">&quot;panic&quot;</span><span class="p">,</span> <span class="nx">error</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Shutdown the kernel instance. This includes shutting down both
+            <span class="k">return</span> <span class="nx">@emit</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="s">&quot;panic&quot;</span><span class="p">,</span> <span class="nx">error</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Shutdown the kernel instance. This includes shutting down both
 HTTP and HTTPS server that may be running, stopping the router
 and unregistering all the services as a precauting. After that
 the scope is being dispersed and some events are being emited.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">shutdownKernel: </span><span class="nf">(reason, eol=yes) -&gt;</span>
@@ -187,9 +201,9 @@ the scope is being dispersed and some events are being emited.</p></div></div><d
             <span class="k">try</span> <span class="nx">@secureSocket</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span> <span class="k">if</span> <span class="nx">@secureSocket</span><span class="o">?</span>
             <span class="k">try</span> <span class="nx">@serverSocket</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span> <span class="k">if</span> <span class="nx">@serverSocket</span><span class="o">?</span>
             <span class="nv">shutdown = </span><span class="s">&quot;Shutting the kernel instance down&quot;</span>
-            <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">shutdown</span><span class="p">.</span><span class="nx">red</span><span class="p">;</span> <span class="nx">@emit</span> <span class="s">&quot;shutdown&quot;</span>
-            <span class="nx">@scope</span><span class="o">?</span><span class="p">.</span><span class="nx">disperse</span><span class="p">();</span> <span class="nx">@domain</span><span class="o">?</span><span class="p">.</span><span class="nx">dispose</span><span class="p">()</span>
-            <span class="k">return</span> <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span> <span class="o">-</span><span class="mi">1</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The important internal routine that sets up and configures a
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">shutdown</span><span class="p">.</span><span class="nx">red</span><span class="p">;</span> <span class="k">this</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;shutdown&quot;</span>
+            <span class="nx">@scope</span><span class="o">?</span><span class="p">.</span><span class="nx">disintegrate</span><span class="p">();</span> <span class="nx">@domain</span><span class="o">?</span><span class="p">.</span><span class="nx">dispose</span><span class="p">()</span>
+            <span class="k">return</span> <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span> <span class="o">-</span><span class="mi">1</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The important internal routine that sets up and configures a
 kernel beacon that gets fired once at each configured interval.
 The beacon, once fired, gets propagated to all services that
 implement the appropriate asynchronous hook. This mechanism is
@@ -208,24 +222,26 @@ intended as a heartbeat that can be leveraged by each service.</p></div></div><d
             <span class="nx">assert</span> <span class="nv">services = </span><span class="nx">@router</span><span class="p">.</span><span class="nx">registry</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">pulse</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">unix</span><span class="si">}</span><span class="s">&quot;</span><span class="p">.</span><span class="nx">bold</span>
             <span class="nv">prepared = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">services</span><span class="p">,</span> <span class="nx">eua</span><span class="p">)</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
-            <span class="nx">async</span><span class="p">.</span><span class="nx">series</span> <span class="nx">prepared</span><span class="p">,</span> <span class="nf">(err, res) -&gt;</span> <span class="kc">null</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Instantiate a hot swapping watcher for this kernel and setup
+            <span class="nx">async</span><span class="p">.</span><span class="nx">series</span> <span class="nx">prepared</span><span class="p">,</span> <span class="nf">(err, res) -&gt;</span> <span class="kc">null</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Instantiate a hot swapping watcher for this kernel and setup
 the watcher per the scoping configuration to watch for certain
 directories. Please refer to the <code>Watcher</code> implementation for
 more information on its operations and configuration routines.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupHotloadWatcher: </span><span class="nf">-&gt;</span>
-        <span class="nx">assert</span> <span class="vi">@watcher = </span><span class="nx">do</span> <span class="o">=&gt;</span> <span class="k">new</span> <span class="nx">watch</span><span class="p">.</span><span class="nx">Watcher</span> <span class="k">this</span>
-        <span class="nv">subjects = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;watch:dirs&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="kc">undefined</span>
-        <span class="nv">config = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;layout:config&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="kc">undefined</span>
-        <span class="nv">library = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;layout:library&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="kc">undefined</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">subjects</span><span class="p">),</span> <span class="s">&quot;no watch configuration&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">library</span><span class="p">),</span> <span class="s">&quot;no library layout is set&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">config</span><span class="p">),</span> <span class="s">&quot;no config layout is set&quot;</span>
-        <span class="nx">assert</span> <span class="nv">watch = </span><span class="nx">@watcher</span><span class="p">.</span><span class="nx">watchDirectory</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@watcher</span>
+        <span class="nx">assert</span> <span class="vi">@watcher = </span><span class="k">new</span> <span class="nx">watch</span><span class="p">.</span><span class="nx">Watcher</span> <span class="k">this</span>
+        <span class="nv">subjects = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;watch:dirs&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nv">config = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;layout:config&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nv">library = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;layout:library&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">subjects</span><span class="p">),</span> <span class="s">&quot;no watch configured&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">library</span><span class="p">),</span> <span class="s">&quot;no library layout&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">config</span><span class="p">),</span> <span class="s">&quot;no config layout&quot;</span>
+        <span class="nv">watch = </span><span class="nx">@watcher</span><span class="p">.</span><span class="nx">watchDirectory</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@watcher</span>
         <span class="nx">watch</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">__dirname</span><span class="p">,</span> <span class="s">&quot;../exposure&quot;</span>
+        <span class="nx">watch</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">__dirname</span><span class="p">,</span> <span class="s">&quot;../semantic&quot;</span>
         <span class="nx">watch</span> <span class="nx">directory</span> <span class="k">for</span> <span class="nx">directory</span> <span class="k">in</span> <span class="nx">subjects</span>
-        <span class="nx">watch</span> <span class="nx">library</span><span class="p">;</span> <span class="nx">watch</span> <span class="nx">config</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The utilitary method that is being called by either the kernel
+        <span class="nx">watch</span> <span class="nx">library</span><span class="p">;</span> <span class="nx">watch</span> <span class="nx">config</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The utilitary method that is being called by either the kernel
 or scope implementation to establish the desirable facade for
 logging. The options from the config may be used to configure
 various options of the logger, such as output format, etc.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupLoggingFacade: </span><span class="nf">-&gt;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="vi">@logging = </span><span class="nx">logger</span>
         <span class="nx">assert</span> <span class="nv">format = </span><span class="s">&quot;DD/MM/YYYY @ HH:mm:ss&quot;</span>
         <span class="nv">stamp = </span><span class="nf">-&gt;</span> <span class="k">return</span> <span class="nx">moment</span><span class="p">().</span><span class="nx">format</span> <span class="nx">format</span>
         <span class="nv">options = timestamp: </span><span class="nx">stamp</span><span class="p">,</span> <span class="nv">colorize: </span><span class="kc">yes</span>
@@ -234,7 +250,7 @@ various options of the logger, such as output format, etc.</p></div></div><div c
         <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">noLevel</span> <span class="k">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">level</span>
         <span class="nx">assert</span> <span class="nv">console = </span><span class="nx">logger</span><span class="p">.</span><span class="nx">transports</span><span class="p">.</span><span class="nx">Console</span>
         <span class="k">try</span> <span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">remove</span> <span class="nx">console</span> <span class="k">catch</span> <span class="nx">error</span>
-        <span class="nx">logger</span><span class="p">.</span><span class="nx">add</span> <span class="nx">console</span><span class="p">,</span> <span class="nx">options</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This routine takes care of resolving all the necessary details
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">add</span> <span class="nx">console</span><span class="p">,</span> <span class="nx">options</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This routine takes care of resolving all the necessary details
 for successfully creating and running an HTTPS (SSL) server.
 The details are typically at least the key and the certficiate.
 This implementation draws data from the config file and then
@@ -250,7 +266,7 @@ used it to obtain the necessary content and whater else needs.</p></div></div><d
         <span class="nv">options.cert = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">cert</span>
         <span class="nx">assert</span> <span class="nx">options</span><span class="p">.</span><span class="nx">cert</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">64</span><span class="p">,</span> <span class="s">&quot;invalid SSL cert&quot;</span>
         <span class="nx">assert</span> <span class="nx">options</span><span class="p">.</span><span class="nx">key</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">64</span><span class="p">,</span> <span class="s">&quot;invalid SSL key&quot;</span>
-        <span class="nv">options.secure = </span><span class="nx">secure</span><span class="p">;</span> <span class="k">return</span> <span class="nb">Object</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup and launch either HTTP or HTTPS servers to listen at
+        <span class="nv">options.secure = </span><span class="nx">secure</span><span class="p">;</span> <span class="k">return</span> <span class="nb">Object</span> <span class="nx">options</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup and launch either HTTP or HTTPS servers to listen at
 the configured addresses and ports. This method reads up the
 scoping configuration in order to obtain the data necessary
 for instantiating, configuring and launching up the servers.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">startupHttpsServer: </span><span class="nf">-&gt;</span>
@@ -265,7 +281,7 @@ for instantiating, configuring and launching up the servers.</p></div></div><div
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">@domain</span><span class="p">;</span> <span class="nx">@domain</span><span class="p">.</span><span class="nx">add</span> <span class="nx">@secure</span>
         <span class="nx">do</span> <span class="o">=&gt;</span> <span class="nx">@secure</span><span class="p">.</span><span class="nx">listen</span> <span class="nx">server</span><span class="p">.</span><span class="nx">https</span><span class="p">,</span> <span class="nx">hostname</span>
         <span class="k">return</span> <span class="nx">@secure</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connection&quot;</span><span class="p">,</span> <span class="nf">(socket) -&gt;</span>
-            <span class="k">return</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">setNoDelay</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup and launch either HTTP or HTTPS servers to listen at
+            <span class="k">return</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">setNoDelay</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup and launch either HTTP or HTTPS servers to listen at
 the configured addresses and ports. This method reads up the
 scoping configuration in order to obtain the data necessary
 for instantiating, configuring and launching up the servers.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">startupHttpServer: </span><span class="nf">-&gt;</span>
@@ -279,10 +295,11 @@ for instantiating, configuring and launching up the servers.</p></div></div><div
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">@domain</span><span class="p">;</span> <span class="nx">@domain</span><span class="p">.</span><span class="nx">add</span> <span class="nx">@server</span>
         <span class="nx">do</span> <span class="o">=&gt;</span> <span class="nx">@server</span><span class="p">.</span><span class="nx">listen</span> <span class="nx">server</span><span class="p">.</span><span class="nx">http</span><span class="p">,</span> <span class="nx">hostname</span>
         <span class="k">return</span> <span class="nx">@server</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connection&quot;</span><span class="p">,</span> <span class="nf">(socket) -&gt;</span>
-            <span class="k">return</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">setNoDelay</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup and attach Socket.IO handlers to each of the servers.
+            <span class="k">return</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">setNoDelay</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup and attach Socket.IO handlers to each of the servers.
 That is HTTP and HTTPS servers that are running and listening
 for new connections. The kernel itself does not use the sockets
-it just sets it up. Please refer to the Socket.IO docs for info.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupSocketServers: </span><span class="nf">-&gt;</span>
+it just sets it up. Please refer to the Socket.IO docs for info.
+Also, see the <code>configureSocketServers</code> method implementation.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupSocketServers: </span><span class="nf">-&gt;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nv">sconfig = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;socket&quot;</span><span class="p">)</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Attaching Socket.IO to HTTPS server&quot;</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="s">&quot;Attaching Socket.IO to HTTP server&quot;</span>
@@ -303,7 +320,7 @@ it just sets it up. Please refer to the Socket.IO docs for info.</p></div></div>
             <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nv">pub = </span><span class="k">try</span> <span class="nx">compiled</span><span class="p">.</span><span class="nx">publish</span>
             <span class="nv">compiled.publish = </span><span class="nf">(n) -&gt;</span> <span class="nx">pub</span><span class="p">.</span><span class="nx">call</span> <span class="nx">compiled</span><span class="p">,</span> <span class="nx">n</span>
             <span class="nx">@secureSocket</span><span class="p">.</span><span class="nx">set</span> <span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="nx">compiled</span> <span class="o">or</span> <span class="p">{}</span>
-            <span class="nx">@serverSocket</span><span class="p">.</span><span class="nx">set</span> <span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="nx">compiled</span> <span class="o">or</span> <span class="p">{}</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This configuration utility sets up the environment for the
+            <span class="nx">@serverSocket</span><span class="p">.</span><span class="nx">set</span> <span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="nx">compiled</span> <span class="o">or</span> <span class="p">{}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This configuration utility sets up the environment for the
 Socket.IO server in the current kernel. Basically, this does
 the socket server configuration using the Socket.IO configure
 API to set the necessary options to opimize the performance.
@@ -325,7 +342,7 @@ Please refer to the implementation for more info on options.</p></div></div><div
             <span class="nx">k</span> <span class="nx">@handshaken</span><span class="p">[</span><span class="nx">ids</span><span class="p">[</span><span class="nx">index</span><span class="p">]],</span> <span class="nx">index</span> <span class="k">while</span> <span class="nx">index</span><span class="o">--</span>
         <span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">every</span><span class="p">.</span><span class="nx">enable</span> <span class="s">&quot;browser client minification&quot;</span>
         <span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">every</span><span class="p">.</span><span class="nx">enable</span> <span class="s">&quot;browser client etag&quot;</span>
-        <span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">every</span><span class="p">.</span><span class="nx">enable</span> <span class="s">&quot;browser client gzip&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup the Connect middleware framework along with the default
+        <span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">every</span><span class="p">.</span><span class="nx">enable</span> <span class="s">&quot;browser client gzip&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup the Connect middleware framework along with the default
 pipeline of middlewares necessary for the Granite framework to
 operate correctly. You are encouraged to override this method
 to provide a Connect setup procedure to your own liking, etc.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupConnectPipeline: </span><span class="nf">-&gt;</span>
@@ -337,16 +354,16 @@ to provide a Connect setup procedure to your own liking, etc.</p></div></div><di
         <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@compress = </span><span class="nx">connect</span><span class="p">.</span><span class="nx">compress</span><span class="p">()</span>
         <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@bodyParser = </span><span class="nx">connect</span><span class="p">.</span><span class="nx">bodyParser</span><span class="p">()</span>
         <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@cookieParser = </span><span class="nx">connect</span><span class="p">.</span><span class="nx">cookieParser</span><span class="p">()</span>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@parameters = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">parameters</span> <span class="k">this</span>
         <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@xSessionId = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">xSessionId</span> <span class="k">this</span>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@negotiate = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">negotiate</span> <span class="k">this</span>
         <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@platform = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">platform</span> <span class="k">this</span>
-        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@capture = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">capture</span> <span class="k">this</span>
-        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@params = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">params</span> <span class="k">this</span>
         <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@redirect = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">redirect</span> <span class="k">this</span>
         <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@session = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">session</span> <span class="k">this</span>
         <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@accepts = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">accepts</span> <span class="k">this</span>
-        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@sender = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">sender</span> <span class="k">this</span>
         <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@logger = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">logger</span> <span class="k">this</span>
-        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">@middleware</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup a set of appropriate Connect middlewares that will take
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="vi">@send = </span><span class="nx">plumbs</span><span class="p">.</span><span class="nx">send</span> <span class="k">this</span>
+        <span class="nx">@connect</span><span class="p">.</span><span class="nx">use</span> <span class="nx">@middleware</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup a set of appropriate Connect middlewares that will take
 care of serving static directory content for all configured
 assets directory, using the options drawed from configuration.
 You should override the method to tweak the creation process.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">connectStaticAssets: </span><span class="nf">-&gt;</span>
@@ -356,23 +373,23 @@ You should override the method to tweak the creation process.</p></div></div><di
         <span class="nv">pub = </span><span class="nf">-&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">envs</span><span class="p">,</span> <span class="nf">(dir) -&gt;</span> <span class="nx">dir</span> <span class="o">is</span> <span class="s">&quot;pub&quot;</span>
         <span class="nv">established = </span><span class="k">try</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">__dirname</span><span class="si">}</span><span class="s">/../../public&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">pub</span><span class="p">()),</span> <span class="s">&quot;no pub environment&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">opts</span><span class="p">),</span> <span class="s">&quot;no assets options&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">opts</span><span class="p">),</span> <span class="s">&quot;wrong assets options&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">dirs</span><span class="p">),</span> <span class="s">&quot;no assets directories&quot;</span>
         <span class="nx">@serveStaticDirectory</span> <span class="nx">d</span><span class="p">,</span> <span class="nx">opts</span> <span class="k">for</span> <span class="nx">d</span> <span class="k">in</span> <span class="nx">dirs</span>
         <span class="nx">@serveStaticDirectory</span> <span class="nx">established</span><span class="p">,</span> <span class="nb">Object</span><span class="p">()</span>
-        <span class="nx">@serveStaticDirectory</span> <span class="nx">pub</span><span class="p">();</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method sets up the necessary internal toolkits, such as
+        <span class="nx">@serveStaticDirectory</span> <span class="nx">pub</span><span class="p">();</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method sets up the necessary internal toolkits, such as
 the determined scope and the router, which is then are wired
 in with the located and instantiated services. Please refer
 to the implementation on how and what is being done exactly.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">setupScaffolding: </span><span class="nf">-&gt;</span>
-        <span class="nv">missing = </span><span class="s">&quot;no NODE_ENV variable found&quot;</span>
-        <span class="nv">tag = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;NODE_ENV&quot;</span> <span class="o">or</span> <span class="kc">undefined</span>
-        <span class="nv">mode = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;forever&quot;</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nv">tag = </span><span class="k">try</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;NODE_ENV&quot;</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nv">mode = </span><span class="k">try</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;forever&quot;</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nv">missing = </span><span class="s">&quot;no valid NODE_ENV variable found&quot;</span>
         <span class="nv">mode = </span><span class="nx">mode</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">().</span><span class="nx">underline</span> <span class="k">if</span> <span class="nx">mode</span>
         <span class="nv">bare = </span><span class="s">&quot;Running without Forever supervision&quot;</span>
         <span class="nv">supd = </span><span class="s">&quot;Running using %s mode within Forever&quot;</span>
-        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">tag</span><span class="p">),</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">missing</span><span class="si">}</span><span class="s">&quot;</span>
-        <span class="vi">@scope = </span><span class="nx">scoping</span><span class="p">.</span><span class="nx">Scope</span><span class="p">.</span><span class="nx">lookupOrFail</span> <span class="nx">tag</span>
-        <span class="nx">assert</span> <span class="k">this</span><span class="p">.</span><span class="nx">scope</span><span class="p">.</span><span class="nx">incorporate</span> <span class="k">this</span><span class="p">,</span> <span class="kc">null</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">tag</span><span class="p">),</span> <span class="nx">missing</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="vi">@scope = </span><span class="k">try</span> <span class="nx">scoping</span><span class="p">.</span><span class="nx">Scope</span><span class="p">.</span><span class="nx">lookup</span> <span class="nx">tag</span>
+        <span class="nx">assert</span> <span class="k">this</span><span class="p">.</span><span class="nx">scope</span><span class="p">.</span><span class="nx">incorporate</span> <span class="k">this</span><span class="p">,</span> <span class="kc">undefined</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">bare</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">red</span> <span class="k">unless</span> <span class="nx">mode</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">supd</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">red</span><span class="p">,</span> <span class="nx">mode</span> <span class="k">if</span> <span class="nx">mode</span>
         <span class="nx">assert</span> <span class="vi">@router = </span><span class="k">new</span> <span class="nx">routing</span><span class="p">.</span><span class="nx">Router</span> <span class="k">this</span>

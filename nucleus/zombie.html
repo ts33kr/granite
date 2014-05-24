@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>nucleus/zombie</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/zombie"><meta name="groc-project-path" content="library/nucleus/zombie.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/zombie.coffee">library/nucleus/zombie.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>nucleus/zombie</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/zombie"><meta name="groc-project-path" content="library/nucleus/zombie.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/zombie.coffee">library/nucleus/zombie.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;&#x69;&#x6c;&#x74;&#111;:&#x74;&#115;&#x33;&#51;&#x6b;&#114;&#x40;&#x67;&#109;&#x61;&#x69;&#108;.&#x63;o&#x6d;">&#x74;&#115;&#x33;&#51;&#x6b;&#114;&#x40;&#x67;&#109;&#x61;&#x69;&#108;.&#x63;o&#x6d;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
 <span class="nv">uuid = </span><span class="nx">require</span> <span class="s">&quot;node-uuid&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
@@ -36,27 +34,27 @@
 <span class="nv">scoping = </span><span class="nx">require</span> <span class="s">&quot;./scoping&quot;</span>
 
 <span class="p">{</span><span class="nx">Service</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./service&quot;</span>
-<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./archetype&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class that represents zombie service. A
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./archetype&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract base class that represents zombie service. A
 zombie service is a service that does not match any request but
 does live within the service infrastructure. The zombie exhibits
 singleton behavior. Typically zombies are used from outside of the
-service infrastructure, yet zombies service themvselves reside in.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Zombie = </span><span class="k">class</span> <span class="nx">Zombie</span> <span class="k">extends</span> <span class="nx">Service</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+service infrastructure, yet zombies service themvselves reside in.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Zombie = </span><span class="k">class</span> <span class="nx">Zombie</span> <span class="k">extends</span> <span class="nx">Service</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either obtain or set the HTTP location of the current service.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Either obtain or set the HTTP location of the current service.
 If not location has been set, but the one is requested then
 the deduced default is returned. Default location is the first
 resource regular expression pattern being unescaped to string.
-Do not confuse it with <code>qualified</code> method that deals with URL.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@location: </span><span class="nf">-&gt;</span> <span class="s">&quot;/</span><span class="si">#{</span><span class="nx">@reference</span><span class="p">()</span><span class="si">}</span><span class="s">/</span><span class="si">#{</span><span class="nx">@identify</span><span class="p">()</span><span class="si">}</span><span class="s">&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method determines whether the supplied HTTP request
+Do not confuse it with <code>qualified</code> method that deals with URL.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@location: </span><span class="nf">-&gt;</span> <span class="s">&quot;/</span><span class="si">#{</span><span class="nx">@reference</span><span class="p">()</span><span class="si">}</span><span class="s">/</span><span class="si">#{</span><span class="nx">@identify</span><span class="p">()</span><span class="si">}</span><span class="s">&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method determines whether the supplied HTTP request
 matches this service. This is determined by examining the
 domain/host and the path, in accordance with the patterns
 that were used for configuring the class of this service.
-It is async, so be sure to call the <code>decide</code> with boolean!</p></div></div><div class="code"><div class="wrapper">    <span class="nv">matches: </span><span class="nf">(request, response, decide) -&gt;</span> <span class="nx">decide</span> <span class="kc">no</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should process the already matched HTTP request.
+It is async, so be sure to call the <code>decide</code> with boolean!</p></div></div><div class="code"><div class="wrapper">    <span class="nv">matches: </span><span class="nf">(request, response, decide) -&gt;</span> <span class="nx">decide</span> <span class="kc">no</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method should process the already matched HTTP request.
 But since this is an abstract base class, this implementation
 only extracts the domain and pathname captured groups, and
 returns them to the caller. Override it to do some real job.
-The captured groups may be used by the overrider or ditched.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">process: </span><span class="nf">(request, response, next) -&gt;</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Obtain an instance of this zombie services. This method does
+The captured groups may be used by the overrider or ditched.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">process: </span><span class="nf">(request, response, next) -&gt;</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Obtain an instance of this zombie services. This method does
 implement the singleton behavior pattern. Beware however that
 although you will always get an instance handle from this method
 although there is no guarantee that this handle is initialized!</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@obtain: </span><span class="nf">(kernel, callback) -&gt;</span>
@@ -72,7 +70,7 @@ although there is no guarantee that this handle is initialized!</p></div></div><
         <span class="nx">assert</span> <span class="nv">singleton = </span><span class="nx">downstream</span> <span class="nv">singleton: </span><span class="nf">-&gt;</span>
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">callback</span>
             <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">@instance</span><span class="p">,</span> <span class="nx">kernel</span>
-        <span class="nx">singleton</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">@instance</span><span class="p">;</span> <span class="nx">@instance</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An important method whose responsibility is to create a new
+        <span class="nx">singleton</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">@instance</span><span class="p">;</span> <span class="nx">@instance</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An important method whose responsibility is to create a new
 instance of the service, which is later will be registered in
 the router. This is invoked by the watcher when it discovers
 new suitable services to register. This works asynchronously!</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@spawn: </span><span class="nf">(kernel, callback) -&gt;</span>

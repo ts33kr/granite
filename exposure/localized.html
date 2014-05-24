@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="en"><head><title>exposure/localized</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/localized"><meta name="groc-project-path" content="library/exposure/localized.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/localized.coffee">library/exposure/localized.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#x6f;:&#116;&#115;&#51;&#51;&#107;&#x72;&#x40;&#103;&#109;&#97;&#x69;&#108;&#46;&#99;&#x6f;&#x6d;">&#116;&#115;&#51;&#51;&#107;&#x72;&#x40;&#103;&#109;&#97;&#x69;&#108;&#46;&#99;&#x6f;&#x6d;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">request = </span><span class="nx">require</span> <span class="s">&quot;request&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">Duplex</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/duplex&quot;</span>
+<span class="p">{</span><span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span>
+<span class="p">{</span><span class="nx">Preflight</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/preflight&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This abstract compound provides the message localization services.
+It is implemented as a tiny, but unified toolkit that includes all
+the necessary instrumentation for the client site as well as for
+the server site to perform text (message) internationalisation. It
+shares the same concepts as I18N, Gettext and other similar kits.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Localized = </span><span class="k">class</span> <span class="nx">Localized</span> <span class="k">extends</span> <span class="nx">Duplex</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Specify the translation file for the current service. This
+file is meant to contain and provide internationalization
+messages. These are the strings to use for displaying with
+different languages. File format is YAML with the special
+structure that embeds multiple languages in a single file.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@messages: </span><span class="nf">(location, options={}) -&gt;</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">cwd = </span><span class="k">try</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="nx">@messageLocations</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nv">implicit = </span><span class="s">&quot;locale&quot;</span> <span class="c1"># default dir for messages</span>
+        <span class="nv">noLocation = </span><span class="s">&quot;the location has to be a string&quot;</span>
+        <span class="nv">noOptions = </span><span class="s">&quot;no suitable options are supplied&quot;</span>
+        <span class="nv">directory = </span><span class="nx">options</span><span class="p">.</span><span class="nx">dir</span> <span class="o">or</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">cwd</span><span class="si">}</span><span class="s">/</span><span class="si">#{</span><span class="nx">implicit</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">location</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noLocation</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">options</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noOptions</span>
+        <span class="k">this</span><span class="p">.</span><span class="nv">messageLocations = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span>
+            <span class="nv">directory: </span><span class="nx">directory</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+            <span class="nv">location: </span><span class="nx">location</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+            <span class="nv">options: </span><span class="nx">options</span> <span class="o">or</span> <span class="nb">Object</span><span class="p">()</span></div></div></div></div></body></html>

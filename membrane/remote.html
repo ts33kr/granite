@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>membrane/remote</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/remote"><meta name="groc-project-path" content="library/membrane/remote.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/remote.coffee">library/membrane/remote.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>membrane/remote</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/remote"><meta name="groc-project-path" content="library/membrane/remote.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/remote.coffee">library/membrane/remote.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;o:t&#115;&#x33;3&#x6b;&#x72;&#x40;&#x67;&#x6d;&#x61;i&#x6c;&#46;&#x63;&#x6f;&#x6d;">t&#115;&#x33;3&#x6b;&#x72;&#x40;&#x67;&#x6d;&#x61;i&#x6c;&#46;&#x63;&#x6f;&#x6d;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="p">{</span><span class="nx">EOL</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;os&quot;</span>
 
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
@@ -35,50 +33,32 @@
 <span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
 <span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
-<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internal method that will be bolted on the remote objects.
-Knows how to compile the citizens to be transferred onto the
-foreign environments under the specified or inherited symbol.
-Please refer to the implementation for greater understanding!
-The method knows how to recursively compile class hierarchies.</p></div></div><div class="code"><div class="wrapper"><span class="nv">compiler = module.exports.compiler = </span><span class="nf">(caching, symbol) -&gt;</span>
-    <span class="nv">noSymbol = </span><span class="s">&quot;symbol must be non empty&quot;</span>
-    <span class="vi">@symbol = </span><span class="nx">symbol</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">symbol</span>
-    <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">@symbol</span><span class="p">),</span> <span class="nx">noSymbol</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="nb">String</span> <span class="k">if</span> <span class="nx">@symbol</span> <span class="k">of</span> <span class="nx">caching</span>
-    <span class="nv">f = </span><span class="o">=&gt;</span> <span class="s">&quot;var </span><span class="si">#{</span><span class="nx">@symbol</span><span class="si">}</span><span class="s"> = (</span><span class="si">#{</span><span class="nx">@source</span><span class="si">}</span><span class="s">)()&quot;</span>
-    <span class="k">return</span> <span class="nx">f</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">@compiled</span>
-    <span class="nv">hierarchy = </span><span class="k">try</span> <span class="nx">@compiled</span><span class="p">.</span><span class="nx">hierarchy</span><span class="o">?</span><span class="p">()</span>
-    <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">hierarchy</span><span class="p">),</span> <span class="s">&quot;no hierarchy&quot;</span>
-    <span class="nv">hasRemote = </span><span class="nf">(x) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">x</span><span class="p">.</span><span class="nx">remote</span>
-    <span class="nv">compilation = </span><span class="nf">(x) -&gt;</span> <span class="nx">x</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">compile</span> <span class="nx">caching</span>
-    <span class="nv">areRemote = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">hierarchy</span><span class="p">,</span> <span class="nx">hasRemote</span>
-    <span class="nv">compiled = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">areRemote</span><span class="p">,</span> <span class="nx">compilation</span>
-    <span class="nv">bases = </span><span class="nx">compiled</span><span class="p">.</span><span class="nx">reverse</span><span class="p">().</span><span class="nx">join</span> <span class="nx">EOL</span> <span class="o">+</span> <span class="nx">EOL</span>
-    <span class="nv">assembled = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">bases</span><span class="si">}#{</span><span class="nx">EOL</span> <span class="o">+</span> <span class="nx">EOL</span><span class="si">}#{</span><span class="nx">f</span><span class="p">()</span><span class="si">}</span><span class="s">&quot;</span>
-    <span class="k">return</span> <span class="nx">caching</span><span class="p">[</span><span class="nx">@symbol</span><span class="p">]</span> <span class="o">=</span> <span class="nx">assembled</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A decorator style of routine that is used to capture the
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A decorator style of routine that is used to capture the
 source code of classes, functions and other first class
 citizens for later transportation on the other environment.
 Typically this would be the browser JS engine environment.
-Call it with an empty function argument wrapping target.</p></div></div><div class="code"><div class="wrapper"><span class="nv">remote = module.exports.remote = </span><span class="nf">(wrapper) -&gt;</span>
+Call it with an empty function argument wrapping target.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.remote = module.exports.cc = </span><span class="nf">(wrapper) -&gt;</span>
     <span class="nv">noWrapper = </span><span class="s">&quot;wrapper must be a function&quot;</span>
     <span class="nv">invalidArgs = </span><span class="s">&quot;wrapper cannot have arguments&quot;</span>
     <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">wrapper</span><span class="p">),</span> <span class="nx">noWrapper</span>
     <span class="nx">assert</span> <span class="nx">wrapper</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">invalidArgs</span>
     <span class="k">try</span> <span class="nv">compiled = </span><span class="nx">wrapper</span><span class="p">()</span> <span class="k">catch</span> <span class="nx">error</span>
-        <span class="nv">msg = </span><span class="s">&quot;compilation failed: </span><span class="si">#{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="si">}</span><span class="s">&quot;</span>
-        <span class="nv">error.message = </span><span class="nx">msg</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span> <span class="k">throw</span> <span class="nx">error</span>
+        <span class="nv">message = </span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nv">msg = </span><span class="s">&quot;compilation failed: </span><span class="si">#{</span><span class="nx">message</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">error.message = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">msg</span><span class="si">}</span><span class="s">&quot;</span><span class="p">;</span> <span class="k">throw</span> <span class="nx">error</span>
     <span class="nx">assert</span> <span class="nv">compiled.remote = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">create</span> <span class="p">{}</span>
     <span class="nx">assert</span> <span class="nv">compiled.remote.compiled = </span><span class="nx">compiled</span>
     <span class="nx">assert</span> <span class="nv">compiled.remote.compile = </span><span class="nx">compiler</span>
     <span class="nx">assert</span> <span class="nv">compiled.remote.source = </span><span class="nx">wrapper</span>
     <span class="nx">assert</span> <span class="nx">compiled</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">meta</span> <span class="o">?=</span> <span class="nb">Object</span><span class="p">()</span>
     <span class="nv">compiled.remote.symbol = </span><span class="nx">compiled</span><span class="p">.</span><span class="nx">name</span>
-    <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">compiled</span><span class="p">;</span> <span class="nx">compiled</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A handy shortcut for the <code>remote</code> decorator that can be used with
+    <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">compiled</span><span class="p">;</span> <span class="nx">compiled</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A handy shortcut for the <code>remote</code> decorator that can be used with
 pure functions (not classes) to avoid having the top level, zero
 arguments functional closure over the compiled routines that is
 only necessary for properly capturing classes. Please refer to
-the <code>remote</code> method for info, since it is relevant here as well.</p></div></div><div class="code"><div class="wrapper"><span class="nv">external = module.exports.external = </span><span class="nf">(compiled) -&gt;</span>
-    <span class="nv">notFunction = </span><span class="s">&quot;the compiled is not a function&quot;</span>
-    <span class="nv">wrongCompiled = </span><span class="s">&quot;do not use external with classes&quot;</span>
+the <code>remote</code> method for info, since it is relevant here as well.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.external = module.exports.ec = </span><span class="nf">(compiled) -&gt;</span>
+    <span class="nv">notFunction = </span><span class="s">&quot;a compiled is not a function&quot;</span>
+    <span class="nv">wrongCompiled = </span><span class="s">&quot;using external with classes&quot;</span>
     <span class="nx">assert</span><span class="p">.</span><span class="nx">ok</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">compiled</span><span class="p">),</span> <span class="nx">notFunction</span>
     <span class="nx">assert</span> <span class="o">not</span> <span class="nx">compiled</span><span class="p">.</span><span class="nx">__super__</span><span class="o">?</span><span class="p">,</span> <span class="nx">wrongCompiled</span>
     <span class="nv">wrapper = </span><span class="s">&quot;function() { return </span><span class="si">#{</span><span class="nx">compiled</span><span class="si">}</span><span class="s"> }&quot;</span>
@@ -88,4 +68,23 @@ the <code>remote</code> method for info, since it is relevant here as well.</p><
     <span class="nx">assert</span> <span class="nv">compiled.remote.source = </span><span class="nx">wrapper</span>
     <span class="nx">assert</span> <span class="nx">compiled</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">meta</span> <span class="o">?=</span> <span class="nb">Object</span><span class="p">()</span>
     <span class="nv">compiled.remote.symbol = </span><span class="nx">compiled</span><span class="p">.</span><span class="nx">name</span>
-    <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">compiled</span><span class="p">;</span> <span class="nx">compiled</span></div></div></div></div></body></html>
+    <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">compiled</span><span class="p">;</span> <span class="nx">compiled</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An internal method that will be bolted on the remote objects.
+Knows how to compile the citizens to be transferred onto the
+foreign environments under the specified or inherited symbol.
+Please refer to the implementation for greater understanding!
+The method knows how to recursively compile class hierarchies.</p></div></div><div class="code"><div class="wrapper"><span class="nv">compiler = module.exports.compiler = </span><span class="nf">(caching, symbol) -&gt;</span>
+    <span class="nv">noSymbol = </span><span class="s">&quot;a symbol must be non empty&quot;</span>
+    <span class="vi">@symbol = </span><span class="nx">symbol</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">symbol</span>
+    <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">@symbol</span><span class="p">),</span> <span class="nx">noSymbol</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nb">String</span> <span class="k">if</span> <span class="nx">@symbol</span> <span class="k">of</span> <span class="nx">caching</span>
+    <span class="nv">f = </span><span class="o">=&gt;</span> <span class="s">&quot;var </span><span class="si">#{</span><span class="nx">@symbol</span><span class="si">}</span><span class="s"> = (</span><span class="si">#{</span><span class="nx">@source</span><span class="si">}</span><span class="s">)()&quot;</span>
+    <span class="k">return</span> <span class="nx">f</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">@compiled</span>
+    <span class="nv">hierarchy = </span><span class="k">try</span> <span class="nx">@compiled</span><span class="p">.</span><span class="nx">hierarchy</span><span class="o">?</span><span class="p">()</span>
+    <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">hierarchy</span><span class="p">),</span> <span class="s">&quot;no hierarchy&quot;</span>
+    <span class="nv">hasRemote = </span><span class="nf">(val) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">val</span><span class="p">.</span><span class="nx">remote</span>
+    <span class="nv">compilation = </span><span class="nf">(x) -&gt;</span> <span class="nx">x</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">compile</span> <span class="nx">caching</span>
+    <span class="nv">areRemote = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">hierarchy</span><span class="p">,</span> <span class="nx">hasRemote</span>
+    <span class="nv">compiled = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">areRemote</span><span class="p">,</span> <span class="nx">compilation</span>
+    <span class="nv">bases = </span><span class="nx">compiled</span><span class="p">.</span><span class="nx">reverse</span><span class="p">().</span><span class="nx">join</span> <span class="nx">EOL</span> <span class="o">+</span> <span class="nx">EOL</span>
+    <span class="nv">assembled = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">bases</span><span class="si">}#{</span><span class="nx">EOL</span> <span class="o">+</span> <span class="nx">EOL</span><span class="si">}#{</span><span class="nx">f</span><span class="p">()</span><span class="si">}</span><span class="s">&quot;</span>
+    <span class="k">return</span> <span class="nx">caching</span><span class="p">[</span><span class="nx">@symbol</span><span class="p">]</span> <span class="o">=</span> <span class="nx">assembled</span></div></div></div></div></body></html>

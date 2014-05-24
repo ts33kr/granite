@@ -1,0 +1,129 @@
+<!DOCTYPE html><html lang="en"><head><title>membrane/billets</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/billets"><meta name="groc-project-path" content="library/membrane/billets.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/billets.coffee">library/membrane/billets.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;a&#105;&#108;&#x74;&#111;:&#x74;&#115;&#51;&#51;kr&#x40;&#x67;&#x6d;&#97;&#105;&#108;&#x2e;&#99;&#111;&#x6d;">&#x74;&#115;&#51;&#51;kr&#x40;&#x67;&#x6d;&#97;&#105;&#108;&#x2e;&#99;&#111;&#x6d;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">crypto = </span><span class="nx">require</span> <span class="s">&quot;crypto&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="nv">tools = </span><span class="nx">require</span> <span class="s">&quot;./../nucleus/tools&quot;</span>
+<span class="nv">extendz = </span><span class="nx">require</span> <span class="s">&quot;./../nucleus/extends&quot;</span>
+<span class="nv">compose = </span><span class="nx">require</span> <span class="s">&quot;./../nucleus/compose&quot;</span>
+
+<span class="p">{</span><span class="nx">EOL</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;os&quot;</span>
+<span class="p">{</span><span class="nx">format</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="p">{</span><span class="nx">STATUS_CODES</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
+<span class="p">{</span><span class="nx">remote</span><span class="p">,</span> <span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./remote&quot;</span>
+<span class="p">{</span><span class="nx">coffee</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./runtime&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an internal abstract base class that is not intended for
+being used directly. The class is being used by the implementation
+of framework sysrems to segregate the implementation of the visual
+core from the convenience API targeted to be used by a developers.
+Please refer to the <code>Screenplay</code> class for actual implementation.
+This can also contain non-developer internals of the visual core.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.VisualBillet = </span><span class="k">class</span> <span class="nx">VisualBillet</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This server side method is called on the context prior to the
+context being compiled and flushed down to the client site. The
+method is wired in an synchronous way for greater functionality.
+This is the place where you would be importing the dependencies.
+Pay attention that most implementations side effect the context.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(symbol, context, request, next) -&gt;</span>
+        <span class="nv">context.service = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
+        <span class="nv">context.params = </span><span class="nx">request</span><span class="p">.</span><span class="nx">params</span> <span class="o">or</span> <span class="p">{}</span>
+        <span class="nv">context.uuid = request: </span><span class="nx">request</span><span class="p">.</span><span class="nx">uuid</span>
+        <span class="nv">context.qualified = </span><span class="nx">@qualified</span><span class="p">()</span>
+        <span class="nv">context.location = </span><span class="nx">@location</span><span class="p">()</span>
+        <span class="nv">context.uuid.service = </span><span class="nx">@uuid</span>
+        <span class="nv">context.url = </span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Use this method in the <code>prelude</code> scope to bring dependencies into
+the scope. This method supports JavaScript scripts as a link or
+JavaScript sources passed in as the remote objects. Please refer
+to the implementation and the class for more information on it.
+An internal implementations in the framework might be using it.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">inject: </span><span class="nf">(context, subject, symbol) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">caching = </span><span class="nx">context</span><span class="p">.</span><span class="nx">caching</span> <span class="o">?=</span> <span class="k">new</span> <span class="nb">Object</span><span class="p">()</span>
+        <span class="nv">scripts = </span><span class="nf">-&gt;</span> <span class="nx">assert</span> <span class="nx">context</span><span class="p">.</span><span class="nx">scripts</span><span class="p">.</span><span class="nx">push</span> <span class="nx">subject</span>
+        <span class="nv">sources = </span><span class="nf">-&gt;</span> <span class="nx">assert</span> <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span><span class="p">.</span><span class="nx">push</span> <span class="nx">compile</span><span class="p">()</span>
+        <span class="nv">compile = </span><span class="nf">-&gt;</span> <span class="nx">subject</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">compile</span> <span class="nx">caching</span><span class="p">,</span> <span class="nx">symbol</span>
+        <span class="nv">invalid = </span><span class="s">&quot;not a remote object and not a JS link&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">context</span><span class="p">),</span> <span class="s">&quot;got invalid context&quot;</span>
+        <span class="nv">compilable = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">subject</span><span class="p">.</span><span class="nx">remote</span><span class="o">?</span><span class="p">.</span><span class="nx">compile</span>
+        <span class="k">return</span> <span class="nx">scripts</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">subject</span>
+        <span class="k">return</span> <span class="nx">sources</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span> <span class="k">if</span> <span class="nx">compilable</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">invalid</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Use this static method to mark up the remote/external methods
+that need to be automaticalled called, once everything is set
+on the client site and before the entrypoint gets executed. It
+is a get idea to place generic or setup code in the autocalls.
+Refer to <code>inlineAutocalls</code> method for params interpretation.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@autocall: </span><span class="nf">(parameters, method) -&gt;</span>
+        <span class="nv">isRemote = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">method</span><span class="o">?</span><span class="p">.</span><span class="nx">remote</span>
+        <span class="nv">notFunction = </span><span class="s">&quot;no function is passed in&quot;</span>
+        <span class="nv">method = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span>
+        <span class="nv">method = </span><span class="nx">external</span> <span class="nx">method</span> <span class="k">unless</span> <span class="nx">isRemote</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">method</span><span class="p">),</span> <span class="nx">notFunction</span>
+        <span class="nv">parameters = </span><span class="p">{}</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">parameters</span>
+        <span class="nv">method.remote.autocall = </span><span class="nx">parameters</span><span class="p">;</span> <span class="nx">method</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The awaiting directive is a lot like <code>autocall</code>, except the
+implementation will not be immediatelly , but rather when the
+specified signal is emited on the current context (service)
+object. Effectively, it is the same as creating the autocall
+that explicitly binds the event using <code>on</code> with the context.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@awaiting: </span><span class="nf">(event, method) -&gt;</span>
+        <span class="nv">invalidEvent = </span><span class="s">&quot;an invalid event supplied&quot;</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">event</span><span class="p">),</span> <span class="nx">invalidEvent</span>
+        <span class="nx">assert</span> <span class="nv">method = </span><span class="nx">@autocall</span> <span class="nb">Object</span><span class="p">(),</span> <span class="nx">method</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">method</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">autocall</span>
+        <span class="nv">method.remote.auto = </span><span class="nf">(symbol, key) -&gt;</span> <span class="nf">-&gt;</span>
+            <span class="nv">t = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">symbol</span><span class="si">}</span><span class="s">.on(%s, </span><span class="si">#{</span><span class="nx">symbol</span><span class="si">}</span><span class="s">.</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">)&quot;</span>
+            <span class="k">return</span> <span class="nx">format</span> <span class="nx">t</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">event</span>
+        <span class="nv">method.remote.meta.event = </span><span class="nx">event</span><span class="p">;</span> <span class="nx">method</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The exclusive directive is a lot like <code>awaiting</code>, except it
+removes all the event listeners that could have been binded
+to the event. And only once that has been done, it binds the
+supplied listener to the event, which will make it the only
+listener of that event at the point of a method invocation.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@exclusive: </span><span class="nf">(event, method) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">method = </span><span class="nx">@awaiting</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">method</span>
+        <span class="nv">fx = </span><span class="nf">(fn) -&gt;</span> <span class="nv">method.remote.auto = </span><span class="nx">fn</span><span class="p">;</span> <span class="nx">method</span>
+        <span class="nx">fx</span> <span class="nv">method.remote.auto = </span><span class="nf">(symbol, key) -&gt;</span> <span class="nf">-&gt;</span>
+            <span class="nv">k = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">symbol</span><span class="si">}</span><span class="s">.removeAllListeners(%s)&quot;</span>
+            <span class="nv">t = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">symbol</span><span class="si">}</span><span class="s">.on(%s, </span><span class="si">#{</span><span class="nx">symbol</span><span class="si">}</span><span class="s">.</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">)&quot;</span>
+            <span class="nv">binder = </span><span class="nx">format</span> <span class="nx">t</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">event</span>
+            <span class="nv">killer = </span><span class="nx">format</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">event</span>
+            <span class="s">&quot;(</span><span class="si">#{</span><span class="nx">killer</span><span class="si">}</span><span class="s">; </span><span class="si">#{</span><span class="nx">binder</span><span class="si">}</span><span class="s">)&quot;</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The awaiting directive is a lot like <code>autocall</code>, except the
+implementation will not be immediatelly , but rather when the
+specified signal is emited on the $root main service context
+object. Effectively, it is the same as creating the autocall
+that explicitly binds the event using <code>on</code> with the context.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@synchronize: </span><span class="nf">(event, method) -&gt;</span>
+        <span class="nv">invalidEvent = </span><span class="s">&quot;an invalid event supplied&quot;</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">event</span><span class="p">),</span> <span class="nx">invalidEvent</span>
+        <span class="nx">assert</span> <span class="nv">method = </span><span class="nx">@autocall</span> <span class="nb">Object</span><span class="p">(),</span> <span class="nx">method</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">method</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">autocall</span>
+        <span class="nv">select = </span><span class="s">&quot;$root&quot;</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">toLowerCase</span><span class="p">()</span>
+        <span class="nv">method.remote.auto = </span><span class="nf">(symbol, key) -&gt;</span> <span class="nf">-&gt;</span>
+            <span class="nv">t = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">select</span><span class="si">}</span><span class="s">.on(%s, </span><span class="si">#{</span><span class="nx">symbol</span><span class="si">}</span><span class="s">.</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">)&quot;</span>
+            <span class="k">return</span> <span class="nx">format</span> <span class="nx">t</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">event</span>
+        <span class="nv">method.remote.meta.event = </span><span class="nx">event</span><span class="p">;</span> <span class="nx">method</span></div></div></div></div></body></html>

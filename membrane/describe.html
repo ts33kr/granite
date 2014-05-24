@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>membrane/describe</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/describe"><meta name="groc-project-path" content="library/membrane/describe.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/describe.coffee">library/membrane/describe.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>membrane/describe</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/describe"><meta name="groc-project-path" content="library/membrane/describe.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/describe.coffee">library/membrane/describe.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#x61;&#105;l&#x74;&#x6f;:&#x74;&#115;&#x33;3&#107;&#x72;&#64;&#x67;&#109;&#97;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#x6d;">&#x74;&#115;&#x33;3&#107;&#x72;&#64;&#x67;&#109;&#97;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#x6d;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
@@ -37,15 +35,15 @@
 <span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
 
 <span class="p">{</span><span class="nx">Stubs</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/stubs&quot;</span>
-<span class="p">{</span><span class="nx">Document</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./document&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class API stub service. Its purpose is
+<span class="p">{</span><span class="nx">Document</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./document&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract base class API stub service. Its purpose is
 providing the boilerplate for documentation and speicification of
 the services using the built it documentation mechanisn. This class
 provide not only function for definition but also for retrieval of
-the documentation on either the per-service or all-at-once basis.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Descriptor = </span><span class="k">class</span> <span class="nx">Descriptor</span> <span class="k">extends</span> <span class="nx">Stubs</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+the documentation on either the per-service or all-at-once basis.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Descriptor = </span><span class="k">class</span> <span class="nx">Descriptor</span> <span class="k">extends</span> <span class="nx">Stubs</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Define a set of aliases that allow for extremely convenient
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Define a set of aliases that allow for extremely convenient
 and short way of running the description against the REST
 methods. These definitions proxy the calls from static scope
 to the prototype scope, and implicitly run the description
@@ -54,7 +52,7 @@ routine on the targeted REST methods. Prefer using these.</p></div></div><div cl
     <span class="vi">@PATCH = </span><span class="nf">(fn) -&gt;</span> <span class="nx">@lazy</span> <span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">PATCH</span><span class="p">,</span> <span class="nx">fn</span>
     <span class="vi">@POST = </span><span class="nf">(fn) -&gt;</span> <span class="nx">@lazy</span> <span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">POST</span><span class="p">,</span> <span class="nx">fn</span>
     <span class="vi">@PUT = </span><span class="nf">(fn) -&gt;</span> <span class="nx">@lazy</span> <span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">PUT</span><span class="p">,</span> <span class="nx">fn</span>
-    <span class="vi">@GET = </span><span class="nf">(fn) -&gt;</span> <span class="nx">@lazy</span> <span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">GET</span><span class="p">,</span> <span class="nx">fn</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method allows to configure the service with respect to
+    <span class="vi">@GET = </span><span class="nf">(fn) -&gt;</span> <span class="nx">@lazy</span> <span class="nf">-&gt;</span> <span class="nx">@describe</span> <span class="nx">@prototype</span><span class="p">.</span><span class="nx">GET</span><span class="p">,</span> <span class="nx">fn</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method allows to configure the service with respect to
 choosing to be documented or not. If the documentation is
 enabled on the service, the description system will gather
 its documentation and publish it via a doc system publisher.
@@ -65,7 +63,7 @@ The specific documentation settings will not be inherited!</p></div></div><div c
         <span class="nv">invalidFlag = </span><span class="s">&quot;the flag has to be boolean&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isBoolean</span><span class="p">(</span><span class="nx">boolean</span><span class="p">),</span> <span class="nx">invalidFlag</span>
         <span class="k">return</span> <span class="vi">@$documentation = </span><span class="k">this</span> <span class="k">if</span> <span class="nx">boolean</span>
-        <span class="k">delete</span> <span class="nx">@$documentation</span><span class="p">;</span> <span class="k">return</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Traverse all of the services that are registered with the router
+        <span class="k">delete</span> <span class="nx">@$documentation</span><span class="p">;</span> <span class="k">return</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Traverse all of the services that are registered with the router
 and collect the documentation for each method, then given this
 information, build a hierarhical tree object of all the methods
 and the services that implement them and return to the invoker.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">collectDescriptions: </span><span class="nf">(substitution) -&gt;</span>
@@ -77,7 +75,7 @@ and the services that implement them and return to the invoker.</p></div></div><
         <span class="nv">services = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">services</span><span class="p">,</span> <span class="nx">conformant</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
         <span class="nv">services = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">services</span><span class="p">,</span> <span class="nx">publishing</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="s">&quot;Collecting service API documentation&quot;</span>
-        <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">services</span><span class="p">,</span> <span class="nx">@documentService</span><span class="p">.</span><span class="nx">bind</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Part of the internal descriptor system implementation. This
+        <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">services</span><span class="p">,</span> <span class="nx">@documentService</span><span class="p">.</span><span class="nx">bind</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Part of the internal descriptor system implementation. This
 method is invoked for each of the collected service that are
 determined to be eligable to publishing their documentation.
 It basically extracts the documentation out of the service,
@@ -92,7 +90,7 @@ does the necessary initializations on it and return the doc.</p></div></div><div
         <span class="nv">args = </span><span class="nf">(method) =&gt;</span> <span class="k">return</span> <span class="p">[</span><span class="nx">method</span><span class="p">,</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">@kernel</span><span class="p">]</span>
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">link = </span><span class="nx">service</span><span class="p">.</span><span class="nx">qualified</span><span class="p">()</span>
         <span class="nx">doc</span><span class="p">.</span><span class="nx">descriptor</span><span class="o">?</span> <span class="nx">args</span><span class="p">(</span><span class="nx">m</span><span class="p">)...</span> <span class="k">for</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">doc</span> <span class="k">of</span> <span class="nx">methods</span>
-        <span class="k">return</span> <span class="nv">service: </span><span class="nx">service</span><span class="p">,</span> <span class="nv">methods: </span><span class="nx">methods</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Describe the supplied method of arbitrary service, in a structured
+        <span class="k">return</span> <span class="nv">service: </span><span class="nx">service</span><span class="p">,</span> <span class="nv">methods: </span><span class="nx">methods</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Describe the supplied method of arbitrary service, in a structured
 and expected way, so that it can later be used to programmatically
 process such documentation and do with it whatever is necessary.
 This approach gives unique ability to build self documented APIs.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@describe: </span><span class="nf">(method, descriptor) -&gt;</span>

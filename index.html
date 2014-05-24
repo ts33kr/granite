@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>index</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content=""><meta name="groc-document-path" content="index"><meta name="groc-project-path" content="README.md"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="assets/style.css"><script type="text/javascript" src="assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/README.md">README.md</a></div></div><div id="document"><div class="segment"><div class="comments"><div class="wrapper"><h2 id="overview">Overview</h2>
+<!DOCTYPE html><html lang="en"><head><title>index</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content=""><meta name="groc-document-path" content="index"><meta name="groc-project-path" content="README.md"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="assets/style.css"><script type="text/javascript" src="assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/README.md">README.md</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h2 id="overview">Overview</h2>
 
 <p>Granite is a web development framework for Node.js. The focus of
 the framework is providing the foundation for building enterprise
@@ -33,7 +33,98 @@ The overall architecture of Granite makes it perfect for engineers.
 Granite makes hard emphasis on the decomposed objective architecture
 in order to provide enterprise level design and make the factor of
 the reusable code sky high. It also embeds in or provides support for
-the community standard sort of toolkits, such as NPM, Bower, Cakefile.</p>
+the community standard sort of toolkits, such as NPM and Bower managers.</p>
+
+<h2 id="highlights">Highlights</h2>
+
+<p>In this paragraph we will give you a brief overview of the features
+that make Granite what it is. Most of the highlights will refer to
+the files containing source code, either as a part of implementation
+or as a usage example; please bear with us on this one, as it is the
+most up-to-date sort of documentation that we have, due to the fact
+that our project is young and its design changes and evoles rapidly.
+Below follows a bullet-list of highlights currently implemented. We
+also strongly encourage you to browse over the project source codes
+and discover more pieces there, ones that haven't been documented yet.
+Use http://ts33kr.github.io/granite for browsing.</p>
+
+<ul>
+<li><p>A unique extension to the object system, written using pure
+CoffeeScript that allows for completely transparent and dynamic
+multiple inheritance, modelled similar to the mixin concept. It
+allows you to build modular pieces of functionality that can be
+reused in any class. The system is unobtrusive and makes use of
+declarative style to keep the syntax clean, when you have a lot
+of different building blocks mixed into your class. Please see
+<a href="library/nucleus/compose.coffee">nucleus/compose.coffee</a> for
+the composition system implementation coding.</p></li>
+<li><p>Natively keeping client-side and server-side code within the
+same class, naturally co-existing and interacting between two
+remote scopes. Allows for a massively superior way of building
+abstractions that abstract away the whole patterns and protocols
+that hide or carry away the interactions between the client and
+the server. It completely frees your of routine and allows to
+focus only on what matters, not on the code required for code.
+See <a href="library/membrane/visual.coffee">membrane/visual.coffee</a>
+and the related for an implementation boilerplate.</p></li>
+<li><p>A bi-directional and real time communication channel that is
+entirely transparent to a developer - it looks just like a usual
+method invocation, with all the guts: parameters, callbacks and
+so on. All of the client/server transportation complexities are
+hidden under the hood, without the need of every touching them.
+The channel uses latest, state-of-the-art technologies, such as
+<a href="http://socket.io">Socket.IO</a> to implement it. Please refer to
+<a href="library/membrane/duplex.coffee">membrane/duplex.coffee</a> and
+<a href="library/membrane/bilateral.coffee">membrane/bilateral.coffee</a>
+for the reference coding and info.</p></li>
+<li><p>A strong layer for implementing conventional application APIs.
+The REST architecture is shipped out of the box, with posibility
+of deep customization to fit in any architecture on top of HTTP.
+Has a built in support for advanced features, like the embedded
+declarative documentation and testing subsystems wired into it.
+Everything is built around an exceptionally strong object model
+and makes uses of an automatic wiring that requires zero level
+configuration for creating and discovering new services. See
+<a href="library/exposure/publish.coffee">exposure/publish.coffee</a>.</p></li>
+<li><p>A production grade load balancing and failover clustering
+provided right out of the box. Delivered by technology called
+<a href="https://github.com/substack/seaport">Seaport</a> it provides a
+lot of advanced functionality, such as the node autodiscovery
+and no need for initial configuration. It allows to dynamically
+create star-like topologies in a matter of seconds, supporting
+any order of brinding nodes up (master and slaves). The shipped
+balancing algorithm is a simple, session-sticky round robin. See
+<a href="library/nucleus/scaled.coffee">nucleus/scaled.coffee</a> file for
+the scalable kernel implementation.</p></li>
+<li><p>Due to the strong objective design principles, it is extremely
+easy to write components (classes) that contain the client side
+coding as well as the server side coding. A frontend package manager
+<a href="http://bower.io">Bower</a> is built right into the framework in order
+to provide the flexible ability to embed the frontend dependencies
+directly into your components. The dependencies are intelligently
+resolved and automatically satisfied during the node bootloaing;
+in a configurable maner. For the implementation coding see
+<a href="library/membrane/bower.coffee">membrane/bower.coffee</a>.</p></li>
+<li><p>An out of the box configuration system allows you to consume
+configuration data (files) right away, wihtout setting up any
+sort of boilerplate. The system is based on a well known package
+called <a href="https://github.com/flatiron/nconf">NConf</a>. Refer to the
+<a href="library/nucleus/scoping.coffee">nucleus/scoping.coffee</a> to get
+some idea about the implementation. On top of this, there are a
+set of tools shipped out of the box that make good use of this,
+such as <a href="http://mongodb.org">MongoDB</a> and <a href="http://redis.io">Redis</a>
+clients (components) that can be mixed into your service and
+used right away, without having to think about configuration.</p></li>
+<li><p>Extremely viable kernel built into the framework. An application
+(node) is automatically reloaded in case of an unexpected crash or
+error and has extensive configuration capabilities as to reacting
+to the unexpected conditions. The technology is based on something
+called <a href="https://github.com/nodejitsu/forever">forever</a>. On top of
+this, the framework has a built in memory monitor that watches an
+application to not exceed the configured limit and reloads an app
+if it does so. See <a href="library/exposure/memory.coffee">exposure/memory.coffee</a>
+for the monitor implementation coding and information.</p></li>
+</ul>
 
 <h2 id="disclaimer">Disclaimer</h2>
 
@@ -53,4 +144,4 @@ targeted towards the end users, such as user guide or manual are not
 there just yet. So you have to be ready to go digging deep into code.
 What should be also mentioned is that framework is under the active
 development and we would appreciate the feedback very much. So you
-can always can on a friendly support ready to give you a hand with it!</p></div></div></div></div></body></html>
+can always count on a friendly support ready to give you a hand with it!</p></div></div></div></div></body></html>

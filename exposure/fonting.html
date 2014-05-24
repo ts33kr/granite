@@ -1,0 +1,93 @@
+<!DOCTYPE html><html lang="en"><head><title>exposure/fonting</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/fonting"><meta name="groc-project-path" content="library/exposure/fonting.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/fonting.coffee">library/exposure/fonting.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#x61;&#x69;l&#116;&#111;:t&#115;&#x33;&#51;&#107;r&#64;&#x67;&#x6d;&#97;&#x69;&#108;&#x2e;&#99;&#111;&#109;">t&#115;&#x33;&#51;&#107;r&#64;&#x67;&#x6d;&#97;&#x69;&#108;&#x2e;&#99;&#111;&#109;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">request = </span><span class="nx">require</span> <span class="s">&quot;request&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">format</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span>
+<span class="p">{</span><span class="nx">Preflight</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/preflight&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This abstract compound provides the internal service API for the
+automatic generation of necessary links and then inclusion of the
+required tags to use the confgured fonts provided by the Google
+Fonts service that generates the CSS stylesheets with settings.
+Please refer to the Google docs to get info on the fonts format.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.GoogleFonts = </span><span class="k">class</span> <span class="nx">GoogleFonts</span> <span class="k">extends</span> <span class="nx">Preflight</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This server side method is called on the context prior to the
+context being compiled and flushed down to the client site. The
+method is wired in an asynchronous way for greater functionality.
+This is the place where you would be importing the dependencies.
+Pay attention that most implementations side effect the context.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(symbol, context, request, next) -&gt;</span>
+        <span class="nv">googlefonts = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">googlefonts</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">googlefonts</span><span class="p">),</span> <span class="s">&quot;invalid fonts&quot;</span>
+        <span class="nx">assert</span> <span class="nv">googlefonts = </span><span class="k">try</span> <span class="nx">googlefonts</span><span class="p">.</span><span class="nx">reverse</span><span class="p">()</span>
+        <span class="nv">j = </span><span class="nf">(strc) -&gt;</span> <span class="k">return</span> <span class="nx">strc</span><span class="p">.</span><span class="nx">typographs</span><span class="p">.</span><span class="nx">join</span> <span class="s">&quot;,&quot;</span>
+        <span class="nv">t = </span><span class="s">&quot;https://fonts.googleapis.com/css?family=%s&quot;</span>
+        <span class="nv">foldtyp = </span><span class="nf">(x) -&gt;</span> <span class="nv">family: </span><span class="nx">x</span><span class="p">.</span><span class="nx">family</span><span class="p">,</span> <span class="nv">joined: </span><span class="nx">j</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+        <span class="nv">infusor = </span><span class="nf">(fx) -&gt;</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">fx</span><span class="p">.</span><span class="nx">family</span><span class="si">}</span><span class="s">:</span><span class="si">#{</span><span class="nx">fx</span><span class="p">.</span><span class="nx">joined</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">extract = </span><span class="nf">(record) -&gt;</span> <span class="k">try</span> <span class="k">return</span> <span class="nx">record</span><span class="p">.</span><span class="nx">family</span>
+        <span class="nv">googlefonts = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">googlefonts</span><span class="p">,</span> <span class="nx">extract</span>
+        <span class="nx">assert</span> <span class="nv">prepped = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">googlefonts</span><span class="p">,</span> <span class="nx">foldtyp</span>
+        <span class="nx">assert</span> <span class="nv">infused = </span><span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">prepped</span><span class="p">,</span> <span class="nx">infusor</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">blob = </span><span class="nx">infused</span><span class="p">.</span><span class="nx">join</span> <span class="s">&quot;|&quot;</span>
+        <span class="nx">context</span><span class="p">.</span><span class="nx">sheets</span><span class="p">.</span><span class="nx">push</span> <span class="nx">format</span> <span class="nx">t</span><span class="p">,</span> <span class="nx">blob</span><span class="p">;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Add the described font to the font request that is going to be
+compiled and emited when the context is assembled. Description
+of a font is formed of a font family name and a vector of the
+typographic descriptions, such as sizes and styles. Values in
+the vector can be strings or any others - all are stringified.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@googlefont: </span><span class="nf">(family, typographs...) -&gt;</span>
+        <span class="nv">string = </span><span class="nf">(val) -&gt;</span> <span class="k">return</span> <span class="nx">val</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nv">isntEmpty = </span><span class="nf">-&gt;</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="nx">@googlefonts</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nv">empty = </span><span class="s">&quot;got an empty font typograph handler&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">family</span><span class="p">),</span> <span class="s">&quot;no valid family&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">typographs</span><span class="p">),</span> <span class="s">&quot;no typographs&quot;</span>
+        <span class="nx">assert</span> <span class="nv">typographs = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">typographs</span><span class="p">,</span> <span class="nx">string</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">typographs</span><span class="p">,</span> <span class="nx">isntEmpty</span><span class="p">),</span> <span class="nx">empty</span>
+        <span class="vi">@googlefonts = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="k">new</span> <span class="nb">Object</span>
+            <span class="nv">family: </span><span class="nx">family</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/\s/g</span><span class="p">,</span> <span class="s">&quot;+&quot;</span>
+            <span class="nv">typographs: </span><span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span> <span class="nx">typographs</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is the composition hook that gets invoked when compound
+is being composed into other services and components. Merges
+together added jscripts found in both hierarchies, the current
+one and the foreign (the one that is beign merged in). Exists
+for backing up the consistent behavior when using composition.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@composition: </span><span class="nf">(destination) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">currents = </span><span class="k">this</span><span class="p">.</span><span class="nx">googlefonts</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nv">previous = </span><span class="nx">destination</span><span class="p">.</span><span class="nx">googlefonts</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">destination</span><span class="p">.</span><span class="nx">derives</span> <span class="nx">GoogleFonts</span>
+        <span class="nx">assert</span> <span class="nx">previous</span><span class="o">?</span> <span class="o">and</span> <span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">previous</span>
+        <span class="nx">assert</span> <span class="nv">merged = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">currents</span>
+        <span class="nx">assert</span> <span class="nv">merged = </span><span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span> <span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">merged</span>
+        <span class="nx">assert</span> <span class="k">try</span> <span class="nv">destination.googlefonts = </span><span class="nx">merged</span>
+        <span class="k">try</span> <span class="k">super</span> <span class="k">catch</span> <span class="nx">error</span> <span class="k">finally</span> <span class="k">return</span> <span class="k">this</span></div></div></div></div></body></html>

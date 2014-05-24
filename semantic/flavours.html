@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="en"><head><title>semantic/flavours</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="semantic/flavours"><meta name="groc-project-path" content="library/semantic/flavours.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/semantic/flavours.coffee">library/semantic/flavours.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;&#x69;&#108;&#116;&#x6f;:&#x74;&#115;&#51;&#51;&#107;&#114;&#x40;g&#x6d;&#97;&#x69;&#108;&#x2e;&#99;&#x6f;&#109;">&#x74;&#115;&#51;&#51;&#107;&#114;&#x40;g&#x6d;&#97;&#x69;&#108;&#x2e;&#99;&#x6f;&#109;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="p">{</span><span class="nx">Preflight</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/preflight&quot;</span>
+<span class="p">{</span><span class="nx">GoogleFonts</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../exposure/fonting&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract compound that is intended for the services to
+be composed in. It customizes a hosting service to include all the
+prerequisites necessary to properly make usage of the Semantic UI
+frontend framework that atre shipped within the primary framework.
+This frontend scaffolding is used to style the provided components.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Semantic = </span><span class="k">class</span> <span class="nx">Semantic</span> <span class="k">extends</span> <span class="nx">Preflight</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These invocations establish the parameters which are going
+to be used for matching HTTP requests against this service.
+Typically an HTTP pathname pattern and a domain name pattern.
+Try not to put constraints on the domain, unless necessary.
+Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@compose</span> <span class="nx">GoogleFonts</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block defines a set of fonts that are used throughout the
+site. The fonts are employed by the means of the external CSS
+stylesheet. However, the fonts are requested, downloaded and
+setup with help of Google Fonts API and a corresponding class
+that implement the functionality, which is the <code>GoogleFonts</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@googlefont</span> <span class="s">&quot;Open Sans&quot;</span><span class="p">,</span> <span class="s">&quot;300italic&quot;</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">700</span>
+    <span class="nx">@googlefont</span> <span class="s">&quot;Source Sans Pro&quot;</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">700</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block here defines a set of assets, such as CSS styles
+or JavaScript files that will be included on every context
+emited by the service that composes this abstract base class
+in. Remember that these links are as they will appear on the
+client browser, unless some else, overriding options are set.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@javascript</span> <span class="s">&quot;javascript/semantic.min.js&quot;</span>
+    <span class="nx">@stylesheet</span> <span class="s">&quot;css/semantic.min.css&quot;</span>
+    <span class="nx">@stylesheet</span> <span class="s">&quot;css/semantic.uix.css&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block define a set of meta tags that specify or tweak
+the way a client browser treats the content that it has got
+from the server site. Please refer to the HTML5 specification
+for more information on the exact semantics of any meta tag.
+Reference the <code>Preflight</code> for the implementation guidance.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@metatag</span> <span class="nv">charset: </span><span class="s">&quot;utf-8&quot;</span></div></div></div></div></body></html>

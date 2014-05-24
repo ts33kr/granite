@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>nucleus/stubs</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/stubs"><meta name="groc-project-path" content="library/nucleus/stubs.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/stubs.coffee">library/nucleus/stubs.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>nucleus/stubs</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/stubs"><meta name="groc-project-path" content="library/nucleus/stubs.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/stubs.coffee">library/nucleus/stubs.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;a&#x69;&#x6c;&#x74;&#x6f;:&#116;&#x73;&#x33;&#51;&#x6b;&#x72;&#64;&#x67;&#x6d;&#97;&#105;&#x6c;.&#x63;&#x6f;&#x6d;">&#116;&#x73;&#x33;&#51;&#x6b;&#x72;&#64;&#x67;&#x6d;&#97;&#105;&#x6c;.&#x63;&#x6f;&#x6d;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
@@ -34,64 +32,64 @@
 <span class="nv">routing = </span><span class="nx">require</span> <span class="s">&quot;./routing&quot;</span>
 <span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;./service&quot;</span>
 
-<span class="p">{</span><span class="nx">Restful</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./restful&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An abstract base class with all of the HTTP methods, defined in
+<span class="p">{</span><span class="nx">Restful</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./restful&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An abstract base class with all of the HTTP methods, defined in
 the HTTP specification and covered by the base implementation
 stubbed with default implementations. By default, the methods
 will throw the 405, method not allowed HTTP error status code.
 The methods have implementations, but marked as the unsupported.
-The ABC also provides stubbed implementation for the API hooks.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Stubs = </span><span class="k">class</span> <span class="nx">Stubs</span> <span class="k">extends</span> <span class="nx">Restful</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+The ABC also provides stubbed implementation for the API hooks.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Stubs = </span><span class="k">class</span> <span class="nx">Stubs</span> <span class="k">extends</span> <span class="nx">Restful</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called once the Connect middleware writes
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called once the Connect middleware writes
 off the headers. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">headers: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to invoking the API method
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">headers: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to invoking the API method
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">preprocess: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called after invoking the API method
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">preprocess: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called after invoking the API method
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">postprocess: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to sending the errors over
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">postprocess: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to sending the errors over
 to the requester. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prerejection: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called after the sending the errors over
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prerejection: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called after the sending the errors over
 to the requester. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">postrejection: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to sending the content over
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">postrejection: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to sending the content over
 to the requester. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prepushing: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called after the sending the content over
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prepushing: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called after the sending the content over
 to the requester. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">postpushing: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should generally be used to obtain HTTP methods that
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">postpushing: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method should generally be used to obtain HTTP methods that
 are allowed on this resources. This is not the only possible way
 of implementing this method, because it usually can have a lot of
 different interpretations other than the one in the HTTP spec.
-The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">OPTIONS: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Delete the contents of the resources at the establushed path. It
+The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">OPTIONS: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Delete the contents of the resources at the establushed path. It
 generally should destroy the contents of the resource for good.
 Be sure to provide enough protection for your API for destructive
 HTTP methods like this one. Apply it to indicate destruction.
-The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">DELETE: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Alter the contents of the resources at the established path. It
+The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">DELETE: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Alter the contents of the resources at the established path. It
 usually means partial replacing contents with the new contents.
 This HTTP method nicely maps to UPDATE method of the storages.
 Use this method to partially replace the contents of resources.
-The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">PATCH: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Append the contents to the resources at the established path. It
+The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">PATCH: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Append the contents to the resources at the established path. It
 usually means adding new content in addition to the old one. This
 HTTP method nicely maps to INSERT method of the storage engines.
 Use this method to successively append new contents to resources.
-The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">POST: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Alter the contents of the resources at the established path. It
+The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">POST: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Alter the contents of the resources at the established path. It
 usually means replacing the old contents with the new contents.
 This HTTP method nicely maps to UPDATE method of the storages.
 Use this method to repetidely replace the contents of resources.
-The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">PUT: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Get the contents of the resources at the established path. It
+The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">PUT: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">unsupported</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Get the contents of the resources at the established path. It
 is a good idea for this HTTP method to be idempotent. As the
 rule, this method does not have to alter any contents or data
 of the resource. Use for unobtrusive retrieval of resources.

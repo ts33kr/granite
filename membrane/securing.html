@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>membrane/securing</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/securing"><meta name="groc-project-path" content="library/membrane/securing.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/securing.coffee">library/membrane/securing.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>membrane/securing</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/securing"><meta name="groc-project-path" content="library/membrane/securing.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/securing.coffee">library/membrane/securing.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;i&#108;&#x74;&#111;:t&#x73;&#51;&#51;&#107;&#x72;&#x40;&#x67;&#109;&#x61;&#x69;&#108;.&#99;&#111;m">t&#x73;&#51;&#51;&#107;&#x72;&#x40;&#x67;&#109;&#x61;&#x69;&#108;.&#99;&#111;m</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
@@ -39,20 +37,20 @@
 <span class="p">{</span><span class="nx">Duplex</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./duplex&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
 <span class="p">{</span><span class="nx">RedisClient</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./redis&quot;</span>
-<span class="nv">tools = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/tools&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an extension of the <code>Duplex</code> abstract base service that
+<span class="nv">tools = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/tools&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an extension of the <code>Duplex</code> abstract base service that
 implements a dialogue sort of protection for the duplex channel.
 It means that a client who made the initial GET request must be
 ensured to be the same client that tried to connect over duplex
 channel. Also, each request has a TTL for the duplex connection.
-The implementation depends on <code>RedisClient</code> and running Redis!</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.RDuplex = </span><span class="k">class</span> <span class="nx">RDuplex</span> <span class="k">extends</span> <span class="nx">Duplex</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+The implementation depends on <code>RedisClient</code> and running Redis!</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.RDuplex = </span><span class="k">class</span> <span class="nx">RDuplex</span> <span class="k">extends</span> <span class="nx">Duplex</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>These invocations establish the parameters which are going
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These invocations establish the parameters which are going
 to be used for matching HTTP requests against this service.
 Typically an HTTP pathname pattern and a domain name pattern.
 Try not to put constraints on the domain, unless necessary.
-Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@compose</span> <span class="nx">RedisClient</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called once the Connect middleware writes
+Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@compose</span> <span class="nx">RedisClient</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called once the Connect middleware writes
 off the headers. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
@@ -68,7 +66,7 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
             <span class="nx">assert</span><span class="p">.</span><span class="nx">ifError</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">internal</span> <span class="nx">error</span>
             <span class="nx">@redis</span><span class="p">.</span><span class="nx">expire</span> <span class="nx">gen</span><span class="p">(</span><span class="nx">key</span><span class="p">(</span><span class="nx">u</span><span class="p">)),</span> <span class="mi">60</span><span class="p">,</span> <span class="nf">(error) -&gt;</span>
                 <span class="nx">assert</span><span class="p">.</span><span class="nx">ifError</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">internal</span> <span class="nx">error</span>
-                <span class="nx">assert</span> <span class="nx">value</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">;</span> <span class="k">return</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
+                <span class="nx">assert</span> <span class="nx">value</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">;</span> <span class="k">return</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A usable hook that gets asynchronously invoked once a new
 channel (socket) gets past the prescreening hook and is rated
 to be good to go through the screening process. This is good
 place to implementation various schemes for authorization. If
@@ -83,15 +81,15 @@ you wish to decline, just don't call <code>next</code> and close socket.</p></di
             <span class="nx">assert</span><span class="p">.</span><span class="nx">ifError</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">internal</span> <span class="nx">error</span>
             <span class="k">return</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">()</span> <span class="k">if</span> <span class="nx">value</span> <span class="o">&lt;</span> <span class="mi">0</span>
             <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="nx">value</span> <span class="o">and</span> <span class="nx">value</span> <span class="o">&gt;=</span> <span class="mi">1</span>
-            <span class="nx">@redis</span><span class="p">.</span><span class="nx">del</span> <span class="nx">gen</span><span class="p">(</span><span class="nx">key</span><span class="p">(</span><span class="nx">uuid</span><span class="p">)),</span> <span class="nf">-&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class API stub service. Its purpose is
+            <span class="nx">@redis</span><span class="p">.</span><span class="nx">del</span> <span class="nx">gen</span><span class="p">(</span><span class="nx">key</span><span class="p">(</span><span class="nx">uuid</span><span class="p">)),</span> <span class="nf">-&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract base class API stub service. Its purpose is
 providing the boilerplate for ensuring that the connection is
 going through the master server! If a request is not going via
 master server then deny current request with an error code. Be
-aware that this compound will be effective for all HTTP methods.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.OnlyMaster = </span><span class="k">class</span> <span class="nx">OnlyMaster</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+aware that this compound will be effective for all HTTP methods.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.OnlyMaster = </span><span class="k">class</span> <span class="nx">OnlyMaster</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to firing up the processing
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to firing up the processing
 of the service. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
@@ -108,15 +106,15 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
         <span class="nv">content = </span><span class="s">&quot;please use the master server&quot;</span>
         <span class="nv">reason = </span><span class="s">&quot;an attempt of direct access&quot;</span>
         <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="mi">401</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">reason</span><span class="si">}</span><span class="s">&quot;</span>
-        <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">end</span> <span class="nx">content</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class API stub service. Its purpose is
+        <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">end</span> <span class="nx">content</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract base class API stub service. Its purpose is
 providing the boilerplate for ensuring that the connection is
 going through the HTTPS channel. If a request is not going via
 SSL transport then redirect the current request to such one. Be
-aware that this compound will be effective for all HTTP methods.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.OnlySsl = </span><span class="k">class</span> <span class="nx">OnlySsl</span> <span class="k">extends</span> <span class="nx">OnlyMaster</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+aware that this compound will be effective for all HTTP methods.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.OnlySsl = </span><span class="k">class</span> <span class="nx">OnlySsl</span> <span class="k">extends</span> <span class="nx">OnlyMaster</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to firing up the processing
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to firing up the processing
 of the service. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.

@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>membrane/health</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/health"><meta name="groc-project-path" content="library/membrane/health.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/health.coffee">library/membrane/health.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>membrane/health</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/health"><meta name="groc-project-path" content="library/membrane/health.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/health.coffee">library/membrane/health.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#x6f;:&#116;&#x73;&#x33;3&#x6b;&#x72;&#64;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#99;o&#109;">&#116;&#x73;&#x33;3&#x6b;&#x72;&#64;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#99;o&#109;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
@@ -38,15 +36,15 @@
 <span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
 
 <span class="p">{</span><span class="nx">Document</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./document&quot;</span>
-<span class="p">{</span><span class="nx">Service</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/service&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract service compount that provides the essential
+<span class="p">{</span><span class="nx">Service</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/service&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract service compount that provides the essential
 capabilities of keeping track of service health. This abstract base
 class provides instruments to define criterias to estimate whether
 a service is healthy or not. On top of that it exposes the system
-that allows to query the health care status for all the services.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Healthcare = </span><span class="k">class</span> <span class="nx">Healthcare</span> <span class="k">extends</span> <span class="nx">Service</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that allows to query the health care status for all the services.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Healthcare = </span><span class="k">class</span> <span class="nx">Healthcare</span> <span class="k">extends</span> <span class="nx">Service</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method wraps a vanilla supplied heartbeat estimate with
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method wraps a vanilla supplied heartbeat estimate with
 a special wrapper. This wrapper provides a smater callback to
 the estimate as compared to the default one in <code>async</code>. Please
 refer to the implementation for the information on a callback.
@@ -63,7 +61,7 @@ Implementation directly affects the contents of the result map.</p></div></div><
         <span class="nv">check.for = </span><span class="nf">(m, c) -&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">m</span> <span class="k">unless</span> <span class="nx">c</span>
         <span class="nv">check.try = </span><span class="nf">(m, f) -&gt;</span> <span class="k">try</span> <span class="nx">f</span><span class="p">()</span> <span class="k">catch</span> <span class="nx">e</span> <span class="k">then</span> <span class="nx">@</span><span class="o">not</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">e</span>
         <span class="nx">guardian</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="nf">(e) =&gt;</span> <span class="nx">@healthreport</span> <span class="nx">e</span><span class="p">,</span> <span class="nx">callback</span>
-        <span class="nx">guard</span> <span class="nf">-&gt;</span> <span class="nx">bound</span> <span class="nx">check</span><span class="p">,</span> <span class="nx">accept</span><span class="p">,</span> <span class="nf">(m) -&gt;</span> <span class="nx">check</span><span class="p">.</span><span class="nx">for</span> <span class="nx">m</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An internal complementary part of the healthcare system. It is
+        <span class="nx">guard</span> <span class="nf">-&gt;</span> <span class="nx">bound</span> <span class="nx">check</span><span class="p">,</span> <span class="nx">accept</span><span class="p">,</span> <span class="nf">(m) -&gt;</span> <span class="nx">check</span><span class="p">.</span><span class="nx">for</span> <span class="nx">m</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An internal complementary part of the healthcare system. It is
 used to create an appropriate healthcare report when heartbeat
 fails gracefully to ensure the health status. This method does
 include information such as originating file and line number.
@@ -79,7 +77,7 @@ Please refer to the implementation regarding extracted info.</p></div></div><div
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">descriptor.file = </span><span class="nx">target</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">descriptor.line = </span><span class="nx">target</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">descriptor.cols = </span><span class="nx">target</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
-        <span class="k">return</span> <span class="k">try</span> <span class="nx">callback</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">descriptor</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Run a healthcare check on the service instance. This method
+        <span class="k">return</span> <span class="k">try</span> <span class="nx">callback</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">descriptor</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Run a healthcare check on the service instance. This method
 retrieves all the heartbeats of this service and its hierarchy
 run them in parallel, asynchronously. Once done, a callback
 will be invoked with the result object where key corresponds
@@ -96,7 +94,7 @@ error happens in any of the hertbeats, it reports to callback.</p></div></div><d
         <span class="nx">async</span><span class="p">.</span><span class="nx">parallel</span> <span class="nx">transformed</span><span class="p">,</span> <span class="nf">(error, map) -&gt;</span>
             <span class="k">return</span> <span class="nx">callback</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">map</span> <span class="k">unless</span> <span class="nx">error</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">error</span>
-            <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">error</span><span class="p">;</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Define a new heartbeat monitor in the service hierarchy. It
+            <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">error</span><span class="p">;</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Define a new heartbeat monitor in the service hierarchy. It
 consists of a heartbeat descriptor and an estimation function
 that is actually invoked to determine if a service is healthy
 or not. If any of the classes in the inheritance hierarchy

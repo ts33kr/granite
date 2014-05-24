@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>exposure/memory</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/memory"><meta name="groc-project-path" content="library/exposure/memory.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/memory.coffee">library/exposure/memory.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>exposure/memory</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/memory"><meta name="groc-project-path" content="library/exposure/memory.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/memory.coffee">library/exposure/memory.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;&#x69;l&#116;&#111;:&#116;s3&#x33;&#x6b;&#x72;&#x40;&#x67;&#x6d;&#97;&#x69;&#108;&#x2e;c&#x6f;&#109;">&#116;s3&#x33;&#x6b;&#x72;&#x40;&#x67;&#x6d;&#97;&#x69;&#108;&#x2e;c&#x6f;&#109;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">filesize = </span><span class="nx">require</span> <span class="s">&quot;filesize&quot;</span>
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
@@ -40,11 +38,11 @@
 <span class="p">{</span><span class="nx">Zombie</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/zombie&quot;</span>
 <span class="p">{</span><span class="nx">OnlySsl</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/securing&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span>
-<span class="p">{</span><span class="nx">Healthcare</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/health&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The memory monitor service is a zombie services that tracks usage
+<span class="p">{</span><span class="nx">Healthcare</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/health&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The memory monitor service is a zombie services that tracks usage
 of the RAM by this process (ergo, by this node). The service drives
 from the kernel beacon and runs the monitoring on each heartbeat of
 the beacon. If the memory usage exceed the configurable max limit,
-this service should gracefully notify the kernel and reboot kernel.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.MemoryMonitor = </span><span class="k">class</span> <span class="nx">MemoryMonitor</span> <span class="k">extends</span> <span class="nx">Zombie</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to instantiating the service
+this service should gracefully notify the kernel and reboot kernel.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.MemoryMonitor = </span><span class="k">class</span> <span class="nx">MemoryMonitor</span> <span class="k">extends</span> <span class="nx">Zombie</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to instantiating the service
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
@@ -61,7 +59,7 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
             <span class="k">return</span> <span class="kc">undefined</span> <span class="k">unless</span> <span class="nx">overflow</span> <span class="o">is</span> <span class="kc">yes</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">hits</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">red</span><span class="p">,</span> <span class="nx">detected</span>
             <span class="nx">kernel</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;mem-limits&quot;</span><span class="p">,</span> <span class="nx">memory</span><span class="p">,</span> <span class="nx">limit</span>
-            <span class="nx">kernel</span><span class="p">.</span><span class="nx">shutdownKernel</span> <span class="kc">undefined</span><span class="p">,</span> <span class="kc">false</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called each time when the kernel beacon
+            <span class="nx">kernel</span><span class="p">.</span><span class="nx">shutdownKernel</span> <span class="kc">undefined</span><span class="p">,</span> <span class="kc">false</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called each time when the kernel beacon
 is being fired. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.

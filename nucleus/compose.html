@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>nucleus/compose</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/compose"><meta name="groc-project-path" content="library/nucleus/compose.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/compose.coffee">library/nucleus/compose.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>nucleus/compose</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/compose"><meta name="groc-project-path" content="library/nucleus/compose.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/compose.coffee">library/nucleus/compose.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;&#105;&#108;&#x74;&#111;:&#116;&#x73;&#51;3&#107;&#x72;&#64;&#103;&#x6d;&#x61;&#x69;&#108;&#46;&#x63;&#x6f;&#109;">&#116;&#x73;&#51;3&#107;&#x72;&#64;&#103;&#x6d;&#x61;&#x69;&#108;&#46;&#x63;&#x6f;&#109;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
@@ -36,11 +34,11 @@
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 
-<span class="p">{</span><span class="nx">remote</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This class contains the definition of the dynamic recomposition
+<span class="p">{</span><span class="nx">cc</span><span class="p">,</span> <span class="nx">ec</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This class contains the definition of the dynamic recomposition
 system. The reason this class exists is to encapsulate this system
 and make it possible to use it on the remote call site. The system
 is a derivative approach from the mixin. It allows to dynamically
-recombinate the inheritance tree to include any number of compounds.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Composition = </span><span class="nx">remote</span> <span class="nf">-&gt;</span> <span class="k">class</span> <span class="nx">Composition</span> <span class="k">extends</span> <span class="nb">Object</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method exists as a complementary part of the composition
+recombinate the inheritance tree to include any number of compounds.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Composition = </span><span class="nx">cc</span> <span class="nf">-&gt;</span> <span class="k">class</span> <span class="nx">Composition</span> <span class="k">extends</span> <span class="nb">Object</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method exists as a complementary part of the composition
 system. The cloner is an implementation of the shader that is
 mapped over each node of the linear hierarchy of the class that
 invokes the composition functionality to obtain a shadow of the
@@ -56,15 +54,15 @@ original class that can be later modified to modify hierarchy.</p></div></div><d
             <span class="nv">func.constructor = </span><span class="nx">value</span><span class="p">.</span><span class="nx">constructor</span><span class="p">;</span> <span class="nx">func</span>
         <span class="nv">w = get: </span><span class="nf">-&gt;</span> <span class="nx">assert</span> <span class="o">not</span> <span class="nx">subject</span><span class="p">.</span><span class="nx">watermark</span><span class="p">;</span> <span class="nx">subject</span>
         <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nx">snapshot</span><span class="p">,</span> <span class="s">&quot;watermark&quot;</span><span class="p">,</span> <span class="nx">w</span>
-        <span class="nx">assert</span> <span class="nx">snapshot</span><span class="p">.</span><span class="nx">watermark</span><span class="p">;</span> <span class="k">return</span> <span class="nx">snapshot</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A unique functionality built around the composition system. It
+        <span class="nx">assert</span> <span class="nx">snapshot</span><span class="p">.</span><span class="nx">watermark</span><span class="p">;</span> <span class="k">return</span> <span class="nx">snapshot</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A unique functionality built around the composition system. It
 allows for an asynchronous way of calling a stream of methods,
 each defined in the peer of the inheritance tree. Basically this
 is a utility to asynchronously call super methods down the stack.
 Each method must call its last parameter <code>next</code> for proceeding.
 Use <code>async</code> error propagation mechanism to break out of stream.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nb">Object</span><span class="o">::</span><span class="p">,</span> <span class="s">&quot;downstream&quot;</span><span class="p">,</span>
         <span class="nv">enumerable: </span><span class="kc">no</span><span class="p">,</span> <span class="nv">value: </span><span class="nf">(def) -&gt;</span> <span class="nf">(args...) =&gt;</span>
-            <span class="nv">fx = </span><span class="nf">(f) =&gt;</span> <span class="nf">(a...) =&gt;</span> <span class="nx">f</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">cc</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
-            <span class="nv">cc = </span><span class="nf">(a) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span><span class="p">(</span><span class="nx">args</span><span class="p">).</span><span class="nx">concat</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+            <span class="nv">cca = </span><span class="nf">(a) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span><span class="p">(</span><span class="nx">args</span><span class="p">).</span><span class="nx">concat</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+            <span class="nv">fxc = </span><span class="nf">(f) =&gt;</span> <span class="nf">(a...) =&gt;</span> <span class="nx">f</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">cca</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
             <span class="nv">malformed = </span><span class="s">&quot;no POJO style definition&quot;</span>
             <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span> <span class="nx">def</span><span class="p">,</span> <span class="nx">malformed</span>
             <span class="nx">assert</span> <span class="nv">targeted = </span><span class="nx">_</span><span class="p">.</span><span class="nx">head</span> <span class="nx">_</span><span class="p">.</span><span class="nx">keys</span> <span class="nx">def</span>
@@ -75,17 +73,17 @@ Use <code>async</code> error propagation mechanism to break out of stream.</p></
             <span class="nx">assert</span> <span class="nv">threads = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">hierarchy</span><span class="p">,</span> <span class="nx">resolve</span>
             <span class="nv">methods = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">threads</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span>
             <span class="nv">prepped = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">methods</span><span class="p">.</span><span class="nx">reverse</span><span class="p">()</span>
-            <span class="nv">applied = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">prepped</span><span class="p">,</span> <span class="nf">(fn) -&gt;</span> <span class="nx">fx</span> <span class="nx">fn</span>
+            <span class="nv">applied = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">prepped</span><span class="p">,</span> <span class="nf">(fn) -&gt;</span> <span class="nx">fxc</span> <span class="nx">fn</span>
             <span class="nv">bounded = </span><span class="nx">callback</span><span class="o">?</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">)</span> <span class="o">or</span> <span class="p">(</span><span class="nf">-&gt;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="nx">async</span><span class="p">.</span><span class="nx">series</span> <span class="nx">applied</span><span class="p">,</span> <span class="nx">bounded</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A unique functionality built around the composition system. It
+            <span class="k">return</span> <span class="nx">async</span><span class="p">.</span><span class="nx">series</span> <span class="nx">applied</span><span class="p">,</span> <span class="nx">bounded</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A unique functionality built around the composition system. It
 allows for an asynchronous way of calling a stream of methods,
 each defined in the peer of the inheritance tree. Basically this
 is a utility to asynchronously call super methods up the stack.
 Each method must call its last parameter <code>next</code> for proceeding.
 Use <code>async</code> error propagation mechanism to break out of stream.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nb">Object</span><span class="o">::</span><span class="p">,</span> <span class="s">&quot;upstream&quot;</span><span class="p">,</span>
         <span class="nv">enumerable: </span><span class="kc">no</span><span class="p">,</span> <span class="nv">value: </span><span class="nf">(def) -&gt;</span> <span class="nf">(args...) =&gt;</span>
-            <span class="nv">fx = </span><span class="nf">(f) =&gt;</span> <span class="nf">(a...) =&gt;</span> <span class="nx">f</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">cc</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
-            <span class="nv">cc = </span><span class="nf">(a) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span><span class="p">(</span><span class="nx">args</span><span class="p">).</span><span class="nx">concat</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+            <span class="nv">cca = </span><span class="nf">(a) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span><span class="p">(</span><span class="nx">args</span><span class="p">).</span><span class="nx">concat</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+            <span class="nv">fxc = </span><span class="nf">(f) =&gt;</span> <span class="nf">(a...) =&gt;</span> <span class="nx">f</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">cca</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
             <span class="nv">malformed = </span><span class="s">&quot;no POJO style definition&quot;</span>
             <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span> <span class="nx">def</span><span class="p">,</span> <span class="nx">malformed</span>
             <span class="nx">assert</span> <span class="nv">targeted = </span><span class="nx">_</span><span class="p">.</span><span class="nx">head</span> <span class="nx">_</span><span class="p">.</span><span class="nx">keys</span> <span class="nx">def</span>
@@ -96,9 +94,9 @@ Use <code>async</code> error propagation mechanism to break out of stream.</p></
             <span class="nx">assert</span> <span class="nv">threads = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">hierarchy</span><span class="p">,</span> <span class="nx">resolve</span>
             <span class="nv">methods = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">threads</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span>
             <span class="nv">prepped = </span><span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span> <span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">methods</span>
-            <span class="nv">applied = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">prepped</span><span class="p">,</span> <span class="nf">(fn) -&gt;</span> <span class="nx">fx</span> <span class="nx">fn</span>
+            <span class="nv">applied = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">prepped</span><span class="p">,</span> <span class="nf">(fn) -&gt;</span> <span class="nx">fxc</span> <span class="nx">fn</span>
             <span class="nv">bounded = </span><span class="nx">callback</span><span class="o">?</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">)</span> <span class="o">or</span> <span class="p">(</span><span class="nf">-&gt;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="nx">async</span><span class="p">.</span><span class="nx">series</span> <span class="nx">applied</span><span class="p">,</span> <span class="nx">bounded</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A method for comparing different classes for equality. Be careful
+            <span class="k">return</span> <span class="nx">async</span><span class="p">.</span><span class="nx">series</span> <span class="nx">applied</span><span class="p">,</span> <span class="nx">bounded</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A method for comparing different classes for equality. Be careful
 as this method is very loose in terms of comparison and its main
 purpose is aiding in implementation of the composition mechanism
 rather than any else. Comparison algorithms is likely to change.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nb">Object</span><span class="o">::</span><span class="p">,</span> <span class="s">&quot;similarWith&quot;</span><span class="p">,</span>
@@ -110,7 +108,7 @@ rather than any else. Comparison algorithms is likely to change.</p></div></div>
             <span class="k">return</span> <span class="kc">yes</span> <span class="k">if</span> <span class="nx">@watermark</span> <span class="o">is</span> <span class="nx">archetype</span>
             <span class="k">return</span> <span class="kc">undefined</span> <span class="k">unless</span> <span class="nx">loose</span> <span class="o">is</span> <span class="kc">yes</span>
             <span class="k">return</span> <span class="kc">yes</span> <span class="k">if</span> <span class="nx">@name</span> <span class="o">is</span> <span class="nx">archetype</span><span class="p">.</span><span class="nx">name</span>
-            <span class="k">return</span> <span class="kc">yes</span> <span class="k">if</span> <span class="nx">@nick</span> <span class="o">is</span> <span class="nx">archetype</span><span class="p">.</span><span class="nx">nick</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A method for the dynamic lookup of the super methods. This method
+            <span class="k">return</span> <span class="kc">yes</span> <span class="k">if</span> <span class="nx">@nick</span> <span class="o">is</span> <span class="nx">archetype</span><span class="p">.</span><span class="nx">nick</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A method for the dynamic lookup of the super methods. This method
 exists because CoffeeScript resolves super methods by using static
 hardcoded class names and <strong>super</strong> attributes. But in order for
 composition to work - system needs dynamic super method resolution.
@@ -130,7 +128,7 @@ Call this method with current class and the method name arguments</p></div></div
             <span class="nv">value = </span><span class="k">try</span> <span class="nx">heading</span><span class="o">?</span><span class="p">.</span><span class="nx">prototype</span><span class="o">?</span><span class="p">[</span><span class="nx">nameing</span><span class="p">]</span>
             <span class="k">return</span> <span class="nx">value</span> <span class="k">unless</span>  <span class="nx">value</span> <span class="o">is</span> <span class="nx">current</span>
             <span class="p">(</span><span class="nv">formed = </span><span class="p">{})[</span><span class="nx">nameing</span><span class="p">]</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">head</span><span class="p">(</span><span class="nx">hierarchy</span><span class="p">)</span>
-            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">upstack</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">formed</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A complicated piece of functionality for merging arbitrary classes
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">upstack</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">formed</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A complicated piece of functionality for merging arbitrary classes
 into the linear hierarchical inheritance chain of existing class.
 This method integrated the supplied compound class in the tear in
 between the foreign and common peers in the inheritance chain. Do
@@ -153,7 +151,7 @@ refer to the implementation for the understanding of what happens.</p></div></di
             <span class="nx">assert</span> <span class="nv">tails = </span><span class="nx">alternative</span><span class="p">.</span><span class="nx">pop</span><span class="p">().</span><span class="nx">rebased</span> <span class="nx">compound</span>
             <span class="nv">rebased = </span><span class="nf">(acc, cls) -&gt;</span> <span class="nx">cls</span><span class="p">.</span><span class="nx">rebased</span> <span class="nx">acc</span><span class="p">;</span> <span class="nx">cls</span>
             <span class="nx">@rebased</span> <span class="nx">_</span><span class="p">.</span><span class="nx">foldr</span> <span class="nx">alternative</span><span class="p">,</span> <span class="nx">rebased</span><span class="p">,</span> <span class="nx">tails</span>
-            <span class="k">return</span> <span class="nx">@refactoring</span> <span class="nx">compound</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An important complementary part of the dynamic recomposition
+            <span class="k">return</span> <span class="nx">@refactoring</span> <span class="nx">compound</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An important complementary part of the dynamic recomposition
 system. The refactoring procedure is a recursive algorithm that
 is executed after each composition invocation to refactor the
 inheritance tree. The refactoring in this case is getting rid
@@ -172,7 +170,7 @@ of the indirectly or directly duplicated peers from the tree.</p></div></div><di
             <span class="nx">assert</span> <span class="p">(</span><span class="nv">h = </span><span class="k">this</span><span class="p">.</span><span class="nx">hierarchy</span><span class="p">()).</span><span class="nx">unshift</span> <span class="k">this</span>
             <span class="nv">shadow = </span><span class="nx">left</span><span class="p">().</span><span class="nx">watermark</span> <span class="o">or</span> <span class="p">(</span><span class="nx">left</span><span class="p">()</span> <span class="o">is</span> <span class="k">this</span><span class="p">)</span>
             <span class="nx">assert</span> <span class="nx">shadow</span><span class="p">,</span> <span class="s">&quot;original: </span><span class="si">#{</span><span class="nx">left</span><span class="p">().</span><span class="nx">identify</span><span class="p">()</span><span class="si">}</span><span class="s">&quot;</span>
-            <span class="nx">left</span><span class="p">().</span><span class="nx">rebased</span> <span class="nx">right</span><span class="p">();</span> <span class="nx">@refactoring</span> <span class="nx">trigger</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Scan the supplied class and return an entire inheritance hierarchy
+            <span class="nx">left</span><span class="p">().</span><span class="nx">rebased</span> <span class="nx">right</span><span class="p">();</span> <span class="nx">@refactoring</span> <span class="nx">trigger</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Scan the supplied class and return an entire inheritance hierarchy
 of classes. The hierarchy is represented as an array of prototypes
 that follow in the order they appear in the chain: starting from
 the supplied class and up to the top. The class has to be a valid
@@ -187,7 +185,7 @@ CoffeeScript class that posses all the necessary internal members.</p></div></di
                 <span class="nv">subject = </span><span class="nx">subject</span><span class="p">.</span><span class="nx">__super__</span> <span class="o">or</span> <span class="kc">undefined</span>
                 <span class="nv">constructor = </span><span class="nx">subject</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">or</span> <span class="kc">null</span>
                 <span class="k">return</span> <span class="kc">no</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">constructor</span>
-                <span class="nx">accumulate</span><span class="p">.</span><span class="nx">push</span> <span class="k">try</span> <span class="nv">subject = </span><span class="nx">constructor</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A fancy method for dynamically changing the inheritance chain of
+                <span class="nx">accumulate</span><span class="p">.</span><span class="nx">push</span> <span class="k">try</span> <span class="nv">subject = </span><span class="nx">constructor</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A fancy method for dynamically changing the inheritance chain of
 the existing classes. This method rebases the current class to
 use the supplied base class as its direct ancestor. The supplied
 class must conform to the basic class requirements, such as have

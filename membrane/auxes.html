@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>membrane/auxes</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/auxes"><meta name="groc-project-path" content="library/membrane/auxes.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/auxes.coffee">library/membrane/auxes.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>membrane/auxes</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/auxes"><meta name="groc-project-path" content="library/membrane/auxes.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/auxes.coffee">library/membrane/auxes.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;&#105;&#108;&#116;&#111;:&#x74;&#115;&#x33;&#51;k&#x72;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;c&#111;&#109;">&#x74;&#115;&#x33;&#51;k&#x72;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;c&#111;&#109;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
@@ -40,15 +38,15 @@
 <span class="p">{</span><span class="nx">Zombie</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/zombie&quot;</span>
 <span class="p">{</span><span class="nx">Duplex</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/duplex&quot;</span>
 <span class="p">{</span><span class="nx">Preflight</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./preflight&quot;</span>
-<span class="p">{</span><span class="nx">Screenplay</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./visual&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This definition stands for the compound that provides support
+<span class="p">{</span><span class="nx">Screenplay</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./visual&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This definition stands for the compound that provides support
 for auxiliary services. These services reside within the conext
 of the parent services, restricted to the context of their own.
 This compound handles the wiring of these services within the
-intestines of the parent service that includes this component.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Auxiliaries = </span><span class="k">class</span> <span class="nx">Auxiliaries</span> <span class="k">extends</span> <span class="nx">Preflight</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+intestines of the parent service that includes this component.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Auxiliaries = </span><span class="k">class</span> <span class="nx">Auxiliaries</span> <span class="k">extends</span> <span class="nx">Preflight</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called once the Connect middleware writes
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called once the Connect middleware writes
 off the headers. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
@@ -65,7 +63,7 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
                 <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">template</span><span class="p">...</span>
                 <span class="nx">assert</span> <span class="nx">singleton</span> <span class="o">is</span> <span class="k">this</span><span class="p">;</span> <span class="nx">callback</span><span class="p">()</span>
             <span class="nx">headers</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">resource</span><span class="p">,</span> <span class="nx">domain</span>
-        <span class="k">return</span> <span class="nx">async</span><span class="p">.</span><span class="nx">series</span> <span class="nx">routines</span><span class="p">,</span> <span class="nx">next</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This server side method is called on the context prior to the
+        <span class="k">return</span> <span class="nx">async</span><span class="p">.</span><span class="nx">series</span> <span class="nx">routines</span><span class="p">,</span> <span class="nx">next</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This server side method is called on the context prior to the
 context being compiled and flushed down to the client site. The
 method is wired in an synchronous way for greater functionality.
 This is the place where you would be importing the dependencies.
@@ -81,7 +79,7 @@ Pay attention that most implementations side effect the context.</p></div></div>
             <span class="nv">stock = </span><span class="nb">Object</span> <span class="nv">nsp: </span><span class="nx">qualified</span><span class="p">,</span> <span class="nv">caching: </span><span class="nx">context</span><span class="p">.</span><span class="nx">caching</span>
             <span class="nx">assembler</span> <span class="nx">qualified</span><span class="p">,</span> <span class="nx">request</span><span class="p">,</span> <span class="kc">yes</span><span class="p">,</span> <span class="nx">stock</span><span class="p">,</span> <span class="nf">(assembled) =&gt;</span>
                 <span class="nx">@mergeContexts</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">assembled</span><span class="p">,</span> <span class="nx">callback</span>
-        <span class="k">return</span> <span class="nx">async</span><span class="p">.</span><span class="nx">series</span> <span class="nx">routines</span><span class="p">,</span> <span class="nx">next</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A complementary part of the auxiliaries substem implementation.
+        <span class="k">return</span> <span class="nx">async</span><span class="p">.</span><span class="nx">series</span> <span class="nx">routines</span><span class="p">,</span> <span class="nx">next</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A complementary part of the auxiliaries substem implementation.
 This routine is invoked once a compiled context is obtained of
 an auxiliary service. It is up to this routine to figure out how
 to merge those contexts together. Please refer to the <code>prelude</code>
@@ -96,7 +94,7 @@ implementation for more information on the internals of process.</p></div></div>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">scripts</span><span class="p">,</span> <span class="nx">changes</span><span class="p">,</span> <span class="nx">sources</span><span class="p">,</span> <span class="nx">invoked</span>
         <span class="nv">styles = </span><span class="nx">context</span><span class="p">.</span><span class="nx">styles</span><span class="p">.</span><span class="nx">push</span> <span class="nx">assembled</span><span class="p">.</span><span class="nx">styles</span><span class="p">...</span>
         <span class="nv">sheets = </span><span class="nx">context</span><span class="p">.</span><span class="nx">sheets</span><span class="p">.</span><span class="nx">push</span> <span class="nx">assembled</span><span class="p">.</span><span class="nx">sheets</span><span class="p">...</span>
-        <span class="nx">callback</span> <span class="kc">undefined</span><span class="p">;</span> <span class="k">return</span> <span class="nx">context</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Include an auxiliary service definition in this service. The
+        <span class="nx">callback</span> <span class="kc">undefined</span><span class="p">;</span> <span class="k">return</span> <span class="nx">context</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Include an auxiliary service definition in this service. The
 definition should be an object whose keys correspond to the
 installation symbol of an auxiliary service and whose values
 are the actual auxiliary services. So that service <code>value</code> is

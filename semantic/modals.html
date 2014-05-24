@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="en"><head><title>semantic/modals</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="semantic/modals"><meta name="groc-project-path" content="library/semantic/modals.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/semantic/modals.coffee">library/semantic/modals.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;&#x69;&#108;&#116;&#111;:t&#115;&#x33;&#51;&#x6b;&#x72;&#64;&#103;&#109;a&#105;&#108;&#x2e;&#99;&#x6f;&#109;">t&#115;&#x33;&#51;&#x6b;&#x72;&#64;&#103;&#109;a&#105;&#108;&#x2e;&#99;&#x6f;&#109;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="p">{</span><span class="nx">Zombie</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/zombie&quot;</span>
+<span class="p">{</span><span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span>
+<span class="p">{</span><span class="nx">Preflight</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/preflight&quot;</span>
+<span class="p">{</span><span class="nx">GoogleFonts</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../exposure/fonting&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract base class compound that exhibits the zombie
+behavior. It is intended as the abstraction to build window-ish
+auxiliary services upon it. Basically, if you have the service
+that needs to be presented as the modal window and is used like
+a zombie, then this class can be used to reduce the boilerplate.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.WithinModal = </span><span class="k">class</span> <span class="nx">WithinModal</span> <span class="k">extends</span> <span class="nx">Zombie</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These invocations establish the parameters which are going
+to be used for matching HTTP requests against this service.
+Typically an HTTP pathname pattern and a domain name pattern.
+Try not to put constraints on the domain, unless necessary.
+Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@compose</span> <span class="nx">Preflight</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method is invoked right after the window skeleton has
+been created. It takes care of filling in the actions segment
+with a couple of default buttons/actions: the positive and the
+negative, with the respectful semantics. See the coding about
+the signals emited. Override this is you need custom buttons.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">assembleModalActions: </span><span class="nx">external</span> <span class="nf">-&gt;</span>
+        <span class="nx">assert</span> <span class="nv">stop = </span><span class="nf">(e) -&gt;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">stopImmediatePropagation</span><span class="p">()</span>
+        <span class="vi">@negative = </span><span class="nx">$</span> <span class="s">&quot;&lt;div&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;ui negative button&quot;</span>
+        <span class="vi">@positive = </span><span class="nx">$</span> <span class="s">&quot;&lt;div&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;ui positive button&quot;</span>
+        <span class="nx">$</span><span class="p">(</span><span class="nx">@negative</span><span class="p">).</span><span class="nx">click</span> <span class="nf">(e) -&gt;</span> <span class="nx">stop</span> <span class="nx">e</span> <span class="k">if</span> <span class="nx">$</span><span class="p">(</span><span class="nx">@</span><span class="p">).</span><span class="o">is</span> <span class="s">&quot;.disabled&quot;</span>
+        <span class="nx">$</span><span class="p">(</span><span class="nx">@positive</span><span class="p">).</span><span class="nx">click</span> <span class="nf">(e) -&gt;</span> <span class="nx">stop</span> <span class="nx">e</span> <span class="k">if</span> <span class="nx">$</span><span class="p">(</span><span class="nx">@</span><span class="p">).</span><span class="o">is</span> <span class="s">&quot;.disabled&quot;</span>
+        <span class="nx">$</span><span class="p">(</span><span class="nx">@negative</span><span class="p">).</span><span class="nx">click</span> <span class="nf">(e) =&gt;</span> <span class="nx">@emit</span> <span class="s">&quot;negative&quot;</span><span class="p">;</span> <span class="nx">stop</span> <span class="nx">e</span>
+        <span class="nx">$</span><span class="p">(</span><span class="nx">@positive</span><span class="p">).</span><span class="nx">click</span> <span class="nf">(e) =&gt;</span> <span class="nx">@emit</span> <span class="s">&quot;positive&quot;</span><span class="p">;</span> <span class="nx">stop</span> <span class="nx">e</span>
+        <span class="nx">@positive</span><span class="p">.</span><span class="nx">append</span> <span class="nx">$</span> <span class="s">&quot;&lt;i&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;checkmark icon&quot;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">negative</span><span class="p">.</span><span class="nx">prepend</span> <span class="nx">$</span><span class="p">(</span><span class="s">&quot;&lt;span&gt;&quot;</span><span class="p">).</span><span class="nx">text</span> <span class="s">&quot;dismiss&quot;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">positive</span><span class="p">.</span><span class="nx">prepend</span> <span class="nx">$</span><span class="p">(</span><span class="s">&quot;&lt;span&gt;&quot;</span><span class="p">).</span><span class="nx">text</span> <span class="s">&quot;confirm&quot;</span>
+        <span class="nx">assert</span> <span class="nx">@positive</span><span class="p">.</span><span class="nx">addClass</span> <span class="s">&quot;right labeled icon&quot;</span>
+        <span class="nx">assert</span> <span class="nx">@actions</span><span class="p">.</span><span class="nx">append</span> <span class="nx">@negative</span><span class="p">,</span> <span class="nx">@positive</span>
+        <span class="nx">@emit</span> <span class="s">&quot;actions&quot;</span><span class="p">,</span> <span class="nx">@actions</span><span class="p">,</span> <span class="nx">@</span><span class="nb">window</span><span class="p">;</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method creates the basic window skeleton with all parts
+required being assembled inside of it. The method is being
+invoked when the instance emits the <code>dcoument</code> event that is
+being fired once the DOM is ready to be used. You can bind
+this same method to any other events you may wish to trap.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">assembleModalWindow: </span><span class="nx">@awaiting</span> <span class="s">&quot;document&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+        <span class="nx">assert</span> <span class="k">this</span><span class="p">.</span><span class="nv">header = </span><span class="nx">$</span> <span class="s">&quot;&lt;div&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;header&quot;</span>
+        <span class="nx">assert</span> <span class="k">this</span><span class="p">.</span><span class="nv">content = </span><span class="nx">$</span> <span class="s">&quot;&lt;div&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;content&quot;</span>
+        <span class="nx">assert</span> <span class="k">this</span><span class="p">.</span><span class="nv">actions = </span><span class="nx">$</span> <span class="s">&quot;&lt;div&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;actions&quot;</span>
+        <span class="nx">assert</span> <span class="k">this</span><span class="p">.</span><span class="nb">window</span> <span class="o">=</span> <span class="nx">$</span> <span class="s">&quot;&lt;div&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;ui modal&quot;</span>
+        <span class="nx">assert</span> <span class="k">this</span><span class="p">.</span><span class="nv">closer = </span><span class="nx">$</span> <span class="s">&quot;&lt;i&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;close icon&quot;</span>
+        <span class="nx">@assembleModalActions</span><span class="p">();</span> <span class="nx">@</span><span class="nb">window</span><span class="p">.</span><span class="nx">append</span> <span class="nx">@actions</span>
+        <span class="k">this</span><span class="p">.</span><span class="nb">window</span><span class="p">.</span><span class="nx">prepend</span> <span class="nx">@closer</span><span class="p">,</span> <span class="nx">@header</span><span class="p">,</span> <span class="nx">@content</span>
+        <span class="k">this</span><span class="p">.</span><span class="nb">window</span><span class="p">.</span><span class="nx">appendTo</span> <span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">)</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;toggle&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nb">window</span><span class="p">.</span><span class="nx">modal</span> <span class="s">&quot;toggle&quot;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;show&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="k">return</span> <span class="nx">@</span><span class="nb">window</span><span class="p">.</span><span class="nx">modal</span> <span class="s">&quot;show&quot;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;hide&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="k">return</span> <span class="nx">@</span><span class="nb">window</span><span class="p">.</span><span class="nx">modal</span> <span class="s">&quot;hide&quot;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;configure-window&quot;</span><span class="p">,</span> <span class="nx">@</span><span class="nb">window</span><span class="p">;</span> <span class="k">this</span></div></div></div></div></body></html>

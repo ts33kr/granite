@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="en"><head><title>exposure/tracked</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/tracked"><meta name="groc-project-path" content="library/exposure/tracked.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/tracked.coffee">library/exposure/tracked.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;&#x69;&#x6c;&#x74;&#x6f;:&#116;s&#51;&#51;&#x6b;&#x72;&#x40;&#103;&#109;&#97;&#105;&#108;&#x2e;&#99;o&#109;">&#116;s&#51;&#51;&#x6b;&#x72;&#x40;&#103;&#109;&#97;&#105;&#108;&#x2e;&#99;o&#109;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">request = </span><span class="nx">require</span> <span class="s">&quot;request&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">Duplex</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/duplex&quot;</span>
+<span class="p">{</span><span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span>
+<span class="p">{</span><span class="nx">Preflight</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/preflight&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This abstract compound provides the enhanced duplex facilities.
+The functionality it implements aids in visual recoginitions of
+the duplexed service life cycle, by issuing a visual popup style
+notifications when most notable events occure on the service. It
+reports connections events in additions to the exceptional ones.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.TrackedDuplex = </span><span class="k">class</span> <span class="nx">TrackedDuplex</span> <span class="k">extends</span> <span class="nx">Duplex</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block here defines a set of Bower dependencies that are
+going to be necessary no matter what sort of functionality is
+is going to be implemented. Most of these libraries required
+by the internal implementations of the various subcomponents.
+Refer to <code>BowerSupport</code> class implementation for information.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@bower</span> <span class="s">&quot;toastr&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method awaits for the <code>socketing</code> signal that is emited
+by the <code>Duplex</code> implementation once it successfuly creates a
+socket object. When that happens, this code sucks up to the
+socket events that indicate successful and fail conditions.
+When either one is happens, it emits the <code>toastr</code> notice.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">attachWatchdog: </span><span class="nx">@awaiting</span> <span class="s">&quot;socketing&quot;</span><span class="p">,</span> <span class="nf">(socket, location) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">l = lst = </span><span class="s">&quot;server connection has been lost&quot;</span>
+        <span class="nx">assert</span> <span class="nv">s = srv = </span><span class="s">&quot;exception occured on the server&quot;</span>
+        <span class="nx">assert</span> <span class="nv">r = rcn = </span><span class="s">&quot;attempting to restore connection&quot;</span>
+        <span class="nx">assert</span> <span class="nv">c = con = </span><span class="s">&quot;established connection to server&quot;</span>
+        <span class="nv">pos = positionClass: </span><span class="s">&quot;toast-top-left&quot;</span><span class="p">,</span> <span class="nv">closable: </span><span class="kc">null</span>
+        <span class="nv">ntm = timeOut: </span><span class="mi">0</span><span class="p">,</span> <span class="nv">extendedTimeOut: </span><span class="mi">0</span><span class="p">,</span> <span class="nv">tapToDismiss: </span><span class="mi">0</span>
+        <span class="nv">xtm = timeOut: </span><span class="mi">3000</span><span class="p">,</span> <span class="nv">extendedTimeOut: </span><span class="mi">1000</span> <span class="c1"># a duplex</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">object</span><span class="p">,</span> <span class="nx">pos</span> <span class="k">for</span> <span class="nx">object</span> <span class="k">in</span> <span class="p">[</span><span class="nx">ntm</span><span class="p">,</span> <span class="nx">xtm</span><span class="p">]</span>
+        <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connect&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">$</span><span class="p">(</span><span class="s">&quot;.toast-warning&quot;</span><span class="p">).</span><span class="nx">remove</span><span class="p">()</span>
+        <span class="nv">recon = </span><span class="nx">_</span><span class="p">.</span><span class="nx">debounce</span> <span class="p">(</span><span class="nf">-&gt;</span> <span class="nx">toastr</span><span class="p">.</span><span class="nx">info</span> <span class="nx">r</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">xtm</span><span class="p">),</span> <span class="mi">500</span>
+        <span class="nv">dropd = </span><span class="nx">_</span><span class="p">.</span><span class="nx">debounce</span> <span class="p">(</span><span class="nf">-&gt;</span> <span class="nx">toastr</span><span class="p">.</span><span class="nx">warning</span> <span class="nx">l</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">ntm</span><span class="p">),</span> <span class="mi">500</span>
+        <span class="nv">connd = </span><span class="nx">_</span><span class="p">.</span><span class="nx">debounce</span> <span class="p">(</span><span class="nf">-&gt;</span> <span class="nx">toastr</span><span class="p">.</span><span class="nx">success</span> <span class="nx">c</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">pos</span><span class="p">),</span> <span class="mi">500</span>
+        <span class="nv">error = </span><span class="nx">_</span><span class="p">.</span><span class="nx">debounce</span> <span class="p">(</span><span class="nf">-&gt;</span> <span class="nx">toastr</span><span class="p">.</span><span class="nx">error</span> <span class="nx">srv</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">pos</span><span class="p">),</span> <span class="mi">500</span>
+        <span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;reconnecting&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">recon</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span>
+        <span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;disconnect&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">dropd</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span>
+        <span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;exception&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">error</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span>
+        <span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;connect&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">connd</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span></div></div></div></div></body></html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="en"><head><title>exposure/policies</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/policies"><meta name="groc-project-path" content="library/exposure/policies.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/policies.coffee">library/exposure/policies.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;&#105;&#x6c;&#x74;&#111;:&#116;&#x73;&#51;&#51;&#x6b;&#x72;&#x40;&#x67;&#109;&#97;&#105;&#108;.&#x63;&#x6f;&#109;">&#116;&#x73;&#51;&#51;&#x6b;&#x72;&#x40;&#x67;&#109;&#97;&#105;&#108;.&#x63;&#x6f;&#109;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/archetype&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An abstract base compound that provides an extensive functionality
+and solution for managing different access and control policies of
+the authenticated (or anonymous) entities. The compound is basically
+ACL solution that functions on top of (but does not depend on) the
+authentication facilities crafter and provided within a framework.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Policies = </span><span class="k">class</span> <span class="nx">Policies</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Allow a specified privilege to be performed by the persons
+with the specificied qualification. Both of these supplied
+using POJO notation, as in <code>qualifier: privilege</code> style. If
+one more arg is given, then is treated as conditional func
+that is run to determine the privilege, once is requested.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@allow: </span><span class="nf">(definition, condition) -&gt;</span>
+        <span class="nv">isEmpty = </span><span class="s">&quot;an empty definition has been given&quot;</span>
+        <span class="nv">noCondition = </span><span class="s">&quot;got invalid conditional argument&quot;</span>
+        <span class="nv">notDefined = </span><span class="s">&quot;the definition has to be an object&quot;</span>
+        <span class="nv">condition = </span><span class="p">(</span><span class="nf">-&gt;</span> <span class="nx">@decision</span> <span class="kc">yes</span><span class="p">)</span> <span class="k">unless</span> <span class="nx">condition</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span><span class="p">(</span><span class="nx">definition</span><span class="p">),</span> <span class="nx">notDefined</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">condition</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noCondition</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">definition</span> <span class="o">or</span> <span class="p">{}),</span> <span class="nx">isEmpty</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="k">this</span><span class="p">.</span><span class="nx">policies</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span> <span class="nx">_</span><span class="p">.</span><span class="nx">values</span><span class="p">(</span><span class="nx">definition</span><span class="p">),</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="vi">@policies = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span>
+            <span class="nv">privilege: </span><span class="nx">_</span><span class="p">.</span><span class="nx">head</span> <span class="nx">_</span><span class="p">.</span><span class="nx">values</span> <span class="nx">definition</span>
+            <span class="nv">qualifier: </span><span class="nx">_</span><span class="p">.</span><span class="nx">head</span> <span class="nx">_</span><span class="p">.</span><span class="nx">keys</span> <span class="nx">definition</span>
+            <span class="nv">inspector: </span><span class="nx">_</span><span class="p">.</span><span class="nx">identity</span> <span class="nx">condition</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Fire the policy engine to obtain a decision on whether the
+supplied privilege is granted for a currently authenticated
+entity in the system. The privilege name may be folowed by
+arbitrary params that will be passed to each conditionals.
+The trailing argument must be a callback accepting result.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">policy: </span><span class="nf">(privilege, parameters..., callback) -&gt;</span>
+        <span class="nv">barebones = </span><span class="s">&quot;scope not isolated or spinned off&quot;</span>
+        <span class="nv">noCallback = </span><span class="s">&quot;please supply a receiver callback&quot;</span>
+        <span class="nv">noPrivilege = </span><span class="s">&quot;please supply a privilege string&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">callback</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noCallback</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">privilege</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noPrivilege</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">parameters</span><span class="p">),</span> <span class="s">&quot;signature error&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">envelope = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">create</span> <span class="k">this</span>
+        <span class="nx">assert</span> <span class="nv">qualifiers = </span><span class="nx">@entityQualifiers</span><span class="o">?</span> <span class="nx">envelope</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">__origin</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">barebones</span>
+        <span class="nv">g = </span><span class="nf">(z) -&gt;</span> <span class="nx">z</span><span class="p">.</span><span class="nx">inspector</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">envelope</span><span class="p">,</span> <span class="nx">parameters</span>
+        <span class="nv">cmp = </span><span class="nf">(sample) -&gt;</span> <span class="nx">sample</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="k">in</span> <span class="nx">qualifiers</span>
+        <span class="nv">matches = </span><span class="nf">(z, cb) -&gt;</span> <span class="nv">envelope.decision = </span><span class="nx">cb</span><span class="p">;</span> <span class="nx">g</span><span class="p">(</span><span class="nx">z</span><span class="p">)</span>
+        <span class="nv">policies = </span><span class="k">this</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">policies</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Array</span>
+        <span class="nv">vector = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">policies</span><span class="p">,</span> <span class="nv">privilege: </span><span class="nx">privilege</span>
+        <span class="nv">vector = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">vector</span><span class="p">,</span> <span class="nf">(z) -&gt;</span> <span class="nx">cmp</span> <span class="nx">z</span><span class="p">.</span><span class="nx">qualifier</span>
+        <span class="k">return</span> <span class="k">try</span> <span class="nx">async</span><span class="p">.</span><span class="nx">some</span> <span class="nx">vector</span><span class="p">,</span> <span class="nx">matches</span><span class="p">,</span> <span class="nx">callback</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a partially internal method that is used by policy
+engine to determine all the qualifications of the currently
+authenticated entity, if there are any. Please refer to the
+implementation of this method for detailed explanation of
+the mechanics, as this is the sole place where it is set.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">entityQualifiers: </span><span class="nf">(envelope, container) -&gt;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nv">qualifiers = </span><span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nv">message = </span><span class="k">try</span> <span class="s">&quot;Entity qualifiers: %s&quot;</span><span class="p">.</span><span class="nx">grey</span>
+        <span class="nv">add = </span><span class="nf">(q) -&gt;</span> <span class="nx">qualifiers</span><span class="p">.</span><span class="nx">push</span> <span class="nx">q</span><span class="p">;</span> <span class="nx">qualifiers</span>
+        <span class="nv">container = </span><span class="k">this</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">container</span>
+        <span class="nv">entity = </span><span class="k">try</span> <span class="p">(</span><span class="nx">container</span><span class="p">.</span><span class="nx">entity</span><span class="p">)</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nx">add</span> <span class="s">&quot;anonymous&quot;</span><span class="p">;</span> <span class="nx">add</span> <span class="s">&quot;everyone&quot;</span> <span class="c1"># automatics</span>
+        <span class="nx">add</span> <span class="s">&quot;authenticated&quot;</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">entity</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nx">add</span> <span class="nx">q</span> <span class="k">for</span> <span class="nx">q</span> <span class="k">in</span> <span class="nx">entity</span><span class="o">?</span><span class="p">.</span><span class="nx">qualifiers</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">add</span> <span class="nx">q</span> <span class="k">for</span> <span class="nx">q</span> <span class="k">in</span> <span class="nx">entity</span><span class="o">?</span><span class="p">.</span><span class="nx">qualify</span><span class="o">?</span><span class="p">()</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nv">aliased = </span><span class="nx">envelope</span> <span class="o">and</span> <span class="nx">envelope</span> <span class="o">is</span> <span class="nx">container</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">envelope</span><span class="p">,</span> <span class="nx">container</span> <span class="k">unless</span> <span class="nx">aliased</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">,</span> <span class="nx">qualifiers</span><span class="p">.</span><span class="nx">join</span> <span class="s">&quot;, &quot;</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">qualifiers</span><span class="p">;</span> <span class="nx">qualifiers</span></div></div></div></div></body></html>

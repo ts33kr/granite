@@ -1,51 +1,51 @@
-<!DOCTYPE html><html lang="en"><head><title>nucleus/routing</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/routing"><meta name="groc-project-path" content="library/nucleus/routing.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/routing.coffee">library/nucleus/routing.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>nucleus/routing</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/routing"><meta name="groc-project-path" content="library/nucleus/routing.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/routing.coffee">library/nucleus/routing.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;&#105;&#x6c;&#116;&#x6f;:&#x74;&#115;&#x33;&#51;&#x6b;&#x72;&#x40;&#103;&#109;&#97;i&#x6c;&#46;&#x63;&#x6f;&#109;">&#x74;&#115;&#x33;&#51;&#x6b;&#x72;&#x40;&#103;&#109;&#97;i&#x6c;&#46;&#x63;&#x6f;&#109;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 
-<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./archetype&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A simple yet solid HTTP request router. This is designed to map
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./archetype&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A simple yet solid HTTP request router. This is designed to map
 HTTP requests to the correpsonding handlers by examining URL and
 the supplied host, among other things. The exact matching logic
 is up to the handlers that implement the corresponding methods.
-This router just provides the infrastructure and boilerplating.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Router = </span><span class="k">class</span> <span class="nx">Router</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Every router has to have a public constructor that accepts
+This router just provides the infrastructure and boilerplating.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Router = </span><span class="k">class</span> <span class="nx">Router</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Every router has to have a public constructor that accepts
 the kernel instance as a parameter. You can override it as
 you see fit, but be sure to invoke the super constructor and
-it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span> <span class="k">super</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The method implements a middleware (for Connect) that looks
+it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span> <span class="k">super</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The method implements a middleware (for Connect) that looks
 up the relevant routable and dispatches the request to the
 routable. If no corresponding routable is found, the method
 transfers the control to the pre-installed, default routable.
 A set of tests are performed to ensure the logical integrity.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">middleware: </span><span class="nf">(request, response, next) -&gt;</span>
         <span class="nx">assert</span> <span class="nv">incoming = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">.</span><span class="nx">underline</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nv">p = </span><span class="nf">(i, c) -&gt;</span> <span class="nx">i</span><span class="p">.</span><span class="nx">matches</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">c</span>
+        <span class="nv">final = </span><span class="nf">(service) -&gt;</span> <span class="nx">service</span><span class="p">.</span><span class="nx">abstract</span><span class="p">()</span> <span class="o">is</span> <span class="kc">no</span>
         <span class="nv">signature = </span><span class="nx">arguments</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArguments</span> <span class="nx">arguments</span>
-        <span class="nx">async</span><span class="p">.</span><span class="nx">detectSeries</span> <span class="nx">@registry</span><span class="p">,</span> <span class="nx">p</span><span class="p">,</span> <span class="nf">(recognized) =&gt;</span>
+        <span class="nv">implemented = </span><span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">@registry</span><span class="p">,</span> <span class="nx">final</span>
+        <span class="nx">async</span><span class="p">.</span><span class="nx">detectSeries</span> <span class="nx">implemented</span><span class="p">,</span> <span class="nx">p</span><span class="p">,</span> <span class="nf">(recognized) =&gt;</span>
             <span class="nv">missing = </span><span class="s">&quot;Request %s does not match any service&quot;</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">missing</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">incoming</span> <span class="k">unless</span> <span class="nx">recognized</span><span class="o">?</span>
             <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">recognized</span>
@@ -54,7 +54,7 @@ A set of tests are performed to ensure the logical integrity.</p></div></div><di
             <span class="nx">@emit</span> <span class="s">&quot;recognized&quot;</span><span class="p">,</span> <span class="nx">recognized</span><span class="p">,</span> <span class="nx">signature</span><span class="p">...</span>
             <span class="nv">matching = </span><span class="s">&quot;Request %s matches %s service&quot;</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">matching</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">incoming</span><span class="p">,</span> <span class="nx">identify</span>
-            <span class="k">return</span> <span class="nx">@streamline</span> <span class="nx">recognized</span><span class="p">,</span> <span class="nx">signature</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Streamlining happens once the requested has been matches with
+            <span class="k">return</span> <span class="nx">@streamline</span> <span class="nx">recognized</span><span class="p">,</span> <span class="nx">signature</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Streamlining happens once the requested has been matches with
 a service that is going to handle it. This method launches the
 pipeline of the necessary prerequisites and subroutines to hand
 the request off to the service for processing it. Normally it
@@ -70,7 +70,7 @@ should not be used outside of the router (middleware) coding.</p></div></div><di
                     <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">response</span><span class="p">.</span><span class="nx">headersSent</span>
                 <span class="k">return</span> <span class="nx">rescuing</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span>
             <span class="nx">domain</span><span class="p">.</span><span class="nx">run</span> <span class="nf">-&gt;</span> <span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span> <span class="nx">polished</span>
-        <span class="k">return</span> <span class="nx">ignition</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Try registering a new routable object. The method checks for
+        <span class="k">return</span> <span class="nx">ignition</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Try registering a new routable object. The method checks for
 the object to be of the correct type, basically making sure
 that it is capable of doing the routing functionality code.
 If something is wrong, this method will throw an exception.
@@ -93,20 +93,20 @@ The method is idempotent, ergo no duplication of routables.</p></div></div><div 
             <span class="p">(</span><span class="nx">@registry</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">unshift</span> <span class="nx">routable</span>
             <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">callback</span>
             <span class="k">return</span> <span class="nx">callback</span> <span class="nx">routable</span><span class="p">,</span> <span class="k">this</span>
-        <span class="nx">register</span> <span class="nx">@kernel</span><span class="p">,</span> <span class="k">this</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Unregister the supplied service instance from the kernel router.
+        <span class="nx">register</span> <span class="nx">@kernel</span><span class="p">,</span> <span class="k">this</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Unregister the supplied service instance from the kernel router.
 You should call this method only after the service has been
 previously registered with the kernel router. This method does
 modify the router register, ergo does write access to kernel.
 It will also call hooks on the service, notifying unregister.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">unregister: </span><span class="nf">(routable, callback) -&gt;</span>
         <span class="nv">noClass = </span><span class="s">&quot;broken routable: </span><span class="si">#{</span><span class="nx">routable</span><span class="si">}</span><span class="s">&quot;</span>
-        <span class="nx">assert</span> <span class="nx">routable</span><span class="o">?</span><span class="p">.</span><span class="nx">constructor</span><span class="o">?</span><span class="p">,</span> <span class="nx">noClass</span>
+        <span class="nx">assert</span> <span class="nx">routable</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">or</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">noClass</span>
         <span class="nv">identify = </span><span class="nx">routable</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
         <span class="nv">inspected = </span><span class="nx">identify</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">underline</span>
         <span class="nv">noRegistry = </span><span class="s">&quot;Could not access the registry&quot;</span>
-        <span class="nv">removing = </span><span class="s">&quot;Removing %s service instance&quot;</span>
+        <span class="nv">removing = </span><span class="s">&quot;Detaching a %s service instance&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">@registry</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noRegistry</span>
-        <span class="nv">index = </span><span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">indexOf</span> <span class="nx">@registry</span><span class="p">,</span> <span class="nx">routable</span>
-        <span class="nx">assert</span> <span class="nx">index</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;missing service: </span><span class="si">#{</span><span class="nx">inspected</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">index = </span><span class="nx">_</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">@registry</span><span class="p">,</span> <span class="nx">routable</span><span class="p">)</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nx">assert</span> <span class="nx">index</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;no service: </span><span class="si">#{</span><span class="nx">inspected</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nv">unregister = </span><span class="nx">routable</span><span class="p">.</span><span class="nx">downstream</span> <span class="nv">unregister: </span><span class="o">=&gt;</span>
             <span class="nx">@emit</span> <span class="s">&quot;unregister&quot;</span><span class="p">,</span> <span class="nx">@routable</span><span class="p">,</span> <span class="nx">@kernel</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">removing</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">inspected</span>

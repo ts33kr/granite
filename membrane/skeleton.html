@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>membrane/skeleton</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/skeleton"><meta name="groc-project-path" content="library/membrane/skeleton.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/skeleton.coffee">library/membrane/skeleton.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>membrane/skeleton</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/skeleton"><meta name="groc-project-path" content="library/membrane/skeleton.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/skeleton.coffee">library/membrane/skeleton.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;&#105;l&#116;&#x6f;:&#x74;&#115;&#51;&#x33;&#x6b;&#x72;&#x40;&#103;&#x6d;&#x61;&#x69;&#108;&#46;&#x63;&#x6f;&#x6d;">&#x74;&#115;&#51;&#x33;&#x6b;&#x72;&#x40;&#103;&#x6d;&#x61;&#x69;&#108;&#46;&#x63;&#x6f;&#x6d;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
@@ -36,20 +34,20 @@
 <span class="p">{</span><span class="nx">Stubs</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./../nucleus/stubs&quot;</span>
 
 <span class="p">{</span><span class="nx">Descriptor</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./describe&quot;</span>
-<span class="p">{</span><span class="nx">Healthcare</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./health&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class for every service in the system
+<span class="p">{</span><span class="nx">Healthcare</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./health&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract base class for every service in the system
 and in the end user application that provides a REST interface
 to some arbitrary resource, determined by HTTP path and guarded
 by the domain matching. This is the crucial piece of framework.
-It supports strictly methods defined in the HTTP specification.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Barebones = </span><span class="k">class</span> <span class="nx">Barebones</span> <span class="k">extends</span> <span class="nx">Stubs</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+It supports strictly methods defined in the HTTP specification.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Barebones = </span><span class="k">class</span> <span class="nx">Barebones</span> <span class="k">extends</span> <span class="nx">Stubs</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>These invocations establish the parameters which are going
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These invocations establish the parameters which are going
 to be used for matching HTTP requests against this service.
 Typically an HTTP pathname pattern and a domain name pattern.
 Try not to put constraints on the domain, unless necessary.
 Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@compose</span> <span class="nx">Descriptor</span>
-    <span class="nx">@compose</span> <span class="nx">Healthcare</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block describes certain method of abrbitrary service. The
+    <span class="nx">@compose</span> <span class="nx">Healthcare</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block describes certain method of abrbitrary service. The
 exact process of how it is being documented depends on how the
 documented function is implemented. Please refer to <code>Document</code>
 class and its module implementation for more information on it.
@@ -61,7 +59,7 @@ Also, see <code>Descriptor</code> compound implementation for reference!</p></di
         <span class="nx">@outputs</span> <span class="s">&quot;An array of supported methods, JSON or string&quot;</span>
         <span class="nx">@markings</span> <span class="nv">framework: </span><span class="s">&quot;critical&quot;</span><span class="p">,</span> <span class="nv">stable: </span><span class="s">&quot;positive&quot;</span>
         <span class="nx">@version</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">framework</span><span class="p">.</span><span class="nx">version</span> <span class="o">or</span> <span class="kc">undefined</span>
-        <span class="nx">@produces</span> <span class="s">&quot;application/json&quot;</span><span class="p">,</span> <span class="s">&quot;text/html&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should generally be used to obtain HTTP methods that
+        <span class="nx">@produces</span> <span class="s">&quot;application/json&quot;</span><span class="p">,</span> <span class="s">&quot;text/html&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method should generally be used to obtain HTTP methods that
 are allowed on this resources. This is not the only possible way
 of implementing this method, because it usually can have a lot of
 different interpretations other than the one in the HTTP spec.
@@ -70,8 +68,8 @@ The method is an HTTP verb, coherent with the REST interface.</p></div></div><di
         <span class="nv">doesJson = </span><span class="nx">response</span><span class="p">.</span><span class="nx">accepts</span><span class="p">(</span><span class="sr">/json/</span><span class="p">)</span> <span class="o">or</span> <span class="kc">false</span>
         <span class="nv">pathname = </span><span class="k">try</span> <span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">pathname</span>
         <span class="nv">checkIfSupported = </span><span class="nf">(m) =&gt;</span> <span class="nx">@</span><span class="p">[</span><span class="nx">m</span><span class="p">]</span> <span class="o">isnt</span> <span class="nx">@unsupported</span>
-        <span class="nv">supported = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">knowns</span><span class="p">,</span> <span class="nx">checkIfSupported</span>
+        <span class="nv">supported = </span><span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">knowns</span><span class="p">,</span> <span class="nx">checkIfSupported</span>
         <span class="nv">descriptor = methods: </span><span class="nx">supported</span><span class="p">,</span> <span class="nv">resource: </span><span class="nx">pathname</span>
-        <span class="k">return</span> <span class="nx">@push</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">descriptor</span> <span class="k">if</span> <span class="nx">doesJson</span>
-        <span class="nv">formatted = </span><span class="nx">supported</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;\r\n&quot;</span>
-        <span class="nx">response</span><span class="p">.</span><span class="nx">send</span> <span class="nx">formatted</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div></div></body></html>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">push</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">descriptor</span> <span class="k">if</span> <span class="nx">doesJson</span>
+        <span class="nx">assert</span> <span class="nv">formatted = </span><span class="nx">supported</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;\r\n&quot;</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">send</span> <span class="nx">formatted</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span> <span class="k">return</span> <span class="nx">@</span></div></div></div></div></body></html>

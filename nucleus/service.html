@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>nucleus/service</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/service"><meta name="groc-project-path" content="library/nucleus/service.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/service.coffee">library/nucleus/service.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>nucleus/service</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/service"><meta name="groc-project-path" content="library/nucleus/service.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/service.coffee">library/nucleus/service.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;&#105;&#x6c;&#116;&#x6f;:&#116;&#x73;&#51;&#x33;kr&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#46;&#x63;o&#109;">&#116;&#x73;&#51;&#x33;kr&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#46;&#x63;o&#109;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
 <span class="nv">uuid = </span><span class="nx">require</span> <span class="s">&quot;node-uuid&quot;</span>
 <span class="nv">crypto = </span><span class="nx">require</span> <span class="s">&quot;crypto&quot;</span>
@@ -42,46 +40,46 @@
 <span class="p">{</span><span class="nx">format</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 <span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./archetype&quot;</span>
 <span class="p">{</span><span class="nx">urlOfServer</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./tools&quot;</span>
-<span class="p">{</span><span class="nx">urlOfMaster</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./tools&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is an abstract base class for every kind of service in this
+<span class="p">{</span><span class="nx">urlOfMaster</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./tools&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract base class for every kind of service in this
 framework and the end user application. It provides the matching
 and processing logic based on domain matches and RE match/extract
 logics, to deal with paths. Remember that this service is just a
-an internal base class, you generally should not use it directly.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Service = </span><span class="k">class</span> <span class="nx">Service</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+an internal base class, you generally should not use it directly.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Service = </span><span class="k">class</span> <span class="nx">Service</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Every service has to have a public constructor that accepts
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Every service has to have a public constructor that accepts
 the kernel instance as a parameter. You can override it as
 you see fit, but be sure to invoke the super constructor and
-it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span> <span class="k">super</span> <span class="o">and</span> <span class="vi">@uuid = </span><span class="nx">uuid</span><span class="p">.</span><span class="nx">v4</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either obtain or set the HTTP location of the current service.
+it is highly advised to store the kernel instance in object.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(@kernel) -&gt;</span> <span class="k">super</span> <span class="o">and</span> <span class="vi">@uuid = </span><span class="nx">uuid</span><span class="p">.</span><span class="nx">v4</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Either obtain or set the HTTP location of the current service.
 This method is a proxy that forwards the invocation to the
 service constructor, for the purpose of easy access to service
 location when programmatically operating on the instances. Do
-refer to the original constructor method for more information.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">location: </span><span class="nf">-&gt;</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">location</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method is a tool for obtaining a fully qualified path to
+refer to the original constructor method for more information.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">location: </span><span class="nf">-&gt;</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">location</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method is a tool for obtaining a fully qualified path to
 access to the resource, according to the HTTP specification.
 This includes details such as host, port, path and alike. The
 method knows how to disambiguate between SSL and non SSL paths.
-Refer to the original constructor method for more information.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">qualified: </span><span class="nf">-&gt;</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">qualified</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called each time when the kernel beacon
+Refer to the original constructor method for more information.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">qualified: </span><span class="nf">-&gt;</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">qualified</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called each time when the kernel beacon
 is being fired. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">beacon: </span><span class="nf">(kernel, timestamp, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to instantiating the service
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">beacon: </span><span class="nf">(kernel, timestamp, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to instantiating the service
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">instance: </span><span class="nf">(kernel, service, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to registering the service
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">instance: </span><span class="nf">(kernel, service, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to registering the service
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">register: </span><span class="nf">(kernel, router, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to unregistering the service
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">register: </span><span class="nf">(kernel, router, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to unregistering the service
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">unregister: </span><span class="nf">(kernel, router, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A hook that will be called prior to firing up the processing
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">unregister: </span><span class="nf">(kernel, router, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to firing up the processing
 of the service. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">ignition: </span><span class="nf">(request, response, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>An important method whose responsibility is to create a new
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">ignition: </span><span class="nf">(request, response, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An important method whose responsibility is to create a new
 instance of the service, which is later will be registered in
 the router. This is invoked by the watcher when it discovers
 new suitable services to register. This works asynchronously!</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@spawn: </span><span class="nf">(kernel, callback) -&gt;</span>
@@ -94,7 +92,7 @@ new suitable services to register. This works asynchronously!</p></div></div><di
         <span class="nv">downstream = </span><span class="k">try</span> <span class="nx">downstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">service</span>
         <span class="nx">assert</span> <span class="nv">instance = </span><span class="nx">downstream</span> <span class="nv">instance: </span><span class="o">=&gt;</span>
             <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">kernel</span>
-        <span class="nx">instance</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">service</span><span class="p">;</span> <span class="k">return</span> <span class="nx">service</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method implements a clever little lazy initialize system
+        <span class="nx">instance</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">service</span><span class="p">;</span> <span class="k">return</span> <span class="nx">service</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method implements a clever little lazy initialize system
 for the services. Basically, if you supply a fucntion to this
 method invocation, it will save it as a lazy config function,
 and execute it when the service is about to be spawned. But
@@ -110,7 +108,7 @@ that will invoke all the lazy config functions in sequence.</p></div></div><div 
         <span class="k">return</span> <span class="nx">execute</span> <span class="k">unless</span> <span class="p">(</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">or</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="nv">executable = </span><span class="s">&quot;please supply a valid lazy function&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">implement</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">executable</span>
-        <span class="k">return</span> <span class="vi">@$lazy = </span><span class="p">(</span><span class="nx">@$lazy</span> <span class="o">or</span> <span class="p">[]).</span><span class="nx">concat</span> <span class="nx">implement</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method provides a handy, convenient tool for obtainting a
+        <span class="k">return</span> <span class="vi">@$lazy = </span><span class="p">(</span><span class="nx">@$lazy</span> <span class="o">or</span> <span class="p">[]).</span><span class="nx">concat</span> <span class="nx">implement</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method provides a handy, convenient tool for obtainting a
 stringified identificator tag (a reference) for a service class.
 This tag is supposed to be something between machine and human
 readable. Typically, this is a short hash function, such as an
@@ -122,7 +120,7 @@ MD5 hash represented (stringified) with HEX digesting mechanism.</p></div></div>
         <span class="nx">assert</span> <span class="nv">location = </span><span class="nx">@origin</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">noOrigin</span>
         <span class="nx">assert</span> <span class="nv">factor = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">location</span><span class="si">}</span><span class="s">:</span><span class="si">#{</span><span class="nx">@identify</span><span class="p">()</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nv">digest = </span><span class="nx">hasher</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">factor</span><span class="p">).</span><span class="nx">digest</span> <span class="s">&quot;hex&quot;</span>
-        <span class="nx">assert</span> <span class="nx">digest</span><span class="p">;</span> <span class="k">return</span> <span class="vi">@$reference = </span><span class="nx">digest</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method is a tool for obtaining a fully qualified path to
+        <span class="nx">assert</span> <span class="nx">digest</span><span class="p">;</span> <span class="k">return</span> <span class="vi">@$reference = </span><span class="nx">digest</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method is a tool for obtaining a fully qualified path to
 access to the resource, according to the HTTP specification.
 This includes details such as host, port, path and alike. The
 method knows how to disambiguate between SSL and non SSL paths.
@@ -134,7 +132,7 @@ Do not confuse it with <code>location</code> method that deals locations.</p></d
         <span class="nv">isProtected = </span><span class="k">this</span><span class="p">.</span><span class="nx">derives</span> <span class="nx">securing</span><span class="p">.</span><span class="nx">OnlySsl</span>
         <span class="nv">sel = </span><span class="nx">master</span> <span class="o">and</span> <span class="nx">urlOfMaster</span> <span class="o">or</span> <span class="nx">urlOfServer</span>
         <span class="nv">link = </span><span class="nx">sel</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">isProtected</span><span class="p">,</span> <span class="nx">@location</span><span class="p">()</span>
-        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">link</span><span class="p">),</span> <span class="nx">int</span><span class="p">;</span> <span class="k">return</span> <span class="nx">link</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Either obtain or set the HTTP location of the current service.
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">link</span><span class="p">),</span> <span class="nx">int</span><span class="p">;</span> <span class="k">return</span> <span class="nx">link</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Either obtain or set the HTTP location of the current service.
 If not location has been set, but the one is requested then
 the deduced default is returned. Default location is the first
 resource regular expression pattern being unescaped to string.
@@ -146,39 +144,39 @@ Do not confuse it with <code>qualified</code> method that deals with URL.</p></d
         <span class="nv">noLocation = </span><span class="s">&quot;the location is not a string&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">location</span><span class="p">),</span> <span class="nx">noLocation</span>
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">location</span><span class="p">),</span> <span class="nx">isEmpty</span>
-        <span class="vi">@$location = </span><span class="nx">location</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a very basic method that adds the specified regular
+        <span class="vi">@$location = </span><span class="nx">location</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a very basic method that adds the specified regular
 expression pattern to the list of permitted resource patterns.
 The patterns are associated with a service class, not object.
 Supports implicit extraction of captured groups in the match.
 Use this to configure what resources should match with service.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@resource: </span><span class="nf">(pattern) -&gt;</span>
         <span class="nx">assert</span> <span class="nv">identify = </span><span class="nx">@identify</span><span class="p">().</span><span class="nx">underline</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
         <span class="nv">regexify = </span><span class="nf">(s) -&gt;</span> <span class="k">new</span> <span class="nb">RegExp</span> <span class="s">&quot;^</span><span class="si">#{</span><span class="nb">RegExp</span><span class="p">.</span><span class="nx">escape</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="si">}</span><span class="s">$&quot;</span>
-        <span class="nv">pattern = </span><span class="nx">regexify</span> <span class="nx">pattern</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">pattern</span>
+        <span class="nv">pattern = </span><span class="k">try</span> <span class="nx">regexify</span> <span class="nx">pattern</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">pattern</span>
         <span class="nv">inspected = </span><span class="nx">pattern</span><span class="p">.</span><span class="nx">unescape</span><span class="p">()</span><span class="o">?</span><span class="p">.</span><span class="nx">underline</span> <span class="o">or</span> <span class="nx">pattern</span>
         <span class="nv">associate = </span><span class="s">&quot;Associating </span><span class="si">#{</span><span class="nx">inspected</span><span class="si">}</span><span class="s"> resource with %s&quot;</span>
         <span class="nv">notRegexp = </span><span class="s">&quot;The </span><span class="si">#{</span><span class="nx">inspected</span><span class="si">}</span><span class="s"> is not a valid regexp&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isRegExp</span><span class="p">(</span><span class="nx">pattern</span><span class="p">)</span> <span class="o">and</span> <span class="nx">pattern</span><span class="p">.</span><span class="nx">source</span><span class="p">,</span> <span class="nx">notRegexp</span>
         <span class="nx">assert</span> <span class="vi">@resources = </span><span class="p">(</span><span class="nx">@resources</span> <span class="o">or</span> <span class="p">[]).</span><span class="nx">concat</span> <span class="nx">pattern</span>
-        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">associate</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">identify</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a very basic method that adds the specified regular
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">associate</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">identify</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a very basic method that adds the specified regular
 expression pattern to the list of permitted domain patterns.
 The patterns are associated with a service class, not object.
 Supports implicit extraction of captured groups in the match.
 Use this to configure what domains should match with service.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@domain: </span><span class="nf">(pattern) -&gt;</span>
         <span class="nx">assert</span> <span class="nv">identify = </span><span class="nx">@identify</span><span class="p">().</span><span class="nx">underline</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
         <span class="nv">regexify = </span><span class="nf">(s) -&gt;</span> <span class="k">new</span> <span class="nb">RegExp</span> <span class="s">&quot;^</span><span class="si">#{</span><span class="nb">RegExp</span><span class="p">.</span><span class="nx">escape</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="si">}</span><span class="s">$&quot;</span>
-        <span class="nv">pattern = </span><span class="nx">regexify</span> <span class="nx">pattern</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">pattern</span>
+        <span class="nv">pattern = </span><span class="k">try</span> <span class="nx">regexify</span> <span class="nx">pattern</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">pattern</span>
         <span class="nv">inspected = </span><span class="nx">pattern</span><span class="p">.</span><span class="nx">unescape</span><span class="p">()</span><span class="o">?</span><span class="p">.</span><span class="nx">underline</span> <span class="o">or</span> <span class="nx">pattern</span>
         <span class="nv">associate = </span><span class="s">&quot;Associating </span><span class="si">#{</span><span class="nx">inspected</span><span class="si">}</span><span class="s"> domain with %s&quot;</span>
         <span class="nv">notRegexp = </span><span class="s">&quot;The </span><span class="si">#{</span><span class="nx">inspected</span><span class="si">}</span><span class="s"> is not a valid regexp&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isRegExp</span><span class="p">(</span><span class="nx">pattern</span><span class="p">)</span> <span class="o">and</span> <span class="nx">pattern</span><span class="p">.</span><span class="nx">source</span><span class="p">,</span> <span class="nx">notRegexp</span>
         <span class="nx">assert</span> <span class="vi">@domains = </span><span class="p">(</span><span class="nx">@domains</span> <span class="o">or</span> <span class="p">[]).</span><span class="nx">concat</span> <span class="nx">pattern</span>
-        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">associate</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">identify</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method handles the rescuing of the request/response pair
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">associate</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">identify</span><span class="p">;</span> <span class="k">return</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method handles the rescuing of the request/response pair
 when some error happens during the processing of the request
 under this service. This method is able to to deliver content
 as the response if it is desirable. If not, the request will
 simply be reject with Node.js/Connect. Beware about <code>next</code>!</p></div></div><div class="code"><div class="wrapper">    <span class="nv">rescuing: </span><span class="nf">(error, request, response, next) -&gt;</span>
-        <span class="nv">expose = </span><span class="s">&quot;failures:exposeExceptions&quot;</span>
-        <span class="nx">assert</span> <span class="nv">plain = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">plain = </span><span class="k">try</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">expose = </span><span class="s">&quot;failures:exposeExceptions&quot;</span>
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">method = </span><span class="nx">request</span><span class="p">.</span><span class="nx">method</span>
         <span class="nv">identify = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
         <span class="nv">template = </span><span class="s">&quot;Exception in a </span><span class="si">#{</span><span class="nx">method</span><span class="si">}</span><span class="s"> at %s: %s&quot;</span>
@@ -188,7 +186,7 @@ simply be reject with Node.js/Connect. Beware about <code>next</code>!</p></div>
         <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s">&quot;text/plain&quot;</span>
         <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="mi">500</span><span class="p">,</span> <span class="nx">http</span><span class="p">.</span><span class="nx">STATUS_CODES</span><span class="p">[</span><span class="mi">500</span><span class="p">]</span>
         <span class="nv">render = </span><span class="nx">format</span> <span class="nx">template</span><span class="p">,</span> <span class="nx">plain</span><span class="p">,</span> <span class="nx">error</span><span class="p">.</span><span class="nx">stack</span>
-        <span class="nx">response</span><span class="p">.</span><span class="nx">end</span> <span class="nx">render</span><span class="p">;</span> <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method should process the already matched HTTP request.
+        <span class="nx">response</span><span class="p">.</span><span class="nx">end</span> <span class="nx">render</span><span class="p">;</span> <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method should process the already matched HTTP request.
 But since this is an abstract base class, this implementation
 only extracts the domain and pathname captured groups, and
 returns them to the caller. Override it to do some real job.
@@ -200,12 +198,12 @@ The captured groups may be used by the overrider or ditched.</p></div></div><div
         <span class="nv">hostname = </span><span class="nx">_</span><span class="p">.</span><span class="nx">first</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span><span class="p">.</span><span class="nx">split</span> <span class="s">&quot;:&quot;</span>
         <span class="nv">pdomain = </span><span class="nf">(p) -&gt;</span> <span class="nv">gdomain = </span><span class="nx">hostname</span><span class="p">.</span><span class="nx">match</span> <span class="nx">p</span>
         <span class="nv">presource = </span><span class="nf">(p) -&gt;</span> <span class="nv">gresource = </span><span class="nx">pathname</span><span class="p">.</span><span class="nx">match</span> <span class="nx">p</span>
-        <span class="nv">pdomain = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">domains</span><span class="p">,</span> <span class="nx">pdomain</span><span class="p">)</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nv">pdomain = </span><span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">domains</span><span class="p">,</span> <span class="nx">pdomain</span><span class="p">)</span> <span class="o">or</span> <span class="kc">null</span>
         <span class="nv">presource = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">resources</span><span class="p">,</span> <span class="nx">presource</span><span class="p">)</span> <span class="o">or</span> <span class="kc">null</span>
         <span class="nx">assert</span> <span class="nx">gdomain</span> <span class="o">isnt</span> <span class="kc">null</span><span class="p">,</span> <span class="s">&quot;missing the domain&quot;</span>
         <span class="nx">assert</span> <span class="nx">gresource</span> <span class="o">isnt</span> <span class="kc">null</span><span class="p">,</span> <span class="s">&quot;missing resource&quot;</span>
         <span class="nx">@emit</span> <span class="s">&quot;process&quot;</span><span class="p">,</span> <span class="nx">gdomain</span><span class="p">,</span> <span class="nx">gresource</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="k">return</span> <span class="nv">domain: </span><span class="nx">gdomain</span><span class="p">,</span> <span class="nv">resource: </span><span class="nx">gresource</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method determines whether the supplied HTTP request
+        <span class="k">return</span> <span class="nv">domain: </span><span class="nx">gdomain</span><span class="p">,</span> <span class="nv">resource: </span><span class="nx">gresource</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method determines whether the supplied HTTP request
 matches this service. This is determined by examining the
 domain/host and the path, in accordance with the patterns
 that were used for configuring the class of this service.
@@ -216,7 +214,7 @@ It is async, so be sure to call the <code>decide</code> with boolean!</p></div><
         <span class="nv">hostname = </span><span class="nx">_</span><span class="p">.</span><span class="nx">first</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span><span class="p">.</span><span class="nx">split</span> <span class="s">&quot;:&quot;</span>
         <span class="nv">pdomain = </span><span class="nf">(pattern) -&gt;</span> <span class="nx">pattern</span><span class="p">.</span><span class="nx">test</span> <span class="nx">hostname</span>
         <span class="nv">presource = </span><span class="nf">(pattern) -&gt;</span> <span class="nx">pattern</span><span class="p">.</span><span class="nx">test</span> <span class="nx">pathname</span>
-        <span class="nv">domainOk = </span><span class="nx">_</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span><span class="nx">domains</span><span class="p">,</span> <span class="nx">pdomain</span><span class="p">)</span> <span class="o">or</span> <span class="kc">no</span>
+        <span class="nv">domainOk = </span><span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span><span class="nx">domains</span><span class="p">,</span> <span class="nx">pdomain</span><span class="p">)</span> <span class="o">or</span> <span class="kc">no</span>
         <span class="nv">resourceOk = </span><span class="nx">_</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span><span class="nx">resources</span><span class="p">,</span> <span class="nx">presource</span><span class="p">)</span> <span class="o">or</span> <span class="kc">no</span>
         <span class="nv">matches = </span><span class="nx">domainOk</span> <span class="o">is</span> <span class="kc">yes</span> <span class="o">and</span> <span class="nx">resourceOk</span> <span class="o">is</span> <span class="kc">yes</span>
         <span class="nx">@emit</span> <span class="s">&quot;matches&quot;</span><span class="p">,</span> <span class="nx">matches</span><span class="p">,</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span>

@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>nucleus/scaled</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/scaled"><meta name="groc-project-path" content="library/nucleus/scaled.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/scaled.coffee">library/nucleus/scaled.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>nucleus/scaled</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/scaled"><meta name="groc-project-path" content="library/nucleus/scaled.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/scaled.coffee">library/nucleus/scaled.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;&#105;&#108;&#116;&#x6f;:&#x74;s&#x33;&#x33;&#107;&#114;&#x40;&#103;&#x6d;&#97;&#x69;&#x6c;&#46;co&#109;">&#x74;s&#x33;&#x33;&#107;&#114;&#x40;&#103;&#x6d;&#97;&#x69;&#x6c;&#46;co&#109;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
 <span class="nv">seaport = </span><span class="nx">require</span> <span class="s">&quot;seaport&quot;</span>
@@ -44,16 +42,16 @@
 
 <span class="p">{</span><span class="nx">format</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 <span class="p">{</span><span class="nx">Generic</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./kernel&quot;</span>
-<span class="p">{</span><span class="nx">HttpProxy</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;http-proxy&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is the descendant of the generic kernel that implements the
+<span class="p">{</span><span class="nx">HttpProxy</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;http-proxy&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is the descendant of the generic kernel that implements the
 scaling of the framework across an arbitrary clustered processes
 or even machines. It is built on top of a set of the Node.js based
 technologies, such as service discovery library alongside with a
 library that allows for effective proxying of the HTTP requests.
-Normally this kernel should always be preferred over Generic one!</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Scaled = </span><span class="k">class</span> <span class="nx">Scaled</span> <span class="k">extends</span> <span class="nx">Generic</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This sets up the default identica for this kernel. It forms
+Normally this kernel should always be preferred over Generic one!</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Scaled = </span><span class="k">class</span> <span class="nx">Scaled</span> <span class="k">extends</span> <span class="nx">Generic</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This sets up the default identica for this kernel. It forms
 an identica of a certain recommended format and populates it
 with data takes from the <code>FRAMEWORK</code> definition in <code>Generic</code>
 kernel. Refer to that kernel and to <code>identica</code> method there
-for more information on semantics and the way of working it.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@identica</span> <span class="nf">-&gt;</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">@APPLICATION</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span><span class="s">@</span><span class="si">#{</span><span class="nx">@APPLICATION</span><span class="p">.</span><span class="nx">version</span><span class="si">}</span><span class="s">&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A configuration routine that ensures the scope config has the
+for more information on semantics and the way of working it.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@identica</span> <span class="nf">-&gt;</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">@APPLICATION</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span><span class="s">@</span><span class="si">#{</span><span class="nx">@APPLICATION</span><span class="p">.</span><span class="nx">version</span><span class="si">}</span><span class="s">&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A configuration routine that ensures the scope config has the
 Seaport hub related configuration data. If so, it proceeds to
 retrieving that info and using it to locate and connect to a
 Seaport hub, which is then installed as the kernel instance
@@ -66,7 +64,7 @@ variable, so that it can be accessed by the other routines.</p></div></div><div 
         <span class="nx">assert</span> <span class="nx">@seaport</span><span class="p">.</span><span class="nx">register</span><span class="o">?</span><span class="p">,</span> <span class="s">&quot;a broken seaport&quot;</span>
         <span class="nv">shl = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">host</span><span class="si">}</span><span class="s">:</span><span class="si">#{</span><span class="nx">port</span><span class="si">}</span><span class="s">&quot;</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">underline</span>
         <span class="nv">msg = </span><span class="s">&quot;Locate a Seaport hub at </span><span class="si">#{</span><span class="nx">shl</span><span class="si">}</span><span class="s">&quot;</span><span class="p">.</span><span class="nx">blue</span>
-        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">msg</span><span class="p">;</span> <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Shutdown the kernel instance. This includes shutting down both
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">msg</span><span class="p">;</span> <span class="k">return</span> <span class="nx">next</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Shutdown the kernel instance. This includes shutting down both
 HTTP and HTTPS server that may be running, stopping the router
 and unregistering all the services as a precauting. After that
 the scope is being dispersed and some events are being emited.
@@ -80,7 +78,7 @@ This implementaton cleans up some of the scalability resources.</p></div></div><
         <span class="nv">terminator = </span><span class="nf">(proxy) -&gt;</span> <span class="k">try</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
         <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">@queueOfHttps</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">(),</span> <span class="nx">terminator</span>
         <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">@queueOfHttp</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">(),</span> <span class="nx">terminator</span>
-        <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span><span class="p">;</span> <span class="k">super</span> <span class="nx">reason</span><span class="p">,</span> <span class="kc">no</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The kernel preemption routine is called once the kernel has
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span><span class="p">;</span> <span class="k">super</span> <span class="nx">reason</span><span class="p">,</span> <span class="kc">no</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The kernel preemption routine is called once the kernel has
 passed the initial launching and configuration phase, but is
 yet to start up the router, connect services and instantiate
 an actual application. This method gets passes continuation
@@ -94,7 +92,7 @@ that does that. The method can either invoke it or omit it.</p></div></div><div 
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">@createSeaportServer</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">@startupHttpsMaster</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">@startupHttpMaster</span><span class="p">()</span>
-        <span class="nx">continuation</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span> <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">instance</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Prepare and setup an HTTPS master server. This server is the
+        <span class="nx">continuation</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span> <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">instance</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Prepare and setup an HTTPS master server. This server is the
 proxy server that is going to consume all the HTTPS requests
 and load balance the request to some of the instances. Please
 refer to the <code>node-http-proxy</code> library for info on the proxy.
@@ -103,8 +101,8 @@ Also see <code>makeForward</code> method for details on load balancing!</p></div
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">options = </span><span class="nx">@resolveSslDetails</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">host = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;master:host&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span> <span class="nv">port = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;master:https&quot;</span>
-        <span class="nx">assert</span> <span class="nv">registr = </span><span class="nx">@makeRegistrar</span> <span class="nx">q</span><span class="p">,</span> <span class="s">&quot;http&quot;</span><span class="p">,</span> <span class="kc">null</span>
-        <span class="nx">assert</span> <span class="nv">selectr = </span><span class="nx">@makeSelectors</span> <span class="nx">q</span><span class="p">,</span> <span class="s">&quot;http&quot;</span><span class="p">,</span> <span class="kc">null</span>
+        <span class="nx">assert</span> <span class="nv">registr = </span><span class="nx">@makeRegistrar</span> <span class="nx">q</span><span class="p">,</span> <span class="s">&quot;http&quot;</span><span class="p">,</span> <span class="kc">undefined</span>
+        <span class="nx">assert</span> <span class="nv">selectr = </span><span class="nx">@makeSelectors</span> <span class="nx">q</span><span class="p">,</span> <span class="s">&quot;http&quot;</span><span class="p">,</span> <span class="kc">undefined</span>
         <span class="nx">assert</span> <span class="nv">forward = </span><span class="nx">@makeForwarder</span> <span class="nx">q</span><span class="p">,</span> <span class="s">&quot;http&quot;</span><span class="p">,</span> <span class="nx">selectr</span>
         <span class="nx">assert</span> <span class="nv">upgrade = </span><span class="nx">@makeUpgraders</span> <span class="nx">q</span><span class="p">,</span> <span class="s">&quot;http&quot;</span><span class="p">,</span> <span class="nx">selectr</span>
         <span class="nv">remove = </span><span class="nf">(s) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">remove</span> <span class="nx">q</span><span class="p">,</span> <span class="nf">(x) -&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">uuid</span> <span class="o">is</span> <span class="nx">x</span><span class="p">.</span><span class="nx">uuid</span>
@@ -116,7 +114,7 @@ Also see <code>makeForward</code> method for details on load balancing!</p></div
         <span class="nv">location = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">host</span><span class="si">}</span><span class="s">:</span><span class="si">#{</span><span class="nx">port</span><span class="si">}</span><span class="s">&quot;</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">underline</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">running</span><span class="p">.</span><span class="nx">underline</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">location</span>
         <span class="nx">@spserver</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;free&quot;</span><span class="p">,</span> <span class="nf">(service) -&gt;</span> <span class="nx">remove</span> <span class="nx">service</span>
-        <span class="nx">@spserver</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;register&quot;</span><span class="p">,</span> <span class="nx">registr</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Prepare and setup an HTTP master server. This server is the
+        <span class="nx">@spserver</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;register&quot;</span><span class="p">,</span> <span class="nx">registr</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Prepare and setup an HTTP master server. This server is the
 proxy server that is going to consume all the HTTP requests
 and load balance the request to some of the instances. Please
 refer to the <code>node-http-proxy</code> library for info on the proxy.
@@ -124,8 +122,8 @@ Also see <code>makeForward</code> method for details on load balancing!</p></div
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nv">q = </span><span class="nx">@queueOfHttp</span> <span class="o">?=</span> <span class="nb">Array</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">host = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;master:host&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span> <span class="nv">port = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;master:http&quot;</span>
-        <span class="nx">assert</span> <span class="nv">registr = </span><span class="nx">@makeRegistrar</span> <span class="nx">q</span><span class="p">,</span> <span class="s">&quot;http&quot;</span><span class="p">,</span> <span class="kc">null</span>
-        <span class="nx">assert</span> <span class="nv">selectr = </span><span class="nx">@makeSelectors</span> <span class="nx">q</span><span class="p">,</span> <span class="s">&quot;http&quot;</span><span class="p">,</span> <span class="kc">null</span>
+        <span class="nx">assert</span> <span class="nv">registr = </span><span class="nx">@makeRegistrar</span> <span class="nx">q</span><span class="p">,</span> <span class="s">&quot;http&quot;</span><span class="p">,</span> <span class="kc">undefined</span>
+        <span class="nx">assert</span> <span class="nv">selectr = </span><span class="nx">@makeSelectors</span> <span class="nx">q</span><span class="p">,</span> <span class="s">&quot;http&quot;</span><span class="p">,</span> <span class="kc">undefined</span>
         <span class="nx">assert</span> <span class="nv">forward = </span><span class="nx">@makeForwarder</span> <span class="nx">q</span><span class="p">,</span> <span class="s">&quot;http&quot;</span><span class="p">,</span> <span class="nx">selectr</span>
         <span class="nx">assert</span> <span class="nv">upgrade = </span><span class="nx">@makeUpgraders</span> <span class="nx">q</span><span class="p">,</span> <span class="s">&quot;http&quot;</span><span class="p">,</span> <span class="nx">selectr</span>
         <span class="nv">remove = </span><span class="nf">(s) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">remove</span> <span class="nx">q</span><span class="p">,</span> <span class="nf">(x) -&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">uuid</span> <span class="o">is</span> <span class="nx">x</span><span class="p">.</span><span class="nx">uuid</span>
@@ -137,7 +135,7 @@ Also see <code>makeForward</code> method for details on load balancing!</p></div
         <span class="nv">location = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">host</span><span class="si">}</span><span class="s">:</span><span class="si">#{</span><span class="nx">port</span><span class="si">}</span><span class="s">&quot;</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">underline</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">running</span><span class="p">.</span><span class="nx">underline</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">location</span>
         <span class="nx">@spserver</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;free&quot;</span><span class="p">,</span> <span class="nf">(service) -&gt;</span> <span class="nx">remove</span> <span class="nx">service</span>
-        <span class="nx">@spserver</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;register&quot;</span><span class="p">,</span> <span class="nx">registr</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a factory method that produces handlers invoked on
+        <span class="nx">@spserver</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;register&quot;</span><span class="p">,</span> <span class="nx">registr</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a factory method that produces handlers invoked on
 discovering a new service on the Seaport hub. This handler
 examines the service to decide if it suits the parameters
 passed to the factory, and if so - add it to the registry
@@ -158,7 +156,7 @@ of available services that are rotated using round-robin.</p></div></div><div cl
         <span class="nx">proxy</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;proxyError&quot;</span><span class="p">,</span> <span class="nf">(err, req, res) =&gt;</span>
             <span class="nv">msg = </span><span class="s">&quot;got an error talking to backend: %s&quot;</span>
             <span class="nx">res</span><span class="p">.</span><span class="nx">writeHead</span> <span class="mi">500</span><span class="p">,</span> <span class="s">&quot;a proxy backend error&quot;</span>
-            <span class="nx">res</span><span class="p">.</span><span class="nx">end</span> <span class="nx">format</span> <span class="nx">msg</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a factory method that produces methods that dispatch
+            <span class="nx">res</span><span class="p">.</span><span class="nx">end</span> <span class="nx">format</span> <span class="nx">msg</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a factory method that produces methods that dispatch
 requests to the corresponding backend proxied server. It is
 the direct implementor of the round-robin rotation algorithm.
 Beware howeber that is also implements the sticky session algo
@@ -184,7 +182,7 @@ based on setting and getting the correctly signed req cookies.</p></div></div><d
         <span class="nv">a = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">proxy</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">host</span><span class="si">}</span><span class="s">:</span><span class="si">#{</span><span class="nx">proxy</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">port</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nx">assert</span> <span class="nv">a = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">a</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">underline</span><span class="p">.</span><span class="nx">yellow</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">sticky</span><span class="p">,</span> <span class="nx">x</span><span class="p">.</span><span class="nx">bold</span><span class="p">,</span> <span class="nx">url</span><span class="p">,</span> <span class="nx">a</span> <span class="k">if</span> <span class="nx">xbackend</span>
-        <span class="nx">assert</span> <span class="nx">s</span><span class="p">.</span><span class="nx">response</span> <span class="o">is</span> <span class="nx">response</span><span class="p">;</span> <span class="k">return</span> <span class="nx">proxy</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a factory method that produces request forwarders.
+        <span class="nx">assert</span> <span class="nx">s</span><span class="p">.</span><span class="nx">response</span> <span class="o">is</span> <span class="nx">response</span><span class="p">;</span> <span class="k">return</span> <span class="nx">proxy</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a factory method that produces request forwarders.
 These are directly responsible for proxying an HTTP request
 from the master server (frontend) to actual server (backend)
 that does the job of handling the request. The forwarder is
@@ -201,24 +199,24 @@ also responsible for rotating (round-robin) servers queue!</p></div></div><div c
         <span class="nv">a = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">proxy</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">host</span><span class="si">}</span><span class="s">:</span><span class="si">#{</span><span class="nx">proxy</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">port</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nx">assert</span> <span class="nv">a = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">a</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">underline</span><span class="p">.</span><span class="nx">yellow</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="s">&quot;Proxy %s request %s to %s&quot;</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">u</span><span class="p">,</span> <span class="nx">a</span>
-        <span class="k">return</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">proxyRequest</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a factory method that that produces the specialized
+        <span class="k">return</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">proxyRequest</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a factory method that that produces the specialized
 request handler that is fired when an <code>upgrade</code> is requested
 on one of the master servers. This is the functionality that
 is required for WebSockets and other similar transports to
 perform its operation correctly in a distributed environment.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">makeUpgraders: </span><span class="nf">(queue, kind, select) -&gt;</span> <span class="nf">(request, response) =&gt;</span>
-        <span class="nv">encrypted = </span><span class="nx">request</span><span class="p">.</span><span class="nx">connection</span><span class="p">.</span><span class="nx">encrypted</span>
-        <span class="nx">assert</span> <span class="nv">u = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="si">}</span><span class="s">&quot;</span><span class="p">.</span><span class="nx">underline</span><span class="p">.</span><span class="nx">yellow</span>
+        <span class="nv">encrypted = </span><span class="nx">request</span><span class="p">.</span><span class="nx">connection</span><span class="p">.</span><span class="nx">encrypted</span> <span class="o">or</span> <span class="kc">no</span>
+        <span class="nx">assert</span> <span class="nv">u = </span><span class="k">try</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="si">}</span><span class="s">&quot;</span><span class="p">.</span><span class="nx">underline</span><span class="p">.</span><span class="nx">yellow</span>
         <span class="nx">assert</span> <span class="nv">x = </span><span class="p">(</span><span class="nx">encrypted</span> <span class="o">and</span> <span class="s">&quot;HTTPS&quot;</span> <span class="o">or</span> <span class="s">&quot;HTTP&quot;</span><span class="p">).</span><span class="nx">bold</span>
         <span class="nv">reason = </span><span class="s">&quot;no instances found behind a frontend&quot;</span>
         <span class="nv">msg = </span><span class="s">&quot;the frontend has no instances to talk to&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">queue</span><span class="p">),</span> <span class="s">&quot;got invalid proxy queue&quot;</span>
         <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="mi">504</span><span class="p">,</span> <span class="nx">reason</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">queue</span>
         <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="o">and</span> <span class="kc">no</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">queue</span>
-        <span class="nx">assert</span> <span class="nv">proxy = </span><span class="nx">select</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span>
+        <span class="nx">assert</span> <span class="nv">proxy = </span><span class="k">try</span> <span class="nx">select</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span>
         <span class="nv">a = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">proxy</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">host</span><span class="si">}</span><span class="s">:</span><span class="si">#{</span><span class="nx">proxy</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">port</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nx">assert</span> <span class="nv">a = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">a</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">underline</span><span class="p">.</span><span class="nx">yellow</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="s">&quot;Proxy %s upgrade %s to %s&quot;</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">u</span><span class="p">,</span> <span class="nx">a</span>
-        <span class="k">return</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">proxyWebSocketRequest</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Create and launch a Seaport server in the current kernel. It
+        <span class="k">return</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">proxyWebSocketRequest</span> <span class="nx">arguments</span><span class="p">...</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Create and launch a Seaport server in the current kernel. It
 draws the configuration from the same key as Seaport client
 uses. This routine should only be invoked when the kernel is
 launched in the master mode, generally. The method wires in
@@ -243,7 +241,7 @@ some handlers into the Seaport to track hosts come and go.</p></div></div><div c
         <span class="k">try</span> <span class="nx">@spserver</span><span class="p">.</span><span class="nx">listen</span> <span class="nx">port</span><span class="p">,</span> <span class="nx">host</span> <span class="k">catch</span> <span class="nx">error</span>
             <span class="nv">message = </span><span class="s">&quot;Seaport server failed\r\n%s&quot;</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span><span class="p">,</span> <span class="nx">error</span><span class="p">.</span><span class="nx">stack</span>
-            <span class="k">return</span> <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span> <span class="o">-</span><span class="mi">1</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup and launch either HTTP or HTTPS servers to listen at
+            <span class="k">return</span> <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span> <span class="o">-</span><span class="mi">1</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup and launch either HTTP or HTTPS servers to listen at
 the configured addresses and ports. This method reads up the
 scoping configuration in order to obtain the data necessary
 for instantiating, configuring and launching up the servers.
@@ -260,7 +258,7 @@ This version goes to the Seaport hub to obtain the options!</p></div></div><div 
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">record</span><span class="p">),</span> <span class="s">&quot;got mistaken&quot;</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">green</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">record</span><span class="si">}</span><span class="s">&quot;</span><span class="p">.</span><span class="nx">bold</span>
         <span class="k">try</span> <span class="nv">config.server.https = </span><span class="nx">record</span> <span class="o">or</span> <span class="kc">null</span>
-        <span class="nx">nconf</span><span class="p">.</span><span class="nx">set</span> <span class="s">&quot;server:https&quot;</span><span class="p">,</span> <span class="nx">record</span><span class="p">;</span> <span class="k">super</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Setup and launch either HTTP or HTTPS servers to listen at
+        <span class="k">try</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">defaults</span> <span class="nx">config</span><span class="p">;</span> <span class="k">return</span> <span class="k">super</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Setup and launch either HTTP or HTTPS servers to listen at
 the configured addresses and ports. This method reads up the
 scoping configuration in order to obtain the data necessary
 for instantiating, configuring and launching up the servers.
@@ -277,4 +275,4 @@ This version goes to the Seaport hub to obtain the options!</p></div></div><div 
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">record</span><span class="p">),</span> <span class="s">&quot;got mistaken&quot;</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">green</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">record</span><span class="si">}</span><span class="s">&quot;</span><span class="p">.</span><span class="nx">bold</span>
         <span class="k">try</span> <span class="nv">config.server.http = </span><span class="nx">record</span> <span class="o">or</span> <span class="kc">null</span>
-        <span class="nx">nconf</span><span class="p">.</span><span class="nx">set</span> <span class="s">&quot;server:http&quot;</span><span class="p">,</span> <span class="nx">record</span><span class="p">;</span> <span class="k">super</span></div></div></div></div></body></html>
+        <span class="k">try</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">defaults</span> <span class="nx">config</span><span class="p">;</span> <span class="k">return</span> <span class="k">super</span></div></div></div></div></body></html>

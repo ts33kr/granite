@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>nucleus/extends</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/extends"><meta name="groc-project-path" content="library/nucleus/extends.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/extends.coffee">library/nucleus/extends.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>nucleus/extends</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/extends"><meta name="groc-project-path" content="library/nucleus/extends.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/extends.coffee">library/nucleus/extends.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="m&#x61;&#x69;&#108;&#x74;&#x6f;:&#x74;&#x73;&#x33;&#51;&#x6b;&#x72;&#x40;&#103;&#109;&#97;&#105;&#108;&#x2e;&#x63;&#x6f;&#109;">&#x74;&#x73;&#x33;&#51;&#x6b;&#x72;&#x40;&#103;&#109;&#97;&#105;&#108;&#x2e;&#x63;&#x6f;&#109;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">uuid = </span><span class="nx">require</span> <span class="s">&quot;node-uuid&quot;</span>
 <span class="nv">strace = </span><span class="nx">require</span> <span class="s">&quot;stack-trace&quot;</span>
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
@@ -39,33 +37,11 @@
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 <span class="nv">fs = </span><span class="nx">require</span> <span class="s">&quot;fs&quot;</span>
 
-<span class="p">{</span><span class="nx">remote</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This class encapsulates arbitrary definition that extend built in
+<span class="p">{</span><span class="nx">cc</span><span class="p">,</span> <span class="nx">ec</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This class encapsulates arbitrary definition that extend built in
 data types or similar to it. This is a small collection of the handy
 routines that are used throughout the code. These definitions are
 placed in this class in order to transfer it to the remote call site.
-Some of them depend on other subsystems, such as dynamic composition.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Extending = </span><span class="nx">remote</span> <span class="nf">-&gt;</span> <span class="k">class</span> <span class="nx">Extending</span> <span class="k">extends</span> <span class="nb">Object</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Extend the native RegExp object to implement method for escaping
-a supplied string. Escaping here means substituting all the RE
-characters so that it can be used inside of the regular expression
-pattern. The implementation was borrowed from StackOverflow thread.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">RegExp</span><span class="p">.</span><span class="nv">escape = </span><span class="nf">(string) -&gt;</span>
-        <span class="nv">noString = </span><span class="s">&quot;please supply valid input&quot;</span>
-        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">string</span><span class="p">),</span> <span class="nx">noString</span>
-        <span class="nv">primary = </span><span class="sr">/[-\/\\^$*+?.()|[\]{}]/g</span>
-        <span class="nx">string</span><span class="p">.</span><span class="nx">replace</span> <span class="nx">primary</span><span class="p">,</span> <span class="s">&quot;\\$&amp;&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Extend the native RegExp object to implement method for unescaping
-a supplied string. Unscaping here means substituting all the RE back
-characters so that it cannot be used inside of the regular expression
-pattern. The implementation was borrowed from StackOverflow thread.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">RegExp</span><span class="o">::</span><span class="nv">unescape = </span><span class="nf">-&gt;</span>
-        <span class="nv">noString = </span><span class="s">&quot;cannot retrieve RE source&quot;</span>
-        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">@source</span><span class="p">),</span> <span class="nx">noString</span>
-        <span class="nv">string = </span><span class="nx">@source</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/\\\//g</span><span class="p">,</span> <span class="s">&quot;/&quot;</span>
-        <span class="k">return</span> <span class="nx">string</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/[\$\^]/g</span><span class="p">,</span> <span class="s">&quot;&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Collect all the matches of the regular expression against of the
-supplied string. This method basically gathers all the matches that
-sequentially matches against the input string and packs them into
-an array which is handed to the invoker. Be sure to set the G flag.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">RegExp</span><span class="o">::</span><span class="nv">collect = </span><span class="nf">(string) -&gt;</span>
-        <span class="nv">matches = </span><span class="k">new</span> <span class="nb">Array</span> <span class="kc">undefined</span>
-        <span class="nv">noString = </span><span class="s">&quot;got no string supplied&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">string</span><span class="p">),</span> <span class="nx">noString</span>
-        <span class="nx">matches</span><span class="p">.</span><span class="nx">push</span> <span class="nx">m</span> <span class="k">while</span> <span class="nv">m = </span><span class="nx">@exec</span> <span class="nx">string</span>
-        <span class="nx">assert</span> <span class="nx">matches</span><span class="p">;</span> <span class="k">return</span> <span class="nx">matches</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Determine if the object that is bound to this invocation is a
+Some of them depend on other subsystems, such as dynamic composition.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Extending = </span><span class="nx">cc</span> <span class="nf">-&gt;</span> <span class="k">class</span> <span class="nx">Extending</span> <span class="k">extends</span> <span class="nb">Object</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Determine if the object that is bound to this invocation is a
 subclass of the supplied archetype class (as argument). Of course
 it is assumed that you should be invoking this method only on the
 objects that are valid CoffeeSscript classes with necessary attrs.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nb">Object</span><span class="o">::</span><span class="p">,</span> <span class="s">&quot;derives&quot;</span><span class="p">,</span>
@@ -75,7 +51,7 @@ objects that are valid CoffeeSscript classes with necessary attrs.</p></div></di
             <span class="nv">predicate = </span><span class="nf">(x) -&gt;</span> <span class="nx">x</span><span class="p">.</span><span class="nx">similarWith</span> <span class="nx">archetype</span><span class="p">,</span> <span class="nx">loose</span>
             <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">@__super__</span><span class="p">),</span> <span class="s">&quot;this is not class&quot;</span>
             <span class="k">return</span> <span class="kc">yes</span> <span class="k">if</span> <span class="nx">predicate</span><span class="p">(</span><span class="k">this</span> <span class="o">or</span> <span class="kc">undefined</span><span class="p">)</span> <span class="o">is</span> <span class="kc">yes</span>
-            <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">any</span> <span class="nx">@hierarchy</span><span class="p">(),</span> <span class="nx">predicate</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Determine if the object that is bound to this invocation is an
+            <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">any</span> <span class="nx">@hierarchy</span><span class="p">(),</span> <span class="nx">predicate</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Determine if the object that is bound to this invocation is an
 object of the supplied archetype class (as argument). Of course
 if is assumed that you should be invoking this only on instances
 of some class in order to yield positive results. Please refer
@@ -86,7 +62,7 @@ to the <code>compose</code> module for more information on how this works.</p></
             <span class="nv">predicate = </span><span class="nf">(x) -&gt;</span> <span class="nx">x</span><span class="p">.</span><span class="nx">similarWith</span> <span class="nx">archetype</span><span class="p">,</span> <span class="nx">loose</span>
             <span class="nx">assert</span> <span class="nv">hierarchy = </span><span class="nx">@constructor</span><span class="o">?</span><span class="p">.</span><span class="nx">hierarchy</span><span class="p">()</span>
             <span class="k">return</span> <span class="kc">yes</span> <span class="k">if</span> <span class="nx">predicate</span><span class="p">(</span><span class="nx">@constructor</span><span class="p">)</span> <span class="o">is</span> <span class="kc">yes</span>
-            <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">any</span> <span class="nx">hierarchy</span> <span class="o">or</span> <span class="p">[],</span> <span class="nx">predicate</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This extension provides a convenient interface for looking up and
+            <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">any</span> <span class="nx">hierarchy</span> <span class="o">or</span> <span class="p">[],</span> <span class="nx">predicate</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This extension provides a convenient interface for looking up and
 setting up the object identifification tag. This tag is usually a
 class or function name, nick or an arbitraty name set with this
 method. If nothing found, the methods falls back to some default.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nb">Object</span><span class="o">::</span><span class="p">,</span> <span class="s">&quot;identify&quot;</span><span class="p">,</span>
@@ -97,7 +73,7 @@ method. If nothing found, the methods falls back to some default.</p></div></div
             <span class="k">return</span> <span class="nx">@$identify</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">@$identify</span>
             <span class="k">return</span> <span class="nx">@name</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">@name</span>
             <span class="k">return</span> <span class="nx">@watermark</span><span class="p">.</span><span class="nx">name</span> <span class="k">if</span> <span class="nx">shadowed</span>
-            <span class="k">return</span> <span class="nx">@identify</span> <span class="k">typeof</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method is a stub that must be called in the abstract methods
+            <span class="k">return</span> <span class="nx">@identify</span> <span class="k">typeof</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method is a stub that must be called in the abstract methods
 who do not have any implementation. When called, this method will
 spit out the relevant error about the caller method. It would say
 that the method is abstract and has no implementation attached to.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nb">Object</span><span class="o">::</span><span class="p">,</span> <span class="s">&quot;unimplemented&quot;</span><span class="p">,</span>
@@ -106,7 +82,7 @@ that the method is abstract and has no implementation attached to.</p></div></di
             <span class="nv">caller = </span><span class="nx">_</span><span class="p">.</span><span class="nx">head</span><span class="p">(</span><span class="nx">stack</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">())</span> <span class="o">or</span> <span class="kc">undefined</span>
             <span class="nx">assert</span> <span class="nv">identification = </span><span class="nx">caller</span><span class="p">.</span><span class="nx">getMethodName</span><span class="p">()</span>
             <span class="nv">naming = </span><span class="s">&quot;abstract method </span><span class="si">#{</span><span class="nx">identification</span><span class="si">}</span><span class="s">&quot;</span>
-            <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">naming</span><span class="si">}</span><span class="s"> is not implemented&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A universal method to both check and set the indicator of whether
+            <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">naming</span><span class="si">}</span><span class="s"> is not implemented&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A universal method to both check and set the indicator of whether
 an object is an abstract class or not. This is very useful for
 implementing proper architectural abstractions and concretizations.
 Use this method rather than directly setting and check for markers.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nb">Object</span><span class="o">::</span><span class="p">,</span> <span class="s">&quot;abstract&quot;</span><span class="p">,</span>
@@ -116,4 +92,26 @@ Use this method rather than directly setting and check for markers.</p></div></d
             <span class="nv">wrong = </span><span class="s">&quot;has to be a boolean value&quot;</span>
             <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isBoolean</span><span class="p">(</span><span class="nx">boolean</span><span class="p">),</span> <span class="nx">wrong</span>
             <span class="k">return</span> <span class="vi">@$abstract = </span><span class="k">this</span> <span class="k">if</span> <span class="nx">boolean</span>
-            <span class="k">delete</span> <span class="nx">@$abstract</span><span class="p">;</span> <span class="nx">@$abstract</span> <span class="o">is</span> <span class="nx">@</span></div></div></div></div></body></html>
+            <span class="k">delete</span> <span class="nx">@$abstract</span><span class="p">;</span> <span class="nx">@$abstract</span> <span class="o">is</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Extend the native RegExp object to implement method for escaping
+a supplied string. Escaping here means substituting all the RE
+characters so that it can be used inside of the regular expression
+pattern. The implementation was borrowed from StackOverflow thread.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">RegExp</span><span class="p">.</span><span class="nv">escape = </span><span class="nf">(string) -&gt;</span>
+        <span class="nv">noString = </span><span class="s">&quot;please supply valid input&quot;</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">string</span><span class="p">),</span> <span class="nx">noString</span>
+        <span class="nv">primary = </span><span class="sr">/[-\/\\^$*+?.()|[\]{}]/g</span>
+        <span class="nx">string</span><span class="p">.</span><span class="nx">replace</span> <span class="nx">primary</span><span class="p">,</span> <span class="s">&quot;\\$&amp;&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Extend the native RegExp object to implement method for unescaping
+a supplied string. Unscaping here means substituting all the RE back
+characters so that it cannot be used inside of the regular expression
+pattern. The implementation was borrowed from StackOverflow thread.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">RegExp</span><span class="o">::</span><span class="nv">unescape = </span><span class="nf">-&gt;</span>
+        <span class="nv">noString = </span><span class="s">&quot;cannot retrieve RE source&quot;</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">@source</span><span class="p">),</span> <span class="nx">noString</span>
+        <span class="nv">string = </span><span class="nx">@source</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/\\\//g</span><span class="p">,</span> <span class="s">&quot;/&quot;</span>
+        <span class="k">return</span> <span class="nx">string</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/[\$\^]/g</span><span class="p">,</span> <span class="s">&quot;&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Collect all the matches of the regular expression against of the
+supplied string. This method basically gathers all the matches that
+sequentially matches against the input string and packs them into
+an array which is handed to the invoker. Be sure to set the G flag.</p></div></div><div class="code"><div class="wrapper">    <span class="nb">RegExp</span><span class="o">::</span><span class="nv">collect = </span><span class="nf">(string) -&gt;</span>
+        <span class="nv">matches = </span><span class="k">new</span> <span class="nb">Array</span> <span class="kc">undefined</span>
+        <span class="nv">noString = </span><span class="s">&quot;got no string supplied&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">string</span><span class="p">),</span> <span class="nx">noString</span>
+        <span class="nx">matches</span><span class="p">.</span><span class="nx">push</span> <span class="nx">m</span> <span class="k">while</span> <span class="nv">m = </span><span class="nx">@exec</span> <span class="nx">string</span>
+        <span class="nx">assert</span> <span class="nx">matches</span><span class="p">;</span> <span class="k">return</span> <span class="nx">matches</span></div></div></div></div></body></html>

@@ -1,29 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><title>exposure/publish</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/publish"><meta name="groc-project-path" content="library/exposure/publish.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/publish.coffee">library/exposure/publish.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>exposure/publish</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/publish"><meta name="groc-project-path" content="library/exposure/publish.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/publish.coffee">library/exposure/publish.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="m&#x61;&#105;&#x6c;&#x74;&#x6f;:&#x74;&#115;&#51;&#51;k&#114;&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#x2e;c&#x6f;&#x6d;">&#x74;&#115;&#51;&#51;k&#114;&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#x2e;c&#x6f;&#x6d;</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
 <span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
@@ -38,18 +36,18 @@
 
 <span class="p">{</span><span class="nx">OnlySsl</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/securing&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span>
-<span class="p">{</span><span class="nx">Healthcare</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/health&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This service exposes the entiry hierarchical structure of the
+<span class="p">{</span><span class="nx">Healthcare</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/health&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This service exposes the entiry hierarchical structure of the
 service documentation, as they scanned and found in the current
 kernel instance. It exposes the data in a structured hierarchy
 encoded with JSON. Please refer to the implementation for info.
 In addition to the documentation it also exposes a complement
-set of service related data, such as health status and so on.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Publish = </span><span class="k">class</span> <span class="nx">Publish</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>These invocations establish the parameters which are going
+set of service related data, such as health status and so on.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Publish = </span><span class="k">class</span> <span class="nx">Publish</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These invocations establish the parameters which are going
 to be used for matching HTTP requests against this service.
 Typically an HTTP pathname pattern and a domain name pattern.
 Try not to put constraints on the domain, unless necessary.
 Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@resource</span> <span class="s">&quot;/api/publish&quot;</span>
     <span class="nx">@documentation</span> <span class="kc">yes</span>
-    <span class="nx">@compose</span> <span class="nx">OnlySsl</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This block describes certain method of abrbitrary service. The
+    <span class="nx">@compose</span> <span class="nx">OnlySsl</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block describes certain method of abrbitrary service. The
 exact process of how it is being documented depends on how the
 documented function is implemented. Please refer to <code>Document</code>
 class and its module implementation for more information on it.
@@ -61,8 +59,8 @@ Also, see <code>Descriptor</code> compound implementation for reference!</p></di
         <span class="nx">@outputs</span> <span class="s">&quot;An array of objects, each describes a service&quot;</span>
         <span class="nx">@markings</span> <span class="nv">framework: </span><span class="s">&quot;critical&quot;</span><span class="p">,</span> <span class="nv">stable: </span><span class="s">&quot;positive&quot;</span>
         <span class="nx">@version</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">framework</span><span class="p">.</span><span class="nx">version</span> <span class="o">or</span> <span class="kc">undefined</span>
-        <span class="nx">@produces</span> <span class="s">&quot;application/json&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Establish a heartbeat monitor. A hearbit monitor is a method
-that tests whether some arbitrarty server functonality does
+        <span class="nx">@produces</span> <span class="s">&quot;application/json&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Establish a heartbeat monitor. A heartbeat monitor is a method
+that tests whether some arbitrarty service functonality doing
 what it is supposed to be. The heartbeats are all executed and
 kept on the server. A service may define any number of beats.
 The hearbeat implementation cycle is never exposed to clients.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@heartbeat</span> <span class="s">&quot;yields a consistent structure&quot;</span><span class="p">,</span> <span class="nf">(check, accept) -&gt;</span>
@@ -82,7 +80,7 @@ The hearbeat implementation cycle is never exposed to clients.</p></div></div><d
             <span class="nx">check</span><span class="p">.</span><span class="nx">for</span> <span class="s">&quot;no relevants&quot;</span><span class="p">,</span> <span class="nx">get</span><span class="p">.</span><span class="nx">relevant</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">2</span>
             <span class="nx">check</span><span class="p">.</span><span class="nx">for</span> <span class="s">&quot;no markings&quot;</span><span class="p">,</span> <span class="nx">get</span><span class="p">.</span><span class="nx">markings</span><span class="p">.</span><span class="nx">framework</span><span class="o">?</span>
             <span class="nx">check</span><span class="p">.</span><span class="nx">for</span> <span class="s">&quot;no githubs&quot;</span><span class="p">,</span> <span class="nx">get</span><span class="p">.</span><span class="nx">github</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">1</span>
-            <span class="k">return</span> <span class="nx">accept</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This is a per service middleware that gets spinned up once a
+            <span class="k">return</span> <span class="nx">accept</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a per service middleware that gets spinned up once a
 request comes through the service. All middlewares are method
 agnostic and are being spinned up for all the HTTP methods. It
 is a good idea to break up the entiry functionality of service
@@ -100,12 +98,12 @@ Be aware that the middlewares can also be inherited from BCs.</p></div></div><di
                 <span class="nx">assert</span><span class="p">.</span><span class="nx">ifError</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">internalError</span>
                 <span class="nx">assert</span> <span class="nv">record.healthcare = </span><span class="nx">measures</span>
                 <span class="k">return</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span><span class="p">,</span> <span class="kc">undefined</span>
-        <span class="k">return</span> <span class="nx">async</span><span class="p">.</span><span class="nx">parallel</span> <span class="nx">getters</span><span class="p">,</span> <span class="nx">next</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Get the contents of the resources at the established path. It
+        <span class="k">return</span> <span class="nx">async</span><span class="p">.</span><span class="nx">parallel</span> <span class="nx">getters</span><span class="p">,</span> <span class="nx">next</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Get the contents of the resources at the established path. It
 is a good idea for this HTTP method to be idempotent. As the
 rule, this method does not have to alter any contents or data
 of the resource. Use for unobtrusive retrieval of resources.
 The method is an HTTP verb, coherent with the REST interface.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">GET: </span><span class="nf">(request, response, resource, domain, session) -&gt;</span>
-        <span class="nx">@push</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">request</span><span class="p">.</span><span class="nx">records</span><span class="p">,</span> <span class="nf">(record) -&gt;</span>
+        <span class="nx">@push</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">@request</span><span class="p">.</span><span class="nx">records</span><span class="p">,</span> <span class="nf">(record, records) -&gt;</span>
             <span class="nv">constructor = </span><span class="nx">record</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">constructor</span>
             <span class="nx">assert</span> <span class="nv">docs = </span><span class="nx">record</span><span class="p">.</span><span class="nx">methods</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
             <span class="nx">assert</span> <span class="nv">resources = </span><span class="nx">constructor</span><span class="p">.</span><span class="nx">resources</span>
@@ -124,7 +122,6 @@ The method is an HTTP verb, coherent with the REST interface.</p></div></div><di
                 <span class="nv">version: </span><span class="nb">document</span><span class="p">.</span><span class="nx">version</span><span class="p">()</span>
                 <span class="nv">failure: </span><span class="nb">document</span><span class="p">.</span><span class="nx">failure</span><span class="p">()</span>
                 <span class="nv">outputs: </span><span class="nb">document</span><span class="p">.</span><span class="nx">outputs</span><span class="p">()</span>
-                <span class="nv">schemas: </span><span class="nb">document</span><span class="p">.</span><span class="nx">schemas</span><span class="p">()</span>
                 <span class="nv">github: </span><span class="nb">document</span><span class="p">.</span><span class="nx">github</span><span class="p">()</span>
                 <span class="nv">inputs: </span><span class="nb">document</span><span class="p">.</span><span class="nx">inputs</span><span class="p">()</span>
                 <span class="nv">remark: </span><span class="nb">document</span><span class="p">.</span><span class="nx">remark</span><span class="p">()</span>

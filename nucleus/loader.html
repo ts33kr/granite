@@ -1,35 +1,33 @@
-<!DOCTYPE html><html lang="en"><head><title>nucleus/loader</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/loader"><meta name="groc-project-path" content="library/nucleus/loader.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/loader.coffee">library/nucleus/loader.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="cm">###</span>
-<span class="cm">Copyright (c) 2013, Alexander Cherniuk &lt;ts33kr@gmail.com&gt;</span>
-<span class="cm">All rights reserved.</span>
+<!DOCTYPE html><html lang="en"><head><title>nucleus/loader</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/loader"><meta name="groc-project-path" content="library/nucleus/loader.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/loader.coffee">library/nucleus/loader.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;&#105;&#x6c;&#116;&#111;:&#116;&#115;&#x33;&#x33;&#x6b;&#114;&#64;&#103;&#109;&#97;&#x69;&#108;.&#99;&#111;m">&#116;&#115;&#x33;&#x33;&#x6b;&#114;&#64;&#103;&#109;&#97;&#x69;&#108;.&#99;&#111;m</a>
+All rights reserved.</p>
 
-<span class="cm">Redistribution and use in source and binary forms, with or without</span>
-<span class="cm">modification, are permitted provided that the following conditions are met:</span>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
 
-<span class="cm">1. Redistributions of source code must retain the above copyright notice, this</span>
-<span class="cm">   list of conditions and the following disclaimer.</span>
-<span class="cm">2. Redistributions in binary form must reproduce the above copyright notice,</span>
-<span class="cm">   this list of conditions and the following disclaimer in the documentation</span>
-<span class="cm">   and/or other materials provided with the distribution.</span>
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
 
-<span class="cm">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="cm">ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="cm">WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="cm">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="cm">ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="cm">(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="cm">LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND</span>
-<span class="cm">ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="cm">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="cm">SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="cm">###</span>
-
-<span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">wrench = </span><span class="nx">require</span> <span class="s">&quot;wrench&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
 <span class="nv">paths = </span><span class="nx">require</span> <span class="s">&quot;path&quot;</span>
-<span class="nv">fs = </span><span class="nx">require</span> <span class="s">&quot;fs&quot;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method is the base method for very important functionality.
+<span class="nv">fs = </span><span class="nx">require</span> <span class="s">&quot;fs&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method is the base method for very important functionality.
 It scans the supplied directory, find all the modules there and
 return an object, where keys are names of modules minus the ext.
 This is used to build up entire module hierarchy of the framework.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.collectModules = </span><span class="nf">(directory, shallow) -&gt;</span>
@@ -41,11 +39,11 @@ This is used to build up entire module hierarchy of the framework.</p></div></di
     <span class="k">return</span> <span class="nb">Object</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span> <span class="nx">directory</span>
     <span class="nx">assert</span> <span class="nv">scanSync = </span><span class="nx">wrench</span><span class="p">.</span><span class="nx">readdirSyncRecursive</span>
     <span class="nx">assert</span> <span class="nv">scanSync = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readdirSync</span> <span class="k">if</span> <span class="nx">shallow</span>
-    <span class="nv">scanned = </span><span class="nx">scanSync</span> <span class="nx">directory</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+    <span class="nv">scanned = </span><span class="k">try</span> <span class="nx">scanSync</span> <span class="nx">directory</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
     <span class="nv">supported = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">scanned</span><span class="p">,</span> <span class="nx">isSupported</span>
-    <span class="nv">modules = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">supported</span><span class="p">,</span> <span class="nx">ingest</span>
-    <span class="nv">symbols = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">supported</span><span class="p">,</span> <span class="nx">sym</span>
-    <span class="nx">_</span><span class="p">.</span><span class="nx">object</span> <span class="nx">symbols</span><span class="p">,</span> <span class="nx">modules</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This method is the base method for very important functionality.
+    <span class="nv">modules = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">supported</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">(),</span> <span class="nx">ingest</span>
+    <span class="nv">symbols = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">supported</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">(),</span> <span class="nx">sym</span>
+    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">object</span><span class="p">(</span><span class="nx">symbols</span><span class="p">,</span> <span class="nx">modules</span><span class="p">)</span> <span class="o">or</span> <span class="p">{}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method is the base method for very important functionality.
 It scans the supplied directory, find all the packages there and
 return an object, where keys are names of modules minus the ext.
 This is used to build up entire module hierarchy of the framework.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.collectPackages = </span><span class="nf">(closure, directory=&quot;library&quot;) -&gt;</span>
@@ -63,7 +61,7 @@ This is used to build up entire module hierarchy of the framework.</p></div></di
     <span class="nv">packages = </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">directories</span><span class="p">,</span> <span class="nx">scanner</span>
     <span class="nv">packages = </span><span class="nx">_</span><span class="p">.</span><span class="nx">object</span> <span class="nx">symbols</span><span class="p">,</span> <span class="nx">packages</span>
     <span class="nv">modules = </span><span class="nx">collectModules</span> <span class="nx">directory</span><span class="p">,</span> <span class="kc">yes</span>
-    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">modules</span><span class="p">,</span> <span class="nx">packages</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Traverse the hierarchy of all cached modules and try find kernel
+    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">modules</span><span class="p">,</span> <span class="nx">packages</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Traverse the hierarchy of all cached modules and try find kernel
 class that the most deep hiererachy. That is the kernel that is a
 most derived from the original one. If no such kernel can be found
 then revert to returning the original kernel embedded in framework.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.cachedKernel = </span><span class="nf">(limits) -&gt;</span>
