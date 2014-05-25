@@ -90,7 +90,7 @@ module.exports.Navigate = class Navigate extends Preflight
         attaching = "no hasher library has been found"
         assert _.isObject(hasher or null), attaching
         assert _.isObject(crossroads or null), router
-        logger.info "setting up the hashing navigation"
+        logger.info "Setting up the hashing navigation"
         parser = (landed, old) -> crossroads.parse landed
         begin = _.find @, (x) -> x?.meta?.options?.default
         hasher.setHash begin.meta.endpoint if begin?.meta
@@ -101,5 +101,5 @@ module.exports.Navigate = class Navigate extends Preflight
             return unless _.isFunction value or null
             return unless value?.meta?.endpoint or 0
             assert endpoint = try value.meta.endpoint
-            logger.debug "mount endpoint #{endpoint}"
+            logger.debug "Mount endpoint #{endpoint}"
             crossroads.addRoute "#{endpoint}", value
