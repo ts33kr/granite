@@ -28,4 +28,5 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # is also used by the framework itself for the Cakefile of its own.
 # This method should satisfy the basic boilerplating needs of apps.
 # Please refer to `cakefile` module for information on the tasking.
+require("coffee-script/register")
 require(__dirname).cakefile()
