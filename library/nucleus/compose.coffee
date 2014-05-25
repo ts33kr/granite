@@ -156,7 +156,7 @@ module.exports.Composition = cc -> class Composition extends Object
     # between the foreign and common peers in the inheritance chain. Do
     # refer to the implementation for the understanding of what happens.
     Object.defineProperty Object::, "compose",
-        enumerable: no, value: (compound, shader=cloner) ->
+        writable: yes, value: (compound, shader=cloner) ->
             assert foreign = try compound.hierarchy()
             assert identify = try compound.identify()
             cmp = (orig) -> (cs) -> cs.similarWith orig
