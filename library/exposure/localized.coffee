@@ -24,6 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 _ = require "lodash"
+yaml = require "js-yaml"
 assert = require "assert"
 asciify = require "asciify"
 connect = require "connect"
@@ -55,6 +56,33 @@ module.exports.Localized = class Localized extends Duplex
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # Walk over all of the declared translation message locations
+    # and try loading messages off the every declared location. All
+    # the messages will be merged into one object, indexed by the
+    # languages names as keys. Colliding keys are overriden. Every
+    # YAML document is treated as a translation for one language.
+    # Please, never execute this method directly, since it is very
+    # heavy on reasources and should be shadowed with the caching.
+    collectTranslationMessages: ->
+        assert resolve = r = require("path").join
+        assert sreader = require("fs").readFileSync
+        identify = @constructor.identify().underline
+        e = "UTF-8" # all messages files must be UTF-8
+        collector = {} # will hold the translation map
+        assert locations = @constructor.messages() or []
+        locations = _.cloneDeep locations # no mutations
+        deduce = (o) -> o.f = r o.directory, o.location
+        o.blob = sreader deduce(o), e for o in locations
+        processing = (f) -> _.each locations, f; collector
+        processing (o) -> yaml.safeLoadAll o.blob, (doc) ->
+            assert loc = o.location, "got invalid location"
+            message = "Get translation for %s at %s".cyan
+            logger.debug message, identify, loc.underline
+            noLanguage = "got incorrect translation file"
+            assert (language = doc.language), noLanguage
+            previous = collector[language] or new Object
+            collector[language] = _.merge previous, doc
+
     # Specify the translation file for the current service. This
     # file is meant to contain and provide internationalization
     # messages. These are the strings to use for displaying with
@@ -63,6 +91,7 @@ module.exports.Localized = class Localized extends Duplex
     @messages: (location, options={}) ->
         assert not _.isEmpty cwd = try process.cwd()
         assert previous = @messageLocations or Array()
+        return previous if arguments.length is 0 # get
         implicit = "locale" # default dir for messages
         noLocation = "the location has to be a string"
         noOptions = "no suitable options are supplied"
