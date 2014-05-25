@@ -63,19 +63,18 @@ module.exports.Localized = class Localized extends Duplex
     # YAML document is treated as a translation for one language.
     # Please, never execute this method directly, since it is very
     # heavy on reasources and should be shadowed with the caching.
-    collectTranslationMessages: ->
-        assert resolve = r = require("path").join
+    compileTranslationMessages: ->
         assert sreader = require("fs").readFileSync
+        assert resolve = join = require("path").join
         identify = @constructor.identify().underline
         e = "UTF-8" # all messages files must be UTF-8
         collector = {} # will hold the translation map
-        assert locations = @constructor.messages() or []
-        locations = _.cloneDeep locations # no mutations
-        deduce = (o) -> o.f = r o.directory, o.location
-        o.blob = sreader deduce(o), e for o in locations
-        processing = (f) -> _.each locations, f; collector
-        processing (o) -> yaml.safeLoadAll o.blob, (doc) ->
-            assert loc = o.location, "got invalid location"
+        assert translations = @constructor.translation()
+        deduce = (t) -> t.f = join t.directory, t.location
+        t.blob = sreader deduce(t), e for t in translations
+        processing = (f) -> _.each translations, f; collector
+        processing (t) -> yaml.safeLoadAll t.blob, (doc) ->
+            assert loc = t.location, "got invalid location"
             message = "Get translation for %s at %s".cyan
             logger.debug message, identify, loc.underline
             noLanguage = "got incorrect translation file"
@@ -88,9 +87,9 @@ module.exports.Localized = class Localized extends Duplex
     # messages. These are the strings to use for displaying with
     # different languages. File format is YAML with the special
     # structure that embeds multiple languages in a single file.
-    @messages: (location, options={}) ->
+    @translation: (location, options={}) ->
         assert not _.isEmpty cwd = try process.cwd()
-        assert previous = @messageLocations or Array()
+        assert previous = @translations or new Array()
         return previous if arguments.length is 0 # get
         implicit = "locale" # default dir for messages
         noLocation = "the location has to be a string"
@@ -98,7 +97,7 @@ module.exports.Localized = class Localized extends Duplex
         directory = options.dir or "#{cwd}/#{implicit}"
         assert _.isString(location or 0), noLocation
         assert _.isObject(options or 0), noOptions
-        this.messageLocations = previous.concat
+        return this.translations = previous.concat
             directory: directory.toString()
             location: location.toString()
             options: options or Object()
