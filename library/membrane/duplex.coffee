@@ -192,8 +192,8 @@ module.exports.Duplex = class Duplex extends Preflight
         s = (f) => session.save -> f.apply this, arguments
         assert binder; return (parameters..., callback) ->
             pci = method.isolation.call @, socket, binder, session
-            respond = (a...) => g => s => callback.apply pci, o(a)
-            execute = (a...) => g => s => method.apply pci, i(a)
+            respond = (a...) => s => g => callback.apply pci, o(a)
+            execute = (a...) => s => g => method.apply pci, i(a)
             assert respond.session = socket.session = session
             assert respond.binder = socket.binder = binder
             assert respond.socket = socket.socket = socket
