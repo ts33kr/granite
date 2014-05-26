@@ -207,10 +207,10 @@ module.exports.Preflight = class Preflight extends LToolkit
     # is going to be implemented. Most of these libraries required
     # by the internal implementations of the various subcomponents.
     # Refer to `BowerSupport` class implementation for information.
-    @bower "platform", "platform.js"
     @bower "async", "lib/async.js"
     @bower "eventemitter2"
     @bower "js-signals"
+    @bower "platform"
     @bower "loglevel"
     @bower "lodash"
     @bower "jquery"
