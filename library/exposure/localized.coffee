@@ -73,10 +73,10 @@ module.exports.Localized = class Localized extends Duplex
         return execute undefined, (language, messages) =>
             do -> context.translationLanguage = language
             do -> context.translationMessages = messages
-            context.inline -> @obtainTranslation = (_, c) ->
-                c @translationLanguage, @translationMessages
-            assert setup = this.setupTranslationTools or 0
+            assert setup = @setupTranslationTools or null
             send setup, (f) -> @setupTranslationTools = f
+            context.inline -> @obtainTranslation = (l, c) ->
+                c @translationLanguage, @translationMessages
             context.inline -> @setupTranslationTools()
             return do => next.call this, undefined
 
