@@ -56,6 +56,27 @@ module.exports.Localized = class Localized extends Duplex
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # An out-of-the-box isolated provider that exposes translation
+    # messages, provided by the service in the language requested.
+    # If no language is explicitly asked, the compound will try to
+    # extract the language selector out of the user session. Refer
+    # to this provider (and compoudt) implementation for details.
+    obtainTranslation: @isolated (language, callback) ->
+        assert compiler = @compileTranslationMessages
+        assert compiler = compiler.bind @ # fix scoping
+        @constructor.compiledTranslations ?= compiler()
+        assert cache = @constructor.compiledTranslations
+        assert session = @session, "no session detected"
+        selector = language or @session.language or null
+        selector = selector or "English" # coded default
+        assert messages = cache[selector] or new Object
+        amount = _.keys(messages).length # of messages
+        banner = "Got %s messages for %s in %s".grey
+        assert identify = try @constructor.identify()
+        logger.debug banner, amount, identify, selector
+        assert _.isFunction(callback), "invalid callback"
+        return callback cache[selector] or new Object()
+
     # Walk over all of the declared translation message locations
     # and try loading messages off the every declared location. All
     # the messages will be merged into one object, indexed by the
