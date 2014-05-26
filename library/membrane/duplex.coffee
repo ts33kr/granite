@@ -178,6 +178,7 @@ module.exports.Duplex = class Duplex extends Preflight
             _.extend shadow, __isolated: yes, __origin: this
             _.extend shadow, session: session, binder: binder
             _.extend shadow, socket: weak(socket) or socket
+            _.extend shadow, request: try socket.handshake
             assert shadow.socket; socket.shadow = shadow
 
     # An important method that pertains to the details of internal
