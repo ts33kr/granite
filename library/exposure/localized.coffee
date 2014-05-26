@@ -56,13 +56,6 @@ module.exports.Localized = class Localized extends Duplex
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
-    # This block here defines a set of Bower dependencies that are
-    # going to be necessary no matter what sort of functionality is
-    # is going to be implemented. Most of these libraries required
-    # by the internal implementations of the various subcomponents.
-    # Refer to `BowerSupport` class implementation for information.
-    @bower "underscore.string", "dist/underscore.string.min.js"
-
     # An automatically called external routine that will take care
     # of setting up the client site part of the translation toolkit.
     # This implementation requests the necessary translation tables
@@ -73,7 +66,6 @@ module.exports.Localized = class Localized extends Duplex
         unrecognized = "unrecognized language received"
         noted = "loaded %s translation messages for %s"
         sel = "using %s as the language selector for %s"
-        _.mixin _.string.exports() # set underscore.string
         assert _.isFunction sprintf = _.sprintf # format
         retrieve = (s) => @translationMessages[s] or s
         logger.info "installing the translation tookit"

@@ -98,6 +98,7 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
         context.inline -> `assert = chai.assert`
         context.inline -> `assert(logger = log)`
         context.inline -> try logger.enableAll()
+        context.inline -> _.mixin _.string.exports()
         context.inline -> $(document).ready =>
             this.emit "document", document, this
         assert remotes = @constructor.remotes or []
@@ -207,7 +208,6 @@ module.exports.Preflight = class Preflight extends LToolkit
     # is going to be implemented. Most of these libraries required
     # by the internal implementations of the various subcomponents.
     # Refer to `BowerSupport` class implementation for information.
-    @bower "async", "lib/async.js"
     @bower "eventemitter2"
     @bower "js-signals"
     @bower "platform"
@@ -215,6 +215,14 @@ module.exports.Preflight = class Preflight extends LToolkit
     @bower "lodash"
     @bower "jquery"
     @bower "chai"
+
+    # This block here defines a set of Bower dependencies that are
+    # going to be necessary no matter what sort of functionality is
+    # is going to be implemented. Most of these libraries required
+    # by the internal implementations of the various subcomponents.
+    # This blocks defines the directory-scopes deps, not bare ones.
+    @bower "underscore.string", "dist/underscore.string.min.js"
+    @bower "async", "lib/async.js"
 
     # This block here defines a set of remote dependencies that are
     # going to be necessary no matter what sort of functionality is
