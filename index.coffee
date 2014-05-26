@@ -36,7 +36,7 @@ fs = require "fs"
 # convenient access by the implementation further below. Refer to the
 # implementation of the loader for more information on how it works.
 _.merge this, require "./library/nucleus/loader"
-_.mixin _.string.exports() # underscore.string
+_.mixin require("underscore.string").exports()
 
 # Build up the entire module hierarchy of the framework. Please do
 # refer to the `collectModules` method implementation for more
