@@ -56,6 +56,37 @@ module.exports.Localized = class Localized extends Duplex
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # This block here defines a set of Bower dependencies that are
+    # going to be necessary no matter what sort of functionality is
+    # is going to be implemented. Most of these libraries required
+    # by the internal implementations of the various subcomponents.
+    # Refer to `BowerSupport` class implementation for information.
+    @bower "underscore.string", "dist/underscore.string.min.js"
+
+    # An automatically called external routine that will take care
+    # of setting up the client site part of the translation toolkit.
+    # This implementation requests the necessary translation tables
+    # off the server provider. Once is acknowledged, a client side
+    # routines are setup and associated with the language and table.
+    setupTranslationTools: @awaiting "booted", ->
+        unexpected = "received malformed translation"
+        unrecognized = "unrecognized language received"
+        noted = "loaded %s translation messages for %s"
+        sel = "using %s as the language selector for %s"
+        _.mixin _.string.exports() # set underscore.string
+        assert _.isFunction sprintf = _.sprintf # format
+        retrieve = (s) => @translationMessages[s] or s
+        logger.info "installing the translation tookit"
+        this.t = (s, a...) => sprintf retrieve(s), a...
+        @obtainTranslation 0, (language, translation) ->
+            assert _.isString language, unrecognized
+            assert _.isObject translation, unexpected
+            assert @translationMessages = translation
+            assert @translationLanguage = language
+            length = _.keys(translation).length
+            logger.info noted, length, @service
+            logger.info sel, language, @service
+
     # An out-of-the-box isolated provider that exposes translation
     # messages, provided by the service in the language requested.
     # If no language is explicitly asked, the compound will try to
@@ -77,7 +108,7 @@ module.exports.Localized = class Localized extends Duplex
         assert identify = try @constructor.identify()
         logger.debug banner, amount, identify, selector
         assert _.isFunction(callback), "invalid callback"
-        return callback cache[selector] or new Object()
+        return callback selector, cache[selector] or {}
 
     # Walk over all of the declared translation message locations
     # and try loading messages off the every declared location. All
