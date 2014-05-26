@@ -1,4 +1,11 @@
 ---
+translation-language: uk # set locale (code) for Ukrainian language
+exception occured on the server: сталался помилка на сервері
+server connection has been lost: втрачено зв'зок із сервером
+attempting to restore connection: спроба відновлення з'єднання
+established connection to server: з'єднання із сервером успішне
+
+---
 translation-language: ru # set locale (code) for Russian language
 exception occured on the server: произошла ошибка на сервере
 server connection has been lost: соединение с сервером прервано
