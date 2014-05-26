@@ -90,6 +90,7 @@ module.exports.Localized = class Localized extends Duplex
         unrecognized = "unrecognized language received"
         noted = "loaded %s translation messages for %s"
         sel = "using %s as the language selector for %s"
+        return if _.isFunction(@t) and @obtainTranslation
         assert _.isFunction sprintf = _.sprintf # format
         retrieve = (s) => @translationMessages?[s] or s
         logger.info "installing the translation tookit"
