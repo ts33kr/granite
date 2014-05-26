@@ -71,7 +71,7 @@ module.exports.Localized = class Localized extends Duplex
         selector = selector or "English" # coded default
         assert messages = cache[selector] or new Object
         amount = _.keys(messages).length # of messages
-        banner = "Got %s messages for %s in %s".grey
+        banner = "Loaded %s messages for %s in %s".grey
         assert identify = try @constructor.identify()
         logger.debug banner, amount, identify, selector
         assert _.isFunction(callback), "invalid callback"
