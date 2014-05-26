@@ -40,6 +40,7 @@
     },
 
     "dependencies": {
+        "underscore.string": "2.3.x",
         "forever-monitor": "1.2.x",
         "eventemitter2": "0.4.x",
         "coffee-script": "1.7.x",
