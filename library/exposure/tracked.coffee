@@ -38,6 +38,7 @@ util = require "util"
 
 {Duplex} = require "../membrane/duplex"
 {external} = require "../membrane/remote"
+{Localized} = require "../exposure/localized"
 {Barebones} = require "../membrane/skeleton"
 {Preflight} = require "../membrane/preflight"
 
@@ -55,6 +56,20 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # These invocations establish the parameters which are going
+    # to be used for matching HTTP requests against this service.
+    # Typically an HTTP pathname pattern and a domain name pattern.
+    # Try not to put constraints on the domain, unless necessary.
+    # Also, the compounds for the composition system belong here.
+    @compose Localized
+
+    # This block here defines a set of translation files thar are
+    # used by the service. Please keep in mind, that translations
+    # are inherited from all of the base classes, and the tookit
+    # then loads each translation file and combines all messages
+    # into one translation table that is used throughout service.
+    @translation "tracked.yaml", dir: "#{__dirname}/../../locale"
+
     # This block here defines a set of Bower dependencies that are
     # going to be necessary no matter what sort of functionality is
     # is going to be implemented. Most of these libraries required
@@ -68,10 +83,10 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
     # socket events that indicate successful and fail conditions.
     # When either one is happens, it emits the `toastr` notice.
     attachWatchdog: @awaiting "socketing", (socket, location) ->
-        assert l = lst = "server connection has been lost"
-        assert s = srv = "exception occured on the server"
-        assert r = rcn = "attempting to restore connection"
-        assert c = con = "established connection to server"
+        assert l = lst = @t "server connection has been lost"
+        assert s = srv = @t "exception occured on the server"
+        assert r = rcn = @t "attempting to restore connection"
+        assert c = con = @t "established connection to server"
         pos = positionClass: "toast-top-left", closable: null
         ntm = timeOut: 0, extendedTimeOut: 0, tapToDismiss: 0
         xtm = timeOut: 3000, extendedTimeOut: 1000 # a duplex
@@ -85,4 +100,3 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
         do -> socket.on "disconnect", -> dropd.call this
         do -> socket.on "exception", -> error.call this
         do -> socket.on "connect", -> connd.call this
-

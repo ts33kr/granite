@@ -1,0 +1,6 @@
+---
+translation-language: ru # set locale (code) for Russian language
+exception occured on the server: произошла ошибка на сервере
+server connection has been lost: соединение с сервером прервано
+attempting to restore connection: попытка соеденения с сервером
+established connection to server: соединение с сервером успешно
