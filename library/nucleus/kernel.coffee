@@ -213,7 +213,7 @@ module.exports.Generic = class Generic extends Archetype
     interceptExceptions: ->
         assert crash = "kernel:crashOnException"
         assert @domain = require("domain").create()
-        fatal = => @shutdownKernel "fatal kernel panic"
+        fatal = => @shutdownKernel "fatal kernel error"
         str = (err) -> err.stack or err.message or err
         assert bark = "kernel domain panic:\r\n%s".red
         @on "panic", (e) -> logger.error bark, str(e)
