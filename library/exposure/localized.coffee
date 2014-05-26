@@ -56,6 +56,30 @@ module.exports.Localized = class Localized extends Duplex
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # An implementation of the standard, system hook in order for
+    # providing a static boilerplate that is used to bring up the
+    # localization toolkit prior to the internal machinery coming
+    # up. This is necessary to provide the ability to translating
+    # certain services that are booted well before all the wiring.
+    # A bit of black magic is used here, for a later refactoring.
+    prelude: (symbol, context, request, next) ->
+        assert send = context.transit.bind context
+        assert shadow = Object.create this # spoofing
+        try _.extend shadow, session: request.session
+        try _.extend shadow, request: request or null
+        _.extend shadow, __isolated: yes, __origin: @
+        translation = @obtainTranslation # get provider
+        execute = (a...) => translation.apply shadow, a
+        return execute undefined, (language, messages) =>
+            do -> context.translationLanguage = language
+            do -> context.translationMessages = messages
+            context.inline -> @obtainTranslation = (_, c) ->
+                c @translationLanguage, @translationMessages
+            assert setup = this.setupTranslationTools or 0
+            send setup, (f) -> @setupTranslationTools = f
+            context.inline -> @setupTranslationTools()
+            return do => next.call this, undefined
+
     # An automatically called external routine that will take care
     # of setting up the client site part of the translation toolkit.
     # This implementation requests the necessary translation tables
@@ -67,12 +91,12 @@ module.exports.Localized = class Localized extends Duplex
         noted = "loaded %s translation messages for %s"
         sel = "using %s as the language selector for %s"
         assert _.isFunction sprintf = _.sprintf # format
-        retrieve = (s) => @translationMessages[s] or s
+        retrieve = (s) => @translationMessages?[s] or s
         logger.info "installing the translation tookit"
         this.t = (s, a...) => sprintf retrieve(s), a...
-        @obtainTranslation 0, (language, translation) ->
-            assert _.isString language, unrecognized
-            assert _.isObject translation, unexpected
+        @obtainTranslation 0, (language, translation) =>
+            assert _.isString(language), unrecognized
+            assert _.isObject(translation), unexpected
             assert @translationMessages = translation
             assert @translationLanguage = language
             length = _.keys(translation).length
