@@ -138,7 +138,8 @@ module.exports.Duplex = class Duplex extends Preflight
             format = try where().toString().underline
             logger.error location, identify, format
             do -> logger.error m.red, error.stack
-            socket.emit "exception", o([error])...
+            error = o([_.omit(error, "domain")])
+            try socket.emit "exception", error...
             try socket.disconnect?() catch error
 
     # A utility method to mark the certain function as the provider.
