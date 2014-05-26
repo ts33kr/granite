@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 {Zombie} = require "../nucleus/zombie"
 {external} = require "../membrane/remote"
 {Preflight} = require "../membrane/preflight"
+{Localized} = require "../exposure/localized"
 {GoogleFonts} = require "../exposure/fonting"
 
 # This is an abstract base class compound that exhibits the zombie
@@ -48,6 +49,7 @@ module.exports.WithinModal = class WithinModal extends Zombie
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
     @compose Preflight
+    @compose Localized
 
     # This method is invoked right after the window skeleton has
     # been created. It takes care of filling in the actions segment
@@ -63,8 +65,8 @@ module.exports.WithinModal = class WithinModal extends Zombie
         $(@negative).click (e) => @emit "negative"; stop e
         $(@positive).click (e) => @emit "positive"; stop e
         @positive.append $ "<i>", class: "checkmark icon"
-        this.negative.prepend $("<span>").text "dismiss"
-        this.positive.prepend $("<span>").text "confirm"
+        this.negative.prepend $("<span>").text @t "dismiss"
+        this.positive.prepend $("<span>").text @t "confirm"
         assert @positive.addClass "right labeled icon"
         assert @actions.append @negative, @positive
         @emit "actions", @actions, @window; this
