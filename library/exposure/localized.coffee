@@ -85,12 +85,12 @@ module.exports.Localized = class Localized extends Duplex
     # This implementation requests the necessary translation tables
     # off the server provider. Once is acknowledged, a client side
     # routines are setup and associated with the language and table.
-    setupTranslationTools: @awaiting "booted", ->
+    setupTranslationTools: @awaiting "booted", (force) ->
         unexpected = "received malformed translation"
         unrecognized = "unrecognized language received"
         noted = "loaded %s translation messages for %s"
         sel = "using %s as the language selector for %s"
-        return if _.isFunction(@t) and @obtainTranslation
+        return if _.isFunction(@t) and force isnt true
         assert _.isFunction sprintf = _.sprintf # format
         retrieve = (s) => @translationMessages?[s] or s
         logger.info "installing the translation tookit"
