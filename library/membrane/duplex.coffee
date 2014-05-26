@@ -128,13 +128,16 @@ module.exports.Duplex = class Duplex extends Preflight
         assert _.isFunction i = Marshal.deserialize
         assert guarded = require("domain").create()
         assert identify = try @identify().underline
+        comparing = (value, opts) -> value is method
+        where = => _.findKey this.prototype, comparing
         _.extend guarded, body: method, socket: socket
-        location = "Got breakpoint in the #{method}#%s"
-        message = "Error while running provider:\r\n%s"
+        location = "Got interrupted around %s#%s".red
+        m = "Exception while running the provider:\r\n%s"
         fx = (blob) => blob.call this; return guarded
         fx -> guarded.on "error", (error, optional) ->
-            logger.error location.red, identify
-            logger.error message.red, error.stack
+            format = try where().toString().underline
+            logger.error location, identify, format
+            do -> logger.error m.red, error.stack
             socket.emit "exception", o([error])...
             try socket.disconnect?() catch error
 
