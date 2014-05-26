@@ -78,9 +78,10 @@ module.exports.Localized = class Localized extends Duplex
             message = "Get translation for %s at %s".cyan
             logger.debug message, identify, loc.underline
             noLanguage = "got incorrect translation file"
-            assert (language = doc.language), noLanguage
+            assert (language = doc[t.select]), noLanguage
             previous = collector[language] or new Object
             collector[language] = _.merge previous, doc
+            do -> delete collector[language][t.select]
 
     # Specify the translation file for the current service. This
     # file is meant to contain and provide internationalization
@@ -95,9 +96,11 @@ module.exports.Localized = class Localized extends Duplex
         noLocation = "the location has to be a string"
         noOptions = "no suitable options are supplied"
         directory = options.dir or "#{cwd}/#{implicit}"
+        select = options.sel or "translation-language"
         assert _.isString(location or 0), noLocation
         assert _.isObject(options or 0), noOptions
         return this.translations = previous.concat
             directory: directory.toString()
             location: location.toString()
             options: options or Object()
+            select: select.toString()
