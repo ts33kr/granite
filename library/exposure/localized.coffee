@@ -167,7 +167,7 @@ module.exports.Localized = class Localized extends Duplex
         noLocation = "the location has to be a string"
         noOptions = "no suitable options are supplied"
         directory = options.dir or "#{cwd}/#{implicit}"
-        select = options.sel or "translation-language"
+        select = options.sel or "$translation-language"
         assert _.isString(location or 0), noLocation
         assert _.isObject(options or 0), noOptions
         return this.translations = previous.concat
