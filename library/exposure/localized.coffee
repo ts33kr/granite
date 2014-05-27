@@ -151,7 +151,7 @@ module.exports.Localized = class Localized extends Duplex
         deduce = (t) -> t.f = join t.directory, t.location
         t.blob = sreader deduce(t), e for t in translations
         processing = (f) -> _.each translations, f; collector
-        processing (t) -> yaml.safeLoadAll t.blob, (doc) ->
+        processing (t) -> try yaml.safeLoadAll t.blob, (doc) ->
             assert loc = t.location, "got invalid location"
             message = "Get translation for %s at %s".cyan
             logger.debug message, identify, loc.underline
