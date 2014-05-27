@@ -100,11 +100,12 @@ module.exports.VisualBillet = class VisualBillet extends Barebones
     # is a get idea to place generic or setup code in the autocalls.
     # Refer to `inlineAutocalls` method for params interpretation.
     @autocall: (parameters, method) ->
-        isRemote = _.isObject method?.remote
         notFunction = "no function is passed in"
         method = _.find arguments, _.isFunction
-        method = external method unless isRemote
+        parameters = _.find arguments, _.isObject
         assert _.isFunction(method), notFunction
+        isRemote = _.isObject try method?.remote
+        method = external method unless isRemote
         parameters = {} unless _.isObject parameters
         method.remote.autocall = parameters; method
 
