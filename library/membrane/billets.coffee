@@ -118,7 +118,8 @@ module.exports.VisualBillet = class VisualBillet extends Barebones
         assert not _.isEmpty(event), invalidEvent
         assert method = @autocall Object(), method
         assert _.isObject method.remote.autocall
-        method.remote.auto = (symbol, key, c) -> ->
+        auto = (fun) -> method.remote.auto = fun
+        auto (symbol, key, context) -> _.once ->
             t = "#{symbol}.on(%s, #{symbol}.#{key})"
             return format t, JSON.stringify event
         method.remote.meta.event = event; method
@@ -129,14 +130,18 @@ module.exports.VisualBillet = class VisualBillet extends Barebones
     # supplied listener to the event, which will make it the only
     # listener of that event at the point of a method invocation.
     @exclusive: (event, method) ->
-        assert method = @awaiting event, method
-        fx = (fn) -> method.remote.auto = fn; method
-        fx method.remote.auto = (symbol, key, c) -> ->
+        invalidEvent = "an invalid event supplied"
+        assert not _.isEmpty(event), invalidEvent
+        assert method = @autocall Object(), method
+        assert _.isObject method.remote.autocall
+        auto = (fun) -> method.remote.auto = fun
+        auto (symbol, key, context) -> _.once ->
             k = "#{symbol}.removeAllListeners(%s)"
             t = "#{symbol}.on(%s, #{symbol}.#{key})"
             binder = format t, JSON.stringify event
             killer = format k, JSON.stringify event
             "(#{killer}; #{binder})".toString()
+        method.remote.meta.event = event; method
 
     # The awaiting directive is a lot like `autocall`, except the
     # implementation will not be immediatelly , but rather when the
@@ -149,7 +154,8 @@ module.exports.VisualBillet = class VisualBillet extends Barebones
         assert method = @autocall Object(), method
         assert _.isObject method.remote.autocall
         select = "$root".toString().toLowerCase()
-        method.remote.auto = (symbol, key, c) -> ->
+        auto = (fun) -> method.remote.auto = fun
+        auto (symbol, key, context) -> _.once ->
             t = "#{select}.on(%s, #{symbol}.#{key})"
             return format t, JSON.stringify event
         method.remote.meta.event = event; method
