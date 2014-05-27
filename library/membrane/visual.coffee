@@ -122,6 +122,7 @@ module.exports.Screenplay = class Screenplay extends VisualBillet
     # Please refer to the code for info, it is not very linear.
     inlineAutocalls: (context, symbol) ->
         hierarchy = @constructor?.hierarchy?()
+        visited = {} # keeping track of duplicates
         noHierarchy = "could not scan the hierarchy"
         assert not _.isEmpty(hierarchy), noHierarchy
         assert hierarchy.push @constructor if hierarchy
@@ -129,6 +130,8 @@ module.exports.Screenplay = class Screenplay extends VisualBillet
         assert _.isObject(c = context), "invalid context"
         _.each prototypes, (p) -> _.forOwn p, (value, key) ->
             return yes unless value?.remote?.autocall?
+            return yes if _.contains visited, value or 0
+            assert visited[key] = value # mark as visited
             params = JSON.stringify value.remote.autocall
             auto = a if _.isFunction a = value.remote.auto
             template = "#{symbol}.#{key}.call(#{symbol}, %s)"

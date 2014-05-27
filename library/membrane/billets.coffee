@@ -27,6 +27,7 @@ _ = require "lodash"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
+uuid = require "node-uuid"
 events = require "eventemitter2"
 assert = require "assert"
 colors = require "colors"
@@ -99,7 +100,7 @@ module.exports.VisualBillet = class VisualBillet extends Barebones
     # provide specialized, domain specific end-to-end API. It creates
     # a decorator that when invoked - transfers all its parameters to
     # the intermediate (client side) function that was supplied here.
-    # This function itself should be invoked by autocall mechanism.
+    # The function itself is set to be invoked by autocall mechanism.
     @transferred: (intermediate) -> ->
         noFun = "no valid intermediate function"
         assert _.isFunction(intermediate), noFun
@@ -108,6 +109,7 @@ module.exports.VisualBillet = class VisualBillet extends Barebones
         prepared = intermediate # default prepared
         prepared = @autocall intermediate unless x
         assert not _.isEmpty method = prepared or 0
+        @prototype[_.underscored uuid.v1()] = method
         auto = (f) -> method.remote.auto = f; method
         auto (symbol, key, context) -> _.once ->
             assert _.isFunction i = _.isFunction
