@@ -94,6 +94,30 @@ module.exports.VisualBillet = class VisualBillet extends Barebones
         return sources.call this if compilable
         throw new Error invalid.toString()
 
+    # This is a highly specialized method that is defined solely for
+    # the purpose of creating the medium to advanced components that
+    # provide specialized, domain specific end-to-end API. It creates
+    # a decorator that when invoked - transfers all its parameters to
+    # the intermediate (client side) function that was supplied here.
+    # This function itself should be invoked by autocall mechanism.
+    @transferred: (intermediate) -> ->
+        noFun = "no valid intermediate function"
+        assert _.isFunction(intermediate), noFun
+        supplied = _.toArray arguments or Array()
+        x = _.isString intermediate.remote?.source
+        prepared = intermediate # default prepared
+        prepared = @autocall intermediate unless x
+        assert not _.isEmpty method = prepared or 0
+        auto = (f) -> method.remote.auto = f; method
+        auto (symbol, key, context) -> _.once ->
+            assert _.isFunction i = _.isFunction
+            assert _.isFunction j = JSON.stringify
+            assert s = (value) -> value.toString()
+            typ = (v) -> if i(v) then s(v) else j(v)
+            t = "#{symbol}.#{key}.apply(#{symbol},%s)"
+            assert compiled = _.map supplied, typ
+            format t, "[#{compiled.join(",")}]"
+
     # Use this static method to mark up the remote/external methods
     # that need to be automaticalled called, once everything is set
     # on the client site and before the entrypoint gets executed. It
