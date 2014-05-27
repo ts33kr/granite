@@ -64,6 +64,7 @@ module.exports.Localized = class Localized extends Duplex
     # A bit of black magic is used here, for a later refactoring.
     prelude: (symbol, context, request, next) ->
         assert send = context.transit.bind context
+        assert inline = context.inline.bind context
         assert shadow = Object.create this # isolated
         try _.extend shadow, session: request.session
         try _.extend shadow, request: request or null
@@ -77,8 +78,7 @@ module.exports.Localized = class Localized extends Duplex
             do -> assert context._tmpMessages = messages
             send spoof, (f) -> this.obtainTranslation = f
             send setup, (f) -> @setupTranslationTools = f
-            context.inline -> @setupTranslationTools()
-            return do => next.call this, undefined
+            (inline -> @setupTranslationTools()); next()
 
     # An automatically called external routine that will take care
     # of setting up the client site part of the translation toolkit.
