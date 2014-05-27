@@ -68,7 +68,7 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
     # are inherited from all of the base classes, and the tookit
     # then loads each translation file and combines all messages
     # into one translation table that is used throughout service.
-    @translation "tracked.yaml", dir: "#{__dirname}/../../locale"
+    @translation "tracked.yaml", "#{__dirname}/../../locale"
 
     # This block here defines a set of Bower dependencies that are
     # going to be necessary no matter what sort of functionality is

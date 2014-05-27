@@ -160,6 +160,7 @@ module.exports.Localized = class Localized extends Duplex
     # different languages. File format is YAML with the special
     # structure that embeds multiple languages in a single file.
     @translation: (location, options={}) ->
+        options = dir: options if _.isString options
         assert not _.isEmpty cwd = try process.cwd()
         assert previous = @translations or new Array()
         return previous if arguments.length is 0 # get
