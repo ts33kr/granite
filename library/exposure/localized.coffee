@@ -99,9 +99,9 @@ module.exports.Localized = class Localized extends Duplex
         sel = "using %s as the language selector for %s"
         return if _.isFunction(@t) and force isnt true
         assert _.isFunction sprintf = _.sprintf # format
-        retrieve = (s) => @translationMessages?[s] or s
+        rx = (src) => @translationMessages?[src] or src
         logger.info "installing the translation tookit"
-        this.t = (s, a...) => sprintf retrieve(s), a...
+        this.t = (s, a...) => sprintf "#{rx(s)}", a...
         @obtainTranslation 0, (language, translation) =>
             assert _.isString(language), unrecognized
             assert _.isObject(translation), unexpected
