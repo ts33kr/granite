@@ -159,6 +159,7 @@ module.exports.Localized = class Localized extends Duplex
     # messages. These are the strings to use for displaying with
     # different languages. File format is YAML with the special
     # structure that embeds multiple languages in a single file.
+    # If second argument is a string, is treated as dir option.
     @translation: (location, options={}) ->
         options = dir: options if _.isString options
         assert not _.isEmpty cwd = try process.cwd()
