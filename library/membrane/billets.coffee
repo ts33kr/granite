@@ -109,7 +109,7 @@ module.exports.VisualBillet = class VisualBillet extends Barebones
         prepared = intermediate # default prepared
         prepared = @autocall intermediate unless x
         assert not _.isEmpty method = prepared or 0
-        @prototype[_.underscored uuid.v1()] = method
+        @prototype[_.uniqueId "__bts_trns"] = method
         auto = (f) -> method.remote.auto = f; method
         auto (symbol, key, context) -> _.once ->
             assert _.isFunction i = _.isFunction
