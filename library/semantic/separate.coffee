@@ -28,15 +28,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 {Preflight} = require "../membrane/preflight"
 {GoogleFonts} = require "../exposure/fonting"
 
-{BoxedForms} = require "./shipped"
-{WithinModal} = require "./modals"
+{ModalWindow} = require "./windows"
+{BoxFormular} = require "./standard"
 
 # This is a abstract base class compound that combines modal window
 # with a data form. Basically, this component provides the skeleton
 # that scrapes the boilerplate routine of form submission and then
 # reacting to the response away and lets you focus on what matters
 # to your functionality, that is setting up the layout and fields.
-module.exports.PlatedForms = class PlatedForms extends WithinModal
+module.exports.ModalFormular = class ModalFormular extends ModalWindow
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -50,26 +50,26 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
     # is going to be implemented. Most of these libraries required
     # by the internal implementations of the various subcomponents.
     # Refer to `RToolkit` class implementation for the information.
-    @transfer BoxedForms
+    @transfer BoxFormular
 
     # This method is invoked once the `positive` event goes off in
     # the service. This event is fired once the positive action is
     # actived. That usually means a user pressing the okay button.
     # The implementation downloads the data from the form and then
     # submits it to the backend and reacts to the response it got.
-    confirmedFormsSubmission: @awaiting "positive", ->
-        try this.forms.container.addClass "loading"
-        wrong = @t "Please check the information entered"
-        assert _.isObject data = try @forms.download yes
+    confirmedFormularSubmission: @awaiting "positive", ->
+        try this.formular.container.addClass "loading"
+        assert _.isObject data = @formular.download yes
+        w = @t "Please check the information you entered"
         this.dataSubmission data, (success, values) =>
-            this.forms.container.removeClass "loading"
+            this.formular.container.removeClass "loading"
             assert values and _.isObject values or null
-            @forms.upload values; @forms.messages wrong
+            @formular.upload values; @formular.messages w
             return undefined unless success and values
             @paragraph = $ "<p>", class: "right aligned"
             iconical = "icon checkmark green massive ok"
             assert icon = $ "<i>", class: "#{iconical}"
-            try this.actions.empty(); this.forms.hide()
+            try this.actions.empty(); this.formular.hide()
             this.emit "acknowledged", success, values
             this.content.append icon, @paragraph
 
@@ -84,12 +84,12 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
         enabler = -> selector().removeClass "disabled"
         selector = => @window.find ".positive.button"
         closer = => return @window.find ".close.icon"
-        clean = => try @forms.prestine(); disabler()
-        @forms = new BoxedForms @content, "plated-form"
-        @window.addClass "modal-form semantic-flavour"
+        clean = => try @formular.prestine(); disabler()
+        @formular = new BoxFormular @content, "m-formular"
+        @window.addClass "modal-formular semantic-flavour"
+        @header.text @t "Please enter the following data"
         @actions.find(".positive").addClass "disabled"
-        @header.text "Please fill the following form"
+        @populateFormular? disabler, enabler, @formular
+        @emit "populate-formular", disabler, enabler
         @on "disconnect", -> try unload $ ".loading"
         @on "negative", => closer().click(); clean()
-        @populateForms? disabler, enabler, @forms
-        @emit "populate-forms", disabler, enabler
