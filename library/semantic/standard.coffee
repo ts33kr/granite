@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # shipped controls (field and inputs) cobered in the Semantic manual.
 # Plese refer to the implementation for the usage information. Also,
 # see the methods to get the idea of what is available and what not.
-module.exports.BoxedForms = cc -> class BoxedForms extends Formular
+module.exports.BoxFormular = cc -> class BoxFormular extends Formular
 
     # Group the two previously created fields (passed by either as
     # direct object or the selectors) into a one horizontal field
