@@ -52,23 +52,6 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
     # Refer to `RToolkit` class implementation for the information.
     @transfer BoxedForms
 
-    # This method is invoked once the `successful` event goes off
-    # at a service. This event could be fired after the component
-    # receives a response after the form submission, if it was a
-    # success. This implementation hides the actualy form, shows
-    # the generic acknowledgement memo regarding succeeded form.
-    successfullyAcknowledged: @awaiting "acknowledged", ->
-        this.paragraph.text "The information you entered in
-        to the form has been successfully submitted. Please
-        press the okay button to close this window and carry
-        on whatever you were doing prior to filling a form."
-        acknowledge = $ "<div>", class: "ui positive button"
-        acknowledge.append $ "<i>", class: "checkmark icon"
-        assert acknowledge.addClass "right labeled icon"
-        $(acknowledge).click => this.window.modal "hide"
-        acknowledge.prepend $("<span>").text "okay"
-        acknowledge.appendTo @actions.empty(); this
-
     # This method is invoked once the `positive` event goes off in
     # the service. This event is fired once the positive action is
     # actived. That usually means a user pressing the okay button.
