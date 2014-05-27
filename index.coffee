@@ -43,6 +43,11 @@ _.mixin require("underscore.string").exports()
 # information on how this is being done. See the modules in the
 # framework library to see the structure of the built hieararchy.
 do => module.exports = @collectPackages __dirname
+
+# Do some aliasing after loading the versy basics of the well known
+# framework internals. In this case, the aliasing is done to expose
+# the automatic package/module loader API to the framework users, so
+# that they can make use of it for loading their own libraries/code.
 module.exports.collectPackages = @collectPackages
 module.exports.collectModules = @collectModules
 module.exports.cachedKernel = @cachedKernel
@@ -51,10 +56,10 @@ module.exports.cachedKernel = @cachedKernel
 # framework is indeed loaded and are not missing. This is precaution
 # to make sure that the framework is in usable state, once is loaded.
 # You can refer to this definitions from the outside of the framework.
-assert nucleus = module.exports.nucleus
-assert membrane = module.exports.membrane
-assert exposure = module.exports.exposure
-assert semantic = module.exports.semantic
+assert _.isObject nucleus = module.exports.nucleus
+assert _.isObject membrane = module.exports.membrane
+assert _.isObject exposure = module.exports.exposure
+assert _.isObject semantic = module.exports.semantic
 
 # Alias the cakefile routine for the easy access to the primary way
 # of referencing the built in Cakefile library, which is standard.
