@@ -59,12 +59,12 @@ module.exports.PlatedForms = class PlatedForms extends WithinModal
     # submits it to the backend and reacts to the response it got.
     confirmedFormsSubmission: @awaiting "positive", ->
         try this.forms.container.addClass "loading"
-        @ewrong ?= "Please check the entered information"
+        wrong = @t "Please check the information entered"
         assert _.isObject data = try @forms.download yes
         this.dataSubmission data, (success, values) =>
             this.forms.container.removeClass "loading"
             assert values and _.isObject values or null
-            @forms.upload values; @forms.messages @ewrong
+            @forms.upload values; @forms.messages wrong
             return undefined unless success and values
             @paragraph = $ "<p>", class: "right aligned"
             iconical = "icon checkmark green massive ok"
