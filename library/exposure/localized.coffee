@@ -56,6 +56,13 @@ module.exports.Localized = class Localized extends Duplex
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # This class-defined constant is intended to be used within
+    # the framework itself. It points to the directory that has
+    # all the embedded translation table files. These file are
+    # used only by the services and components that are shipped
+    # with the framework. The ones that actually constitute it.
+    @EMBEDDED_LOCALE = "#{__dirname}/../../locale"
+
     # An implementation of the standard, system hook in order for
     # providing a static boilerplate that is used to bring up the
     # localization toolkit prior to the internal machinery coming
