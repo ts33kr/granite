@@ -117,6 +117,44 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
         $(wrap).checkbox onEnable: onpos, onDisable: onneg
         label.text synopsis.toString(); return field
 
+    # Create an inlined checkbox field that looks like a sliding
+    # with a text string attached next to it (on the right side).
+    # It is usually a good idea for indicating options selection
+    # or agreement to some legal terms and conditions. The field
+    # that it creates is rendered as inline (see semantic man).
+    sliding: (identity, synopsis, onpos, onneg) ->
+        assert _.isString what = "ui checkbox slider"
+        assert _.isObject label = $ "<label>", class: "label"
+        assert _.isObject input = $ "<input>", type: "checkbox"
+        assert _.isObject input.attr name: identity.toString()
+        field = $("<div>", class: "field").appendTo @container
+        wrap = $ "<div>", class: what; field.addClass "inline"
+        input.on "input", -> do -> field.removeClass "error"
+        try $(field).data "identity", identity.toString()
+        field.addClass try identity.toString() if identity
+        input.appendTo wrap; field.append wrap.append label
+        $(wrap).checkbox onEnable: onpos, onDisable: onneg
+        label.text synopsis.toString(); return field
+
+    # Create an inlined checkbox field that looks like a toggling
+    # with a text string attached next to it (on the right side).
+    # It is usually a good idea for indicating options selection
+    # or agreement to some legal terms and conditions. The field
+    # that it creates is rendered as inline (see semantic man).
+    toggling: (identity, synopsis, onpos, onneg) ->
+        assert _.isString what = "ui checkbox toggle"
+        assert _.isObject label = $ "<label>", class: "label"
+        assert _.isObject input = $ "<input>", type: "checkbox"
+        assert _.isObject input.attr name: identity.toString()
+        field = $("<div>", class: "field").appendTo @container
+        wrap = $ "<div>", class: what; field.addClass "inline"
+        input.on "input", -> do -> field.removeClass "error"
+        try $(field).data "identity", identity.toString()
+        field.addClass try identity.toString() if identity
+        input.appendTo wrap; field.append wrap.append label
+        $(wrap).checkbox onEnable: onpos, onDisable: onneg
+        label.text synopsis.toString(); return field
+
     # This method creates the most basic textual field. It does not
     # contain anything other that the field itself. Optionally this
     # can be tagged by an icon on the left side of the field. It is
