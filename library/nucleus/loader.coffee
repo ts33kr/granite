@@ -60,6 +60,8 @@ module.exports.collectPackages = (closure, directory="library") ->
     fix = (p) -> return paths.join directory, p
     resolve = -> paths.resolve closure, directory
     directory = resolve() if _.isString closure
+    note = "Collecting packages at %s, please wait..."
+    try logger.info note.toString().grey, directory
     nodes = fs.readdirSync directory.toString()
     directories = _.toArray _.filter nodes, isDir
     collectModules = module.exports.collectModules
