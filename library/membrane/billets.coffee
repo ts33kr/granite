@@ -118,7 +118,7 @@ module.exports.VisualBillet = class VisualBillet extends Barebones
         assert not _.isEmpty(event), invalidEvent
         assert method = @autocall Object(), method
         assert _.isObject method.remote.autocall
-        method.remote.auto = (symbol, key) -> ->
+        method.remote.auto = (symbol, key, c) -> ->
             t = "#{symbol}.on(%s, #{symbol}.#{key})"
             return format t, JSON.stringify event
         method.remote.meta.event = event; method
@@ -131,7 +131,7 @@ module.exports.VisualBillet = class VisualBillet extends Barebones
     @exclusive: (event, method) ->
         assert method = @awaiting event, method
         fx = (fn) -> method.remote.auto = fn; method
-        fx method.remote.auto = (symbol, key) -> ->
+        fx method.remote.auto = (symbol, key, c) -> ->
             k = "#{symbol}.removeAllListeners(%s)"
             t = "#{symbol}.on(%s, #{symbol}.#{key})"
             binder = format t, JSON.stringify event
@@ -149,7 +149,7 @@ module.exports.VisualBillet = class VisualBillet extends Barebones
         assert method = @autocall Object(), method
         assert _.isObject method.remote.autocall
         select = "$root".toString().toLowerCase()
-        method.remote.auto = (symbol, key) -> ->
+        method.remote.auto = (symbol, key, c) -> ->
             t = "#{select}.on(%s, #{symbol}.#{key})"
             return format t, JSON.stringify event
         method.remote.meta.event = event; method

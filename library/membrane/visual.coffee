@@ -126,6 +126,7 @@ module.exports.Screenplay = class Screenplay extends VisualBillet
         assert not _.isEmpty(hierarchy), noHierarchy
         assert hierarchy.push @constructor if hierarchy
         assert prototypes = _.map hierarchy, "prototype"
+        assert _.isObject(c = context), "invalid context"
         _.each prototypes, (p) -> _.forOwn p, (value, key) ->
             return yes unless value?.remote?.autocall?
             params = JSON.stringify value.remote.autocall
@@ -133,7 +134,7 @@ module.exports.Screenplay = class Screenplay extends VisualBillet
             template = "#{symbol}.#{key}.call(#{symbol}, %s)"
             formatted = Object.create String.prototype
             formatted.valueOf = -> format template, params
-            formatted.valueOf = auto symbol, key if auto
+            formatted.valueOf = auto symbol, key, c if auto
             formatted.priority = value.remote.autocall.z
             uns = -> context.invokes.unshift formatted
             return uns() if value.remote.autocall.unshift
