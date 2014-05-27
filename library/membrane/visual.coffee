@@ -154,6 +154,7 @@ module.exports.Screenplay = class Screenplay extends VisualBillet
         emptySources = "context JS sources are empty"
         u = (v) -> v.match(RegExp "^(.+)/(.+)$")[2]
         context.sheets = _.unique context.sheets
+        context.invokes = _.unique context.invokes
         context.styles = _.unique context.styles, u
         assert context.scripts = _.unique scripts, u
         assert _.isArray sources = _.unique sources
