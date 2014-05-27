@@ -69,11 +69,11 @@ module.exports.Localized = class Localized extends Duplex
         try _.extend shadow, request: request or null
         _.extend shadow, __isolated: yes, __origin: @
         translation = @obtainTranslation # get provider
+        setup = @setupTranslationTools # get installer
         execute = (a...) => translation.apply shadow, a
         return execute undefined, (language, messages) =>
             do -> context.translationLanguage = language
             do -> context.translationMessages = messages
-            assert setup = @setupTranslationTools or null
             send setup, (f) -> @setupTranslationTools = f
             context.inline -> @obtainTranslation = (l, c) ->
                 c @translationLanguage, @translationMessages
