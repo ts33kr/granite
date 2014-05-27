@@ -106,8 +106,9 @@ module.exports.VisualBillet = class VisualBillet extends Barebones
         assert _.isFunction(method), notFunction
         isRemote = _.isObject try method?.remote
         method = external method unless isRemote
-        parameters = {} unless _.isObject parameters
-        method.remote.autocall = parameters; method
+        method.remote.autocall = parameters or {}
+        source = try method.remote.source or null
+        assert _.isString source; return method
 
     # The awaiting directive is a lot like `autocall`, except the
     # implementation will not be immediatelly , but rather when the
