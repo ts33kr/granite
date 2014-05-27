@@ -64,19 +64,19 @@ module.exports.Localized = class Localized extends Duplex
     # A bit of black magic is used here, for a later refactoring.
     prelude: (symbol, context, request, next) ->
         assert send = context.transit.bind context
-        assert shadow = Object.create this # spoofing
+        assert shadow = Object.create this # isolated
         try _.extend shadow, session: request.session
         try _.extend shadow, request: request or null
         _.extend shadow, __isolated: yes, __origin: @
         translation = @obtainTranslation # get provider
         setup = @setupTranslationTools # get installer
         execute = (a...) => translation.apply shadow, a
+        spoof = (l, c) -> c @_tmpLanguage, @_tmpMessages
         return execute undefined, (language, messages) =>
-            do -> context.translationLanguage = language
-            do -> context.translationMessages = messages
+            do -> assert context._tmpLanguage = language
+            do -> assert context._tmpMessages = messages
+            send spoof, (f) -> this.obtainTranslation = f
             send setup, (f) -> @setupTranslationTools = f
-            context.inline -> @obtainTranslation = (l, c) ->
-                c @translationLanguage, @translationMessages
             context.inline -> @setupTranslationTools()
             return do => next.call this, undefined
 
