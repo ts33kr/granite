@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # auxiliary services upon it. Basically, if you have the service
 # that needs to be presented as the modal window and is used like
 # a zombie, then this class can be used to reduce the boilerplate.
-module.exports.WithinModal = class WithinModal extends Zombie
+module.exports.ModalWindow = class ModalWindow extends Zombie
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -56,7 +56,7 @@ module.exports.WithinModal = class WithinModal extends Zombie
     # with a couple of default buttons/actions: the positive and the
     # negative, with the respectful semantics. See the coding about
     # the signals emited. Override this is you need custom buttons.
-    assembleModalActions: external ->
+    assembleWindowActions: external ->
         assert stop = (e) -> e.stopImmediatePropagation()
         @negative = $ "<div>", class: "ui negative button"
         @positive = $ "<div>", class: "ui positive button"
@@ -82,7 +82,7 @@ module.exports.WithinModal = class WithinModal extends Zombie
         assert this.actions = $ "<div>", class: "actions"
         assert this.window = $ "<div>", class: "ui modal"
         assert this.closer = $ "<i>", class: "close icon"
-        @assembleModalActions(); @window.append @actions
+        @assembleWindowActions(); @window.append @actions
         this.window.prepend @closer, @header, @content
         this.window.appendTo $(document.body) or null
         this.on "toggle", => this.window.modal "toggle"
