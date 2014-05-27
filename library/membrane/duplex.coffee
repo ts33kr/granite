@@ -174,7 +174,7 @@ module.exports.Duplex = class Duplex extends Preflight
             assert this isnt constructor, "scoping error"
             assert _.isObject shadow = Object.create this
             assert isolating = "Isolated provider call in %s"
-            logger.debug isolating.grey, socket.id.toString()
+            logger.debug isolating.grey, try socket.id?.bold
             _.extend shadow, __isolated: yes, __origin: this
             _.extend shadow, session: session, binder: binder
             _.extend shadow, socket: weak(socket) or socket
