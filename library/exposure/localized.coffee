@@ -132,7 +132,9 @@ module.exports.Localized = class Localized extends Duplex
         assert identify = try @constructor.identify()
         logger.debug banner, amount, identify, selector
         assert _.isFunction(callback), "invalid callback"
-        return callback selector, cache[selector] or {}
+        assert selected = cache[selector] or new Object
+        assert fallback = _.clone cache.en or Object()
+        callback selector, _.merge fallback, selected
 
     # Walk over all of the declared translation message locations
     # and try loading messages off the every declared location. All
