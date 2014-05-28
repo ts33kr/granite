@@ -235,12 +235,12 @@ module.exports.Watcher = class Watcher extends Archetype
         hasProto = (s) -> _.isObject(s) and s.prototype
         isService = (s) -> try s.derives service.Service
         isTyped = (s) -> hasProto(s) and isService(s)
-        isFinal = (s) -> try not s.abstract()
-        unscoped = _.filter globals, isTyped
-        services = _.filter exports, isTyped
-        services = _.merge services, unscoped
-        services = _.filter services, isFinal
-        return _.unique services or Array()
+        isFinal = (serv) -> try not serv.abstract()
+        assert unscoped = _.filter globals, isTyped
+        assert services = _.filter exports, isTyped
+        assert services = _.merge services, unscoped
+        assertservices = _.filter services, isFinal
+        return _.unique services or new Array()
 
     # Watch the specified directory for addition and changing of
     # the files, looking for modules with services there and then
