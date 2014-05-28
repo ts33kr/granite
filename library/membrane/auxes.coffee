@@ -56,6 +56,56 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # Register current service that invokes the method as parasite.
+    # This means that the service will be automatically included to
+    # every services as an auxilliary, if it satisfies the condition.
+    # The argument has to be a key/value signature, where the key is
+    # the variable name that will be used for the aux service and the
+    # value is a function that evaluates inclusions conditions every
+    # time when any auxilliary-powered services is being executed.
+    @parasite: (signature) ->
+        vector = Auxiliaries.$parasites ?= Array()
+        return vector unless arguments.length >= 1
+        identity = try this?.identify?().toString?()
+        abused = "an argument has to be a key/value"
+        incorrect = "got incorrect decision function"
+        assert _.isObject(signature or null), abused
+        assert token = try _.first _.keys(signature)
+        assert decides = _.first _.values(signature)
+        assert _.isFunction(decides or 0), incorrect
+        notZombie = "not a zombie child: #{identity}"
+        notScreen = "has no visual core: #{identity}"
+        assert this.derives(Screenplay), notScreen
+        assert this.derives(Zombie), notZombie
+        return vector.push # append parasite
+            token: token.toString()
+            target: this or null
+            decides: decides
+
+    # A part of the internal implementation of the auxilliaries. It
+    # takes care of revewing and connecting the parasiting peers, by
+    # polling the registered parasites and seeing if conditions fit.
+    # Please see the implementation for understanding the detailing
+    # on how the parasiting functionality is implemented and works.
+    reviewParasites: (seeds, request, callback) ->
+        assert parasites = try Auxiliaries.parasite()
+        selfomit = (par) => par.target is @constructor
+        assert parasites = _.reject parasites, selfomit
+        assert _.isObject polygone = _.clone seeds or {}
+        assert _.isFunction(callback), "got no callback"
+        ask = (xi, fun) => xi.decides this, request, fun
+        log = (xi) => logger.debug inf, idc(xi), hosting
+        idc = (xi) => try xi.target.identify().underline
+        inf = "Parasiting %s service into %s hosting".blue
+        hosting = try @constructor.identify().underline
+        async.filter parasites or [], ask, (results) =>
+            _.each results or new Object(), log # notify
+            assert tokens = _.map results, (r) -> r.token
+            assert targets = _.map results, (r) -> r.target
+            assert polished = try _.object(tokens, targets)
+            assert merged = try _.merge polygone, polished
+            return callback polygone or new Object()
+
     # A hook that will be called once the Connect middleware writes
     # off the headers. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
@@ -63,18 +113,20 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # Please be sure invoke the `next` arg to proceed, if relevant.
     headers: (request, response, resource, domain, next) ->
         assert auxiliaries = @constructor.aux() or {}
-        hosting = try @constructor.identify().underline
-        mapper = (closure) -> _.map auxiliaries, closure
-        routines = mapper (value, key) -> (callback) ->
-            assert _.isObject singleton = value.obtain()
-            message = "Cascading headers from %s to %s @ %s"
-            headers = singleton.downstream headers: ->
-                identity = value.identify().underline
-                template = [hosting, identity, key]
-                logger.debug message.grey, template...
-                assert singleton is this; callback()
-            headers request, response, resource, domain
-        return async.series routines, next
+        @reviewParasites auxiliaries, request, (poly) =>
+            assert auxiliaries = poly # replace the vector
+            hosting = try @constructor.identify().underline
+            mapper = (closure) -> _.map auxiliaries, closure
+            routines = mapper (value, key) -> (callback) ->
+                assert _.isObject singleton = value.obtain()
+                message = "Cascading headers from %s to %s @ %s"
+                headers = singleton.downstream headers: ->
+                    identity = value.identify().underline
+                    template = [hosting, identity, key]
+                    logger.debug message.grey, template...
+                    assert singleton is this; callback()
+                headers request, response, resource, domain
+            return async.series routines, next
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
@@ -83,17 +135,19 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
         assert auxiliaries = @constructor.aux() or {}
-        context.externals.push _.keys(auxiliaries)...
-        mapper = (closure) -> _.map auxiliaries, closure
-        routines = mapper (value, key) => (callback) =>
-            assert _.isObject singleton = value.obtain()
-            assert _.isObject ecc = context.caching ?= {}
-            assert _.isString qualified = "#{symbol}.#{key}"
-            assembler = singleton.assembleContext.bind singleton
-            stock = Object nsp: qualified, caching: context.caching
-            assembler qualified, request, yes, stock, (assembled) =>
-                @mergeContexts key, context, assembled, callback
-        return async.series routines, next
+        @reviewParasites auxiliaries, request, (poly) =>
+            assert auxiliaries = poly # replace the vector
+            context.externals.push _.keys(auxiliaries)...
+            mapper = (closure) -> _.map auxiliaries, closure
+            routines = mapper (value, key) => (callback) =>
+                assert _.isObject singleton = value.obtain()
+                assert _.isObject ecc = context.caching ?= {}
+                assert _.isString qualified = "#{symbol}.#{key}"
+                assembler = singleton.assembleContext.bind singleton
+                stock = Object nsp: qualified, caching: context.caching
+                assembler qualified, request, yes, stock, (assembled) =>
+                    @mergeContexts key, context, assembled, callback
+            return async.series routines, next
 
     # A complementary part of the auxiliaries substem implementation.
     # This routine is invoked once a compiled context is obtained of
