@@ -69,7 +69,7 @@ module.exports.external = module.exports.ec = (compiled) ->
     wrongCompiled = "using external with classes"
     assert.ok _.isFunction(compiled), notFunction
     assert not compiled.__super__?, wrongCompiled
-    p = (ds) -> ("var #{k} = #{v}" for k, v in ds)
+    p = (ds) -> ("var #{k} = #{v}" for k, v of ds)
     tabled = (d) -> _.sprintf wrapper, p(d).join ";\n"
     wrapper = "function() { %s; return #{compiled}}"
     assert compiled.remote = Object.create {}
