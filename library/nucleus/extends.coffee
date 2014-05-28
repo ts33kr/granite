@@ -59,7 +59,7 @@ module.exports.Extending = cc -> class Extending extends Object
             predicate = (x) -> x.similarWith archetype, loose
             assert _.isObject(@__super__), "this is not class"
             return yes if predicate(this or undefined) is yes
-            return _.any @hierarchy(), predicate
+            return _.any this.hierarchy(), predicate
 
     # Determine if the object that is bound to this invocation is an
     # object of the supplied archetype class (as argument). Of course
