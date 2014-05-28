@@ -63,8 +63,8 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # Please be sure invoke the `next` arg to proceed, if relevant.
     headers: (request, response, resource, domain, next) ->
         assert auxiliaries = @constructor.aux() or {}
-        mapper = (closure) -> _.map auxiliaries, closure
         hosting = try @constructor.identify().underline
+        mapper = (closure) -> _.map auxiliaries, closure
         routines = mapper (value, key) -> (callback) ->
             assert _.isObject singleton = value.obtain()
             message = "Cascading headers from %s to %s @ %s"
