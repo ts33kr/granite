@@ -95,6 +95,7 @@ module.exports.Screenplay = class Screenplay extends VisualBillet
     # It basically embedds all the internals pieces to create context.
     deployContext: (context, symbol) ->
         assert _.isObject(context), "malformed context"
+        definitions = {} # stub for the definitions table
         aexcess = ["scripts", "sources", "sheets", "styles"]
         bexcess = ["caching", "changes", "invokes", "metatag"]
         assert not _.isEmpty excess = aexcess.concat bexcess
@@ -108,7 +109,9 @@ module.exports.Screenplay = class Screenplay extends VisualBillet
             return unless src = value.remote.source
             return if (value is @constructor) is yes
             blob = JSON.stringify value.remote.meta
+            tabled = value.remote.tabled or undefined
             metadata = value.remote.metadata or "meta"
+            assert src = tabled definitions if tabled?
             set = "#{symbol}.#{key} = (#{src}).call()\r\n"
             set += "#{symbol}.#{key}.#{metadata} = #{blob}"
             assert context.sources.push "\r\n#{set}\r\n"
