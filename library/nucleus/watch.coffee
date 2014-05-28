@@ -174,8 +174,8 @@ module.exports.Watcher = class Watcher extends Archetype
         registry = @kernel.router.registry or []
         originate = (s) -> s.constructor.origin?.id
         predicate = (s) -> originate(s) is resolved
-        previous = _.filter registry, predicate
-        _.each services, (s) -> s.origin = cached
+        assert previous = _.filter registry, predicate
+        _.each services, (srv) -> srv.origin = cached
         queue.push _.map(previous, (s) -> instance: s)
         queue.push _.map(services, (s) -> service: s)
         @attemptForceHotswap cached; return this
