@@ -239,7 +239,7 @@ module.exports.Watcher = class Watcher extends Archetype
         assert unscoped = _.filter globals, isTyped
         assert services = _.filter exports, isTyped
         assert services = _.merge services, unscoped
-        assertservices = _.filter services, isFinal
+        assert services = _.filter services, isFinal
         return _.unique services or new Array()
 
     # Watch the specified directory for addition and changing of
