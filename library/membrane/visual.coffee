@@ -76,13 +76,14 @@ module.exports.Screenplay = class Screenplay extends VisualBillet
         sheet = (s) -> "\r\n<link rel=\x22#{c}\x22 href=\x22#{s}\x22>"
         template = "%s<html><head>%s</head><body></body></html>"
         [x, c, j] = ["text/css", "stylesheet", "text/javascript"]
-        scripts = _.map(context.scripts, script).join String()
-        changes = _.map(context.changes, source).join String()
-        sources = _.map(context.sources, source).join String()
-        invokes = _.map(context.invokes, source).join String()
-        metatag = _.map(context.metatag, meta).join String()
-        sheets = _.map(context.sheets, sheet).join String()
-        styles = _.map(context.styles, style).join String()
+        filter = (seq) -> _.filter seq, (val) -> "#{val}".length > 0
+        metatag = _.map(filter(context.metatag), meta).join String()
+        sheets = _.map(filter(context.sheets), sheet).join String()
+        styles = _.map(filter(context.styles), style).join String()
+        scripts = _.map(filter(context.scripts), script).join ""
+        changes = _.map(filter(context.changes), source).join ""
+        sources = _.map(filter(context.sources), source).join ""
+        invokes = _.map(filter(context.invokes), source).join ""
         assert _.isString joined = metatag + sheets + styles
         assert _.isString joined += scripts + changes + sources
         format template, context.doctype, joined + invokes
