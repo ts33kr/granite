@@ -37,8 +37,8 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-# A decorator style of routine that is used to capture the
-# source code of classes, functions and other first class
+# The decorator style of routine that is used to capture the
+# source code of classes, functions and the other first class
 # citizens for later transportation on the other environment.
 # Typically this would be the browser JS engine environment.
 # Call it with an empty function argument wrapping target.
@@ -69,11 +69,14 @@ module.exports.external = module.exports.ec = (compiled) ->
     wrongCompiled = "using external with classes"
     assert.ok _.isFunction(compiled), notFunction
     assert not compiled.__super__?, wrongCompiled
-    wrapper = "function() { return #{compiled} }"
+    p = (ds) -> ("var #{k} = #{v}" for k, v in ds)
+    tabled = (d) -> _.sprintf wrapper, p(d).join ";\n"
+    wrapper = "function() { %s; return #{compiled}}"
     assert compiled.remote = Object.create {}
     assert compiled.remote.compiled = compiled
     assert compiled.remote.compile = compiler
-    assert compiled.remote.source = wrapper
+    assert compiled.remote.source = tabled {}
+    assert compiled.remote.tabled = tabled
     assert compiled.remote.meta ?= Object()
     compiled.remote.symbol = compiled.name
     assert _.isFunction compiled; compiled
