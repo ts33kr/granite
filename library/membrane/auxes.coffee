@@ -56,6 +56,14 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # These are the shorthand definitions to use when defining new
+    # parasites. These exist only for convenience. Consider using
+    # these definitions when you need a typical parasites, such as
+    # the one that parsites on all standalone (non zombie) services
+    # or the one that parasites on all services, including zombies.
+    @P_EVERYWHERE = (h, r, decide) -> return decide true
+    @P_STANDALONE = (h, r, d) -> d not h.objectOf Zombie
+
     # Register current service that invokes the method as parasite.
     # This means that the service will be automatically included to
     # every services as an auxilliary, if it satisfies the condition.
@@ -93,7 +101,9 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
         assert parasites = _.reject parasites, selfomit
         assert _.isObject polygone = _.clone seeds or {}
         assert _.isFunction(callback), "got no callback"
-        ask = (xi, fun) => xi.decides this, request, fun
+        obt = (xi) -> xi.target.obtain() or throw Error()
+        ink = (xi) -> -> xi.decides.apply obt(xi), arguments
+        ask = (xi, func) => ink(xi)(this, request, func)
         log = (xi) => logger.debug inf, idc(xi), hosting
         idc = (xi) => try xi.target.identify().underline
         inf = "Parasiting %s service into %s hosting".blue
