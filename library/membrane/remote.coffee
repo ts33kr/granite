@@ -71,7 +71,7 @@ module.exports.external = module.exports.ec = (compiled) ->
     assert not compiled.__super__?, wrongCompiled
     p = (df) -> ("var #{k} = #{v};" for k, v of df)
     tabled = (df) -> _.sprintf wrap, p(df).join "\n\t"
-    wrap = "function() {\n\t%s \n\treturn #{compiled}}"
+    wrap = "function() { %s \n\treturn #{compiled}}"
     assert compiled.remote = Object.create {}
     assert compiled.remote.compiled = compiled
     assert compiled.remote.compile = compiler
