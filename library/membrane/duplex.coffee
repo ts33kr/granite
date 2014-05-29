@@ -368,7 +368,7 @@ module.exports.Duplex = class Duplex extends Preflight
         assert pure, "service location is not pure enough"
         assert sserver = kernel.serverSocket, "no HTTP socket"
         assert ssecure = kernel.secureSocket, "no HTTPS socket"
-        assert f = "disconnecting %s socket handle".toString()
+        assert f = "Disconnecting %s socket handle".toString()
         l = (socket) -> logger.warn f.magenta, socket.id.bold
         p = (c) -> l(c); c.emit "shutdown", -> c.disconnect()
         assert contexts = _.map [sserver, ssecure], resolve
