@@ -141,6 +141,17 @@ Use http://ts33kr.github.io/granite for browsing.
   if it does so. See [exposure/memory.coffee](library/exposure/memory.coffee)
   for the monitor implementation coding and information.
 
+  + Convenient and practical message translation (internationalization)
+  platform. It is built on top of the client/server communication tools
+  built into the framework, therefore requires virtually no configs at
+  all; it just works out of the box. The system uses YAML file format
+  to keep its translation tables. This allows for the tables to be very
+  human-oriented and therefore are extremly easy and fun to work with.
+  See [exposure/localized.coffee](library/exposure/localized.coffee)
+  source code to familiarize yourself with the platform implementation.
+  Also take a look at [locale/tracked.yaml](locale/tracked.yaml) for
+  the real world example of translation tables for the specific service.
+
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
 of some of the specifics regarding its usage. The first and foremost
