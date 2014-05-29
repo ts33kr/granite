@@ -147,7 +147,7 @@ Use http://ts33kr.github.io/granite for browsing.
   all; it just works out of the box. The system uses YAML file format
   to keep its translation tables. This allows for the tables to be very
   human-oriented and therefore are extremly easy and fun to work with.
-  See [exposure/localized.coffee](library/exposure/localized.coffee)
+  Please see [exposure/localized.coffee](library/exposure/localized.coffee)
   source code to familiarize yourself with the platform implementation.
   Also take a look at [locale/tracked.yaml](locale/tracked.yaml) for
   the real world example of translation tables for the specific service.
