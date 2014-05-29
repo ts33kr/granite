@@ -14,7 +14,7 @@ These things are well integrated with the framework which allows for
 a very rapid creation of extremely well designed and well decoupled
 services with a rock solid architecture. Granite also bundles some
 unique approaches and systems, such as the class composition system
-along with a unique, code driven approach for crafting UI/UX.
+along with a unique, code driven approach for crafting UI/UX interfaces.
 
 ##Concepts
 The Granite framework is built around the concept of being entirely
@@ -26,12 +26,12 @@ an asynchronous fashion, mostly, in order to match the Node.js idioms.
 The Granite was engineered for perfectly matching the one-man-show
 scenario, when one or more programmers have to do the job of an entire
 team. The framework provides a unique way of the client/server site
-integration that allows for entirely transparent data and event passing.
+integration that allows for entirely transparent data, event and code passing.
 The overall architecture of Granite makes it perfect for engineers.
 Granite makes hard emphasis on the decomposed objective architecture
 in order to provide enterprise level design and make the factor of
 the reusable code sky high. It also embeds in or provides support for
-the community standard sort of toolkits, such as NPM and Bower managers.
+the community standard sort of toolkits, such as NPM and Bower package managers.
 
 ##Highlights
 In this paragraph we will give you a brief overview of the features
@@ -39,7 +39,7 @@ that make Granite what it is. Most of the highlights will refer to
 the files containing source code, either as a part of implementation
 or as a usage example; please bear with us on this one, as it is the
 most up-to-date sort of documentation that we have, due to the fact
-that our project is young and its design changes and evoles rapidly.
+that our project is young and its design changes and evolves rapidly.
 Below follows a bullet-list of highlights currently implemented. We
 also strongly encourage you to browse over the project source codes
 and discover more pieces there, ones that haven't been documented yet.
