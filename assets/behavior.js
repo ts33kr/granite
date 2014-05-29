@@ -1093,11 +1093,11 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/semantic/modals.coffee",
-            "projectPath": "library/semantic/modals.coffee",
-            "targetPath": "semantic/modals",
-            "pageTitle": "semantic/modals",
-            "title": "modals"
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/semantic/separate.coffee",
+            "projectPath": "library/semantic/separate.coffee",
+            "targetPath": "semantic/separate",
+            "pageTitle": "semantic/separate",
+            "title": "separate"
           },
           "depth": 2,
           "outline": []
@@ -1114,11 +1114,11 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/semantic/platings.coffee",
-            "projectPath": "library/semantic/platings.coffee",
-            "targetPath": "semantic/platings",
-            "pageTitle": "semantic/platings",
-            "title": "platings"
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/semantic/standard.coffee",
+            "projectPath": "library/semantic/standard.coffee",
+            "targetPath": "semantic/standard",
+            "pageTitle": "semantic/standard",
+            "title": "standard"
           },
           "depth": 2,
           "outline": []
@@ -1135,11 +1135,11 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/semantic/shipped.coffee",
-            "projectPath": "library/semantic/shipped.coffee",
-            "targetPath": "semantic/shipped",
-            "pageTitle": "semantic/shipped",
-            "title": "shipped"
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/semantic/windows.coffee",
+            "projectPath": "library/semantic/windows.coffee",
+            "targetPath": "semantic/windows",
+            "pageTitle": "semantic/windows",
+            "title": "windows"
           },
           "depth": 2,
           "outline": []

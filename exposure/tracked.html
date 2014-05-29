@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>exposure/tracked</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/tracked"><meta name="groc-project-path" content="library/exposure/tracked.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/tracked.coffee">library/exposure/tracked.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;&#x69;&#x6c;&#x74;&#x6f;:&#116;s&#51;&#51;&#x6b;&#x72;&#x40;&#103;&#109;&#97;&#105;&#108;&#x2e;&#99;o&#109;">&#116;s&#51;&#51;&#x6b;&#x72;&#x40;&#103;&#109;&#97;&#105;&#108;&#x2e;&#99;o&#109;</a>
+<!DOCTYPE html><html lang="en"><head><title>exposure/tracked</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/tracked"><meta name="groc-project-path" content="library/exposure/tracked.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/tracked.coffee">library/exposure/tracked.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;i&#x6c;&#x74;&#x6f;:&#116;&#x73;&#x33;&#x33;k&#114;&#x40;&#x67;&#x6d;&#x61;&#x69;&#x6c;&#x2e;c&#x6f;&#109;">&#116;&#x73;&#x33;&#x33;k&#114;&#x40;&#x67;&#x6d;&#x61;&#x69;&#x6c;&#x2e;c&#x6f;&#109;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div
 
 <span class="p">{</span><span class="nx">Duplex</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/duplex&quot;</span>
 <span class="p">{</span><span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span>
+<span class="p">{</span><span class="nx">Localized</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../exposure/localized&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span>
 <span class="p">{</span><span class="nx">Preflight</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/preflight&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This abstract compound provides the enhanced duplex facilities.
 The functionality it implements aids in visual recoginitions of
@@ -45,7 +46,15 @@ reports connections events in additions to the exceptional ones.</p></div></div>
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block here defines a set of Bower dependencies that are
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These invocations establish the parameters which are going
+to be used for matching HTTP requests against this service.
+Typically an HTTP pathname pattern and a domain name pattern.
+Try not to put constraints on the domain, unless necessary.
+Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@compose</span> <span class="nx">Localized</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block here defines a set of translation files thar are
+used by the service. Please keep in mind, that translations
+are inherited from all of the base classes, and the tookit
+then loads each translation file and combines all messages
+into one translation table that is used throughout service.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@translation</span> <span class="s">&quot;tracked.yaml&quot;</span><span class="p">,</span> <span class="nx">@EMBEDDED_LOCALE</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block here defines a set of Bower dependencies that are
 going to be necessary no matter what sort of functionality is
 is going to be implemented. Most of these libraries required
 by the internal implementations of the various subcomponents.
@@ -54,10 +63,10 @@ by the <code>Duplex</code> implementation once it successfuly creates a
 socket object. When that happens, this code sucks up to the
 socket events that indicate successful and fail conditions.
 When either one is happens, it emits the <code>toastr</code> notice.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">attachWatchdog: </span><span class="nx">@awaiting</span> <span class="s">&quot;socketing&quot;</span><span class="p">,</span> <span class="nf">(socket, location) -&gt;</span>
-        <span class="nx">assert</span> <span class="nv">l = lst = </span><span class="s">&quot;server connection has been lost&quot;</span>
-        <span class="nx">assert</span> <span class="nv">s = srv = </span><span class="s">&quot;exception occured on the server&quot;</span>
-        <span class="nx">assert</span> <span class="nv">r = rcn = </span><span class="s">&quot;attempting to restore connection&quot;</span>
-        <span class="nx">assert</span> <span class="nv">c = con = </span><span class="s">&quot;established connection to server&quot;</span>
+        <span class="nx">assert</span> <span class="nv">l = lst = </span><span class="nx">@t</span> <span class="s">&quot;server connection has been lost&quot;</span>
+        <span class="nx">assert</span> <span class="nv">s = srv = </span><span class="nx">@t</span> <span class="s">&quot;exception occured on the server&quot;</span>
+        <span class="nx">assert</span> <span class="nv">r = rcn = </span><span class="nx">@t</span> <span class="s">&quot;attempting to restore connection&quot;</span>
+        <span class="nx">assert</span> <span class="nv">c = con = </span><span class="nx">@t</span> <span class="s">&quot;established connection to server&quot;</span>
         <span class="nv">pos = positionClass: </span><span class="s">&quot;toast-top-left&quot;</span><span class="p">,</span> <span class="nv">closable: </span><span class="kc">null</span>
         <span class="nv">ntm = timeOut: </span><span class="mi">0</span><span class="p">,</span> <span class="nv">extendedTimeOut: </span><span class="mi">0</span><span class="p">,</span> <span class="nv">tapToDismiss: </span><span class="mi">0</span>
         <span class="nv">xtm = timeOut: </span><span class="mi">3000</span><span class="p">,</span> <span class="nv">extendedTimeOut: </span><span class="mi">1000</span> <span class="c1"># a duplex</span>

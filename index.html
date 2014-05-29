@@ -49,6 +49,18 @@ and discover more pieces there, ones that haven't been documented yet.
 Use http://ts33kr.github.io/granite for browsing.</p>
 
 <ul>
+<li><p>Highly advanced code emission platform that is taking care of
+doing all the processing necessary to transfer the relevant code
+to the client site. The entire method hierarchies are transferred,
+so that you can always access all the possibly overriden methods
+in the base classes. On top of that, there is a special mechanism
+implemented that allows you to override type implementations that
+are used in the parent classes, without having to override any of
+the base classes coding (as long as types have similar interfaces).
+And last, but not least - all of the code that is emited into the
+client site is being taken apart and re-translated, using either
+the comprssion &amp; obfuscation or the code beautification toolkit,
+depending on the scope and config.</p></li>
 <li><p>A unique extension to the object system, written using pure
 CoffeeScript that allows for completely transparent and dynamic
 multiple inheritance, modelled similar to the mixin concept. It
@@ -124,6 +136,16 @@ this, the framework has a built in memory monitor that watches an
 application to not exceed the configured limit and reloads an app
 if it does so. See <a href="library/exposure/memory.coffee">exposure/memory.coffee</a>
 for the monitor implementation coding and information.</p></li>
+<li><p>Convenient and practical message translation (internationalization)
+platform. It is built on top of the client/server communication tools
+built into the framework, therefore requires virtually no configs at
+all; it just works out of the box. The system uses YAML file format
+to keep its translation tables. This allows for the tables to be very
+human-oriented and therefore are extremly easy and fun to work with.
+Please see <a href="library/exposure/localized.coffee">exposure/localized.coffee</a>
+source code to familiarize yourself with the platform implementation.
+Also take a look at <a href="locale/tracked.yaml">locale/tracked.yaml</a> for
+the real world example of translation tables for the specific service.</p></li>
 </ul>
 
 <h2 id="disclaimer">Disclaimer</h2>
