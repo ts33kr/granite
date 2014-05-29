@@ -128,6 +128,19 @@ Use http://ts33kr.github.io/granite for browsing.
   if it does so. See [exposure/memory.coffee](library/exposure/memory.coffee)
   for the monitor implementation coding and information.
 
+  + Highly advanced code emission platform that is taking care of
+  doing all the processing necessary to transfer the relevant code
+  to the client site. The entire method hierarchies are transferred,
+  so that you can always access all the possibly overriden methods
+  in the base classes. On top of that, there is a special mechanism
+  implemented that allows you to override type implementations that
+  are used in the parent classes, without having to override any of
+  the base classes coding (as long as types have similar interfaces).
+  And last, but not least - all of the code that is emited into the
+  client site is being taken apart and re-translated, using either
+  the comprssion & obfuscation or the code beautification toolkit,
+  depending on the environmental scope (production/development).
+
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
 of some of the specifics regarding its usage. The first and foremost
