@@ -45,6 +45,19 @@ also strongly encourage you to browse over the project source codes
 and discover more pieces there, ones that haven't been documented yet.
 Use http://ts33kr.github.io/granite for browsing.
 
+  + Highly advanced code emission platform that is taking care of
+  doing all the processing necessary to transfer the relevant code
+  to the client site. The entire method hierarchies are transferred,
+  so that you can always access all the possibly overriden methods
+  in the base classes. On top of that, there is a special mechanism
+  implemented that allows you to override type implementations that
+  are used in the parent classes, without having to override any of
+  the base classes coding (as long as types have similar interfaces).
+  And last, but not least - all of the code that is emited into the
+  client site is being taken apart and re-translated, using either
+  the comprssion & obfuscation or the code beautification toolkit,
+  depending on the scope and config.
+
   + A unique extension to the object system, written using pure
   CoffeeScript that allows for completely transparent and dynamic
   multiple inheritance, modelled similar to the mixin concept. It
@@ -127,19 +140,6 @@ Use http://ts33kr.github.io/granite for browsing.
   application to not exceed the configured limit and reloads an app
   if it does so. See [exposure/memory.coffee](library/exposure/memory.coffee)
   for the monitor implementation coding and information.
-
-  + Highly advanced code emission platform that is taking care of
-  doing all the processing necessary to transfer the relevant code
-  to the client site. The entire method hierarchies are transferred,
-  so that you can always access all the possibly overriden methods
-  in the base classes. On top of that, there is a special mechanism
-  implemented that allows you to override type implementations that
-  are used in the parent classes, without having to override any of
-  the base classes coding (as long as types have similar interfaces).
-  And last, but not least - all of the code that is emited into the
-  client site is being taken apart and re-translated, using either
-  the comprssion & obfuscation or the code beautification toolkit,
-  depending on the scope and config.
 
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
