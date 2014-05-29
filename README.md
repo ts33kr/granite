@@ -139,7 +139,7 @@ Use http://ts33kr.github.io/granite for browsing.
   And last, but not least - all of the code that is emited into the
   client site is being taken apart and re-translated, using either
   the comprssion & obfuscation or the code beautification toolkit,
-  depending on the environmental scope (production/development).
+  depending on the scope and config.
 
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
