@@ -39,7 +39,7 @@ that make Granite what it is. Most of the highlights will refer to
 the files containing source code, either as a part of implementation
 or as a usage example; please bear with us on this one, as it is the
 most up-to-date sort of documentation that we have, due to the fact
-that our project is young and its design changes and evoles rapidly.
+that our project is young and its design changes and evolves rapidly.
 Below follows a bullet-list of highlights currently implemented. We
 also strongly encourage you to browse over the project source codes
 and discover more pieces there, ones that haven't been documented yet.
