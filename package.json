@@ -1,7 +1,7 @@
 {
     "name": "granite",
-    "version": "0.9.7",
-    "codename": "hipster",
+    "version": "0.10.1",
+    "codename": "hammerhead",
     "main": "index.coffee",
 
     "license": "Simplified BSD-3",
