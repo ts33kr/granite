@@ -31,7 +31,7 @@ The overall architecture of Granite makes it perfect for engineers.
 Granite makes hard emphasis on the decomposed objective architecture
 in order to provide enterprise level design and make the factor of
 the reusable code sky high. It also embeds in or provides support for
-the community standard sort of toolkits, such as NPM and Bower packe managers.
+the community standard sort of toolkits, such as NPM and Bower package managers.
 
 ##Highlights
 In this paragraph we will give you a brief overview of the features
