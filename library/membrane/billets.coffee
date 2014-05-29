@@ -95,6 +95,31 @@ module.exports.VisualBillet = class VisualBillet extends Barebones
         return sources.call this if compilable
         throw new Error invalid.toString()
 
+    # This method implements overridiable type installation mechanism
+    # similar to Beans in a way. It basically transfers remotable type
+    # (or a function) onto the remote site and aliases it under given
+    # token (name). The key here is this aliasing is done for every
+    # method transferred to the client side. And the definitions table
+    # that is used for aliasing is overridable based on inheritance.
+    # This allows you to override type definitions that may be used in
+    # the parent classes, without having to replace implementation code.
+    @consider: (signature) ->
+        assert remotes = this.remotes or new Array()
+        assert previous = @$considerations or Object()
+        return previous if (try arguments.length) is 0
+        incorrect = "argument should be key/value pair"
+        singleArg = "one definition possible at a time"
+        fx = "value should be either remote or function"
+        assert _.isObject(signature or null), incorrect
+        assert _.keys(signature).length is 1, singleArg
+        assert token = _.first _.keys(signature or null)
+        assert value = _.first _.values(signature or 0)
+        assert _.isFunction(value) or value.remote?, fx
+        remotes.push value if (try value.remote.compile)
+        raw = (try value.remote?.symbol) or ("#{value}")
+        assert this.$considerations = _.clone previous
+        return this.$considerations[token] = raw
+
     # This is a highly specialized method that is defined solely for
     # the purpose of creating the medium to advanced components that
     # provide specialized, domain specific end-to-end API. It creates

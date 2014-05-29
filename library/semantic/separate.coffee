@@ -45,12 +45,13 @@ module.exports.ModalFormular = class ModalFormular extends ModalWindow
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
-    # This block here defines a set of remote dependencies that are
-    # going to be necessary to provide support for functionality is
-    # is going to be implemented. Most of these libraries required
-    # by the internal implementations of the various subcomponents.
-    # Refer to `RToolkit` class implementation for the information.
-    @transfer BoxFormular
+    # Define a set of considerations used by this service. An every
+    # consideration is one key/value pair. Where the key corresponds
+    # to the type name (also known as token) and the value is holding
+    # either an implementation function or a remotable type (an alias).
+    # This allows you to override type definitions that may be used in
+    # the parent classes, without having to replace implementation code.
+    @consider TFormular: BoxFormular
 
     # This method is invoked once the `positive` event goes off in
     # the service. This event is fired once the positive action is
@@ -85,7 +86,7 @@ module.exports.ModalFormular = class ModalFormular extends ModalWindow
         selector = => @window.find ".positive.button"
         closer = => return @window.find ".close.icon"
         clean = => try @formular.prestine(); disabler()
-        @formular = new BoxFormular @content, "m-formular"
+        @formular = new TFormular @content, "m-formular"
         @window.addClass "modal-formular semantic-flavour"
         @header.text @t "Please enter the following data"
         @actions.find(".positive").addClass "disabled"
