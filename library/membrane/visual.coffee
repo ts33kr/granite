@@ -95,7 +95,7 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
     # It basically embedds all the internals pieces to create context.
     deployContext: (context, symbol) ->
         assert _.isObject(context), "malformed context"
-        definitions = @constructor.consider() or Object()
+        definitions = defs = @constructor.consider() or {}
         aexcess = ["scripts", "sources", "sheets", "styles"]
         bexcess = ["caching", "changes", "invokes", "metatag"]
         assert not _.isEmpty excess = aexcess.concat bexcess
@@ -111,13 +111,36 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
             blob = JSON.stringify value.remote.meta
             tabled = value.remote.tabled or undefined
             metadata = value.remote.metadata or "meta"
-            assert src = tabled definitions if tabled?
+            idefs = @inlineHierarchy defs, symbol, value, key
+            assert _.isString src = tabled idefs if tabled
             set = "#{symbol}.#{key} = (#{src}).call()\r\n"
             set += "#{symbol}.#{key}.#{metadata} = #{blob}"
             assert context.sources.push "\r\n#{set}\r\n"
         context.sources.unshift applicator
         context.changes.unshift installer
         context.sources.unshift runtime
+
+    # Part of the internal implementation. For every remote symbol
+    # that gets emited by the visua core, this routine performs the
+    # hierarchy inlining. That is, find all (overriden) definitions
+    # of a symbol (method) and emits it into the context in special
+    # way, so that if a method has an overriden parent, this parent
+    # method will always be available under `$parent` variale name.
+    inlineHierarchy: (definitions, symbol, value, key) ->
+        assert hierarchy = this.constructor.hierarchy()
+        assert _.isObject cloned = _.clone definitions
+        flag = this.constructor?.NO_HIERARCHY_INLINING
+        return cloned if flag # do not inline, if asked
+        assert _.isString(key), "key must be a string"
+        assert _.isObject(value.remote), "not a remote"
+        assert not _.isEmpty(s = symbol), "wrong symbol"
+        prototypes = _.map hierarchy, (h) -> h.prototype
+        nodes = _.map prototypes, (p) -> p[key] or null
+        nodes = _.filter nodes, (n) -> n and n isnt value
+        nodes = _.filter nodes, (n) -> try n.remote.tabled
+        gen = (t, n) -> "#{n.remote.tabled(t)}.call(#{s})"
+        worker = (t, n) -> t.$parent = gen(t, n); return t
+        return _.reduceRight nodes, worker, cloned or {}
 
     # Issue the autocalls into the context. Traverse the hierarchy
     # from top to bottom (the ordering is important) and issue an
@@ -178,11 +201,16 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
         assert hasher = crypto.createHash "md5"
         joined = context.sources.join new String
         digest = hasher.update(joined).digest "hex"
+        beauty = nconf.get("visual:beautify") or no
+        disablers = mangle: false, compress: false
         context.sources = c if c = @ccache?[digest]
-        return context if context.sources and c
+        return context if (try context.sources and c)
         assert sources = _.reject sources, _.isEmpty
         assert minify = require("uglify-js").minify
-        minified = minify sources, fromString: yes
+        assert processing = fromString: yes # opts
+        processing.output = beautify: yes if beauty
+        try _.extend processing, disablers if beauty
+        minified = minify sources, processing or {}
         (@ccache ?= {})[digest] = [minified.code]
         context.sources = @ccache[digest]; context
 
