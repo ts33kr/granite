@@ -94,7 +94,7 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
         deb = ((f) -> _.debounce f, 500); clear = toastr.clear
         wclear = -> return $(".toast-warning").hide().remove()
         recon = _.debounce (-> toastr.info r, null, xtm), 100
-        dropd = deb -> wclear() -> toastr.warning lst, 0, ntm
+        dropd = deb -> wclear(); toastr.warning lst, 0, ntm
         connd = deb -> clear(); toastr.success con, 0, pos
         error = deb -> clear(); toastr.error srv, 0, pos
         do => $root?.on "reconnecting", => recon.call @
