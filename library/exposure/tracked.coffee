@@ -75,7 +75,7 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
     # is going to be implemented. Most of these libraries required
     # by the internal implementations of the various subcomponents.
     # Refer to `BowerSupport` class implementation for information.
-    @bower "toastr"
+    @bower "toastr#2.0.x"
 
     # This method awaits for the `socketing` signal that is emited
     # by the `Duplex` implementation once it successfuly creates a
@@ -91,12 +91,12 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
         ntm = timeOut: 0, extendedTimeOut: 0, tapToDismiss: 0
         xtm = timeOut: 3000, extendedTimeOut: 1000 # a duplex
         assert _.extend object, pos for object in [ntm, xtm]
-        socket.on "connect", -> $(".toast-warning").remove()
-        recon = _.debounce (-> toastr.info r, null, xtm), 500
-        dropd = _.debounce (-> toastr.warning l, 0, ntm), 500
-        connd = _.debounce (-> toastr.success c, 0, pos), 500
-        error = _.debounce (-> toastr.error srv, 0, pos), 500
-        do -> socket.on "reconnecting", -> recon.call this
-        do -> socket.on "disconnect", -> dropd.call this
-        do -> socket.on "exception", -> error.call this
-        do -> socket.on "connect", -> connd.call this
+        deb = ((f) -> _.debounce f, 500); clear = toastr.clear
+        recon = _.debounce (-> toastr.info r, null, xtm), 100
+        dropd = deb -> clear(); toastr.warning lst, 0, ntm
+        connd = deb -> clear(); toastr.success con, 0, pos
+        error = deb -> clear(); toastr.error srv, 0, pos
+        do => socket.on "reconnecting", => recon.call @
+        do => socket.on "disconnect", => dropd.call @
+        do => socket.on "exception", => error.call @
+        do => socket.on "connect", => connd.call @
