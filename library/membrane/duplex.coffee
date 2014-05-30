@@ -138,9 +138,11 @@ module.exports.Duplex = class Duplex extends Preflight
             format = try where().toString().underline
             logger.error location, identify, format
             do -> logger.error m.red, error.stack
-            error = o([_.omit(error, "domain")])
-            try socket.emit "exception", error...
-            try socket.disconnect?() catch error
+            str = error.toString() # got no message
+            packed = stack: error.stack.toString()
+            packed.message = error.message or str
+            try socket.emit "exception", packed
+            try socket.disconnect?() catch err
 
     # A utility method to mark the certain function as the provider.
     # The method returns the original function back so it can be used
@@ -278,7 +280,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # Can be overriden to provide more meaningful feedback handlers.
     socketFeedback: external ->
         c = "an error raised during socket connection: %s"
-        p = "an exception happend at the server provider, %s"
+        p = "an exception happend at the server provider:"
         connected = "established connection at #{@location}"
         reconnect = "attempting to reconnect at #{@location}"
         connecting = "attempting connection at #{@location}"
@@ -286,12 +288,12 @@ module.exports.Duplex = class Duplex extends Preflight
         @socket.on "disconnect", => this.emit "disconnect"
         @socket.on "connect_failed", => @emit "disconnect"
         @socket.on "exception", => $root?.emit? "exception"
+        @socket.on "exception", (e) -> logger.error p, e.message
+        @socket.on "error", (e) -> logger.error c, e.message
         @socket.on "reconnecting", -> logger.info reconnect
         @socket.on "disconnect", -> logger.error disconnect
         @socket.on "connecting", -> logger.info connecting
         @socket.on "connect", -> logger.info connected
-        @socket.on "exception", (e) -> logger.error p, e
-        @socket.on "error", (e) -> logger.error c, e
 
     # An external routine that will be invoked once a both way duplex
     # channel is established at the client site. This will normally
