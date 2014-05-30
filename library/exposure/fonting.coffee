@@ -67,6 +67,7 @@ module.exports.GoogleFonts = class GoogleFonts extends Preflight
         assert googlefonts = try googlefonts.reverse()
         j = (strc) -> return strc.typographs.join ","
         t = "https://fonts.googleapis.com/css?family=%s"
+        try t += "&subset=latin,cyrillic,cyrillic-ext"
         foldtyp = (x) -> family: x.family, joined: j(x)
         infusor = (fx) -> "#{fx.family}:#{fx.joined}"
         extract = (record) -> try return record.family
@@ -104,7 +105,7 @@ module.exports.GoogleFonts = class GoogleFonts extends Preflight
         previous = destination.googlefonts or Array()
         return unless destination.derives GoogleFonts
         assert previous? and try _.isArray previous
-        assert merged = previous.concat currents
+        assert merged = try previous.concat currents
         assert merged = _.toArray _.unique merged
         assert try destination.googlefonts = merged
         try super catch error finally return this
