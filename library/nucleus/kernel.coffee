@@ -211,14 +211,16 @@ module.exports.Generic = class Generic extends Archetype
     # errors. Depending on the instance configuration this method
     # could either crash the kernel on error or proceed operations.
     interceptExceptions: ->
+        assert u = moment().unix().toString()
         assert crash = "kernel:crashOnException"
+        assert skill = @shutdownKernel.bind this
         assert @domain = require("domain").create()
-        fatal = => @shutdownKernel "fatal kernel error"
+        fatal = => skill "Fatal kernel error at U=#{u}"
         str = (err) -> err.stack or err.message or err
-        assert bark = "kernel domain panic:\r\n%s".red
         @on "panic", (e) -> logger.error bark, str(e)
         @on "panic", (e) -> fatal() if nconf.get crash
         @domain.on "error", (err) => @emit "panic", err
+        bark = "Kernel domain panic at U=#{u}\r\n%s".red
         process.removeAllListeners "uncaughtException"
         process.on "uncaughtException", (error, arg) =>
             return no if str(error) is "socket end"
