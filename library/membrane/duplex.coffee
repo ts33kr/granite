@@ -124,6 +124,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # the domains and error handling itself. This method is generally
     # used only once per the domain declaration. See `provider`.
     @guarded: (method, socket) ->
+        killOnError = "duplex:disconnectOnError"
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
         assert guarded = require("domain").create()
@@ -142,6 +143,7 @@ module.exports.Duplex = class Duplex extends Preflight
             packed = stack: error.stack.toString()
             packed.message = error.message or str
             try socket.emit "exception", packed
+            return unless nconf.get killOnError
             try socket.disconnect?() catch err
 
     # A utility method to mark the certain function as the provider.
