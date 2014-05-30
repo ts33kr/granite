@@ -92,8 +92,9 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
         xtm = timeOut: 3000, extendedTimeOut: 1000 # a duplex
         assert _.extend object, pos for object in [ntm, xtm]
         deb = ((f) -> _.debounce f, 500); clear = toastr.clear
+        wclear = -> return $(".toast-warning").hide().remove()
         recon = _.debounce (-> toastr.info r, null, xtm), 100
-        dropd = _.debounce (-> toastr.warning l, 0, ntm), 600
+        dropd = deb -> wclear() -> toastr.warning lst, 0, ntm
         connd = deb -> clear(); toastr.success con, 0, pos
         error = deb -> clear(); toastr.error srv, 0, pos
         do => $root?.on "reconnecting", => recon.call @
