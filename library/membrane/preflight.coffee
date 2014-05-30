@@ -97,6 +97,7 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
     prelude: (symbol, context, request, next) ->
         context.inline -> `assert = chai.assert`
         context.inline -> `assert(logger = log)`
+        context.inline -> `assert($logger = log)`
         context.inline -> try logger.enableAll()
         context.inline -> _.mixin _.string.exports()
         context.inline -> $(document).ready =>
