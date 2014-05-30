@@ -22,15 +22,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-html, body {
+.toast-message {
+    font-family: "Arial", sans-serif;
+}
+
+html, body, * {
+    font-family: "Open Sans Condensed", sans-serif;
+    font-weight: normal !important;
     font-size: 15px;
 }
 
 body {
-    font-family: "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
-    margin: 0px; padding: 0px; color: #555555; min-width: 320px;
-}
-
-h1, h2, h3, h4, h5 {
-    font-family: "Source Sans Pro", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    margin: 0px;
+    padding: 0px;
+    color: #555555;
+    min-width: 320px;
 }
