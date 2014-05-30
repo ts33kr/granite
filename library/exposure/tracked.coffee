@@ -98,5 +98,5 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
         error = deb -> clear(); toastr.error srv, 0, pos
         do => socket.on "reconnecting", => recon.call @
         do => socket.on "disconnect", => dropd.call @
-        do => socket.on "exception", => error.call @
+        do => $root?.on "exception", => error.call @
         do => socket.on "connect", => connd.call @
