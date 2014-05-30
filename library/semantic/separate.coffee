@@ -61,10 +61,13 @@ module.exports.ModalFormular = class ModalFormular extends ModalWindow
     confirmedFormularSubmission: @awaiting "positive", ->
         try this.formular.container.addClass "loading"
         assert _.isObject data = @formular.download yes
-        w = @t "Please check the information you entered"
+        w = @th "Please check the information you entered"
         this.dataSubmission data, (success, values) =>
             this.formular.container.removeClass "loading"
             assert values and _.isObject values or null
+            lo = (k) => (value) => value[k] = @t value[k]
+            pp = (k) => _.each _.filter(values, k), lo(k)
+            pp "warning"; pp "error" # localize server msg
             @formular.upload values; @formular.messages w
             return undefined unless success and values
             @paragraph = $ "<p>", class: "right aligned"
