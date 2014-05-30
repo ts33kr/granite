@@ -225,6 +225,7 @@ module.exports.Preflight = class Preflight extends LToolkit
     # This blocks defines the directory-scopes deps, not bare ones.
     @bower "underscore.string", "dist/underscore.string.min.js"
     @bower "async", "lib/async.js"
+    @bower "node-uuid", "uuid.js"
 
     # This block here defines a set of remote dependencies that are
     # going to be necessary no matter what sort of functionality is

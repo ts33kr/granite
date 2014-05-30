@@ -74,6 +74,26 @@ module.exports.ModalFormular = class ModalFormular extends ModalWindow
             this.emit "acknowledged", success, values
             this.content.append icon, @paragraph
 
+    # This method is invoked once the `configure-formular` event is
+    # fired on the service. This event means that the window and the
+    # formular are ready to be configured. This method sets a handy
+    # sort of behavior, when `enter` key is pressed, it either sets
+    # the focus to the next field or submits the form if it was last.
+    configureKeyboardBehavior: @awaiting "configure-formular", ->
+        proceed = => $(".positive.button", @window).click()
+        next = => return performFieldResolution arguments...
+        textInputs = "input[type=text],input[type=password]"
+        assert not _.isEmpty idc = @windowUid.toString()
+        jwerty.key "enter", next, textInputs, "##{idc}"
+        return performFieldResolution = (event, key) ->
+            assert _.isObject target = try event.target
+            sibling = $(target).parents(".field").next()
+            assert input = sibling.find(textInputs)
+            return proceed() unless sibling.is ".field"
+            return proceed() unless sibling.length > 0
+            return proceed() unless input.length > 0
+            return input.focus() # set to next input
+
     # This method is invoked once the `configure-window` events goes
     # through the service. This event is fired once the modal window
     # is ready and can be configured. This implementation creates a
@@ -86,7 +106,8 @@ module.exports.ModalFormular = class ModalFormular extends ModalWindow
         selector = => @window.find ".positive.button"
         closer = => return @window.find ".close.icon"
         clean = => try @formular.prestine(); disabler()
-        @formular = new TFormular @content, "m-formular"
+        @formular = new TFormular @content, "the-formular"
+        @window.attr id: @windowUid = uuid.v1().toString()
         @window.addClass "modal-formular semantic-flavour"
         @header.text @t "Please enter the following data"
         @configureFormular? disabler, enabler, @formular
