@@ -89,8 +89,8 @@ module.exports.ModalFormular = class ModalFormular extends ModalWindow
         @formular = new TFormular @content, "m-formular"
         @window.addClass "modal-formular semantic-flavour"
         @header.text @t "Please enter the following data"
+        @configureFormular? disabler, enabler, @formular
         @actions.find(".positive").addClass "disabled"
-        @populateFormular? disabler, enabler, @formular
         @emit "configure-formular", disabler, enabler
         @on "disconnect", -> try unload $ ".loading"
         @on "negative", => closer().click(); clean()
