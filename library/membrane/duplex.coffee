@@ -285,9 +285,13 @@ module.exports.Duplex = class Duplex extends Preflight
         reconnect = "attempting to reconnect at #{@location}"
         connecting = "attempting connection at #{@location}"
         disconnect = "lost socket connection at #{@location}"
-        @socket.on "disconnect", => this.emit "disconnect"
-        @socket.on "connect_failed", => @emit "disconnect"
-        @socket.on "exception", => $root?.emit? "exception"
+        r = (e, s) => this.emit(e, s...); $root.emit(e, s...)
+        if _.isEmpty @STOP_ROOT_PROPAGATION or undefined
+            @socket.on "connect", => r "connect", arguments
+            @socket.on "exception", => r "exception", arguments
+            @socket.on "disconnect", => r "disconnect", arguments
+            @socket.on "connect_failed", => r "disconnect", arguments
+            @socket.on "reconnecting", => r "reconnecting", arguments
         @socket.on "exception", (e) -> logger.error p, e.message
         @socket.on "error", (e) -> logger.error c, e.message
         @socket.on "reconnecting", -> logger.info reconnect
