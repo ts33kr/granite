@@ -293,6 +293,7 @@ module.exports.Scaled = class Scaled extends Generic
         msg = "Got #{type} port from the Seaport: %s"
         assert identica = @constructor.identica()
         cfg = config: config, identica: identica
+        _.extend cfg, host: try config.server.host
         _.extend cfg, uuid: uuid.v4(), kind: "https"
         _.extend cfg, token: @token or undefined
         record = @seaport.register identica, cfg
@@ -313,6 +314,7 @@ module.exports.Scaled = class Scaled extends Generic
         msg = "Got #{type} port from the Seaport: %s"
         assert identica = @constructor.identica()
         cfg = config: config, identica: identica
+        _.extend cfg, host: try config.server.host
         _.extend cfg, uuid: uuid.v4(), kind: "http"
         _.extend cfg, token: @token or undefined
         record = @seaport.register identica, cfg
