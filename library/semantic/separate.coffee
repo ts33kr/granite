@@ -91,6 +91,6 @@ module.exports.ModalFormular = class ModalFormular extends ModalWindow
         @header.text @t "Please enter the following data"
         @actions.find(".positive").addClass "disabled"
         @populateFormular? disabler, enabler, @formular
-        @emit "populate-formular", disabler, enabler
+        @emit "configure-formular", disabler, enabler
         @on "disconnect", -> try unload $ ".loading"
         @on "negative", => closer().click(); clean()
