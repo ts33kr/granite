@@ -93,10 +93,10 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
         assert _.extend object, pos for object in [ntm, xtm]
         deb = ((f) -> _.debounce f, 500); clear = toastr.clear
         recon = _.debounce (-> toastr.info r, null, xtm), 100
-        dropd = deb -> clear(); toastr.warning lst, 0, ntm
+        dropd = _.debounce (-> toastr.warning l, 0, ntm), 600
         connd = deb -> clear(); toastr.success con, 0, pos
         error = deb -> clear(); toastr.error srv, 0, pos
-        do => socket.on "reconnecting", => recon.call @
-        do => socket.on "disconnect", => dropd.call @
+        do => $root?.on "reconnecting", => recon.call @
+        do => $root?.on "disconnect", => dropd.call @
         do => $root?.on "exception", => error.call @
-        do => socket.on "connect", => connd.call @
+        do => $root?.on "connect", => connd.call @
