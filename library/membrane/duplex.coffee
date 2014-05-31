@@ -116,7 +116,7 @@ module.exports.Duplex = class Duplex extends Preflight
                 return accept ns, no unless session
                 handshaken = @downstream handshaken: ->
                     return accept undefined, yes
-                return handshaken context, downstream
+                return handshaken context, handshake
 
     # An internal, static method that is used to obtain gurading
     # domains for each of the declared server site providers. Please
