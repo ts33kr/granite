@@ -146,7 +146,7 @@ module.exports.Composition = cc -> class Composition extends Object
             exists = (val) -> val.prototype?[nameing]?
             heading = _.find(hierarchy, exists) or 0
             value = try heading?.prototype?[nameing]
-            return value unless  value is current
+            return value unless value is current
             (formed = {})[nameing] = _.head(hierarchy)
             return this.upstack.call this, formed
 
