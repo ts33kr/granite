@@ -63,7 +63,7 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
     # Also, the compounds for the composition system belong here.
     @compose Localized
 
-    # This block here defines a set of translation files thar are
+    # This block here defines a set of translation files that are
     # used by the service. Please keep in mind, that translations
     # are inherited from all of the base classes, and the tookit
     # then loads each translation file and combines all messages
