@@ -36,8 +36,8 @@ _ = require "lodash"
 tools = require "./tools"
 extendz = require "./extends"
 routing = require "./routing"
-{Service} = require "./service"
 {STATUS_CODES} = require "http"
+{Service} = require "./service"
 
 # This is an abstract base class for every service in the system
 # and in the end user application that provides a REST interface
@@ -120,10 +120,12 @@ module.exports.Restful = class Restful extends Service
         _.extend shadow, response: try weak response
         _.extend shadow, request: try weak request
         s = get: -> try request.session or undefined
-        e = get: -> try request.entity or undefined
+        e = get: -> try request[symbol] or undefined
+        {AccessGate} = require "../exposure/access"
+        symbol = try AccessGate.ACCESS_ENTITY_SYMBOL
         logger.debug message.grey, try request.url
         Object.defineProperty shadow, "session", s
-        Object.defineProperty shadow, "entity", e
+        Object.defineProperty shadow, symbol, e
         @emit "spinoff", capture...; execute()
 
     # This method is intended for indicating to a client that the

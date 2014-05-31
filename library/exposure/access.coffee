@@ -129,8 +129,8 @@ module.exports.AccessGate = class AccessGate extends Barebones
         try @dereference request, (error, supply) =>
             @emit "access-entity-ignition", arguments...
             s = succeeded = _.isObject request[symbol]
-            logger.debug success.green if succeeded
-            logger.debug set.green, symbol.bold if s
+            logger.debug success.yellow if succeeded
+            logger.debug set.yellow, symbol.bold if s
             return next undefined if _.isEmpty error
             assert message = error.message or error
             logger.error format(message).red
@@ -152,8 +152,8 @@ module.exports.AccessGate = class AccessGate extends Barebones
         try @dereference handshake, (error, supply) =>
             @emit "access-entity-handshake", arguments...
             s = succeeded = _.isObject handshake[symbol]
-            logger.debug success.green if succeeded
-            logger.debug set.green, symbol.bold if s
+            logger.debug success.yellow if succeeded
+            logger.debug set.yellow, symbol.bold if s
             return next undefined if _.isEmpty error
             assert message = error.message or error
             logger.error format(message).red
