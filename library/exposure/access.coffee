@@ -93,9 +93,10 @@ module.exports.AccessGate = class AccessGate extends Barebones
     authenticate: (container, entity, rme, callback) ->
         noSave = "the session has not save function"
         noSession = "container has no session object"
-        message = "Persisted the entity against session"
+        message = "Persisted %s entity against session"
         isVanillaSession = _.isObject container.cookie
         container = session: container if isVanillaSession
+        assert symbol = @constructor.ACCESS_ENTITY_SYMBOL
         assert session = container?.session, noSession
         assert _.isObject(entity), "malformed entity"
         @hibernateEntity ?= (xe, xn) -> xn null, xe
@@ -105,8 +106,9 @@ module.exports.AccessGate = class AccessGate extends Barebones
             session["x-authenticate-entity"] = content
             assert _.isFunction(session.save), noSave
             session.cookie.maxAge = 2628000000 if rme
-            session.random = _.random 0, 1, yes # reset
-            logger.debug message.blue; session.touch()
+            session.random = _.random 0, 1, yes # force
+            try logger.debug message.blue, symbol.bold
+            session.touch() # mark the session changed
             session.save => @dereference container, =>
                 @emit "hibernate", container, entity
                 return callback undefined, content
