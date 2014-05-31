@@ -148,6 +148,7 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
         @reviewParasites auxiliaries, request, (poly) =>
             assert auxiliaries = poly # replace the vector
             context.externals.push _.keys(auxiliaries)...
+            context.auxiliaries = _.keys(poly) or new Array
             mapper = (closure) -> _.map auxiliaries, closure
             routines = mapper (value, key) => (callback) =>
                 assert _.isObject singleton = value.obtain()
