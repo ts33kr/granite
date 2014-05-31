@@ -55,9 +55,9 @@ module.exports.Navigate = class Navigate extends Preflight
     @abstract yes
 
     # This block here defines a set of Bower dependencies that are
-    # going to be necessary no matter what sort of functionality is
-    # is going to be implemented. Most of these libraries required
-    # by the internal implementations of the various subcomponents.
+    # required by the client site part of the code that constitutes
+    # this service or compound. Dependencies can be restricted to a
+    # certain version and also they can have customized entrypoint.
     # Refer to `BowerSupport` class implementation for information.
     @bower "crossroads.js", "dist/crossroads.min.js"
     @bower "hasher#1.1.4", "dist/js/hasher.min.js"

@@ -71,9 +71,9 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
     @translation "tracked.yaml", @EMBEDDED_LOCALE
 
     # This block here defines a set of Bower dependencies that are
-    # going to be necessary no matter what sort of functionality is
-    # is going to be implemented. Most of these libraries required
-    # by the internal implementations of the various subcomponents.
+    # required by the client site part of the code that constitutes
+    # this service or compound. Dependencies can be restricted to a
+    # certain version and also they can have customized entrypoint.
     # Refer to `BowerSupport` class implementation for information.
     @bower "toastr#2.0.x"
 
