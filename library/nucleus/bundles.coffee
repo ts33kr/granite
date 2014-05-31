@@ -66,6 +66,7 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @defaults.beacon = interval: 60000
     @defaults.socket = "log level": 0
     @defaults.env.preserve = ["pub"]
+    @defaults.visual.logging = no
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -97,6 +98,7 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @defaults.beacon = interval: 60000
     @defaults.socket = "log level": 0
     @defaults.env.preserve = ["pub"]
+    @defaults.visual.logging = no
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -128,6 +130,7 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.beacon = interval: 60000
     @defaults.socket = "log level": 0
     @defaults.env.preserve = ["pub"]
+    @defaults.visual.logging = yes
 
 # One of the predefined scopes, baked into the framework. Scopes
 # that are bundled with the framework are pretty standard and
@@ -159,3 +162,4 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.beacon = interval: 60000
     @defaults.socket = "log level": 0
     @defaults.env.preserve = ["pub"]
+    @defaults.visual.logging = yes

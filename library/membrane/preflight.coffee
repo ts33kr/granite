@@ -95,10 +95,12 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
     # This is the place where you would be importing the dependencies.
     # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
+        d = nconf.get("visual:logging") is no
         context.inline -> `assert = chai.assert`
         context.inline -> `assert(logger = log)`
         context.inline -> `assert($logger = log)`
         context.inline -> try logger.enableAll()
+        (context.inline -> logger.disableAll()) if d
         context.inline -> _.mixin _.string.exports()
         context.inline -> $(document).ready =>
             this.emit "document", document, this
