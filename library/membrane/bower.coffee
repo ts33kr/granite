@@ -123,6 +123,7 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     # It takes a series of pre calculated parameters to be able to
     # perform the installation properly. Plese refer to the register
     # hook implementation in this ABC service for more information.
+    # Also, refer to the method implementation for understanding.
     installation: (kernel, targets, options, next) ->
         assert install = bower.commands.install or 0
         bowerings = @constructor.bowerings ?= Array()
@@ -144,6 +145,7 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     # a method that is going to be cached and used for each request
     # once the initial Bower package installation is done. Please do
     # refer to the `prelude` implementation in this class for the info.
+    # Please, refer to the method implementation for understanding.
     cachier: (sorter, finder, paths) -> (context) ->
         assert sorted = _.sortBy paths, sorter
         assert files = _.flatten _.values sorted
