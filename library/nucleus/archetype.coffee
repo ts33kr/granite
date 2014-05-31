@@ -67,7 +67,7 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
     # vectors from the compound that is being composed right into the
     # destination components. There are certain rules on what is merged
     # and how it is merged. Please refer to the implementation for it.
-    @composition: (destination, hierarchy) ->
+    @composition: (destination, local, implanted) ->
         return if this.STOP_COMPOSITION_MERGING or no
         return if destination.STOP_COMPOSITION_MERGING
         assert from = try @identify().underline or null
@@ -75,8 +75,8 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
         merge = "Merging vector context from %s into %s"
         exact = "Vector %s of %s is merged into %s".grey
         gs = (h) -> h.COMPOSITION_EXPORTS or new Object
-        rd = (acc, table) -> return _.merge acc, table
-        symbols = _.reduce _.map(hierarchy, gs), rd, {}
+        rd = (acc, table) -> return _.merge acc, table; acc
+        symbols = _.reduce _.map(implanted, gs), rd, {}
         logger.debug merge.toString().grey, from, into
         _.forIn this, (value, name, sourcing) -> do ->
             return unless symbols and name of symbols
