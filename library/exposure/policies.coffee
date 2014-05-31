@@ -35,6 +35,7 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+{Access} = require "./access"
 {Archetype} = require "../nucleus/archetype"
 {Barebones} = require "../membrane/skeleton"
 
@@ -43,7 +44,7 @@ util = require "util"
 # the authenticated (or anonymous) entities. The compound is basically
 # ACL solution that functions on top of (but does not depend on) the
 # authentication facilities crafter and provided within a framework.
-module.exports.Policies = class Policies extends Barebones
+module.exports.Policies = class Policies extends Access
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
