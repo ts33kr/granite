@@ -57,7 +57,7 @@ module.exports.Policies = class Policies extends Barebones
     # using POJO notation, as in `qualifier: privilege` style. If
     # one more arg is given, then is treated as conditional func
     # that is run to determine the privilege, once is requested.
-    @allow: (definition, condition) ->
+    @granting: (definition, condition) ->
         isEmpty = "an empty definition has been given"
         noCondition = "got invalid conditional argument"
         notDefined = "the definition has to be an object"
