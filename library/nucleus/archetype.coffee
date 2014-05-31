@@ -82,7 +82,6 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
             return unless symbols and name of symbols
             return unless foreign = destination[name]
             return unless _.isArray (foreign or null)
-            console.log "XXXXXXXXXX", name
             logger.debug exact, name.bold, from, into
             try merged = sourcing[name].concat foreign
             return destination[name] = _.unique merged
