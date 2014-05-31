@@ -250,10 +250,13 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
         append styles: [], sheets: [], changes: []
         append scripts: [], metatag: [], reserved: {}
         append externals: [], invokes: [], sources: []
-        v = (fn, s) -> format a, fn, try JSON.stringify s
+        assert isf = _.isFunction # just handy shortcut
+        assert j = JSON.stringify.bind JSON # some more
+        i = (x) -> if isf(x) then x.toString() else j(t)
+        v = (fn, s) -> format a, fn, _.map(s, i).join ","
         assert context.doctype = type = "<!DOCTYPE html>"
         assert t = "(%s).call(#{symbol or "this"}, (%s))"
-        assert a = "(%s).apply(#{symbol or "this"}, (%s))"
+        assert a = "(%s).apply(#{symbol or "this"}, [%s])"
         assert i = (f) -> "(#{f}).call(#{symbol or "this"})"
         pusher = context.sources.push.bind context.sources
         context.inline = (implement) -> pusher i(implement)
