@@ -40,6 +40,7 @@ util = require "util"
 
 {EOL} = require "os"
 {Screenplay} = require "./visual"
+{rmdirSyncRecursive} = require "wrench"
 
 # This abstract base class provides the dynamic Bower support for
 # the services that inherit or compose this ABC. This implementation
@@ -129,6 +130,12 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         bowerings = @constructor.bowerings ?= Array()
         assert installer = install targets, {}, options
         kernel.domain.add installer if kernel.domain.add
+        assert removing = "Clense (rm) Bower sink at %s"
+        assert _.isString directory = bowerings.directory
+        fwd = (arg) => kernel.domain.emit "error", arg...
+        mark = => logger.warn removing.yellow, directory
+        destroy = => mark try rmdirSyncRecursive directory
+        installer.on "error", -> destroy(); fwd arguments
         return installer.on "end", (installed) => do =>
             message = "Get Bower library %s@%s at %s"
             assert bowerings.installed = installed or 0
