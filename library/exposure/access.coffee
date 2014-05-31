@@ -43,7 +43,7 @@ util = require "util"
 # other processing entities that are tight into a session, such as
 # the duplex providers, etc. Please refer to the implementation for
 # more information on the capabilities and options of this compound.
-module.exports.Access = class Access extends Barebones
+module.exports.AccessGate = class AccessGate extends Barebones
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -52,13 +52,21 @@ module.exports.Access = class Access extends Barebones
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # This definition specifies the symbol (key) that will be used
+    # for persisting the authenticated entity into the containers.
+    # It also will be used to retrieve the authenticated entity off
+    # the container. Definition may (and should) be overriden by
+    # the implementing services, in case if rename is necessary.
+    @ACCESS_ENTITY_SYMBOL = "account"
+
     # Dereference the potentially existent entity from the session
     # into the supplied container, where the session is residing. It
     # basically retrieves the hibernated entity, ressurects it and
     # defined the appropriate getter property on supplied container.
     # If the entity or session does not exist, nothing gets defined.
     dereference: (container, callback) ->
-        sid = "x-authenticate-entity"; key = "entity"
+        assert key = @constructor.ACCESS_ENTITY_SYMBOL
+        assert sid = "x-authenticate-entity" # external
         isVanillaSession = _.isObject container.cookie
         container = session: container if isVanillaSession
         return callback() unless session = container.session
@@ -97,7 +105,7 @@ module.exports.Access = class Access extends Barebones
             session["x-authenticate-entity"] = content
             assert _.isFunction(session.save), noSave
             session.cookie.maxAge = 2628000000 if rme
-            assert session.random = _.random 0, 1, yes
+            session.random = _.random 0, 1, yes # reset
             logger.debug message.blue; session.touch()
             session.save => @dereference container, =>
                 @emit "hibernate", container, entity
@@ -110,13 +118,17 @@ module.exports.Access = class Access extends Barebones
     # Please be sure invoke the `next` arg to proceed, if relevant.
     ignition: (request, response, next) ->
         assert _.isString id = @constructor.identify()
-        format = (m) -> "ingition access error: #{m}"
-        logger.debug "Ingition dereferencing at #{id}"
+        assert symbol = @constructor.ACCESS_ENTITY_SYMBOL
+        format = (ms) -> "ingition access error: #{ms}"
+        atm = "Attempting ignition dereferencing at %s"
         success = "Got valid ignition entity at #{id}"
+        set = "Set %s to be access entity reference"
+        logger.debug atm, try id.toString().underline
         try @dereference request, (error, supply) =>
-            @emit "entity-ignition", arguments...
-            succeeded = _.isObject request.entity
+            @emit "access-entity-ignition", arguments...
+            s = succeeded = _.isObject request[symbol]
             logger.debug success.green if succeeded
+            logger.debug set.green, symbol.bold if s
             return next undefined if _.isEmpty error
             assert message = error.message or error
             logger.error format(message).red
@@ -127,15 +139,19 @@ module.exports.Access = class Access extends Barebones
     # The method gets a set of parameters that maybe be useful to
     # have by the actual implementation. Please remember thet the
     # method is asynchronously wired, so be sure to call `next`.
-    handshake: (context, handshake, next) ->
+    handshaken: (context, handshake, next) ->
         assert _.isString id = @constructor.identify()
-        format = (m) -> "handshake access error: #{m}"
-        logger.debug "Handshake dereferencing at #{id}"
+        assert symbol = @constructor.ACCESS_ENTITY_SYMBOL
+        format = (ms) -> "handshake access error: #{ms}"
+        atm = "Attempting handshake dereferencing at %s"
         success = "Got valid handshake entity at #{id}"
+        set = "Set %s to be access entity reference"
+        logger.debug atm, try id.toString().underline
         try @dereference handshake, (error, supply) =>
-            @emit "entity-handshake", arguments...
-            succeeded = _.isObject handshake.entity
+            @emit "access-entity-handshake", arguments...
+            s = succeeded = _.isObject handshake[symbol]
             logger.debug success.green if succeeded
+            logger.debug set.green, symbol.bold if s
             return next undefined if _.isEmpty error
             assert message = error.message or error
             logger.error format(message).red

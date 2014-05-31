@@ -35,7 +35,7 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-{Access} = require "./access"
+{AccessGate} = require "./access"
 {Archetype} = require "../nucleus/archetype"
 {Barebones} = require "../membrane/skeleton"
 
@@ -44,7 +44,7 @@ util = require "util"
 # the authenticated (or anonymous) entities. The compound is basically
 # ACL solution that functions on top of (but does not depend on) the
 # authentication facilities crafter and provided within a framework.
-module.exports.Policies = class Policies extends Access
+module.exports.Policies = class Policies extends AccessGate
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -103,10 +103,11 @@ module.exports.Policies = class Policies extends Access
     # the mechanics, as this is the sole place where it is set.
     entityQualifiers: (envelope, container) ->
         assert _.isArray qualifiers = new Array()
+        symbol = @constructor.ACCESS_ENTITY_SYMBOL
         message = try "Entity qualifiers: %s".grey
         add = (q) -> qualifiers.push q; qualifiers
         container = this unless _.isObject container
-        entity = try (container.entity) or undefined
+        assert _.isObject entity = container[symbol]
         add "anonymous"; add "everyone" # automatics
         add "authenticated" if _.isObject entity or 0
         add q for q in entity?.qualifiers or Array()
