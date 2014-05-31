@@ -55,6 +55,13 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # Symbol declaration table, that states what keys, if those are
+    # vectors (arrays) should be exported and then merged with their
+    # counterparts in the destination, once the composition process
+    # takes place. See the `Archetype::composition` hook definition
+    # for more information. Keys are names, values can be anything.
+    @COMPOSITION_EXPORTS = bowerings: yes
+
     # Install the specified package via Bower into the specific
     # location within the system that is figured out automatically.
     # All packages installed via Bower will be served as the static
@@ -87,26 +94,6 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         assert _.isString(sink), "has to be a string"
         assert not _.isEmpty(sink), "got empty sink"
         return @$bowerSink = try sink.toString()
-
-    # This is the composition hook that gets invoked when compound
-    # is being composed into other services and components. Checks
-    # if there are Bower dependencies defined on both components,
-    # and if they are - merges them together and assigns a merged
-    # dependency list to the compoun that mixed in bower support.
-    @composition: (destination) ->
-        assert _.isObject b = BowerSupport
-        assert currents = @bowerings or []
-        assert from = @identify().underline
-        return unless destination.derives b
-        into = destination.identify().underline
-        message = "Merge Bowers from %s into %s"
-        previous = destination.bowerings or []
-        assert previous? and _.isArray previous
-        assert merged = previous.concat currents
-        assert _.isArray merged = _.unique merged
-        logger.debug message.blue, from, into
-        assert destination.bowerings = merged
-        try super catch error; return this
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for

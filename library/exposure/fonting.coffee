@@ -56,6 +56,13 @@ module.exports.GoogleFonts = class GoogleFonts extends Preflight
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # Symbol declaration table, that states what keys, if those are
+    # vectors (arrays) should be exported and then merged with their
+    # counterparts in the destination, once the composition process
+    # takes place. See the `Archetype::composition` hook definition
+    # for more information. Keys are names, values can be anything.
+    @COMPOSITION_EXPORTS = googlefonts: yes
+
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
     # method is wired in an asynchronous way for greater functionality.
@@ -94,18 +101,3 @@ module.exports.GoogleFonts = class GoogleFonts extends Preflight
         @googlefonts = previous.concat new Object
             family: family.replace /\s/g, "+"
             typographs: _.toArray typographs
-
-    # This is the composition hook that gets invoked when compound
-    # is being composed into other services and components. Merges
-    # together added jscripts found in both hierarchies, the current
-    # one and the foreign (the one that is beign merged in). Exists
-    # for backing up the consistent behavior when using composition.
-    @composition: (destination) ->
-        assert currents = this.googlefonts or Array()
-        previous = destination.googlefonts or Array()
-        return unless destination.derives GoogleFonts
-        assert previous? and try _.isArray previous
-        assert merged = try previous.concat currents
-        assert merged = _.toArray _.unique merged
-        assert try destination.googlefonts = merged
-        try super catch error finally return this

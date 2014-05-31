@@ -59,20 +59,12 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
-    # This is the composition hook that gets invoked when compound
-    # is being composed into other services and components. Merges
-    # together added jscripts found in both hierarchies, the current
-    # one and the foreign (the one that is beign merged in). Exists
-    # for backing up the consistent behavior when using composition.
-    @composition: (destination) ->
-        assert currents = this.remotes or Array()
-        previous = destination.remotes or Array()
-        return unless destination.derives RToolkit
-        assert previous? and try _.isArray previous
-        assert merged = previous.concat currents
-        assert merged = _.toArray _.unique merged
-        assert try destination.remotes = merged
-        try super catch error finally return @
+    # Symbol declaration table, that states what keys, if those are
+    # vectors (arrays) should be exported and then merged with their
+    # counterparts in the destination, once the composition process
+    # takes place. See the `Archetype::composition` hook definition
+    # for more information. Keys are names, values can be anything.
+    @COMPOSITION_EXPORTS = remotes: yes
 
     # A directive to mark the certain remote class or object to be
     # included in the `Screenplay` context that is going to be emited
@@ -122,6 +114,13 @@ module.exports.LToolkit = class LToolkit extends RToolkit
     # mainly is used to exclude or account for abstract classes.
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
+
+    # Symbol declaration table, that states what keys, if those are
+    # vectors (arrays) should be exported and then merged with their
+    # counterparts in the destination, once the composition process
+    # takes place. See the `Archetype::composition` hook definition
+    # for more information. Keys are names, values can be anything.
+    @COMPOSITION_EXPORTS = jscripts: 1, stsheets: 1, metatag: 1
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The

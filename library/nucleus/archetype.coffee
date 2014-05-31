@@ -55,6 +55,38 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # Symbol declaration table, that states what keys, if those are
+    # vectors (arrays) should be exported and then merged with their
+    # counterparts in the destination, once the composition process
+    # takes place. See the `Archetype::composition` hook definition
+    # for more information. Keys are names, values can be anything.
+    @COMPOSITION_EXPORTS = interceptors: yes
+
+    # This is the composition hook that gets invoked once a compound
+    # is being composed into other services and components. It merges
+    # vectors from the compound that is being composed right into the
+    # destination components. There are certain rules on what is merged
+    # and how it is merged. Please refer to the implementation for it.
+    @composition: (destination, hierarchy) ->
+        return if this.STOP_COMPOSITION_MERGING or no
+        return if destination.STOP_COMPOSITION_MERGING
+        assert from = try @identify().underline or null
+        into = destination.identify().underline or null
+        merge = "Merging vector context from %s into %s"
+        exact = "Vector %s of %s is merged into %s".grey
+        gs = (h) -> h.COMPOSITION_EXPORTS or new Object
+        rd = (acc, table) -> return _.merge acc, table
+        symbols = _.reduce _.map(hierarchy, gs), rd, {}
+        logger.debug merge.toString().grey, from, into
+        _.forIn this, (value, name, sourcing) -> do ->
+            return unless symbols and name of symbols
+            return unless foreign = destination[name]
+            return unless _.isArray (foreign or null)
+            console.log "XXXXXXXXXX", name
+            logger.debug exact, name.bold, from, into
+            try merged = sourcing[name].concat foreign
+            return destination[name] = _.unique merged
+
     # This is a top level constructor that should be called by any
     # class that inherits from Archetype, which is about every class
     # in the framework. This implementation performs some important
@@ -92,22 +124,3 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
         execute = (fnc) => fnc.call this; implement
         execute -> return @interceptors = inmerge
             implement: implement, event: event
-
-    # This is the composition hook that gets invoked when compound
-    # is being composed into other services and components. Merges
-    # together interceptors found in both hierarchies, the current
-    # one and the foreign (the one that is beign merged in). Exists
-    # for backing up the consistent behavior when using composition.
-    @composition: (destination) ->
-        assert from = try @identify().underline
-        assert currents = @interceptors or Array()
-        return unless destination.derives Archetype
-        into = try destination.identify().underline
-        message = "Merge intercept from %s into %s"
-        previous = destination.interceptors or []
-        assert previous? and _.isArray previous
-        assert merged = previous.concat currents
-        assert merged = _.toArray _.unique merged
-        try logger.debug message.blue, from, into
-        assert destination.interceptors = merged
-        try super catch error finally return @
