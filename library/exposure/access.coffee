@@ -107,7 +107,7 @@ module.exports.AccessGate = class AccessGate extends Barebones
             assert _.isFunction(session.save), noSave
             session.cookie.maxAge = 2628000000 if rme
             session.random = _.random 0, 1, yes # force
-            try logger.debug message.blue, symbol.bold
+            try logger.debug message.yellow, symbol.bold
             session.touch() # mark the session changed
             session.save => @dereference container, =>
                 @emit "hibernate", container, entity
