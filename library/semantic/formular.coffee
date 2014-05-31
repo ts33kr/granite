@@ -104,7 +104,8 @@ module.exports.Formular = cc -> class Formular extends Archetype
         sieve = (seq) -> _.filter seq, (value) -> value
         sieve _.map fields, (value, index, iteratee) =>
             assert _.isObject value = $(value) or null
-            assert not value.find("input").val() or 0
+            assert not (i = value.find("input")).val()
+            i.after(i.clone(yes).val("")).remove()
             try value.removeClass "warning error"
 
     # This method is intended for rendering error messages attached
