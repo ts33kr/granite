@@ -86,13 +86,16 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
     # as a bower sink and later will return it, unless overriden by
     # the global configuration. See the implementation for the info.
     @bowerSink: (sink) ->
+        identity = try this.identify().underline
         assert hash = try crypto.createHash "md5"
         id = hash.update(@identify()).digest "hex"
         automatic = => global or @$bowerSink or id
+        notify = "Bower sink directory for %s set to %s"
         global = nconf.get "bower:globalSinkDirectory"
         return automatic() if arguments.length is 0
         assert _.isString(sink), "has to be a string"
         assert not _.isEmpty(sink), "got empty sink"
+        logger.debug notify.cyan, identity, sink
         return @$bowerSink = try sink.toString()
 
     # A hook that will be called prior to registering the service
