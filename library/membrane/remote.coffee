@@ -72,7 +72,7 @@ module.exports.external = module.exports.ec = (compiled) ->
     pn = (df) -> ("#{glb} = #{v};" for glb, v of df)
     pv = (df) -> ("var #{k} = #{v};" for k, v of df)
     ds = (long, short) -> pn(long).concat(pv(short))
-    tabled = (l) -> (b) -> _.sprintf wrap, ds(l,b).join ";"
+    tabled = (f) -> (s) -> _.sprintf wrap, ds(f,s).join ";"
     wrap = "function() { %s \n\treturn #{compiled}}"
     assert compiled.remote = Object.create {}
     assert compiled.remote.compiled = compiled
