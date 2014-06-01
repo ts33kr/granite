@@ -95,7 +95,6 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
     # It basically embedds all the internals pieces to create context.
     deployContext: (context, symbol) ->
         assert _.isObject(context), "malformed context"
-        definitions = defs = @constructor.consider() or {}
         aexcess = ["scripts", "sources", "sheets", "styles"]
         bexcess = ["caching", "changes", "invokes", "metatag"]
         assert not _.isEmpty excess = aexcess.concat bexcess
@@ -111,6 +110,7 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
             blob = JSON.stringify value.remote.meta
             tabled = value.remote.tabled or undefined
             metadata = value.remote.metadata or "meta"
+            assert _.isObject defs = value.remote?.bonding
             idefs = @inlineHierarchy defs, symbol, value, key
             assert _.isString src = tabled idefs if tabled
             set = "#{symbol}.#{key} = (#{src}).call()\r\n"
@@ -127,8 +127,10 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
     # way, so that if a method has an overriden parent, this parent
     # method will always be available under `$parent` variale name.
     inlineHierarchy: (definitions, symbol, value, key) ->
+        assert consider = this.constructor.consider()
         assert hierarchy = this.constructor.hierarchy()
         assert _.isObject cloned = _.clone definitions
+        assert _.isObject _.merge definitions, consider
         flag = this.constructor?.NO_HIERARCHY_INLINING
         return cloned if flag # do not inline, if asked
         assert _.isString(key), "key must be a string"
