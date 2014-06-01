@@ -65,7 +65,7 @@ module.exports = ->
     option "-w", "--watch", "Watch the library sources and recompile"
     option "-g", "--git-hub-pages", "Publish documents to GitHub pages"
 
-    # This is one of th e major tasks in this Cakefile, it implements
+    # This is one of the major tasks in this Cakefile, it implements
     # the generation of the documentation for the library, using the
     # Groc documentation tool. The Groc depends on Pygments being set
     # in place, before running. Takes some minor options via CLI call.
