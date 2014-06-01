@@ -103,6 +103,7 @@ module.exports.Pinpoint = class Pinpoint extends Preflight
             try logger.info pe, moved.length, this.service
             $(nod).data owners: go(nod) for nod in moved
             go(nod).push this for nod in moved or Array()
+            @emit "pp-parented", selector, renderer, moved
             _.each moved, (n) => renderer.call @, n, go n
 
     # Pinpoint when the specified selector vanishes (is removed or
@@ -125,6 +126,7 @@ module.exports.Pinpoint = class Pinpoint extends Preflight
             try logger.info pe, moved.length, this.service
             $(nod).data owners: go(nod) for nod in moved
             go(nod).push this for nod in moved or Array()
+            @emit "pp-vanished", selector, renderer, moved
             _.each moved, (n) => renderer.call @, n, go n
 
     # Pinpoint when the specified selector appears (or if it already
@@ -147,4 +149,5 @@ module.exports.Pinpoint = class Pinpoint extends Preflight
             try logger.info pe, added.length, this.service
             $(nod).data owners: go(nod) for nod in added
             go(nod).push this for nod in added or Array()
+            @emit "pp-pinpoint", selector, renderer, added
             _.each added, (n) => renderer.call @, n, go n
