@@ -142,7 +142,7 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
         typ = (v) -> if i(v) then v.toString() else j(v)
         leaking[aid()] = typ arg for arg, ix in supplied
         auto = (fn) -> method.remote.auto = fn; method
-        auto (symbol, key, context) => _.once =>
+        return auto (symbol, key, context) => _.once =>
             t = "#{symbol}.#{key}.apply(#{symbol},%s)"
             fk = (v) -> _.findKey leaking, (i) -> i is v
             compiled = (fk typ(val) for val in supplied)
