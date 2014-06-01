@@ -61,7 +61,7 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
     # Please take a look at the `Composition` class implementation
     # for all sorts of information on the composition system itself.
     # Each of these will be dynamicall integrated in class hierarchy.
-    @implanted Localized
+    @implanting Localized
 
     # This block here defines a set of translation files that are
     # used by the service. Please keep in mind, that translations

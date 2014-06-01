@@ -48,8 +48,8 @@ module.exports.ModalWindow = class ModalWindow extends Zombie
     # Please take a look at the `Composition` class implementation
     # for all sorts of information on the composition system itself.
     # Each of these will be dynamicall integrated in class hierarchy.
-    @implanted Preflight
-    @implanted Localized
+    @implanting Preflight
+    @implanting Localized
 
     # This method is invoked right after the window skeleton has
     # been created. It takes care of filling in the actions segment

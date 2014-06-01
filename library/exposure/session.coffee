@@ -51,7 +51,7 @@ module.exports.RedisSession = class RedisSession extends Zombie
     # Please take a look at the `Composition` class implementation
     # for all sorts of information on the composition system itself.
     # Each of these will be dynamicall integrated in class hierarchy.
-    @implanted RedisClient
+    @implanting RedisClient
 
     # The dirty way of inheriting the prototypal properties of the
     # abstract session store engine found in the standard Connect

@@ -61,7 +61,7 @@ module.exports.RDuplex = class RDuplex extends Duplex
     # Please take a look at the `Composition` class implementation
     # for all sorts of information on the composition system itself.
     # Each of these will be dynamicall integrated in class hierarchy.
-    @implanted RedisClient
+    @implanting RedisClient
 
     # A hook that will be called once the Connect middleware writes
     # off the headers. Please refer to this prototype signature for

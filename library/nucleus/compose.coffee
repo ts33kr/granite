@@ -155,7 +155,7 @@ module.exports.Composition = cc -> class Composition extends Object
     # This method integrated the supplied compound class in the tear in
     # between the foreign and common peers in the inheritance chain. Do
     # refer to the implementation for the understanding of what happens.
-    Object.defineProperty Object::, "implanted",
+    Object.defineProperty Object::, "implanting",
         writable: yes, value: (compound, shader=cloner) ->
             assert foreign = try compound.hierarchy()
             assert identify = try compound.identify()

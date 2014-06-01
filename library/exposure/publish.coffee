@@ -61,7 +61,7 @@ module.exports.Publish = class Publish extends Barebones
     # Please take a look at the `Composition` class implementation
     # for all sorts of information on the composition system itself.
     # Each of these will be dynamicall integrated in class hierarchy.
-    @implanted OnlySsl
+    @implanting OnlySsl
 
     # This block describes certain method of abrbitrary service. The
     # exact process of how it is being documented depends on how the

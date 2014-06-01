@@ -45,7 +45,7 @@ module.exports.Semantic = class Semantic extends Preflight
     # Please take a look at the `Composition` class implementation
     # for all sorts of information on the composition system itself.
     # Each of these will be dynamicall integrated in class hierarchy.
-    @implanted GoogleFonts
+    @implanting GoogleFonts
 
     # This block defines a set of fonts that are used throughout the
     # site. The fonts are employed by the means of the external CSS
