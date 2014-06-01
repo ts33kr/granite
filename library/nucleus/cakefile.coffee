@@ -101,10 +101,10 @@ module.exports = ->
         assert _.isObject generator.stdout.pipe process.stdout
         assert _.isObject generator.stderr.pipe process.stderr
         assert _.isObject generator.on "exit", (status) ->
-            failure = "Failed to generate documentation".red
-            success = "Generated documentation successfuly".green
-            logger.error failure if status isnt 0
-            logger.info success if status is 0
+            failure = "Failed to generate documentation"
+            success = "Generated documentation successfuly"
+            return logger.error failure.red if status isnt 0
+            logger.info success.green if status is 0
 
     # This is one of the major tasks in this Cakefile, it implements
     # the compilatation of the library source code from CoffeeScript
@@ -122,10 +122,10 @@ module.exports = ->
         assert _.isObject compiler.stdout.pipe process.stdout
         assert _.isObject compiler.stderr.pipe process.stderr
         assert _.isObject compiler.on "exit", (status) ->
-            failure = "Failed to compile library".red
-            success = "Compiled library successfuly".green
-            logger.error failure if status isnt 0
-            logger.info success if status is 0
+            failure = "Failed to compile framework library"
+            success = "Compiled framework library successfuly"
+            return logger.error failure.red if status isnt 0
+            logger.info success.green if status is 0
 
     # This task launches an instance of application where this task
     # is invoked at. It should be either an application build within
