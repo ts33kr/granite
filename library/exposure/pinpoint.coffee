@@ -72,10 +72,11 @@ module.exports.Pinpoint = class Pinpoint extends Preflight
         noSelector = "got no valid selector for mutations"
         noCallback = "no valid callback function is given"
         noLibrary = "mutation-summary library is missing"
-        assert _.isFunction(MutationSummary), noLibrary
-        assert _.isFunction(callback or no), noCallback
-        assert _.isString(selector or null), noSelector
-        assert instruct = queries: [element: selector]
+        assert _.isFunction(try MutationSummary), noLibrary
+        assert _.isFunction(c = callback or null), noCallback
+        assert _.isString(s = selector or null), noSelector
+        assert instruct = try queries: [element: selector]
+        _.head(instruct.queries).elementAttributes = false
         pp = "watch mutation of %s selector for #{@service}"
         try logger.info pp.toString(), selector.toString()
         make = -> observer = new MutationSummary instruct
