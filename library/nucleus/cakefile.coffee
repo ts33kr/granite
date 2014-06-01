@@ -38,6 +38,7 @@ _ = require "lodash"
 # the defaults for some of the options, generally for the ones that
 # specify directory paths that constitute the directory layout of
 # the project. Use one of these instead of hardcoding the defaults!
+# See the task definitions below for information on defaults usage.
 DEFAULT_LIBRARY = "library"
 DEFAULT_ARTIFACT = "artifact"
 DEFAULT_DOCUMENTS = "documents"
