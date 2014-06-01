@@ -62,7 +62,7 @@ module.exports = ->
     option "-d", "--documents [PATH]", "Path to the documents directory"
     option "-s", "--scoping [SCOPE]", "The name of the scope to boot kernel"
     option "-i", "--logging [LEVEL]", "The level to use for the logging output"
-    option "-w", "--watch", "Watch the library sources and recompile"
+    option "-w", "--watch", "Watch the library sources and recompile it"
     option "-g", "--git-hub-pages", "Publish documents to GitHub pages"
 
     # This is one of the major tasks in this Cakefile, it implements
