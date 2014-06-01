@@ -71,15 +71,16 @@ module.exports.external = module.exports.ec = (compiled) ->
     assert not compiled.__super__?, wrongCompiled
     pn = (df) -> ("#{glb} = #{v};" for glb, v of df)
     pv = (df) -> ("var #{k} = #{v};" for k, v of df)
-    tabled = (p) -> (d) -> _.sprintf wrap, p(d).join ";"
+    ds = (long, short) -> pn(long).concat pv(short)
+    tabled = (l) -> (b) -> _.sprintf wrap, ds(l,b).join ";"
     wrap = "function() { %s \n\treturn #{compiled}}"
     assert compiled.remote = Object.create {}
     assert compiled.remote.compiled = compiled
     assert compiled.remote.compile = compiler
     assert compiled.remote.bonding = b = Object()
-    assert compiled.remote.source = tabled(pv) b
-    assert compiled.remote.tabled = tabled(pv)
-    assert compiled.remote.tleaky = tabled(pn)
+    assert compiled.remote.leaking = l = Object()
+    assert compiled.remote.source = tabled(l)(b)
+    assert compiled.remote.tabled = tabled(l)
     assert compiled.remote.meta ?= Object()
     compiled.remote.symbol = compiled.name
     assert _.isFunction compiled; compiled
