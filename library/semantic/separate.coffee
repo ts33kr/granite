@@ -51,7 +51,7 @@ module.exports.ModalFormular = class ModalFormular extends ModalWindow
     # either an implementation function or a remotable type (an alias).
     # This allows you to override type definitions that may be used in
     # the parent classes, without having to replace implementation code.
-    @consider TFormular: BoxFormular
+    @considering TFormular: BoxFormular
 
     # This method is invoked once the `positive` event goes off in
     # the service. This event is fired once the positive action is
