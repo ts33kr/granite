@@ -62,8 +62,50 @@ module.exports.Pinpoint = class Pinpoint extends Preflight
     # Refer to `BowerSupport` class implementation for information.
     @bower "mutation-summary", "src/mutation-summary.js"
 
-    # Pinpoint when the specified selector vanishes (is removed or
+    # A part of the internal implementation of pinpointing component.
+    # Provides a common interface (for the components implementation)
+    # to invoke the `mutation-summary` library with some predefined
+    # parameters, in addition to the ones that will be passed into
+    # this method as arguments. Please, do not use method directly,
+    # but rather use one of the definitions that follow below this.
+    mutationSummary: external (selector, callback) ->
+        noSelector = "got no valid selector for mutations"
+        noCallback = "no valid callback function is given"
+        noLibrary = "mutation-summary library is missing"
+        assert _.isFunction(MutationSummary), noLibrary
+        assert _.isFunction(callback or no), noCallback
+        assert _.isString(selector or null), noSelector
+        assert instruct = queries: [element: selector]
+        pp = "watch mutation of %s selector for #{@service}"
+        try logger.info pp.toString(), selector.toString()
+        make = -> observer = new MutationSummary instruct
+        creator = (fn) -> instruct.callback = fn; make()
+        return creator.call this, callback or _.noop
+
+    # Pinpoint when the specified selector vanishes (is reparented or
     # moved) and then invoke the supplied rendering function, which
+    # will receive the newly pinpointed node as its first argument.
+    # If multiple nodes with this selector vanished, then renderer
+    # will be invoked once for every disappeared node of a selector.
+    # Selectors must conform to the strict subset of CSS selectors.
+    @parented: @transferred (selector, renderer) ->
+        noSelector = "no valid CSS selector is supplied"
+        noRenderer = "no valid rendering function given"
+        assert _.isFunction(renderer or null), noRenderer
+        assert _.isString(sel = selector or 0), noSelector
+        go = (n) => try $(n).data("owners") or new Array()
+        @mutationSummary sel, (s) => _.each s, (summary) =>
+            na = "missing the element reparented summary"
+            pe = "reparenting %s elements for %s service"
+            assert _.isArray(moved = summary.reparented), na
+            return unless (try moved.length or null) > 0
+            try logger.info pe, moved.length, this.service
+            $(nod).data owners: go(nod) for nod in moved
+            go(nod).push this for nod in moved or Array()
+            _.each moved, (nod) -> renderer n, go(nod)
+
+    # Pinpoint when the specified selector vanishes (is removed or
+    # detach) and then invoke the supplied rendering function, which
     # will receive the newly pinpointed node as its first argument.
     # If multiple nodes with this selector vanished, then renderer
     # will be invoked once for every disappeared node of a selector.
@@ -71,24 +113,15 @@ module.exports.Pinpoint = class Pinpoint extends Preflight
     @vanished: @transferred (selector, renderer) ->
         noSelector = "no valid CSS selector is supplied"
         noRenderer = "no valid rendering function given"
-        noLibrary = "mutation-summary library is missing"
-        assert _.isFunction(MutationSummary), noLibrary
-        assert _.isFunction(renderer or no), noRenderer
-        assert _.isString(selector or null), noSelector
-        assert instruct = queries: [element: selector]
-        pp = "watch vanished %s selector for a #{@service}"
-        try logger.info pp.toString(), selector.toString()
+        assert _.isFunction(renderer or null), noRenderer
+        assert _.isString(sel = selector or 0), noSelector
         go = (n) => try $(n).data("owners") or new Array()
-        make = -> observer = new MutationSummary instruct
-        callback = (fn) -> instruct.callback = fn; make()
-        return callback (sum) => _.each sum, (summary) =>
-            na = "missing the element addition summary"
-            pe = "got vanish %s elements for %s service"
-            moved = new Array() # source vec for concat
-            moved = moved.concat summary.removed or []
-            moved = moved.concat summary.reparented or []
+        @mutationSummary sel, (s) => _.each s, (summary) =>
+            na = "missing the element vanishing summary"
+            pe = "vanishing %s elements for %s service"
+            assert _.isArray(moved = summary.removed), na
             return unless (try moved.length or null) > 0
-            logger.info pe, moved.length, this.service
+            try logger.info pe, moved.length, this.service
             $(nod).data owners: go(nod) for nod in moved
             go(nod).push this for nod in moved or Array()
             _.each moved, (nod) -> renderer n, go(nod)
@@ -102,22 +135,15 @@ module.exports.Pinpoint = class Pinpoint extends Preflight
     @pinpoint: @transferred (selector, renderer) ->
         noSelector = "no valid CSS selector is supplied"
         noRenderer = "no valid rendering function given"
-        noLibrary = "mutation-summary library is missing"
-        assert _.isFunction(MutationSummary), noLibrary
-        assert _.isFunction(renderer or no), noRenderer
-        assert _.isString(selector or null), noSelector
-        assert instruct = queries: [element: selector]
-        pp = "pinpointing %s selector for a #{@service}"
-        try logger.info pp.toString(), selector.toString()
+        assert _.isFunction(renderer or null), noRenderer
+        assert _.isString(sel = selector or 0), noSelector
         go = (n) => try $(n).data("owners") or new Array()
-        make = -> observer = new MutationSummary instruct
-        callback = (fn) -> instruct.callback = fn; make()
-        return callback (sum) => _.each sum, (summary) =>
+        @mutationSummary sel, (s) => _.each s, (summary) =>
             na = "missing the element addition summary"
             pe = "pinpointed %s elements for %s service"
             assert _.isArray(added = summary.added), na
             return unless (try added.length or null) > 0
-            logger.info pe, added.length, this.service
+            try logger.info pe, added.length, this.service
             $(nod).data owners: go(nod) for nod in added
             go(nod).push this for nod in added or Array()
             _.each added, (nod) -> renderer n, go(nod)
