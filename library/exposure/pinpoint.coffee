@@ -101,8 +101,8 @@ module.exports.Pinpoint = class Pinpoint extends Preflight
             assert _.isArray(moved = summary.reparented), na
             return unless (try moved.length or null) > 0
             try logger.info pe, moved.length, this.service
-            $(nod).data owners: go(nod) for nod in moved
-            go(n).push @ for n in moved unless @ in go(n)
+            $(node).data owners: go(node) for node in moved
+            go(n).push this for n in moved unless @ in go(n)
             @emit "pp-parented", selector, renderer, moved
             _.each moved, (n) => renderer.call @, n, go n
 
@@ -124,8 +124,8 @@ module.exports.Pinpoint = class Pinpoint extends Preflight
             assert _.isArray(moved = summary.removed), na
             return unless (try moved.length or null) > 0
             try logger.info pe, moved.length, this.service
-            $(nod).data owners: go(nod) for nod in moved
-            go(n).push @ for n in moved unless @ in go(n)
+            $(node).data owners: go(node) for node in moved
+            go(n).push this for n in moved unless @ in go(n)
             @emit "pp-vanished", selector, renderer, moved
             _.each moved, (n) => renderer.call @, n, go n
 
@@ -147,7 +147,7 @@ module.exports.Pinpoint = class Pinpoint extends Preflight
             assert _.isArray(added = summary.added), na
             return unless (try added.length or null) > 0
             try logger.info pe, added.length, this.service
-            $(nod).data owners: go(nod) for nod in added
-            go(n).push @ for n in added unless @ in go(n)
+            $(node).data owners: go(node) for node in added
+            go(n).push this for n in added unless @ in go(n)
             @emit "pp-pinpoint", selector, renderer, added
             _.each added, (n) => renderer.call @, n, go n
