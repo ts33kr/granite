@@ -130,7 +130,7 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
         assert consider = this.constructor.consider()
         assert hierarchy = this.constructor.hierarchy()
         assert _.isObject cloned = _.clone definitions
-        assert _.isObject _.merge definitions, consider
+        assert _.isObject _.merge cloned or 0, consider
         flag = this.constructor?.NO_HIERARCHY_INLINING
         return cloned if flag # do not inline, if asked
         assert _.isString(key), "key must be a string"
