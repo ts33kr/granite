@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>exposure/policies</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/policies"><meta name="groc-project-path" content="library/exposure/policies.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/policies.coffee">library/exposure/policies.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="m&#x61;&#x69;&#x6c;&#x74;&#111;:&#116;s&#51;&#x33;&#107;&#114;&#x40;g&#109;&#x61;&#105;&#108;&#46;co&#109;">&#116;s&#51;&#x33;&#107;&#114;&#x40;g&#109;&#x61;&#105;&#108;&#46;co&#109;</a>
+<!DOCTYPE html><html lang="en"><head><title>exposure/policies</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/policies"><meta name="groc-project-path" content="library/exposure/policies.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/policies.coffee">library/exposure/policies.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;a&#105;&#108;&#x74;&#x6f;:&#116;&#x73;&#51;&#51;&#107;&#x72;&#64;&#103;&#x6d;&#97;&#105;&#108;&#x2e;&#99;&#x6f;&#109;">&#116;&#x73;&#51;&#51;&#107;&#x72;&#64;&#103;&#x6d;&#97;&#105;&#108;&#x2e;&#99;&#x6f;&#109;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -33,12 +33,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 
+<span class="p">{</span><span class="nx">AccessGate</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./access&quot;</span>
 <span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/archetype&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An abstract base compound that provides an extensive functionality
 and solution for managing different access and control policies of
 the authenticated (or anonymous) entities. The compound is basically
 ACL solution that functions on top of (but does not depend on) the
-authentication facilities crafter and provided within a framework.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Policies = </span><span class="k">class</span> <span class="nx">Policies</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+authentication facilities crafter and provided within a framework.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Policies = </span><span class="k">class</span> <span class="nx">Policies</span> <span class="k">extends</span> <span class="nx">AccessGate</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
@@ -46,7 +47,7 @@ Once inherited from, the inheritee is not abstract anymore.</p></div></div><div 
 with the specificied qualification. Both of these supplied
 using POJO notation, as in <code>qualifier: privilege</code> style. If
 one more arg is given, then is treated as conditional func
-that is run to determine the privilege, once is requested.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@allow: </span><span class="nf">(definition, condition) -&gt;</span>
+that is run to determine the privilege, once is requested.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@granting: </span><span class="nf">(definition, condition) -&gt;</span>
         <span class="nv">isEmpty = </span><span class="s">&quot;an empty definition has been given&quot;</span>
         <span class="nv">noCondition = </span><span class="s">&quot;got invalid conditional argument&quot;</span>
         <span class="nv">notDefined = </span><span class="s">&quot;the definition has to be an object&quot;</span>
@@ -85,10 +86,11 @@ authenticated entity, if there are any. Please refer to the
 implementation of this method for detailed explanation of
 the mechanics, as this is the sole place where it is set.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">entityQualifiers: </span><span class="nf">(envelope, container) -&gt;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nv">qualifiers = </span><span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nv">symbol = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">ACCESS_ENTITY_SYMBOL</span>
         <span class="nv">message = </span><span class="k">try</span> <span class="s">&quot;Entity qualifiers: %s&quot;</span><span class="p">.</span><span class="nx">grey</span>
         <span class="nv">add = </span><span class="nf">(q) -&gt;</span> <span class="nx">qualifiers</span><span class="p">.</span><span class="nx">push</span> <span class="nx">q</span><span class="p">;</span> <span class="nx">qualifiers</span>
         <span class="nv">container = </span><span class="k">this</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">container</span>
-        <span class="nv">entity = </span><span class="k">try</span> <span class="p">(</span><span class="nx">container</span><span class="p">.</span><span class="nx">entity</span><span class="p">)</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">entity = </span><span class="nx">container</span><span class="p">[</span><span class="nx">symbol</span><span class="p">]</span>
         <span class="nx">add</span> <span class="s">&quot;anonymous&quot;</span><span class="p">;</span> <span class="nx">add</span> <span class="s">&quot;everyone&quot;</span> <span class="c1"># automatics</span>
         <span class="nx">add</span> <span class="s">&quot;authenticated&quot;</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">entity</span> <span class="o">or</span> <span class="mi">0</span>
         <span class="nx">add</span> <span class="nx">q</span> <span class="k">for</span> <span class="nx">q</span> <span class="k">in</span> <span class="nx">entity</span><span class="o">?</span><span class="p">.</span><span class="nx">qualifiers</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>

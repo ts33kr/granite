@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="en"><head><title>exposure/pinpoint</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/pinpoint"><meta name="groc-project-path" content="library/exposure/pinpoint.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/pinpoint.coffee">library/exposure/pinpoint.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;&#105;&#108;&#x74;o:&#116;&#115;&#x33;&#51;&#107;&#x72;&#64;g&#109;&#x61;&#x69;&#108;&#x2e;&#99;&#111;&#x6d;">&#116;&#115;&#x33;&#51;&#107;&#x72;&#64;g&#109;&#x61;&#x69;&#108;&#x2e;&#99;&#111;&#x6d;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">request = </span><span class="nx">require</span> <span class="s">&quot;request&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span>
+<span class="p">{</span><span class="nx">Preflight</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/preflight&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This abstract compound provides the curious functionality that is
+greatly improving the way you would construct the client side code
+that is responsible for rendering UI elements. It allows you to run
+client side (external) code once the specified selector is available.
+All of this lets you easily implement the viewport/slow architecture.
+It also allows you to react on when selector changes or disappears.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Pinpoint = </span><span class="k">class</span> <span class="nx">Pinpoint</span> <span class="k">extends</span> <span class="nx">Preflight</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block here defines a set of Bower dependencies that are
+required by the client site part of the code that constitutes
+this service or compound. Dependencies can be restricted to a
+certain version and also they can have customized entrypoint.
+Refer to <code>BowerSupport</code> class implementation for information.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@bower</span> <span class="s">&quot;mutation-summary&quot;</span><span class="p">,</span> <span class="s">&quot;src/mutation-summary.js&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A part of the internal implementation of pinpointing component.
+Provides a common interface (for the components implementation)
+to invoke the <code>mutation-summary</code> library with some predefined
+parameters, in addition to the ones that will be passed into
+this method as arguments. Please, do not use method directly,
+but rather use one of the definitions that follow below this.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">mutationSummary: </span><span class="nx">external</span> <span class="nf">(selector, callback) -&gt;</span>
+        <span class="nv">noSelector = </span><span class="s">&quot;got no valid selector for mutations&quot;</span>
+        <span class="nv">noCallback = </span><span class="s">&quot;no valid callback function is given&quot;</span>
+        <span class="nv">noLibrary = </span><span class="s">&quot;mutation-summary library is missing&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="k">try</span> <span class="nx">MutationSummary</span><span class="p">),</span> <span class="nx">noLibrary</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nv">c = </span><span class="nx">callback</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">noCallback</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nv">s = </span><span class="nx">selector</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">noSelector</span>
+        <span class="nx">assert</span> <span class="nv">instruct = </span><span class="k">try</span> <span class="nv">queries: </span><span class="p">[</span><span class="nv">element: </span><span class="nx">selector</span><span class="p">]</span>
+        <span class="nv">pp = </span><span class="s">&quot;watch mutation of %s selector for </span><span class="si">#{</span><span class="nx">@service</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="k">try</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">pp</span><span class="p">.</span><span class="nx">toString</span><span class="p">(),</span> <span class="nx">selector</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nv">make = </span><span class="nf">-&gt;</span> <span class="nv">observer = </span><span class="k">new</span> <span class="nx">MutationSummary</span> <span class="nx">instruct</span>
+        <span class="nv">creator = </span><span class="nf">(fn) -&gt;</span> <span class="nv">instruct.callback = </span><span class="nx">fn</span><span class="p">;</span> <span class="nx">make</span><span class="p">()</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;mutation-summary&quot;</span><span class="p">,</span> <span class="nx">selector</span><span class="p">,</span> <span class="nx">callback</span>
+        <span class="k">return</span> <span class="nx">creator</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">callback</span> <span class="o">or</span> <span class="nx">_</span><span class="p">.</span><span class="nx">noop</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Pinpoint when the specified selector vanishes (is parented or
+moved) and then invoke the supplied rendering function, which
+will receive the newly pinpointed node as its first argument.
+If multiple nodes with this selector vanished, then renderer
+will be invoked once for every disappeared node of a selector.
+Selectors must conform to the strict subset of CSS selectors.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@parented: </span><span class="nx">@transferred</span> <span class="nf">(selector, renderer) -&gt;</span>
+        <span class="nv">noSelector = </span><span class="s">&quot;no valid CSS selector is supplied&quot;</span>
+        <span class="nv">noRenderer = </span><span class="s">&quot;no valid rendering function given&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">renderer</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">noRenderer</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nv">sel = </span><span class="nx">selector</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noSelector</span>
+        <span class="nv">go = </span><span class="nf">(n) =&gt;</span> <span class="k">try</span> <span class="nx">$</span><span class="p">(</span><span class="nx">n</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s">&quot;owners&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">@mutationSummary</span> <span class="nx">sel</span><span class="p">,</span> <span class="nf">(s) =&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">s</span><span class="p">,</span> <span class="nf">(summary) =&gt;</span>
+            <span class="nv">na = </span><span class="s">&quot;missing the element reparented summary&quot;</span>
+            <span class="nv">pe = </span><span class="s">&quot;reparenting %s elements for %s service&quot;</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nv">moved = </span><span class="nx">summary</span><span class="p">.</span><span class="nx">reparented</span><span class="p">),</span> <span class="nx">na</span>
+            <span class="k">return</span> <span class="k">unless</span> <span class="p">(</span><span class="k">try</span> <span class="nx">moved</span><span class="p">.</span><span class="nx">length</span> <span class="o">or</span> <span class="kc">null</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">try</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">pe</span><span class="p">,</span> <span class="nx">moved</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">service</span>
+            <span class="nx">$</span><span class="p">(</span><span class="nx">node</span><span class="p">).</span><span class="nx">data</span> <span class="nv">owners: </span><span class="nx">go</span><span class="p">(</span><span class="nx">node</span><span class="p">)</span> <span class="k">for</span> <span class="nx">node</span> <span class="k">in</span> <span class="nx">moved</span>
+            <span class="nx">go</span><span class="p">(</span><span class="nx">n</span><span class="p">).</span><span class="nx">push</span> <span class="k">this</span> <span class="k">for</span> <span class="nx">n</span> <span class="k">in</span> <span class="nx">moved</span> <span class="k">unless</span> <span class="nx">@</span> <span class="k">in</span> <span class="nx">go</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span>
+            <span class="nx">@emit</span> <span class="s">&quot;pp-parented&quot;</span><span class="p">,</span> <span class="nx">selector</span><span class="p">,</span> <span class="nx">renderer</span><span class="p">,</span> <span class="nx">moved</span>
+            <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">moved</span><span class="p">,</span> <span class="nf">(n) =&gt;</span> <span class="nx">renderer</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">go</span> <span class="nx">n</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Pinpoint when the specified selector vanishes (is removed or
+detach) and then invoke the supplied rendering function, which
+will receive the newly pinpointed node as its first argument.
+If multiple nodes with this selector vanished, then renderer
+will be invoked once for every disappeared node of a selector.
+Selectors must conform to the strict subset of CSS selectors.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@vanished: </span><span class="nx">@transferred</span> <span class="nf">(selector, renderer) -&gt;</span>
+        <span class="nv">noSelector = </span><span class="s">&quot;no valid CSS selector is supplied&quot;</span>
+        <span class="nv">noRenderer = </span><span class="s">&quot;no valid rendering function given&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">renderer</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">noRenderer</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nv">sel = </span><span class="nx">selector</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noSelector</span>
+        <span class="nv">go = </span><span class="nf">(n) =&gt;</span> <span class="k">try</span> <span class="nx">$</span><span class="p">(</span><span class="nx">n</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s">&quot;owners&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">@mutationSummary</span> <span class="nx">sel</span><span class="p">,</span> <span class="nf">(s) =&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">s</span><span class="p">,</span> <span class="nf">(summary) =&gt;</span>
+            <span class="nv">na = </span><span class="s">&quot;missing the element vanishing summary&quot;</span>
+            <span class="nv">pe = </span><span class="s">&quot;vanishing %s elements for %s service&quot;</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nv">moved = </span><span class="nx">summary</span><span class="p">.</span><span class="nx">removed</span><span class="p">),</span> <span class="nx">na</span>
+            <span class="k">return</span> <span class="k">unless</span> <span class="p">(</span><span class="k">try</span> <span class="nx">moved</span><span class="p">.</span><span class="nx">length</span> <span class="o">or</span> <span class="kc">null</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">try</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">pe</span><span class="p">,</span> <span class="nx">moved</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">service</span>
+            <span class="nx">$</span><span class="p">(</span><span class="nx">node</span><span class="p">).</span><span class="nx">data</span> <span class="nv">owners: </span><span class="nx">go</span><span class="p">(</span><span class="nx">node</span><span class="p">)</span> <span class="k">for</span> <span class="nx">node</span> <span class="k">in</span> <span class="nx">moved</span>
+            <span class="nx">go</span><span class="p">(</span><span class="nx">n</span><span class="p">).</span><span class="nx">push</span> <span class="k">this</span> <span class="k">for</span> <span class="nx">n</span> <span class="k">in</span> <span class="nx">moved</span> <span class="k">unless</span> <span class="nx">@</span> <span class="k">in</span> <span class="nx">go</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span>
+            <span class="nx">@emit</span> <span class="s">&quot;pp-vanished&quot;</span><span class="p">,</span> <span class="nx">selector</span><span class="p">,</span> <span class="nx">renderer</span><span class="p">,</span> <span class="nx">moved</span>
+            <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">moved</span><span class="p">,</span> <span class="nf">(n) =&gt;</span> <span class="nx">renderer</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">go</span> <span class="nx">n</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Pinpoint when the specified selector appears (or if it already
+exists) and then invoke the supplied rendering function, which
+will receive the newly pinpointed node as its first argument.
+If multiple nodes with this selector is found, then renderer
+will be invoked once for every discovered node of a selector.
+Selectors must conform to the strict subset of CSS selectors.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@pinpoint: </span><span class="nx">@transferred</span> <span class="nf">(selector, renderer) -&gt;</span>
+        <span class="nv">noSelector = </span><span class="s">&quot;no valid CSS selector is supplied&quot;</span>
+        <span class="nv">noRenderer = </span><span class="s">&quot;no valid rendering function given&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">renderer</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">noRenderer</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nv">sel = </span><span class="nx">selector</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noSelector</span>
+        <span class="nv">go = </span><span class="nf">(n) =&gt;</span> <span class="k">try</span> <span class="nx">$</span><span class="p">(</span><span class="nx">n</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s">&quot;owners&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">@mutationSummary</span> <span class="nx">sel</span><span class="p">,</span> <span class="nf">(s) =&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">s</span><span class="p">,</span> <span class="nf">(summary) =&gt;</span>
+            <span class="nv">na = </span><span class="s">&quot;missing the element addition summary&quot;</span>
+            <span class="nv">pe = </span><span class="s">&quot;pinpointed %s elements for %s service&quot;</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nv">added = </span><span class="nx">summary</span><span class="p">.</span><span class="nx">added</span><span class="p">),</span> <span class="nx">na</span>
+            <span class="k">return</span> <span class="k">unless</span> <span class="p">(</span><span class="k">try</span> <span class="nx">added</span><span class="p">.</span><span class="nx">length</span> <span class="o">or</span> <span class="kc">null</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">try</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">pe</span><span class="p">,</span> <span class="nx">added</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">service</span>
+            <span class="nx">$</span><span class="p">(</span><span class="nx">node</span><span class="p">).</span><span class="nx">data</span> <span class="nv">owners: </span><span class="nx">go</span><span class="p">(</span><span class="nx">node</span><span class="p">)</span> <span class="k">for</span> <span class="nx">node</span> <span class="k">in</span> <span class="nx">added</span>
+            <span class="nx">go</span><span class="p">(</span><span class="nx">n</span><span class="p">).</span><span class="nx">push</span> <span class="k">this</span> <span class="k">for</span> <span class="nx">n</span> <span class="k">in</span> <span class="nx">added</span> <span class="k">unless</span> <span class="nx">@</span> <span class="k">in</span> <span class="nx">go</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span>
+            <span class="nx">@emit</span> <span class="s">&quot;pp-pinpoint&quot;</span><span class="p">,</span> <span class="nx">selector</span><span class="p">,</span> <span class="nx">renderer</span><span class="p">,</span> <span class="nx">added</span>
+            <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">added</span><span class="p">,</span> <span class="nf">(n) =&gt;</span> <span class="nx">renderer</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">go</span> <span class="nx">n</span></div></div></div></div></body></html>

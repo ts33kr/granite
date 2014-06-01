@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>membrane/preflight</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/preflight"><meta name="groc-project-path" content="library/membrane/preflight.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/preflight.coffee">library/membrane/preflight.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;&#105;&#108;t&#x6f;:&#116;&#115;3&#x33;k&#114;&#64;&#103;&#x6d;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#116;&#115;3&#x33;k&#114;&#64;&#103;&#x6d;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a>
+<!DOCTYPE html><html lang="en"><head><title>membrane/preflight</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/preflight"><meta name="groc-project-path" content="library/membrane/preflight.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/preflight.coffee">library/membrane/preflight.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;&#x69;&#108;&#x74;&#111;:&#116;&#115;&#51;&#51;&#x6b;&#x72;&#x40;&#103;&#x6d;&#97;&#x69;&#x6c;&#x2e;&#x63;&#111;&#x6d;">&#116;&#115;&#51;&#51;&#x6b;&#x72;&#x40;&#103;&#x6d;&#97;&#x69;&#x6c;&#x2e;&#x63;&#111;&#x6d;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -49,19 +49,11 @@ purpose of preflight is drawing in the remoted and Bower packages.</p></div></di
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is the composition hook that gets invoked when compound
-is being composed into other services and components. Merges
-together added jscripts found in both hierarchies, the current
-one and the foreign (the one that is beign merged in). Exists
-for backing up the consistent behavior when using composition.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@composition: </span><span class="nf">(destination) -&gt;</span>
-        <span class="nx">assert</span> <span class="nv">currents = </span><span class="k">this</span><span class="p">.</span><span class="nx">remotes</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
-        <span class="nv">previous = </span><span class="nx">destination</span><span class="p">.</span><span class="nx">remotes</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
-        <span class="k">return</span> <span class="k">unless</span> <span class="nx">destination</span><span class="p">.</span><span class="nx">derives</span> <span class="nx">RToolkit</span>
-        <span class="nx">assert</span> <span class="nx">previous</span><span class="o">?</span> <span class="o">and</span> <span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">previous</span>
-        <span class="nx">assert</span> <span class="nv">merged = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">currents</span>
-        <span class="nx">assert</span> <span class="nv">merged = </span><span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span> <span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">merged</span>
-        <span class="nx">assert</span> <span class="k">try</span> <span class="nv">destination.remotes = </span><span class="nx">merged</span>
-        <span class="k">try</span> <span class="k">super</span> <span class="k">catch</span> <span class="nx">error</span> <span class="k">finally</span> <span class="k">return</span> <span class="nx">@</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A directive to mark the certain remote class or object to be
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Symbol declaration table, that states what keys, if those are
+vectors (arrays) should be exported and then merged with their
+counterparts in the destination, once the composition process
+takes place. See the <code>Archetype::composition</code> hook definition
+for more information. Keys are names, values can be anything.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@COMPOSITION_EXPORTS = </span><span class="nv">remotes: </span><span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A directive to mark the certain remote class or object to be
 included in the <code>Screenplay</code> context that is going to be emited
 and deployed on the client site. Basically, use this to bring
 in all the remote classes that you need to the remote call site.
@@ -78,9 +70,12 @@ context being compiled and flushed down to the client site. The
 method is wired in an asynchronous way for greater functionality.
 This is the place where you would be importing the dependencies.
 Pay attention that most implementations side effect the context.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(symbol, context, request, next) -&gt;</span>
+        <span class="nv">d = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;visual:logging&quot;</span><span class="p">)</span> <span class="o">is</span> <span class="kc">no</span>
         <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="o">`</span><span class="nv">assert = </span><span class="nx">chai</span><span class="p">.</span><span class="nx">assert</span><span class="o">`</span>
         <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="o">`</span><span class="nx">assert</span><span class="p">(</span><span class="nv">logger = </span><span class="nx">log</span><span class="p">)</span><span class="o">`</span>
+        <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="o">`</span><span class="nx">assert</span><span class="p">(</span><span class="nv">$logger = </span><span class="nx">log</span><span class="p">)</span><span class="o">`</span>
         <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="k">try</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">enableAll</span><span class="p">()</span>
+        <span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">disableAll</span><span class="p">())</span> <span class="k">if</span> <span class="nx">d</span>
         <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">mixin</span> <span class="nx">_</span><span class="p">.</span><span class="nx">string</span><span class="p">.</span><span class="nx">exports</span><span class="p">()</span>
         <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span> <span class="o">=&gt;</span>
             <span class="k">this</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;document&quot;</span><span class="p">,</span> <span class="nb">document</span><span class="p">,</span> <span class="k">this</span>
@@ -95,7 +90,11 @@ need to link to a static asset file, within any domain or path.</p></div></div><
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This server side method is called on the context prior to the
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Symbol declaration table, that states what keys, if those are
+vectors (arrays) should be exported and then merged with their
+counterparts in the destination, once the composition process
+takes place. See the <code>Archetype::composition</code> hook definition
+for more information. Keys are names, values can be anything.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@COMPOSITION_EXPORTS = </span><span class="nv">jscripts: </span><span class="mi">1</span><span class="p">,</span> <span class="nv">stsheets: </span><span class="mi">1</span><span class="p">,</span> <span class="nv">metatag: </span><span class="mi">1</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This server side method is called on the context prior to the
 context being compiled and flushed down to the client site. The
 method is wired in an asynchronous way for greater functionality.
 This is the place where you would be importing the dependencies.
@@ -170,12 +169,14 @@ Refer to <code>BowerSupport</code> class implementation for information.</p></di
     <span class="nx">@bower</span> <span class="s">&quot;loglevel&quot;</span>
     <span class="nx">@bower</span> <span class="s">&quot;lodash&quot;</span>
     <span class="nx">@bower</span> <span class="s">&quot;jquery&quot;</span>
+    <span class="nx">@bower</span> <span class="s">&quot;jwerty&quot;</span>
     <span class="nx">@bower</span> <span class="s">&quot;chai&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block here defines a set of Bower dependencies that are
 going to be necessary no matter what sort of functionality is
 is going to be implemented. Most of these libraries required
 by the internal implementations of the various subcomponents.
 This blocks defines the directory-scopes deps, not bare ones.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@bower</span> <span class="s">&quot;underscore.string&quot;</span><span class="p">,</span> <span class="s">&quot;dist/underscore.string.min.js&quot;</span>
-    <span class="nx">@bower</span> <span class="s">&quot;async&quot;</span><span class="p">,</span> <span class="s">&quot;lib/async.js&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block here defines a set of remote dependencies that are
+    <span class="nx">@bower</span> <span class="s">&quot;async&quot;</span><span class="p">,</span> <span class="s">&quot;lib/async.js&quot;</span>
+    <span class="nx">@bower</span> <span class="s">&quot;node-uuid&quot;</span><span class="p">,</span> <span class="s">&quot;uuid.js&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block here defines a set of remote dependencies that are
 going to be necessary no matter what sort of functionality is
 is going to be implemented. Most of these libraries required
 by the internal implementations of the various subcomponents.

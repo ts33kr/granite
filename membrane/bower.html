@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>membrane/bower</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/bower"><meta name="groc-project-path" content="library/membrane/bower.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/bower.coffee">library/membrane/bower.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#x61;&#x69;&#108;&#116;&#111;:&#x74;&#115;&#x33;&#51;&#x6b;&#x72;&#64;&#103;&#109;&#x61;&#105;&#108;&#46;&#x63;o&#x6d;">&#x74;&#115;&#x33;&#51;&#x6b;&#x72;&#64;&#103;&#109;&#x61;&#105;&#108;&#46;&#x63;o&#x6d;</a>
+<!DOCTYPE html><html lang="en"><head><title>membrane/bower</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/bower"><meta name="groc-project-path" content="library/membrane/bower.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/bower.coffee">library/membrane/bower.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;&#105;&#x6c;&#x74;&#111;:ts&#x33;&#x33;&#x6b;&#x72;&#64;&#x67;&#x6d;&#x61;i&#x6c;&#x2e;&#99;o&#109;">ts&#x33;&#x33;&#x6b;&#x72;&#64;&#x67;&#x6d;&#x61;i&#x6c;&#x2e;&#99;o&#109;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 
 <span class="p">{</span><span class="nx">EOL</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;os&quot;</span>
-<span class="p">{</span><span class="nx">Screenplay</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./visual&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This abstract base class provides the dynamic Bower support for
+<span class="p">{</span><span class="nx">Screenplay</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./visual&quot;</span>
+<span class="p">{</span><span class="nx">rmdirSyncRecursive</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;wrench&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This abstract base class provides the dynamic Bower support for
 the services that inherit or compose this ABC. This implementation
 allows for each service to have its own, isolated tree of packages
 that will be dynamically installed via Bower package manager. The
@@ -45,7 +46,11 @@ implementation provides convenient way of requiring frontend libs.</p></div></di
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Install the specified package via Bower into the specific
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Symbol declaration table, that states what keys, if those are
+vectors (arrays) should be exported and then merged with their
+counterparts in the destination, once the composition process
+takes place. See the <code>Archetype::composition</code> hook definition
+for more information. Keys are names, values can be anything.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@COMPOSITION_EXPORTS = </span><span class="nv">bowerings: </span><span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Install the specified package via Bower into the specific
 location within the system that is figured out automatically.
 All packages installed via Bower will be served as the static
 assets, by using the <code>pub</code> env dir. The package installation
@@ -65,31 +70,17 @@ supplied the method will return the automatically deduced the
 bower sink. If you supply an argument the method will set it
 as a bower sink and later will return it, unless overriden by
 the global configuration. See the implementation for the info.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@bowerSink: </span><span class="nf">(sink) -&gt;</span>
+        <span class="nv">identity = </span><span class="k">try</span> <span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
         <span class="nx">assert</span> <span class="nv">hash = </span><span class="k">try</span> <span class="nx">crypto</span><span class="p">.</span><span class="nx">createHash</span> <span class="s">&quot;md5&quot;</span>
         <span class="nv">id = </span><span class="nx">hash</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">@identify</span><span class="p">()).</span><span class="nx">digest</span> <span class="s">&quot;hex&quot;</span>
         <span class="nv">automatic = </span><span class="o">=&gt;</span> <span class="nx">global</span> <span class="o">or</span> <span class="nx">@$bowerSink</span> <span class="o">or</span> <span class="nx">id</span>
+        <span class="nv">notify = </span><span class="s">&quot;Bower sink directory for %s set to %s&quot;</span>
         <span class="nv">global = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;bower:globalSinkDirectory&quot;</span>
         <span class="k">return</span> <span class="nx">automatic</span><span class="p">()</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">sink</span><span class="p">),</span> <span class="s">&quot;has to be a string&quot;</span>
         <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">sink</span><span class="p">),</span> <span class="s">&quot;got empty sink&quot;</span>
-        <span class="k">return</span> <span class="vi">@$bowerSink = </span><span class="k">try</span> <span class="nx">sink</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is the composition hook that gets invoked when compound
-is being composed into other services and components. Checks
-if there are Bower dependencies defined on both components,
-and if they are - merges them together and assigns a merged
-dependency list to the compoun that mixed in bower support.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@composition: </span><span class="nf">(destination) -&gt;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">b = </span><span class="nx">BowerSupport</span>
-        <span class="nx">assert</span> <span class="nv">currents = </span><span class="nx">@bowerings</span> <span class="o">or</span> <span class="p">[]</span>
-        <span class="nx">assert</span> <span class="nv">from = </span><span class="nx">@identify</span><span class="p">().</span><span class="nx">underline</span>
-        <span class="k">return</span> <span class="k">unless</span> <span class="nx">destination</span><span class="p">.</span><span class="nx">derives</span> <span class="nx">b</span>
-        <span class="nv">into = </span><span class="nx">destination</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
-        <span class="nv">message = </span><span class="s">&quot;Merge Bowers from %s into %s&quot;</span>
-        <span class="nv">previous = </span><span class="nx">destination</span><span class="p">.</span><span class="nx">bowerings</span> <span class="o">or</span> <span class="p">[]</span>
-        <span class="nx">assert</span> <span class="nx">previous</span><span class="o">?</span> <span class="o">and</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">previous</span>
-        <span class="nx">assert</span> <span class="nv">merged = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">currents</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nv">merged = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">merged</span>
-        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">blue</span><span class="p">,</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">into</span>
-        <span class="nx">assert</span> <span class="nv">destination.bowerings = </span><span class="nx">merged</span>
-        <span class="k">try</span> <span class="k">super</span> <span class="k">catch</span> <span class="nx">error</span><span class="p">;</span> <span class="k">return</span> <span class="k">this</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to registering the service
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">notify</span><span class="p">.</span><span class="nx">cyan</span><span class="p">,</span> <span class="nx">identity</span><span class="p">,</span> <span class="nx">sink</span>
+        <span class="k">return</span> <span class="vi">@$bowerSink = </span><span class="k">try</span> <span class="nx">sink</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to registering the service
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
@@ -110,11 +101,18 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
         <span class="nx">@installation</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">targets</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">next</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An internal routine that launches the actual Bower installer.
 It takes a series of pre calculated parameters to be able to
 perform the installation properly. Plese refer to the register
-hook implementation in this ABC service for more information.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">installation: </span><span class="nf">(kernel, targets, options, next) -&gt;</span>
+hook implementation in this ABC service for more information.
+Also, refer to the method implementation for understanding.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">installation: </span><span class="nf">(kernel, targets, options, next) -&gt;</span>
         <span class="nx">assert</span> <span class="nv">install = </span><span class="nx">bower</span><span class="p">.</span><span class="nx">commands</span><span class="p">.</span><span class="nx">install</span> <span class="o">or</span> <span class="mi">0</span>
         <span class="nv">bowerings = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">bowerings</span> <span class="o">?=</span> <span class="nb">Array</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nv">installer = </span><span class="nx">install</span> <span class="nx">targets</span><span class="p">,</span> <span class="p">{},</span> <span class="nx">options</span>
         <span class="nx">kernel</span><span class="p">.</span><span class="nx">domain</span><span class="p">.</span><span class="nx">add</span> <span class="nx">installer</span> <span class="k">if</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">domain</span><span class="p">.</span><span class="nx">add</span>
+        <span class="nx">assert</span> <span class="nv">removing = </span><span class="s">&quot;Clense (rm) Bower sink at %s&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">directory = </span><span class="nx">bowerings</span><span class="p">.</span><span class="nx">directory</span>
+        <span class="nv">fwd = </span><span class="nf">(arg) =&gt;</span> <span class="nx">kernel</span><span class="p">.</span><span class="nx">domain</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="nx">arg</span><span class="p">...</span>
+        <span class="nv">mark = </span><span class="o">=&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">removing</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">directory</span>
+        <span class="nv">destroy = </span><span class="o">=&gt;</span> <span class="nx">mark</span> <span class="k">try</span> <span class="nx">rmdirSyncRecursive</span> <span class="nx">directory</span>
+        <span class="nx">installer</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">destroy</span><span class="p">();</span> <span class="nx">fwd</span> <span class="nx">arguments</span>
         <span class="k">return</span> <span class="nx">installer</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;end&quot;</span><span class="p">,</span> <span class="nf">(installed) =&gt;</span> <span class="nx">do</span> <span class="o">=&gt;</span>
             <span class="nv">message = </span><span class="s">&quot;Get Bower library %s@%s at %s&quot;</span>
             <span class="nx">assert</span> <span class="nv">bowerings.installed = </span><span class="nx">installed</span> <span class="o">or</span> <span class="mi">0</span>
@@ -128,7 +126,8 @@ hook implementation in this ABC service for more information.</p></div></div><di
             <span class="k">return</span> <span class="nx">next</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This complicated definition is used to produce and then install
 a method that is going to be cached and used for each request
 once the initial Bower package installation is done. Please do
-refer to the <code>prelude</code> implementation in this class for the info.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">cachier: </span><span class="nf">(sorter, finder, paths) -&gt;</span> <span class="nf">(context) -&gt;</span>
+refer to the <code>prelude</code> implementation in this class for the info.
+Please, refer to the method implementation for understanding.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">cachier: </span><span class="nf">(sorter, finder, paths) -&gt;</span> <span class="nf">(context) -&gt;</span>
         <span class="nx">assert</span> <span class="nv">sorted = </span><span class="nx">_</span><span class="p">.</span><span class="nx">sortBy</span> <span class="nx">paths</span><span class="p">,</span> <span class="nx">sorter</span>
         <span class="nx">assert</span> <span class="nv">files = </span><span class="nx">_</span><span class="p">.</span><span class="nx">flatten</span> <span class="nx">_</span><span class="p">.</span><span class="nx">values</span> <span class="nx">sorted</span>
         <span class="nv">locate = </span><span class="nf">(f) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">findKey</span> <span class="nx">paths</span><span class="p">,</span> <span class="nx">resides</span><span class="p">(</span><span class="nx">f</span><span class="p">)</span>

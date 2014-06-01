@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>semantic/windows</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="semantic/windows"><meta name="groc-project-path" content="library/semantic/windows.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/semantic/windows.coffee">library/semantic/windows.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;&#x69;&#x6c;&#x74;&#111;:&#x74;&#x73;&#x33;&#51;&#107;&#x72;&#64;&#103;&#109;&#x61;i&#x6c;&#46;co&#x6d;">&#x74;&#x73;&#x33;&#51;&#107;&#x72;&#64;&#103;&#109;&#x61;i&#x6c;&#46;co&#x6d;</a>
+<!DOCTYPE html><html lang="en"><head><title>semantic/windows</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="semantic/windows"><meta name="groc-project-path" content="library/semantic/windows.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/semantic/windows.coffee">library/semantic/windows.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;&#x69;&#x6c;&#116;&#x6f;:&#116;&#x73;&#x33;&#51;&#x6b;&#114;&#64;&#x67;m&#x61;&#x69;&#108;&#x2e;&#99;&#111;&#x6d;">&#116;&#x73;&#x33;&#51;&#x6b;&#114;&#64;&#x67;m&#x61;&#x69;&#108;&#x2e;&#99;&#111;&#x6d;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -33,12 +33,12 @@ a zombie, then this class can be used to reduce the boilerplate.</p></div></div>
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These invocations establish the parameters which are going
-to be used for matching HTTP requests against this service.
-Typically an HTTP pathname pattern and a domain name pattern.
-Try not to put constraints on the domain, unless necessary.
-Also, the compounds for the composition system belong here.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@compose</span> <span class="nx">Preflight</span>
-    <span class="nx">@compose</span> <span class="nx">Localized</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method is invoked right after the window skeleton has
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These declarations below are implantations of the abstracted
+components by the means of the dynamic recomposition system.
+Please take a look at the <code>Composition</code> class implementation
+for all sorts of information on the composition system itself.
+Each of these will be dynamicall integrated in class hierarchy.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@implanting</span> <span class="nx">Preflight</span>
+    <span class="nx">@implanting</span> <span class="nx">Localized</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method is invoked right after the window skeleton has
 been created. It takes care of filling in the actions segment
 with a couple of default buttons/actions: the positive and the
 negative, with the respectful semantics. See the coding about
