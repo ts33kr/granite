@@ -85,7 +85,7 @@ module.exports.Bilateral = class Bilateral extends Duplex
     # externalized and transferred (by the `Screenplay`) to a client.
     @uplink: (directives, implement) ->
         invalidFunc = "no function for the uplink"
-        implement = try_.find arguments, _.isFunction
+        implement = try _.find arguments, _.isFunction
         directives = {} unless _.isPlainObject directives
         assert _.isFunction(implement or null), invalidFunc
         assert p = @prototype; overwrap = (container) ->
