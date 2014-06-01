@@ -130,20 +130,23 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
         noFun = "no valid intermediate function"
         assert _.isFunction(intermediate), noFun
         supplied = _.toArray arguments or Array()
+        intermediate = eval("[#{intermediate}]")[0]
         x = _.isString intermediate.remote?.source
         prepared = intermediate # default prepared
         prepared = @autocall intermediate unless x
         assert not _.isEmpty method = prepared or 0
-        @prototype[_.uniqueId "__bts_trns"] = method
-        auto = (f) -> method.remote.auto = f; method
-        auto (symbol, key, context) -> _.once ->
-            assert _.isFunction i = _.isFunction
-            assert _.isFunction j = JSON.stringify
-            assert s = (value) -> value.toString()
-            typ = (v) -> if i(v) then s(v) else j(v)
+        @prototype[_.uniqueId "__bts_trans_"] = method
+        assert leaking = method.remote.leaking or {}
+        i = _.isFunction; j = JSON.stringify # aliases
+        aid = -> _.uniqueId "__bts_inline_arg_vector_"
+        typ = (v) -> if i(v) then v.toString() else j(v)
+        leaking[aid()] = typ arg for arg, ix in supplied
+        auto = (fn) -> method.remote.auto = fn; method
+        auto (symbol, key, context) => _.once =>
             t = "#{symbol}.#{key}.apply(#{symbol},%s)"
-            assert compiled = _.map supplied, typ
-            format t, "[#{compiled.join(",")}]"
+            fk = (v) -> _.findKey leaking, (i) -> i is v
+            compiled = (fk typ(val) for val in supplied)
+            return format t, "[#{compiled.join(",")}]"
 
     # Use this static method to mark up the remote/external methods
     # that need to be automaticalled called, once everything is set
