@@ -76,7 +76,8 @@ module.exports.external = module.exports.ec = (compiled) ->
     assert compiled.remote = Object.create {}
     assert compiled.remote.compiled = compiled
     assert compiled.remote.compile = compiler
-    assert compiled.remote.source = tabled(pv) {}
+    assert compiled.remote.btable = b = Object()
+    assert compiled.remote.source = tabled(pv) b
     assert compiled.remote.tabled = tabled(pv)
     assert compiled.remote.tleaky = tabled(pn)
     assert compiled.remote.meta ?= Object()
