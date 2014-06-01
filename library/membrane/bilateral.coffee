@@ -68,11 +68,11 @@ module.exports.Bilateral = class Bilateral extends Duplex
     # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
         _.forIn this, (value, name, service) =>
-            set = "#{symbol}.#{name}.%s = (%s)"
+            setter = "#{symbol}.#{name}.%s = (%s)"
             directives = value?.uplink?.directives
             return unless _.isPlainObject directives
             assert json = try JSON.stringify directives
-            template = format set, "directives", json
+            template = format setter, "directives", json
             context.invokes.push "\r\n#{template}\r\n"
             uplinks = context.uplinks ?= new Object
             uplinks[name] = directives; return @
@@ -84,7 +84,7 @@ module.exports.Bilateral = class Bilateral extends Duplex
     # function that is supplied as an implementation is automatocally
     # externalized and transferred (by the `Screenplay`) to a client.
     @uplink: (directives, implement) ->
-        invalidFunc = "no function for the uplink"
+        invalidFunc = "got no function for the uplink"
         implement = try _.find arguments, _.isFunction
         directives = {} unless _.isPlainObject directives
         assert _.isFunction(implement or null), invalidFunc
@@ -131,18 +131,21 @@ module.exports.Bilateral = class Bilateral extends Duplex
     # This method should not normally be used outside of the class.
     createLinkage: (socket, name, directives) ->
         assert identify = @constructor.identify()
-        uplinking = "Invoking uplink #{identify}#%s"
-        responded = "Uplink #{identify}#%s responded"
-        noBinder = "container has got no valid binder"
-        notify = "incorrect callback for the uplink"
-        assert _.isFunction o = Marshal.serialize
-        assert _.isFunction i = Marshal.deserialize
-        return (parameters..., callback=(->)) =>
-            assert _.isFunction(callback), notify
+        try identify = identify.toString().underline
+        uplinking = "Invoking uplink %s at #{identify}"
+        responded = "Uplink %s at #{identify} responded"
+        noBinder = "the container has got no valid binder"
+        notify = "got incorrect callback for the uplink"
+        assert _.isFunction try o = Marshal.serialize
+        assert _.isFunction try i = Marshal.deserialize
+        return (sequence..., callback) => # a complex sig
+            parameters = _.reject arguments, _.isFunction
+            callback = (->) unless _.isFunction callback
+            assert _.isFunction(callback or 0), notify
             assert mangled = "#{@location()}/#{name}"
             assert binder = socket.binder, noBinder
             mangled += "/#{nsp}" if nsp = binder.nsp
-            logger.debug uplinking.cyan, name.bold
+            try logger.debug uplinking.cyan, name.bold
             socket.emit mangled, o(parameters)..., a = =>
                 key = _.findKey socket.acks, (x) -> x is a
                 assert key, "ack"; delete socket.acks[key]
