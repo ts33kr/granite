@@ -52,9 +52,15 @@ module.exports.Publish = class Publish extends Barebones
     # to be used for matching HTTP requests against this service.
     # Typically an HTTP pathname pattern and a domain name pattern.
     # Try not to put constraints on the domain, unless necessary.
-    # Also, the compounds for the composition system belong here.
+    # Also, other similar and related directives belong in here.
     @resource "/api/publish"
     @documentation yes
+
+    # These declarations below are implantations of the abstracted
+    # components by the means of the dynamic recomposition system.
+    # Please take a look at the `Composition` class implementation
+    # for all sorts of information on the composition system itself.
+    # Each of these will be dynamicall integrated in class hierarchy.
     @implanted OnlySsl
 
     # This block describes certain method of abrbitrary service. The
