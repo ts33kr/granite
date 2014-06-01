@@ -35,6 +35,7 @@ fs = require "fs"
 # It scans the supplied directory, find all the modules there and
 # return an object, where keys are names of modules minus the ext.
 # This is used to build up entire module hierarchy of the framework.
+# Values will be holding the module structures along with exports.
 module.exports.collectModules = (directory, shallow) ->
     ext = (name) -> return paths.extname name
     sym = (name) -> paths.basename name, ext name
@@ -52,13 +53,15 @@ module.exports.collectModules = (directory, shallow) ->
 
 # This method is the base method for very important functionality.
 # It scans the supplied directory, find all the packages there and
-# return an object, where keys are names of modules minus the ext.
+# return an object, where keys are names of the packages (directory).
 # This is used to build up entire module hierarchy of the framework.
-module.exports.collectPackages = (closure, directory="library") ->
+# Values will be holding the package structure along with modules.
+module.exports.collectPackages = (closure, directory) ->
     isDir = (p) -> stat(p).isDirectory()
     stat = (p) -> return fs.statSync fix p
     fix = (p) -> return paths.join directory, p
     resolve = -> paths.resolve closure, directory
+    directory = "library" unless directory or null
     directory = resolve() if _.isString closure
     notification = "Collecting packages at %s"
     try logger.info notification.grey, directory
@@ -74,9 +77,10 @@ module.exports.collectPackages = (closure, directory="library") ->
     return _.merge modules, packages
 
 # Traverse the hierarchy of all cached modules and try find kernel
-# class that the most deep hiererachy. That is the kernel that is a
+# class that has most deep hiererachy. That is the kernel that seems
 # most derived from the original one. If no such kernel can be found
 # then revert to returning the original kernel embedded in framework.
+# Beware, this code logic is far from idea and therefor error prone.
 module.exports.cachedKernel = (limits) ->
     origin = require("./scaled").Scaled
     assert _.isString limits, "no limits"
