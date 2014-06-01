@@ -56,11 +56,11 @@ module.exports.RDuplex = class RDuplex extends Duplex
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
-    # These invocations establish the parameters which are going
-    # to be used for matching HTTP requests against this service.
-    # Typically an HTTP pathname pattern and a domain name pattern.
-    # Try not to put constraints on the domain, unless necessary.
-    # Also, the compounds for the composition system belong here.
+    # These declarations below are implantations of the abstracted
+    # components by the means of the dynamic recomposition system.
+    # Please take a look at the `Composition` class implementation
+    # for all sorts of information on the composition system itself.
+    # Each of these will be dynamicall integrated in class hierarchy.
     @implanted RedisClient
 
     # A hook that will be called once the Connect middleware writes
