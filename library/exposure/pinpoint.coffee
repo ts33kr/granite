@@ -80,6 +80,7 @@ module.exports.Pinpoint = class Pinpoint extends Preflight
         try logger.info pp.toString(), selector.toString()
         make = -> observer = new MutationSummary instruct
         creator = (fn) -> instruct.callback = fn; make()
+        this.emit "mutation-summary", selector, callback
         return creator.call this, callback or _.noop
 
     # Pinpoint when the specified selector vanishes (is reparented or
