@@ -40,7 +40,7 @@ _ = require "lodash"
 # the project. Use one of these instead of hardcoding the defaults!
 # See the task definitions below for information on defaults usage.
 DEFAULT_LIBRARY = "library"
-DEFAULT_ARTIFACT = "artifact"
+DEFAULT_ARTIFACTS = "artifacts"
 DEFAULT_DOCUMENTS = "documents"
 DEFAULT_SCOPING = "development"
 DEFAULT_LOGGING = "info"
@@ -58,7 +58,7 @@ module.exports = ->
     # options are shared among all of the tasks and the entire file!
     # Please refer to `Cakefile` and `CoffeeScript` for information.
     option "-l", "--library [PATH]", "Path to the library sources"
-    option "-a", "--artifact [PATH]", "Path to the artifact directory"
+    option "-a", "--artifacts [PATH]", "Path to the artifacts directory"
     option "-d", "--documents [PATH]", "Path to the documents directory"
     option "-s", "--scoping [SCOPE]", "The name of the scope to boot kernel"
     option "-i", "--logging [LEVEL]", "The level to use for the logging output"
@@ -93,8 +93,8 @@ module.exports = ->
     # Please see the implementation for some of the important details
     task "compile", "compile CoffeeScript into JavaScript", (options) ->
         assert library = options.library or DEFAULT_LIBRARY
-        assert artifact = options.artifact or DEFAULT_ARTIFACT
-        assert parameters = ["-c", "-o", artifact, library]
+        assert artifacts = options.artifacts or DEFAULT_ARTIFACTS
+        assert parameters = ["-c", "-o", artifacts, library]
         parameters.unshift "-w" if options.watch or false
         assert watching = "Watching the %s directory".blue
         logger.info watching, library.bold if options.watch
