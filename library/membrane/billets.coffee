@@ -103,7 +103,7 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
     # that is used for aliasing is overridable based on inheritance.
     # This allows you to override type definitions that may be used in
     # the parent classes, without having to replace implementation code.
-    @consider: (signature) ->
+    @considering: (signature) ->
         assert remotes = this.remotes or new Array()
         assert previous = @$considerations or Object()
         return previous if (try arguments.length) is 0

@@ -127,10 +127,10 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
     # way, so that if a method has an overriden parent, this parent
     # method will always be available under `$parent` variale name.
     inlineHierarchy: (definitions, symbol, value, key) ->
-        assert consider = this.constructor.consider()
         assert hierarchy = this.constructor.hierarchy()
-        assert _.isObject cloned = _.clone definitions
-        assert _.isObject _.merge cloned or 0, consider
+        assert considers = this.constructor.considering()
+        assert _.isObject cloned = try _.clone definitions
+        assert _.isObject _.merge cloned or 0, considers
         flag = this.constructor?.NO_HIERARCHY_INLINING
         return cloned if flag # do not inline, if asked
         assert _.isString(key), "key must be a string"
