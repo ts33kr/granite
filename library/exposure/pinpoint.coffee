@@ -83,7 +83,7 @@ module.exports.Pinpoint = class Pinpoint extends Preflight
         this.emit "mutation-summary", selector, callback
         return creator.call this, callback or _.noop
 
-    # Pinpoint when the specified selector vanishes (is reparented or
+    # Pinpoint when the specified selector vanishes (is parented or
     # moved) and then invoke the supplied rendering function, which
     # will receive the newly pinpointed node as its first argument.
     # If multiple nodes with this selector vanished, then renderer
