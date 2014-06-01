@@ -51,7 +51,7 @@ module.exports.RedisSession = class RedisSession extends Zombie
     # Typically an HTTP pathname pattern and a domain name pattern.
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
-    @compose RedisClient
+    @implanted RedisClient
 
     # The dirty way of inheriting the prototypal properties of the
     # abstract session store engine found in the standard Connect

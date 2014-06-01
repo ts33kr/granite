@@ -61,7 +61,7 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
     # Typically an HTTP pathname pattern and a domain name pattern.
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
-    @compose Localized
+    @implanted Localized
 
     # This block here defines a set of translation files that are
     # used by the service. Please keep in mind, that translations

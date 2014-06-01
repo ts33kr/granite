@@ -57,8 +57,8 @@ module.exports.Barebones = class Barebones extends Stubs
     # Typically an HTTP pathname pattern and a domain name pattern.
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
-    @compose Descriptor
-    @compose Healthcare
+    @implanted Descriptor
+    @implanted Healthcare
 
     # This block describes certain method of abrbitrary service. The
     # exact process of how it is being documented depends on how the

@@ -61,7 +61,7 @@ module.exports.RDuplex = class RDuplex extends Duplex
     # Typically an HTTP pathname pattern and a domain name pattern.
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
-    @compose RedisClient
+    @implanted RedisClient
 
     # A hook that will be called once the Connect middleware writes
     # off the headers. Please refer to this prototype signature for

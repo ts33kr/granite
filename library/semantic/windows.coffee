@@ -48,8 +48,8 @@ module.exports.ModalWindow = class ModalWindow extends Zombie
     # Typically an HTTP pathname pattern and a domain name pattern.
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
-    @compose Preflight
-    @compose Localized
+    @implanted Preflight
+    @implanted Localized
 
     # This method is invoked right after the window skeleton has
     # been created. It takes care of filling in the actions segment

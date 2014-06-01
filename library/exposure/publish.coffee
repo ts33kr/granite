@@ -55,7 +55,7 @@ module.exports.Publish = class Publish extends Barebones
     # Also, the compounds for the composition system belong here.
     @resource "/api/publish"
     @documentation yes
-    @compose OnlySsl
+    @implanted OnlySsl
 
     # This block describes certain method of abrbitrary service. The
     # exact process of how it is being documented depends on how the

@@ -45,7 +45,7 @@ module.exports.Semantic = class Semantic extends Preflight
     # Typically an HTTP pathname pattern and a domain name pattern.
     # Try not to put constraints on the domain, unless necessary.
     # Also, the compounds for the composition system belong here.
-    @compose GoogleFonts
+    @implanted GoogleFonts
 
     # This block defines a set of fonts that are used throughout the
     # site. The fonts are employed by the means of the external CSS
