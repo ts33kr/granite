@@ -71,7 +71,7 @@ module.exports.Bilateral = class Bilateral extends Duplex
             set = "#{symbol}.#{name}.%s = (%s)"
             directives = value?.uplink?.directives
             return unless _.isPlainObject directives
-            assert json = JSON.stringify directives
+            assert json = try JSON.stringify directives
             template = format set, "directives", json
             context.invokes.push "\r\n#{template}\r\n"
             uplinks = context.uplinks ?= new Object
@@ -85,9 +85,9 @@ module.exports.Bilateral = class Bilateral extends Duplex
     # externalized and transferred (by the `Screenplay`) to a client.
     @uplink: (directives, implement) ->
         invalidFunc = "no function for the uplink"
-        implement = _.find arguments, _.isFunction
+        implement = try_.find arguments, _.isFunction
         directives = {} unless _.isPlainObject directives
-        assert _.isFunction(implement), invalidFunc
+        assert _.isFunction(implement or null), invalidFunc
         assert p = @prototype; overwrap = (container) ->
             assert _.isArray c = _.toArray arguments or []
             assert _.isArray s = [@__origin, socket: @socket]
@@ -117,7 +117,7 @@ module.exports.Bilateral = class Bilateral extends Duplex
             assert mangled = "#{@location}/#{reference}"
             mangled += "/#{nsp}" if _.isString nsp = @nsp
             assert value; return @socket.on mangled, =>
-                logger.info uplinking, reference, nsp
+                try logger.info uplinking, reference, nsp
                 value.call this, i(arguments)..., (params...) =>
                     id = @socket.sacks = (@socket.sacks ?= 0) + 1
                     ack = type: "ack", name: mangled, ack: "data"
