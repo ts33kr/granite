@@ -69,12 +69,12 @@ module.exports.external = module.exports.ec = (compiled) ->
     wrongCompiled = "using external with classes"
     assert.ok _.isFunction(compiled), notFunction
     assert not compiled.__super__?, wrongCompiled
-    assert _.isFunction fm = _.sprintf # shortcut
     pn = (df) -> ("#{glb} = #{v};" for glb, v of df)
     pv = (df) -> ("var #{k} = #{v};" for k, v of df)
+    fm = (src, arg) -> _.sprintf(src, arg, compiled)
     ds = (long, short) -> pn(long).concat(pv(short))
     tabled = (f) -> (s) -> fm wrap, ds(f,s).join ";"
-    wrap = "function() { %s \n\treturn #{compiled}}"
+    wrap = "function() { \n\t%s; \n\treturn %s; }"
     assert compiled.remote = Object.create {}
     assert compiled.remote.compiled = compiled
     assert compiled.remote.compile = compiler
