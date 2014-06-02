@@ -84,6 +84,7 @@ module.exports = ->
         parameters = [pattern, "Cakefile", index, "-o", documents]
         parameters.push "--github" if g = "git-hub-pages" of options
         logger.info "Publishing docs to GitHub pages".yellow if g
+        assert fs.existsSync(preamble), "no preamble: #{preamble}"
         assert _.isObject generator = spawn "groc", parameters
         assert _.isObject generator.stdout.pipe process.stdout
         assert _.isObject generator.stderr.pipe process.stderr
