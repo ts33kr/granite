@@ -32,6 +32,7 @@ events = require "eventemitter2"
 assert = require "assert"
 colors = require "colors"
 crypto = require "crypto"
+async = require "async"
 nconf = require "nconf"
 https = require "https"
 http = require "http"
@@ -62,6 +63,13 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
     # mainly is used to exclude or account for abstract classes.
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
+
+    # Symbol declaration table, that states what keys, if those are
+    # vectors (arrays) should be exported and then merged with their
+    # counterparts in the destination, once the composition process
+    # takes place. See the `Archetype::composition` hook definition
+    # for more information. Keys are names, values can be anything.
+    @COMPOSITION_EXPORTS = renderers: yes
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
@@ -94,6 +102,26 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
         return scripts.call this if _.isString subject
         return sources.call this if compilable
         throw new Error invalid.toString()
+
+    # Use this decorator to append a renderer function to sequence.
+    # These are server side, instance methods that will be invoked
+    # when the visual core is performing final assmbly/compilation
+    # of the context. Basically, it is when a programmatic context
+    # turns into a raw HTML/JS that gets then sent away to client.
+    # For more info, please refer to `Screenplay#contextRendering`.
+    @rendering: (renderer) ->
+        noFunction = "no rendering function given"
+        wrongUsage = "should accept >= 2 arguments"
+        {series, apply} = async or require "async"
+        fn = (s) -> (j, d, c) -> series pp(s, j, d), c
+        pp = (s, j, dm) -> (apply f, j, dm for f in s)
+        assert previous = @renderers or new Array()
+        assert previous = try _.clone previous or []
+        return fn previous if arguments.length is 0
+        assert _.isFunction(renderer), noFunction
+        assert (renderer.length >= 2), wrongUsage
+        @renderers = previous.concat [renderer]
+        assert @renderers = _.unique @renderers
 
     # This method implements overridiable type installation mechanism
     # similar to Beans in a way. It basically transfers remotable type

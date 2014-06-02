@@ -89,7 +89,10 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
         ha xr $("<script>"), r for r in context.scripts
         ha xo $("<script>"), jstr o for o in javascript
         $('script[type*="javascript"]:empty').remove()
-        return callback dom($.root().get(0).children)
+        assert not _.isEmpty doc = $.root().get(0) or 0
+        @constructor.rendering() $, doc, (error, res) ->
+            assert.ifError error, "a rendering error"
+            callback dom(doc.children).toString()
 
     # This is an internal routine that performs a very important task
     # of deploying the context onto the call (client) site. It also
