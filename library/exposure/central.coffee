@@ -110,6 +110,7 @@ module.exports.GrandCentral = class GrandCentral extends Barebones
         assert _.isString packed.hostname = os.hostname()
         assert _.isString packed.platform = os.platform()
         assert _.isString packed.scope = @kernel.scope.tag
+        assert _.isObject packed.server = nconf.get "server"
         assert cn = nconf.get("central:collection") or null
         i = packed.identica = @kernel.constructor.identica()
         o = try nconf.get "central:options" or new Object()
