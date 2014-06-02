@@ -120,8 +120,9 @@ module.exports = ->
             assert sources = try readdirSyncRecursive artifacts
             assert sources = _.reject sources, isDirS artifacts
             o = (source) -> optimize("#{artifacts}/#{source}")
-            try logger.info produce, artifacts, s for s in sources
-            (o(s); logger.info(op, artifacts, s)) for s in sources
+            wsources = (fun) -> return try _.each sources, fun
+            wsources (s) -> logger.info produce, artifacts, s
+            wsources (s) -> o s; logger.info op, artifacts, s
             logger.info success.green if status is 0
 
     # This task launches an instance of application where this task
