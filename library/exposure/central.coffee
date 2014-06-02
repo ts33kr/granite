@@ -70,7 +70,7 @@ module.exports.GrandCentral = class GrandCentral extends Barebones
     # listener also receives an accompanied object that contains all
     # of the data and information that pertain to event that occured.
     # This data is being deserialize from JSON payload got for Redis.
-    @arrive: (event, listener) -> @intercept "redis-ready", ->
+    @arriving: (event, listener) -> @intercept "redis-ready", ->
         caught = "Got central %s (%s bytes) in %s"
         assert idc = @kernel.constructor.identica()
         pattern = "grand-central:%s:%s" # the channel
