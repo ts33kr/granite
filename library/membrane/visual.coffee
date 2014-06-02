@@ -86,8 +86,8 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
         ha $ "<meta #{meta}>" for meta in context.metatag
         ha $("<link>").attr xs(s) for s in context.sheets
         ha xl $("<style>").text l for l in context.styles
-        ha(xr($("<script>"), r)) for r in context.scripts
-        ha(xo($("<script>"), jstr o)) for o in javascript
+        ha xr $("<script>"), r for r in context.scripts
+        ha xo $("<script>"), jstr o for o in javascript
         $('script[type*="javascript"]:empty').remove()
         return callback dom($.root().get(0).children)
 
