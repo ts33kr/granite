@@ -88,7 +88,7 @@ module.exports.GrandCentral = class GrandCentral extends Barebones
             unpacked = try JSON.parse message.toString()
             assert _.isPlainObject(unpacked), unpacking
             assert bs = Buffer.byteLength message, "utf8"
-            assert ivent = try event.toString().underline
+            assert ivent = event.toString().bold or null
             logger.debug caught.yellow, ivent, bs, ident
             return listener.call this, unpacked, event
 
