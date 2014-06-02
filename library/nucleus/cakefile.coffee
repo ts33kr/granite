@@ -40,6 +40,7 @@ _ = require "lodash"
 # the project. Use one of these instead of hardcoding the defaults!
 # See the task definitions below for information on defaults usage.
 DEFAULT_LIBRARY = "library"
+DEFAULT_PREAMBLE = "README.md"
 DEFAULT_ARTIFACTS = "artifacts"
 DEFAULT_DOCUMENTS = "documents"
 DEFAULT_SCOPING = "development"
@@ -58,6 +59,7 @@ module.exports = ->
     # options are shared among all of the tasks and the entire file!
     # Please refer to `Cakefile` and `CoffeeScript` for information.
     option "-l", "--library [PATH]", "Path to the library sources"
+    option "-p", "--preamble [PATH]", "An index file to use for docs"
     option "-a", "--artifacts [PATH]", "Path to the artifacts directory"
     option "-d", "--documents [PATH]", "Path to the documents directory"
     option "-s", "--scoping [SCOPE]", "The name of the scope to boot kernel"
@@ -72,8 +74,9 @@ module.exports = ->
     # Please see the implementation for some of the important details
     task "documents", "generate the library documentation", (options) ->
         assert library = options.library or DEFAULT_LIBRARY
+        assert preamble = option.preamble or DEFAULT_PREAMBLE
         assert documents = options.documents or DEFAULT_DOCUMENTS
-        [pattern, index] = ["#{library}/**/*.coffee", "README.md"]
+        [pattern, index] = ["#{library}/**/*.coffee", preamble]
         parameters = [pattern, "Cakefile", index, "-o", documents]
         parameters.push "--github" if g = "git-hub-pages" of options
         logger.info "Publishing docs to GitHub pages".yellow if g
