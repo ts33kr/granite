@@ -71,15 +71,15 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
     # implementation for greater understanding of what it does exactly.
     # The resulting value is a string with compiled JavaScript code.
     # Uses `cheerio` library (jQuery for server) to do the rendering.
-    compileContext: (context, callback) ->
-        assert _.isObject $ = cheerio.load "<!DOCTYPE html>"
-        assert $.root().append html = $ "<html>" # set a root
-        xs = (src) -> rel: "stylesheet", href: src.toString()
-        xl = (elem) -> return try elem.attr type: "text/css"
-        xr = (elem, text) -> elem.attr src: text.toString()
+    contextRendering: (context, callback) ->
+        assert $ = cheerio.load "<!DOCTYPE html>"
+        assert $.root().append html = $ "<html>"
+        xl = (e) -> return e.attr type: "text/css"
+        xr = (e, t) -> return e.attr src: t.toString()
+        xs = (s) -> rel: "stylesheet", href: s.toString()
         xo = (e, t) -> e.text(t).attr type: "text/javascript"
-        ha = (element) -> assert head.append element or null
-        html.append head = $("<head>"), body = $("<body>")
+        ha = (e) -> assert try head.append(e) or undefined
+        html.append head = $("<head>"), body = $ "<body>"
         {changes, sources, invokes} = context or Object()
         jstr = (object) -> try object.valueOf().toString()
         javascript = [].concat changes, sources, invokes
@@ -242,7 +242,7 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
                 this.root.emit.apply $root, arguments
             return receive context, null unless asm
             assert context = @compressContext context
-            this.compileContext context, (compiled) ->
+            this.contextRendering context, (compiled) ->
                 return receive context, compiled
         return prelude symbol, context, request
 
