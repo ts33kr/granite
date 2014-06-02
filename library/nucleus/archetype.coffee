@@ -94,6 +94,8 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
     constructor: (parameters...) ->
         currents = try @constructor.interceptors
         currents = [] unless _.isArray currents
+        return if _.isArray this.$icpCts or null
+        assert _.isArray this.$icpCts = currents
         ids = @constructor.identify().underline
         msg = "Intercepting an %s event at the %s"
         _.each currents, (record, index, linear) =>
