@@ -91,8 +91,8 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
         $('script[type*="javascript"]:empty').remove()
         assert not _.isEmpty doc = $.root().get(0) or 0
         @constructor.rendering() $, doc, (error, res) ->
-            assert.ifError error, "a rendering error"
-            callback dom(doc.children).toString()
+            assert.ifError error, "got rendering error"
+            return callback dom(doc.children), $, doc
 
     # This is an internal routine that performs a very important task
     # of deploying the context onto the call (client) site. It also
