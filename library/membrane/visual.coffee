@@ -97,7 +97,7 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
     # context object, which is defered to be done on the client site.
     # It basically embedds all the internals pieces to create context.
     deployContext: (context, symbol) ->
-        assert _.isObject(context), "malformed context"
+        assert _.isObject(context), "got malformed context"
         aexcess = ["scripts", "sources", "sheets", "styles"]
         bexcess = ["caching", "changes", "invokes", "metatag"]
         assert not _.isEmpty excess = aexcess.concat bexcess
