@@ -89,7 +89,7 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
         ha(xr($("<script>"), r)) for r in context.scripts
         ha(xo($("<script>"), jstr o)) for o in javascript
         $('script[type*="javascript"]:empty').remove()
-        return dom $.root().get(0).children
+        dom($.root().get(0).children).toString()
 
     # This is an internal routine that performs a very important task
     # of deploying the context onto the call (client) site. It also
