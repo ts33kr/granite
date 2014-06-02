@@ -57,8 +57,8 @@ module.exports.collectModules = (directory, shallow) ->
 # This is used to build up entire module hierarchy of the framework.
 # Values will be holding the package structure along with modules.
 module.exports.collectPackages = (closure, directory) ->
-    isDir = (p) -> stat(p).isDirectory()
-    stat = (p) -> return fs.statSync fix p
+    stat = (p) -> return try fs.statSync fix p
+    isDir = (p) -> return stat(p).isDirectory()
     fix = (p) -> return paths.join directory, p
     resolve = -> paths.resolve closure, directory
     directory = "library" unless directory or null
