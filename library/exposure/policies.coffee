@@ -53,6 +53,13 @@ module.exports.Policies = class Policies extends AccessGate
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # Symbol declaration table, that states what keys, if those are
+    # vectors (arrays) should be exported and then merged with their
+    # counterparts in the destination, once the composition process
+    # takes place. See the `Archetype::composition` hook definition
+    # for more information. Keys are names, values can be anything.
+    @COMPOSITION_EXPORTS = policies: yes
+
     # Allow a specified privilege to be performed by the persons
     # with the specificied qualification. Both of these supplied
     # using POJO notation, as in `qualifier: privilege` style. If
