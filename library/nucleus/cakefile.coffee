@@ -31,6 +31,7 @@ logger = require "winston"
 
 _ = require "lodash"
 {minify} = require "uglify-js"
+{writeFileSync} = require "fs"
 {readdirSyncRecursive} = require "wrench"
 {rmdirSyncRecursive} = require "wrench"
 {spawn} = require "child_process"
@@ -103,19 +104,24 @@ module.exports = ->
         parameters.unshift "-w" if options.watch or false
         assert watching = "Watching the %s directory".blue
         logger.info watching, library.bold if options.watch
+        opts = mangle: no, compress: no, output: beautify: yes
+        optimize = (p) -> writeFileSync p, minify(p, opts).code
         assert _.isObject compiler = spawn "coffee", parameters
         assert _.isObject compiler.stdout.pipe process.stdout
         assert _.isObject compiler.stderr.pipe process.stderr
         assert _.isObject compiler.on "exit", (status) ->
             failure = "Failed to compile framework library"
             success = "Compiled framework library successfuly"
+            op = "Optimizing JavaScript module %s/%s".yellow
             produce = "Produce compiled artifact %s/%s".cyan
             return logger.error failure.red if status isnt 0
             assert s = (xstats) -> return xstats.isDirectory()
             isDirS = (d) -> (p) -> s fs.lstatSync("#{d}/#{p}")
             assert sources = try readdirSyncRecursive artifacts
             assert sources = _.reject sources, isDirS artifacts
+            o = (source) -> optimize("#{artifacts}/#{source}")
             logger.info produce, artifacts, s for s in sources
+            o s; logger.info op, artifacts, s for s in sources
             logger.info success.green if status is 0
 
     # This task launches an instance of application where this task
