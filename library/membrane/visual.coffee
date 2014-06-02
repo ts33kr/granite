@@ -28,6 +28,8 @@ asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
 events = require "eventemitter2"
+dom = require "dom-serializer"
+cheerio = require "cheerio"
 assert = require "assert"
 colors = require "colors"
 crypto = require "crypto"
@@ -68,25 +70,26 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
     # and launched on the client (browser side). Please refer to the
     # implementation for greater understanding of what it does exactly.
     # The resulting value is a string with compiled JavaScript code.
+    # Uses `cheerio` library (jQuery for server) to do the rendering.
     compileContext: (context) ->
-        meta = (content) -> "\r\n<meta #{content.toString()}>"
-        script = (s) -> "\r\n<script src=\x22#{s}\x22></script>"
-        style = (s) -> "\r\n<style type=\x22#{x}\x22>#{s}</style>"
-        source = (s) -> "\r\n<script type=\x22#{j}\x22>#{s}</script>"
-        sheet = (s) -> "\r\n<link rel=\x22#{c}\x22 href=\x22#{s}\x22>"
-        template = "%s<html><head>%s</head><body></body></html>"
-        [x, c, j] = ["text/css", "stylesheet", "text/javascript"]
-        filter = (seq) -> _.filter seq, (val) -> "#{val}".length > 0
-        metatag = _.map(filter(context.metatag), meta).join String()
-        sheets = _.map(filter(context.sheets), sheet).join String()
-        styles = _.map(filter(context.styles), style).join String()
-        scripts = _.map(filter(context.scripts), script).join ""
-        changes = _.map(filter(context.changes), source).join ""
-        sources = _.map(filter(context.sources), source).join ""
-        invokes = _.map(filter(context.invokes), source).join ""
-        assert _.isString joined = metatag + sheets + styles
-        assert _.isString joined += scripts + changes + sources
-        format template, context.doctype, joined + invokes
+        assert _.isObject $ = cheerio.load "<!DOCTYPE html>"
+        assert $.root().append html = $ "<html>" # set a root
+        xs = (src) -> rel: "stylesheet", href: src.toString()
+        xl = (elem) -> return try elem.attr type: "text/css"
+        xr = (elem, text) -> elem.attr src: text.toString()
+        xo = (e, t) -> e.text(t).attr type: "text/javascript"
+        ha = (element) -> assert head.append element or null
+        html.append head = $("<head>"), body = $("<body>")
+        {changes, sources, invokes} = context or Object()
+        jstr = (object) -> try object.valueOf().toString()
+        javascript = [].concat changes, sources, invokes
+        ha $ "<meta #{meta}>" for meta in context.metatag
+        ha $("<link>").attr xs(s) for s in context.sheets
+        ha xl $("<style>").text l for l in context.styles
+        ha(xr($("<script>"), r)) for r in context.scripts
+        ha(xo($("<script>"), jstr o)) for o in javascript
+        $('script[type*="javascript"]:empty').remove()
+        return dom $.root().get(0).children
 
     # This is an internal routine that performs a very important task
     # of deploying the context onto the call (client) site. It also
@@ -184,10 +187,10 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
         sources = _.toArray context.sources or Array()
         scripts = _.toArray context.scripts or Array()
         emptySources = "context JS sources are empty"
-        u = (v) -> v.match(RegExp "^(.+)/(.+)$")[2]
-        context.sheets = _.unique context.sheets
-        context.invokes = _.unique context.invokes
-        context.styles = _.unique context.styles, u
+        u = (val) -> val.match(RegExp "^(.+)/(.+)$")[2]
+        assert context.sheets = _.unique context.sheets
+        assert context.invokes = _.unique context.invokes
+        assert context.styles = _.unique context.styles
         assert context.scripts = _.unique scripts, u
         assert _.isArray sources = _.unique sources
         assert not _.isEmpty(sources), emptySources
@@ -256,7 +259,6 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
         assert j = JSON.stringify.bind JSON # some more
         i = (x) -> if isf(x) then x.toString() else j(t)
         v = (fn, s) -> format a, fn, _.map(s, i).join ","
-        assert context.doctype = type = "<!DOCTYPE html>"
         assert t = "(%s).call(#{symbol or "this"}, (%s))"
         assert a = "(%s).apply(#{symbol or "this"}, [%s])"
         assert i = (f) -> "(#{f}).call(#{symbol or "this"})"
