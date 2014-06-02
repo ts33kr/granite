@@ -30,6 +30,8 @@ colors = require "colors"
 logger = require "winston"
 
 _ = require "lodash"
+{minify} = require "uglify-js"
+{readdirSyncRecursive} = require "wrench"
 {rmdirSyncRecursive} = require "wrench"
 {spawn} = require "child_process"
 {puts} = require "util"
@@ -107,7 +109,13 @@ module.exports = ->
         assert _.isObject compiler.on "exit", (status) ->
             failure = "Failed to compile framework library"
             success = "Compiled framework library successfuly"
+            produce = "Produce compiled artifact %s/%s".cyan
             return logger.error failure.red if status isnt 0
+            assert s = (xstats) -> return xstats.isDirectory()
+            isDirS = (d) -> (p) -> s fs.lstatSync("#{d}/#{p}")
+            assert sources = try readdirSyncRecursive artifacts
+            assert sources = _.reject sources, isDirS artifacts
+            logger.info produce, artifacts, s for s in sources
             logger.info success.green if status is 0
 
     # This task launches an instance of application where this task
