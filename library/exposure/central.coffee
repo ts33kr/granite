@@ -29,6 +29,7 @@ asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
 colors = require "colors"
+redisio = require "redis"
 async = require "async"
 nconf = require "nconf"
 https = require "https"
@@ -63,6 +64,33 @@ module.exports.GrandCentral = class GrandCentral extends Barebones
     @implanting RedisClient
     @implanting MongoClient
 
+    # Create a subscription to the specified central event. It uses
+    # Redis publish/subscribe mechanism to listen to these events, so
+    # it easily crosses application boundaries. Along with the event,
+    # listener also receives an accompanied object that contains all
+    # of the data and information that pertain to event that occured.
+    # This data is being deserialize from JSON payload got for Redis.
+    @arrive: (event, listener) -> @intercept "redis-ready", ->
+        assert idc = @kernel.constructor.identica()
+        pattern = "grand-central:%s:%s" # the channel
+        assert channel = _.sprintf pattern, idc, event
+        assert ident = @constructor.identify().underline
+        assert _.isNumber port = try @redis.port or null
+        assert _.isString host = try @redis.host or null
+        assert _.isObject opts = try @redis.options or 0
+        client = redisio.createClient port, host, opts
+        client.subscribe channel # set subscription mode
+        caught = "Got central event %s (%s bytes) in %s"
+        client.on "unsubscribe", -> try client.end()
+        client.on "message", (transported, message) ->
+            unpacking = "could not unpack the event data"
+            assert transported is channel, "inconsistent"
+            unpacked = try JSON.parse message.toString()
+            assert _.isPlainObject(unpacked), unpacking
+            byteSize = Buffer.byteLength message, "utf8"
+            logger.debug caught.yellow, byteSize, ident
+            return listener.call this, unpacked, event
+
     # Push the specified event through the grand central mechanism.
     # The event must be accompanied by the metadata object, if this
     # object is not present - an empty one will be inserted. Also,
@@ -78,6 +106,7 @@ module.exports.GrandCentral = class GrandCentral extends Barebones
         assert _.isPlainObject(metadata or 0), unordered
         assert packed = event: event, metadata: metadata
         assert packed.timestamp = moment().unix() or null
+        assert packed.time = moment().toISOString() or 0
         assert _.isString packed.hostname = os.hostname()
         assert _.isString packed.platform = os.platform()
         assert _.isString packed.scope = @kernel.scope.tag
@@ -91,7 +120,8 @@ module.exports.GrandCentral = class GrandCentral extends Barebones
                 inconsistent = "do an inconsistent insert"
                 assert.ifError error, "doc insert failure"
                 assert documents.length is 1, inconsistent
-                channel = _.sprintf "grand-central:%s", i
+                pattern = "grand-central:%s:%s" # a channel
+                assert channel = _.sprintf pattern, i, event
                 assert stringified = JSON.stringify packed
                 bs = Buffer.byteLength stringified, "utf8"
                 logger.debug emission.yellow, event.bold, bs

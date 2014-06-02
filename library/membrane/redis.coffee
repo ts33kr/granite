@@ -100,9 +100,10 @@ module.exports.RedisClient = class RedisClient extends Service
     instance: (kernel, service, next) ->
         return next undefined if _.has service, "redis"
         ack = "Acquire Redis client handle in %s".grey
+        sig = => this.emit "redis-ready", @redis or null
         define = -> Object.defineProperty arguments...
         mkp = (prop) -> define service, "redis", prop
-        dap = -> mkp arguments...; next(); return this
+        dap = -> mkp arguments...; next(); sig(); this
         dap enumerable: yes, configurable: no, get: ->
             redis = try @kernel.redis or undefined
             noRedis = "a kernel has no Redis client"

@@ -115,9 +115,10 @@ module.exports.MongoClient = class MongoClient extends Service
     instance: (kernel, service, next) ->
         return next undefined if _.has service, "mongo"
         ack = "Acquire MongoDB client handle in %s".grey
+        sig = => this.emit "mongo-ready", @mongo or null
         define = -> Object.defineProperty arguments...
         mkp = (prop) -> define service, "mongo", prop
-        dap = -> mkp arguments...; next(); return this
+        dap = -> mkp arguments...; next(); sig(); this
         dap enumerable: yes, configurable: no, get: ->
             mongo = try @kernel.mongo or undefined
             noMongo = "a kernel has no Mongo client"
