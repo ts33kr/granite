@@ -71,6 +71,7 @@ module.exports.GrandCentral = class GrandCentral extends Barebones
     # of the data and information that pertain to event that occured.
     # This data is being deserialize from JSON payload got for Redis.
     @arrive: (event, listener) -> @intercept "redis-ready", ->
+        caught = "Got central %s (%s bytes) in %s"
         assert idc = @kernel.constructor.identica()
         pattern = "grand-central:%s:%s" # the channel
         assert channel = _.sprintf pattern, idc, event
@@ -80,15 +81,15 @@ module.exports.GrandCentral = class GrandCentral extends Barebones
         assert _.isObject opts = try @redis.options or 0
         client = redisio.createClient port, host, opts
         client.subscribe channel # set subscription mode
-        caught = "Got central event %s (%s bytes) in %s"
         client.on "unsubscribe", -> try client.end()
         client.on "message", (transported, message) ->
             unpacking = "could not unpack the event data"
             assert transported is channel, "inconsistent"
             unpacked = try JSON.parse message.toString()
             assert _.isPlainObject(unpacked), unpacking
-            byteSize = Buffer.byteLength message, "utf8"
-            logger.debug caught.yellow, byteSize, ident
+            assert bs = Buffer.byteLength message, "utf8"
+            assert ivent = try event.toString().underline
+            logger.debug caught.yellow, ivent, bs, ident
             return listener.call this, unpacked, event
 
     # Push the specified event through the grand central mechanism.
@@ -111,10 +112,19 @@ module.exports.GrandCentral = class GrandCentral extends Barebones
         assert _.isString packed.platform = os.platform()
         assert _.isString packed.scope = @kernel.scope.tag
         assert _.isObject packed.server = nconf.get "server"
+        return this.publishCentralEvent event, packed
+
+    # A part of the internal implementation of the central events
+    # mechanism. Method implements the propagation semantic itself,
+    # once all of the preparations and container creation routines
+    # are finished and the event, along with its accompanied object
+    # is ready to be sent away, this method is invoked internally.
+    # It takes care of publishing the event into Mongo and Redis.
+    publishCentralEvent: (event, packed) ->
         assert cn = nconf.get("central:collection") or null
         i = packed.identica = @kernel.constructor.identica()
         o = try nconf.get "central:options" or new Object()
-        emission = "Central event %s with %s bytes of data"
+        emission = "Publish central %s with %s bytes of data"
         @mongo.createCollection cn, o, (error, collection) =>
             assert.ifError error, "create collection fail"
             collection.insert packed, (error, documents) =>
