@@ -71,7 +71,7 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
     # implementation for greater understanding of what it does exactly.
     # The resulting value is a string with compiled JavaScript code.
     # Uses `cheerio` library (jQuery for server) to do the rendering.
-    compileContext: (context) ->
+    compileContext: (context, callback) ->
         assert _.isObject $ = cheerio.load "<!DOCTYPE html>"
         assert $.root().append html = $ "<html>" # set a root
         xs = (src) -> rel: "stylesheet", href: src.toString()
@@ -89,7 +89,7 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
         ha(xr($("<script>"), r)) for r in context.scripts
         ha(xo($("<script>"), jstr o)) for o in javascript
         $('script[type*="javascript"]:empty').remove()
-        dom($.root().get(0).children).toString()
+        return callback dom($.root().get(0).children)
 
     # This is an internal routine that performs a very important task
     # of deploying the context onto the call (client) site. It also
@@ -240,9 +240,10 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
             context.inline -> this.externals.push "eco"
             context.inline -> assert @broadcast = ->
                 this.root.emit.apply $root, arguments
-            context = @compressContext context if asm
-            compiled = @compileContext context if asm
-            return receive context, compiled or null
+            return receive context, null unless asm
+            assert context = @compressContext context
+            this.compileContext context, (compiled) ->
+                return receive context, compiled
         return prelude symbol, context, request
 
     # An internally used routine, part of the context assembly proc.
