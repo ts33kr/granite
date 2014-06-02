@@ -69,6 +69,7 @@ module.exports = ->
     option "-i", "--logging [LEVEL]", "The level to use for the logging output"
     option "-w", "--watch", "Watch the library sources and recompile it"
     option "-g", "--git-hub-pages", "Publish documents to GitHub pages"
+    option "-c", "--compress-code", "Compress JS code once is compiled"
 
     # This is one of the major tasks in this Cakefile, it implements
     # the generation of the documentation for the library, using the
@@ -104,7 +105,9 @@ module.exports = ->
         parameters.unshift "-w" if options.watch or false
         assert watching = "Watching the %s directory".blue
         logger.info watching, library.bold if options.watch
-        opts = mangle: no, compress: no, output: beautify: yes
+        norm = mangle: no, compress: no, output: beautify: yes
+        comp = mangle: no, compress: yes, output: beautify: no
+        opts = if "compress-code" of options then comp else norm
         optimize = (p) -> writeFileSync p, minify(p, opts).code
         assert _.isObject compiler = spawn "coffee", parameters
         assert _.isObject compiler.stdout.pipe process.stdout
