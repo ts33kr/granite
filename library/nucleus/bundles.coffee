@@ -40,6 +40,7 @@ scoping = require "./scoping"
 # that are bundled with the framework are pretty standard and
 # should generally cover 95% percent of the typical web needs.
 # Of course you are free to define as much scopes as you need.
+# The scope contains all the configuration defaults of Granite.
 module.exports.PRODUCTION = new scoping.Scope "production", ->
     @synopsis = "Final production environment for end users"
     @overrides = layout: library: "library", config: "config"
@@ -53,6 +54,8 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
+    @defaults.central = enabled: yes, collection: "g-central"
+    @defaults.central.options = capped: yes, size: 2147483648
     @defaults.session.key = "granite.session.identification"
     @defaults.watch = dirs: [], force: yes, reboot: false
     @defaults.threshold = lag: 70, reason: "overloaded"
@@ -72,6 +75,7 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
 # that are bundled with the framework are pretty standard and
 # should generally cover 95% percent of the typical web needs.
 # Of course you are free to define as much scopes as you need.
+# The scope contains all the configuration defaults of Granite.
 module.exports.STAGING = new scoping.Scope "staging", ->
     @synopsis = "An environment between staging and production"
     @overrides = layout: library: "library", config: "config"
@@ -85,6 +89,8 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
+    @defaults.central = enabled: yes, collection: "g-central"
+    @defaults.central.options = capped: yes, size: 2147483648
     @defaults.session.key = "granite.session.identification"
     @defaults.watch = dirs: [], force: yes, reboot: false
     @defaults.threshold = lag: 70, reason: "overloaded"
@@ -104,6 +110,7 @@ module.exports.STAGING = new scoping.Scope "staging", ->
 # that are bundled with the framework are pretty standard and
 # should generally cover 95% percent of the typical web needs.
 # Of course you are free to define as much scopes as you need.
+# The scope contains all the configuration defaults of Granite.
 module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @synopsis = "Unstable working environment for developers"
     @overrides = layout: library: "library", config: "config"
@@ -117,6 +124,8 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
+    @defaults.central = enabled: yes, collection: "g-central"
+    @defaults.central.options = capped: yes, size: 2147483648
     @defaults.session.key = "granite.session.identification"
     @defaults.watch = dirs: [], force: yes, reboot: 100
     @defaults.threshold = lag: 70, reason: "overloaded"
@@ -136,6 +145,7 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
 # that are bundled with the framework are pretty standard and
 # should generally cover 95% percent of the typical web needs.
 # Of course you are free to define as much scopes as you need.
+# The scope contains all the configuration defaults of Granite.
 module.exports.TESTING = new scoping.Scope "testing", ->
     @synopsis = "Isolated environment for running the tests"
     @overrides = layout: library: "library", config: "config"
@@ -149,6 +159,8 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.log = request: {format: "dev", level: "debug"}
     @defaults.secure.key = "#{__dirname}/../../keys/key.pem"
     @defaults.secure.cert = "#{__dirname}/../../keys/cert.pem"
+    @defaults.central = enabled: yes, collection: "g-central"
+    @defaults.central.options = capped: yes, size: 2147483648
     @defaults.session.key = "granite.session.identification"
     @defaults.watch = dirs: [], force: yes, reboot: 100
     @defaults.threshold = lag: 70, reason: "overloaded"
