@@ -113,8 +113,8 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
         noFunction = "no rendering function given"
         wrongUsage = "should accept >= 2 arguments"
         {series, apply} = async or require "async"
-        fn = (s) -> (j, d, c) -> series pp(s, j, d), c
-        pp = (s, j, dm) -> (apply f, j, dm for f in s)
+        fn = (s) -> (j, d, c) -> series pp.call(@, s, j, d), c
+        pp = (s, j, dm) -> (apply f.bind(@), j, dm for f in s)
         assert previous = @renderers or new Array()
         assert previous = try _.clone previous or []
         return fn previous if arguments.length is 0
