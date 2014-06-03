@@ -79,7 +79,7 @@ module.exports.RedisClient = class RedisClient extends Service
         {host, port, options} = envelope.redis or Object()
         message = "Disconnecting from Redis at %s:%s"
         warning = "Latest Redis envelope was not a kernel"
-        logger.info message.toString().red, host, port
+        logger.info message.underline.magenta, host, port
         logger.debug warning.grey unless envelope is kernel
         try @emit "redis-gone", envelope.redis, envelope
         try kernel.emit? "redis-gone", envelope.redis, @
@@ -107,7 +107,7 @@ module.exports.RedisClient = class RedisClient extends Service
         noRedis = "Something has gone wrong, no Redis client"
         warning = "Latest Redis envelope was not a kernel".grey
         assert spawner = redisio.createClient.bind redisio
-        logger.info message.toString().red, host, port
+        logger.info message.underline.magenta, host, port
         logger.debug warning unless envelope is kernel
         envelope.redis = spawner port, host, options
         assert _.isObject(envelope.redis), noRedis

@@ -54,20 +54,37 @@ module.exports.MongoClient = class MongoClient extends Service
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # These defintions are the presets available for configuring
+    # the Mongo envelope getting functions. Please set the special
+    # class value `MONGO_ENVELOPE` to either one of these values or
+    # to a custom function that will generate/retrieve the Mongo
+    # envelope, when necessary. Depending on this, the system will
+    # generate a new connection on the container, if it does not
+    # contain an opened connection yet. The default container is
+    # the kernel preset using the `MONGO_ENVELOPE_KERNEL` value.
+    @MONGO_ENVELOPE_KERNEL = -> return @kernel
+    @MONGO_ENVELOPE_SERVICE = -> @$mongo ?= {}
+
     # A hook that will be called prior to unregistering the service
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
+    # This implementation correctly ends Mongo connection, if any.
     unregister: (kernel, router, next) ->
-        return next() unless _.isObject kernel.mongo
-        database = kernel.mongo._db or kernel.mongo
+        @constructor.MONGO_ENVELOPE ?= -> kernel
+        envelope = this.constructor.MONGO_ENVELOPE
+        envelope = try envelope.apply this, arguments
+        return next() unless _.isObject envelope.mongo
+        database = envelope.mongo._db or envelope.mongo
         {host, port, options} = database.serverConfig
         message = "Disconnecting from Mongo at %s:%s"
-        logger.info message.cyan.underline, host, port
-        try @emit "mongo-gone", kernel.redis, kernel
-        try kernel.emit? "mongo-gone", kernel.redis
-        kernel.mongo.close(); delete kernel.mongo
+        warning = "Latest Mongo envelope was not a kernel"
+        logger.info message.underline.magenta, host, port
+        logger.debug warning.grey unless envelope is kernel
+        try @emit "mongo-gone", envelope.mongo, envelope
+        try kernel.emit? "mongo-gone", envelope.mongo, @
+        envelope.mongo.close(); delete envelope.mongo
         next.call this, undefined; return this
 
     # A hook that will be called prior to registering the service
@@ -75,19 +92,25 @@ module.exports.MongoClient = class MongoClient extends Service
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
+    # This implementation open a new Mongo connection, if configed.
     register: (kernel, router, next) ->
-        config = nconf.get("mongo") or null
-        return next() unless _.isObject config
-        return next() if _.isObject kernel.mongo
-        {host, port, options} = config or Object()
+        @constructor.MONGO_ENVELOPE ?= -> kernel
+        envelope = this.constructor.MONGO_ENVELOPE
+        envelope = envelope.apply this, arguments
+        assert config = nconf.get("mongo") or null
+        return next() unless _.isObject config or 0
+        return next() if _.isObject try envelope.mongo
+        {host, port, options} = config or new Object()
         assert _.isString(host), "got invalid Mongo host"
         assert _.isNumber(port), "got invalid Mongo port"
         assert _.isObject(options), "invalid Mongo options"
         assert message = "Connecting to MongoDB at %s:%s"
-        logger.info message.cyan.underline, host, port
+        warning = "Latest Mongo envelope was not a kernel"
+        logger.info message.underline.magenta, host, port
+        logger.debug warning.grey unless envelope is kernel
         server = new mongodb.Server host, port, options
-        kernel.mongo = new mongodb.MongoClient server
-        return kernel.mongo.open (error, client) =>
+        envelope.mongo = new mongodb.MongoClient server
+        return envelope.mongo.open (error, client) =>
             @openMongoConnection next, error, client
 
     # A presumably internal method that gets invoked by the primary
@@ -95,16 +118,21 @@ module.exports.MongoClient = class MongoClient extends Service
     # configured MongoDB database and if relevant - set up required
     # premises, such as the database name, among other things. This
     # method should not be called directly in most if cases at hand.
+    # Please refer to `MongoClient#register` method implementation.
     openMongoConnection: (next, error, client) ->
+        @constructor.MONGO_ENVELOPE ?= -> kernel
+        envelope = this.constructor.MONGO_ENVELOPE
+        envelope = try envelope.apply this, arguments
         assert _.isObject config = nconf.get "mongo"
         assert.ifError error, "mongo failed: #{error}"
-        assert.ok _.isObject @kernel.mongo = client
+        assert.ok _.isObject envelope.mongo = client
         scope = _.isString database = config.database
         message = "Setting the MongoDB database: %s"
-        @kernel.mongo = client.db database if scope
+        assert message = message.toString().underline
+        envelope.mongo = client.db database if scope
         logger.info message.magenta, database if scope
-        @emit "mongo-ready", @kernel.redis, @kernel
-        @kernel.emit "mongo-ready", @kernel.redis
+        @emit "mongo-ready", envelope.mongo, envelope
+        @kernel.emit "mongo-ready", envelope.mongo, @
         next.call this, undefined; return this
 
     # A hook that will be called prior to instantiating the service
@@ -112,7 +140,11 @@ module.exports.MongoClient = class MongoClient extends Service
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
+    # This implementation sets the Redis connection access handle.
     instance: (kernel, service, next) ->
+        @constructor.MONGO_ENVELOPE ?= -> kernel
+        envelope = this.constructor.MONGO_ENVELOPE
+        envelope = try envelope.apply this, arguments
         return next undefined if _.has service, "mongo"
         ack = "Acquire MongoDB client handle in %s".grey
         sig = => this.emit "mongo-ready", @mongo or null
@@ -120,8 +152,8 @@ module.exports.MongoClient = class MongoClient extends Service
         mkp = (prop) -> define service, "mongo", prop
         dap = -> mkp arguments...; next(); sig(); this
         dap enumerable: yes, configurable: no, get: ->
-            mongo = try @kernel.mongo or undefined
-            noMongo = "a kernel has no Mongo client"
+            mongo = try envelope.mongo or undefined
+            noMongo = "an envelope has no Mongo client"
             identify = try this.constructor.identify()
             try logger.debug ack, identify.underline
             assert _.isObject(mongo), noMongo; mongo
