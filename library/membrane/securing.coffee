@@ -47,7 +47,7 @@ tools = require "../nucleus/tools"
 # ensured to be the same client that tried to connect over duplex
 # channel. Also, each request has a TTL for the duplex connection.
 # The implementation depends on `RedisClient` and running Redis!
-module.exports.MarkDuplex = class RDuplex extends MarkDuplex
+module.exports.MarkingDuplex = class MarkingDuplex extends Duplex
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
