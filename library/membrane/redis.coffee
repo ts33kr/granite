@@ -54,19 +54,36 @@ module.exports.RedisClient = class RedisClient extends Service
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # These defintions are the presets available for configuring
+    # the Redis envelope getting functions. Please set the special
+    # class value `REDIS_ENVELOPE` to either one of these values or
+    # to a custom function that will generate/retrieve the Redis
+    # envelope, when necessary. Depending on this, the system will
+    # generate a new connection on the container, if it does not
+    # contain an opened connection yet. The default container is
+    # the kernel preset using the `REDIS_ENVELOPE_KERNEL` value.
+    @REDIS_ENVELOPE_KERNEL = -> return @kernel
+    @REDIS_ENVELOPE_SERVICE = -> @$redis ?= {}
+
     # A hook that will be called prior to unregistering the service
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
+    # This implementation correctly ends Redis connection, if any.
     unregister: (kernel, router, next) ->
-        return next() unless _.isObject kernel.redis
-        {host, port, options} = kernel.redis or Object()
+        @constructor.REDIS_ENVELOPE ?= -> kernel
+        envelope = this.constructor.REDIS_ENVELOPE
+        envelope = try envelope.apply this, arguments
+        return next() unless _.isObject envelope.redis
+        {host, port, options} = envelope.redis or Object()
         message = "Disconnecting from Redis at %s:%s"
-        logger.info message.toString().cyan, host, port
-        try @emit "redis-gone", kernel.redis, kernel
-        try kernel.emit? "redis-gone", kernel.redis
-        try kernel.redis.end(); delete kernel.redis
+        warning = "Latest Redis envelope was not a kernel"
+        logger.info message.toString().red, host, port
+        logger.debug warning.grey unless envelope is kernel
+        try @emit "redis-gone", envelope.redis, envelope
+        try kernel.emit? "redis-gone", envelope.redis, @
+        try envelope.redis.end(); delete envelope.redis
         next.call this, undefined; return this
 
     # A hook that will be called prior to registering the service
@@ -74,22 +91,28 @@ module.exports.RedisClient = class RedisClient extends Service
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
+    # This implementation open a new Redis connection, if configed.
     register: (kernel, router, next) ->
-        config = nconf.get "redis" or null
-        return next() unless _.isObject config
-        return next() if _.isObject kernel.redis
-        {host, port, options} = config or Object()
+        @constructor.REDIS_ENVELOPE ?= -> kernel
+        envelope = this.constructor.REDIS_ENVELOPE
+        envelope = envelope.apply this, arguments
+        assert config = nconf.get("redis") or null
+        return next() unless _.isObject config or 0
+        return next() if _.isObject try envelope.redis
+        {host, port, options} = config or new Object()
         assert _.isString(host), "got invalid Redis host"
         assert _.isNumber(port), "git invalid Redis port"
         assert _.isObject(options), "invalid Redis options"
         message = "Connecting to Redis at %s:%s".toString()
         noRedis = "Something has gone wrong, no Redis client"
+        warning = "Latest Redis envelope was not a kernel".grey
         assert spawner = redisio.createClient.bind redisio
-        logger.info message.toString().cyan, host, port
-        kernel.redis = spawner port, host, options
-        assert _.isObject(kernel.redis), noRedis
-        @emit "redis-ready", kernel.redis, kernel
-        kernel.emit "redis-ready", kernel.redis
+        logger.info message.toString().red, host, port
+        logger.debug warning unless envelope is kernel
+        envelope.redis = spawner port, host, options
+        assert _.isObject(envelope.redis), noRedis
+        kernel.emit "redis-ready", envelope.redis, @
+        @emit "redis-ready", envelope.redis, kernel
         next.call this, undefined; return this
 
     # A hook that will be called prior to instantiating the service
@@ -97,7 +120,11 @@ module.exports.RedisClient = class RedisClient extends Service
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
+    # This implementation sets the Redis connection access handle.
     instance: (kernel, service, next) ->
+        @constructor.REDIS_ENVELOPE ?= -> kernel
+        envelope = this.constructor.REDIS_ENVELOPE
+        envelope = try envelope.apply this, arguments
         return next undefined if _.has service, "redis"
         ack = "Acquire Redis client handle in %s".grey
         sig = => this.emit "redis-ready", @redis or null
@@ -105,8 +132,8 @@ module.exports.RedisClient = class RedisClient extends Service
         mkp = (prop) -> define service, "redis", prop
         dap = -> mkp arguments...; next(); sig(); this
         dap enumerable: yes, configurable: no, get: ->
-            redis = try @kernel.redis or undefined
-            noRedis = "a kernel has no Redis client"
+            redis = try envelope.redis or undefined
+            noRedis = "an envelope has no Redis client"
             identify = try this.constructor.identify()
             try logger.debug ack, identify.underline
             assert _.isObject(redis), noRedis; redis
