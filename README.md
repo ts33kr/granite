@@ -152,6 +152,16 @@ Use http://ts33kr.github.io/granite for browsing.
   Also take a look at [locale/tracked.yaml](locale/tracked.yaml) for
   the real world example of translation tables for the specific service.
 
+  + Centralized mechanism for application level events publishing and
+  book keeping. Basically, allows you to publish an application event
+  that will be automatically propagated to all application nodes, via
+  Redis pub/sub mechanism, and then the event and all its metadata will
+  be stored in a capped collection in MongoDB. This toolkit gives you
+  an ability to keep an effective application log and stream events
+  from a tailable MongoDB cursor, receiving the real time information.
+  Please see [exposure/central.coffee](library/exposure/central.coffee)
+  source code for the centralized messaging system implementation.
+
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
 of some of the specifics regarding its usage. The first and foremost
