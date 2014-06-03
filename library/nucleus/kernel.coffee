@@ -464,6 +464,7 @@ module.exports.Generic = class Generic extends Archetype
         bare = "Running without Forever supervision"
         supd = "Running using %s mode within Forever"
         assert not _.isEmpty(tag), missing.toString()
+        assert @tag = @env = @environment = tag or null
         assert @scope = try scoping.Scope.lookup tag
         assert this.scope.incorporate this, undefined
         logger.warn bare.toString().red unless mode
