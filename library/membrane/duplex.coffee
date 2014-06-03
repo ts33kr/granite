@@ -266,6 +266,7 @@ module.exports.Duplex = class Duplex extends Preflight
         @emit "socketing", this.socket, this.duplex, options
         failed = "failed to establish the Socket.IO connection"
         assert this.socket.emit, failed; this.socketFeedback()
+        $(window).unload => @emit "unload"; @socket.emit "unload"
         osc = (listener) => this.socket.on "connect", listener
         osc => @socket.emit "screening", _.pick(@, @snapshot), =>
             assert @consumeProviders; @consumeProviders @socket
