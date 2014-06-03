@@ -99,7 +99,7 @@ module.exports.GrandCentral = class GrandCentral extends Barebones
     # some other useful data, when it will be build the container.
     # The event will be persisted in the MongoDB and propagate to an
     # every node that may listen to it via the pub/sub kit of Redis.
-    central: (event, metadata=new Object()) ->
+    central: (event, metadata=new Object(), append) ->
         deficient = "supplied event name is not correct"
         unordered = "must have the valid metadata object"
         return unless nconf.get("central:enabled") is yes
@@ -112,6 +112,8 @@ module.exports.GrandCentral = class GrandCentral extends Barebones
         assert _.isString packed.platform = os.platform()
         assert _.isString packed.scope = @kernel.scope.tag
         assert _.isObject packed.server = nconf.get "server"
+        append = _.find(arguments, _.isFunction) or append
+        append.call @, event, metadata, packed if append
         return this.publishCentralEvent event, packed
 
     # A part of the internal implementation of the central events
