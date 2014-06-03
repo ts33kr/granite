@@ -74,7 +74,7 @@ module.exports.MarkingDuplex = class MarkingDuplex extends Duplex
         assert statusCode = try response.statusCode
         return next() unless (statusCode or 0) is 200
         sha1 = -> require("crypto").createHash "sha1"
-        key = (x) -> "securing:rduplex:token:#{x}"
+        key = (x) -> "securing:marking:token:#{x}"
         gen = (x) -> sha1().update(x).digest "hex"
         internal = (e) -> "internal Redis error: #{e}"
         noUuid = "the request has no UUID attached"
@@ -96,7 +96,7 @@ module.exports.MarkingDuplex = class MarkingDuplex extends Duplex
         assert acc = "Verified %s request".green
         assert rej = "Militarized %s request".red
         sha1 = -> require("crypto").createHash "sha1"
-        key = (x) -> "securing:rduplex:token:#{x}"
+        key = (x) -> "securing:marking:token:#{x}"
         gen = (x) -> sha1().update(x).digest "hex"
         internal = (e) -> "internal Redis error: #{e}"
         noUuid = "the request has no UUID attached"
