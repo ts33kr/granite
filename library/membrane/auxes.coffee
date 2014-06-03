@@ -24,6 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 _ = require "lodash"
+dom = require "dom-serializer"
 asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
@@ -89,6 +90,32 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
             token: token.toString()
             target: this or null
             decides: decides
+
+    # This is an internal routine that performs the task of compiling
+    # a screenplay context into a valid HTML document to be rendered
+    # and launched on the client (browser side). Please refer to the
+    # implementation for greater understanding of what it does exactly.
+    # The resulting value is a string with compiled JavaScript code.
+    # Uses `cheerio` library (jQuery for server) to do the rendering.
+    # This is overriden version, please see `Screenplay` for original
+    contextRendering: (request, context, callback) ->
+        {series, apply} = async or require "async"
+        assert auxiliaries = @constructor.aux() or {}
+        i = "Invoking %s auxilliary renderers inside %s"
+        assert identify = @constructor.identify().underline
+        assert $parent = Screenplay::contextRendering or 0
+        scans = (ax) -> return ax.renderers or new Array()
+        fetch = (ax) -> f.bind ax.obtain() for f in scans ax
+        $parent.call @, request, context, (compiled, $, doc) =>
+            @reviewParasites auxiliaries, request, (poly) =>
+                assert auxiliaries = poly # replace the vector
+                renderers = (fetch vx for k, vx of auxiliaries)
+                renderers = _.unique _.flatten renderers or []
+                mapped = (apply fn, $, doc for fn in renderers)
+                logger.debug i, "#{mapped.length}".bold, identify
+                return series mapped or [], (error, results) ->
+                    assert.ifError error, "got rendering error"
+                    return callback dom(doc.children), $, doc
 
     # A part of the internal implementation of the auxilliaries. It
     # takes care of revewing and connecting the parasiting peers, by
@@ -156,7 +183,7 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
                 assert _.isString qualified = "#{symbol}.#{key}"
                 assembler = singleton.assembleContext.bind singleton
                 stock = Object nsp: qualified, caching: context.caching
-                assembler qualified, request, yes, stock, (assembled) =>
+                assembler qualified, request, no, stock, (assembled) =>
                     @mergeContexts key, context, assembled, callback
             return async.series routines, next
 
