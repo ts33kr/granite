@@ -64,8 +64,8 @@ module.exports.OnlyMaster = class OnlyMaster extends Barebones
         inbound = request.connection.address()
         assert server = @kernel.server.address()
         assert secure = @kernel.secure.address()
-        assert not _.isEmpty "#{str(inbound)}"
-        assert master = nconf.get "master:host"
+        assert not _.isEmpty try "#{str(inbound)}"
+        assert master = try nconf.get "master:host"
         return next() if str(inbound) is str(server)
         return next() if str(inbound) is str(secure)
         return next() if str(inbound) is master
