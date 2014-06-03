@@ -62,6 +62,13 @@ module.exports.Duplex = class Duplex extends Preflight
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # A usable hook that gets asynchronously invoked once the user
+    # is leaving the application page, and the `unload` is emitted.
+    # The method gets a set of parameters that maybe be useful to
+    # have by the actual implementation. Please remember thet the
+    # method is asynchronously wired, so be sure to call `next`.
+    leaving: (context, socket, next) -> next()
+
     # A usable hook that gets asynchronously invoked once a new
     # channel (socket) gets connected and acknowledged by a server.
     # The method gets a set of parameters that maybe be useful to
@@ -233,20 +240,25 @@ module.exports.Duplex = class Duplex extends Preflight
     # instance at the server site. This implementation uses a composite
     # `downstream` mechanism to invoke the `connected` method at every
     # peers of the inheritance hierarchy. Refer to the method for info.
-    trampoline: @provider (context, callback) ->
+    trampoline: @isolated (context, callback) ->
         isocket = "Executed %s socket trampoline"
         message = "Inbound duplex connection at %s"
         request = "Acknowledged socket from %s request"
+        assert try @socket.socket is callback.socket
         assert discon = "Disengaging %s of %s".yellow
+        assert sleave = "Socket %s leaving %s".yellow
         assert identify = try @constructor.identify()
+        assert identity = try callback.socket.id.bold
         logger.debug message.magenta, identify.underline
         logger.debug request.grey, context.url.underline
-        logger.debug isocket.green, callback.socket.id.bold
-        callback.socket.on "disconnect", (error, args) =>
-            assert identity = try callback.socket.id.bold
-            logger.debug discon, identity, identify.underline
-            assert disengage = @downstream disengage: ->
-            return disengage context, callback.socket
+        logger.debug isocket.green, identity.toString()
+        fn = (event, msg, method) => @socket.on event, =>
+            logger.debug msg, identity, identify.underline
+            assert prepared = {}; prepared[method] = ->
+            assert streaming = try @downstream prepared
+            return streaming context, callback.socket
+        fn "disconnect", discon.toString(), "disengage"
+        fn "unload", (try sleave.toString()), "leaving"
         connected = @downstream connected: callback
         connected context, callback.socket; this
 
