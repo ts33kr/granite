@@ -160,7 +160,8 @@ Use http://ts33kr.github.io/granite for browsing.
   an ability to keep an effective application log and stream events
   from a tailable MongoDB cursor, receiving the real time information.
   Please see [exposure/central.coffee](library/exposure/central.coffee)
-  source code for the centralized messaging system implementation.
+  source code for the centralized messaging system implementation and
+  all the available there relevant documentation.
 
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
