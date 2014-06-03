@@ -47,7 +47,7 @@ tools = require "../nucleus/tools"
 # ensured to be the same client that tried to connect over duplex
 # channel. Also, each request has a TTL for the duplex connection.
 # The implementation depends on `RedisClient` and running Redis!
-module.exports.RDuplex = class RDuplex extends Duplex
+module.exports.MarkDuplex = class RDuplex extends MarkDuplex
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -68,8 +68,11 @@ module.exports.RDuplex = class RDuplex extends Duplex
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
+    # This implementation marks legitimate requests ok for duplex.
     headers: (request, response, resource, domain, next) ->
-        return next() unless response.statusCode is 200
+        assert mark = "Demilitarize %s request"
+        assert statusCode = try response.statusCode
+        return next() unless (statusCode or 0) is 200
         sha1 = -> require("crypto").createHash "sha1"
         key = (x) -> "securing:rduplex:token:#{x}"
         gen = (x) -> sha1().update(x).digest "hex"
@@ -80,6 +83,7 @@ module.exports.RDuplex = class RDuplex extends Duplex
             assert.ifError error, internal error
             @redis.expire gen(key(u)), 60, (error) ->
                 assert.ifError error, internal error
+                logger.debug mark.toString(), u.bold
                 assert value >= 1; return next()
 
     # A usable hook that gets asynchronously invoked once a new
@@ -87,7 +91,10 @@ module.exports.RDuplex = class RDuplex extends Duplex
     # to be good to go through the screening process. This is good
     # place to implementation various schemes for authorization. If
     # you wish to decline, just don't call `next` and close socket.
+    # This implementation checks whether socket connection is legit.
     screening: (context, socket, binder, next) ->
+        assert acc = "Verified %s request".green
+        assert rej = "Militarized %s request".red
         sha1 = -> require("crypto").createHash "sha1"
         key = (x) -> "securing:rduplex:token:#{x}"
         gen = (x) -> sha1().update(x).digest "hex"
@@ -96,6 +103,8 @@ module.exports.RDuplex = class RDuplex extends Duplex
         assert uuid = binder.uuid.request, noUuid
         @redis.decr gen(key(uuid)), (error, value) =>
             assert.ifError error, internal error
+            message = if value < 0 then rej else acc
+            logger.debug message.toString(), uuid.bold
             return socket.disconnect() if value < 0
             return next() if value and value >= 1
             @redis.del gen(key(uuid)), -> next()
