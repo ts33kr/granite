@@ -32,6 +32,7 @@ socketio = require "socket.io"
 uuid = require "node-uuid"
 colors = require "colors"
 assert = require "assert"
+redisio = require "redis"
 async = require "async"
 nconf = require "nconf"
 https = require "https"
@@ -364,57 +365,34 @@ module.exports.Generic = class Generic extends Archetype
     # it just sets it up. Please refer to the Socket.IO docs for info.
     # Also, see the `configureSocketServers` method implementation.
     setupSocketServers: ->
-        assert _.isObject(sconfig = nconf.get "socket")
+        assert _.isObject sconfig = nconf.get "socket"
         logger.info "Attaching Socket.IO to HTTPS server"
         logger.info "Attaching Socket.IO to HTTP server"
         newMessage = "New Socket.IO connected at %s server"
         newSocket = (o) -> logger.debug newMessage.grey, o
         assert @secureSocket = socketio.listen @secure, sconfig
         assert @serverSocket = socketio.listen @server, sconfig
-        @configureSocketServers @serverSocket, @secureSocket
+        @domain.add @serverSocket; @domain.add @secureSocket
         @secureSocket.on "connection", -> newSocket "HTTPS"
         @serverSocket.on "connection", -> newSocket "HTTP"
         return @on "redis-ready", (redis) => do (redis) =>
             message = "Attaching Redis storage to sockets"
             logger.debug message.toString().cyan if logger
-            assert disposition = Object redisClient: redis
-            disposition.redisPub = disposition.redisClient
-            disposition.redisSub = disposition.redisClient
-            assert compiled = new RedisStore disposition
-            assert _.isFunction pub = try compiled.publish
-            compiled.publish = (n) -> pub.call compiled, n
-            @secureSocket.set "store", compiled or {}
-            @serverSocket.set "store", compiled or {}
-
-    # This configuration utility sets up the environment for the
-    # Socket.IO server in the current kernel. Basically, this does
-    # the socket server configuration using the Socket.IO configure
-    # API to set the necessary options to opimize the performance.
-    # Please refer to the implementation for more info on options.
-    configureSocketServers: ->
-        assert not _.isEmpty servers = _.toArray arguments
-        @domain.add server for own server, index of servers
-        logger.info "Configuring the Socket.IO servers".cyan
-        assert @serverSocket in servers, "missing HTTP socket"
-        assert @secureSocket in servers, "missing HTTPS socket"
-        assert _.isObject every = try Object.create new Object
-        every.set = (k, fx) -> io.set k, fx for io in servers
-        every.enable = (fx) -> io.enable fx for io in servers
-        assert socketio.Manager::garbageCollection = ->
-            assert ids = _.keys @handshaken or Object()
-            assert _.isNumber index = ids?.length or 0
-            assert _.isNumber current = try Date.now()
-            f = (h) -> (current - h?.issued or 0) >= 3e4
-            k = (h, i) -> h.onDisconnect ids[i] if f(h)
-            k @handshaken[ids[index]], index while index--
-        do -> every.enable "browser client minification"
-        do -> every.enable "browser client etag"
-        do -> every.enable "browser client gzip"
+            assert readapter = require "socket.io-redis"
+            assert _.isNumber port = try redis.port or null
+            assert _.isString host = try redis.host or null
+            assert _.isObject opts = try redis.options or 0
+            pubCon = redisio.createClient port, host, opts
+            subCon = redisio.createClient port, host, opts
+            ready = pubClient: pubCon, subClient: subCon
+            this.secureSocket.adapter readapter ready
+            this.serverSocket.adapter readapter ready
 
     # Setup the Connect middleware framework along with the default
     # pipeline of middlewares necessary for the Granite framework to
     # operate correctly. You are encouraged to override this method
     # to provide a Connect setup procedure to your own liking, etc.
+    # Each middleware instance is stored in the kernel as variable.
     setupConnectPipeline: ->
         assert @connect = connect()
         assert @connectStaticAssets()
@@ -439,6 +417,7 @@ module.exports.Generic = class Generic extends Archetype
     # care of serving static directory content for all configured
     # assets directory, using the options drawed from configuration.
     # You should override the method to tweak the creation process.
+    # Please see the `serveStaticDirectory` method implementation.
     connectStaticAssets: ->
         envs = nconf.get "env:dirs" or Array()
         dirs = nconf.get "assets:dirs" or Array()
@@ -456,6 +435,7 @@ module.exports.Generic = class Generic extends Archetype
     # the determined scope and the router, which is then are wired
     # in with the located and instantiated services. Please refer
     # to the implementation on how and what is being done exactly.
+    # Also, it looks up and initialized the requested env scope.
     setupScaffolding: ->
         tag = try nconf.get "NODE_ENV" or undefined
         mode = try nconf.get "forever" or undefined

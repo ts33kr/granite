@@ -88,7 +88,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # The method gets a set of parameters that maybe be useful to
     # have by the actual implementation. Please remember thet the
     # method is asynchronously wired, so be sure to call `next`.
-    handshaken: (context, handshake, next) -> next()
+    handshaken: (context, socket, next) -> next()
 
     # A usable hook that gets asynchronously invoked once a new
     # channel (socket) gets past authorization phase and is rated
@@ -109,7 +109,8 @@ module.exports.Duplex = class Duplex extends Preflight
     # during the handshake phase. This method checks that handshake
     # contains correct session requsities and restores the session!
     # The session can normally be used as you would use req session.
-    authorization: (context) => (handshake, accept) ->
+    authorization: (context) => (socket, accept) ->
+        assert _.isObject handshake = socket.request
         assert _.isFunction session = @kernel.session
         assert _.isFunction cookies = @kernel.cookieParser
         assert handshake.originalUrl = handshake.url or "/"
@@ -122,8 +123,8 @@ module.exports.Duplex = class Duplex extends Preflight
                 ns = new Error "no session detected"
                 return accept ns, no unless session
                 handshaken = @downstream handshaken: ->
-                    return accept undefined, yes
-                return handshaken context, handshake
+                    return accept undefined, true
+                return handshaken context, socket
 
     # An internal, static method that is used to obtain gurading
     # domains for each of the declared server site providers. Please
@@ -201,7 +202,7 @@ module.exports.Duplex = class Duplex extends Preflight
         assert _.isFunction o = Marshal.serialize
         assert _.isFunction i = Marshal.deserialize
         socket.on "disconnect", -> try guarded.dispose()
-        session = socket?.handshake?.session or undefined
+        session = try socket.request.session unless session
         socket.disconnect "no session found" unless session
         assert _.isObject guarded = @guarded method, socket
         assert _.isFunction g = guarded.run.bind guarded
@@ -297,21 +298,16 @@ module.exports.Duplex = class Duplex extends Preflight
         c = "an error raised during socket connection:"
         p = "an exception happend at the server provider:"
         connected = "established connection at #{@location}"
-        reconnect = "attempting to reconnect at #{@location}"
-        connecting = "attempting connection at #{@location}"
         disconnect = "lost socket connection at #{@location}"
         r = (e, s) => this.emit(e, s...); $root.emit(e, s...)
-        if _.isEmpty @STOP_ROOT_PROPAGATION or undefined
-            @socket.on "connect", => r "connect", arguments
-            @socket.on "exception", => r "exception", arguments
-            @socket.on "disconnect", => r "disconnect", arguments
-            @socket.on "connect_failed", => r "disconnect", arguments
-            @socket.on "reconnecting", => r "reconnecting", arguments
+        breaker = try this.STOP_ROOT_PROPAGATION or undefined
+        forward = (evt) => @socket.on evt, => r evt, arguments
+        forward "disconnect" # lost socket connection to server
+        forward "connect" # a successfull connection happended
+        forward "exception" # server side indicates exception
         @socket.on "exception", (e) -> logger.error p, e.message
         @socket.on "error", (e) -> logger.error c, e.message
-        @socket.on "reconnecting", -> logger.info reconnect
         @socket.on "disconnect", -> logger.error disconnect
-        @socket.on "connecting", -> logger.info connecting
         @socket.on "connect", -> logger.info connected
 
     # An external routine that will be invoked once a both way duplex
@@ -375,7 +371,7 @@ module.exports.Duplex = class Duplex extends Preflight
         _.each contexts, (context, position, vector) =>
             assert screener = makeScreener context
             assert applied = @authorization context
-            context.authorization applied.bind this
+            context.use applied.bind this # middleware
             return context.on "connection", screener
         return next undefined
 
@@ -396,8 +392,9 @@ module.exports.Duplex = class Duplex extends Preflight
         assert contexts = _.map [sserver, ssecure], resolve
         _.each contexts, (context, vector, addition) =>
             try context.removeAllListeners "connection"
-            intern = "missing a client listing function"
-            assert _.isFunction(context.clients), intern
-            assert _.isArray clients = context.clients()
+            intern = "missing a client listing registry"
+            assert _.isObject(context.connected), intern
+            assert clients = _.values context.connected
+            assert clients = _.unique clients # go once
             do -> p client for client, index in clients
         return next undefined

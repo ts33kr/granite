@@ -83,21 +83,20 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
     # socket events that indicate successful and fail conditions.
     # When either one is happens, it emits the `toastr` notice.
     attachWatchdog: @awaiting "socketing", (socket, location) ->
-        assert l = lst = @t "server connection has been lost"
-        assert s = srv = @t "exception occured on the server"
-        assert r = rcn = @t "attempting to restore connection"
-        assert c = con = @t "established connection to server"
-        pos = positionClass: "toast-top-left", closable: null
-        ntm = timeOut: 0, extendedTimeOut: 0, tapToDismiss: 0
-        xtm = timeOut: 3000, extendedTimeOut: 1000 # a duplex
-        assert _.extend object, pos for object in [ntm, xtm]
-        deb = ((f) -> _.debounce f, 500); clear = toastr.clear
-        wclear = -> return $(".toast-warning").hide().remove()
-        recon = _.debounce (-> toastr.info r, null, xtm), 100
-        dropd = deb -> wclear(); toastr.warning lst, 0, ntm
-        connd = deb -> clear(); toastr.success con, 0, pos
-        error = deb -> clear(); toastr.error srv, 0, pos
-        do => $root?.on "reconnecting", => recon.call @
-        do => $root?.on "disconnect", => dropd.call @
-        do => $root?.on "exception", => error.call @
-        do => $root?.on "connect", => connd.call @
+        assert l = @t "server connection has been lost"
+        assert s = @t "exception occured on the server"
+        assert c = @t "established connection to server"
+        pos = positionClass: "toast-top-left" # location
+        bhv = tapToDismiss: 0, closable: 0 # set behavior
+        ntm = timeOut: 0, extendedTimeOut: 0 # timeouts
+        drn = hideDuration: 300, showDuration: 300 # ms
+        assert try _.extend ntm, _.extend pos, bhv, drn
+        assert _.isFunction db = (f) -> _.debounce f, 500
+        assert _.isFunction clear = toastr.clear # alias
+        wclear = -> $(".toast-warning").hide().remove()
+        dropd = db -> wclear(); toastr.warning l, 0, ntm
+        connd = db -> clear(); toastr.success c, 0, pos
+        error = db -> clear(); toastr.error s, 0, pos
+        try $root?.on "disconnect", => dropd.call @
+        try $root?.on "exception", => error.call @
+        try $root?.on "connect", => connd.call @
