@@ -62,8 +62,9 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # these definitions when you need a typical parasites, such as
     # the one that parsites on all standalone (non zombie) services
     # or the one that parasites on all services, including zombies.
+    @PEXPERIMENT = (h, r, d) -> d h.kernel.env is "development"
+    @PSTANDALONE = (h, r, d) -> d not try h.objectOf Zombie
     @PEVERYWHERE = (h, r, decide) -> return decide true
-    @PSTANDALONE = (h, r, d) -> d not h.objectOf Zombie
 
     # Register current service that invokes the method as parasite.
     # This means that the service will be automatically included to
