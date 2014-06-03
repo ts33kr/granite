@@ -55,8 +55,7 @@ Use http://ts33kr.github.io/granite for browsing.
   the base classes coding (as long as types have similar interfaces).
   And last, but not least - all of the code that is emitted into the
   client site is being taken apart and re-translated, using either
-  the obfuscation or the code beautification toolkit, depending on
-  the scope and config.
+  obfuscation or the code beautification toolkit, depending on config.
 
   + A unique extension to the object system, written using pure
   CoffeeScript that allows for completely transparent and dynamic
