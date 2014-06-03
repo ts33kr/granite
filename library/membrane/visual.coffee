@@ -212,7 +212,8 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
         digest = hasher.update(joined).digest "hex"
         beauty = nconf.get("visual:beautify") or no
         disablers = mangle: false, compress: false
-        context.sources = c if c = @ccache?[digest]
+        assert ccache = @constructor ?= new Object()
+        context.sources = c if c = try ccache[digest]
         return context if (try context.sources and c)
         assert sources = _.reject sources, _.isEmpty
         assert minify = require("uglify-js").minify
@@ -220,8 +221,8 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
         processing.output = beautify: yes if beauty
         try _.extend processing, disablers if beauty
         minified = minify sources, processing or {}
-        (@ccache ?= {})[digest] = [minified.code]
-        context.sources = @ccache[digest]; context
+        ccache[digest] = [minified.code] # cache it
+        context.sources = ccache[digest]; context
 
     # Assemble a new remoting context for the current service. This
     # creates a proper empty context that conforms to the necessary
