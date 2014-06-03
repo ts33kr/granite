@@ -244,8 +244,8 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
             context.inline -> this.externals.push "eco"
             context.inline -> assert @broadcast = ->
                 this.root.emit.apply $root, arguments
-            return receive context, null unless asm
             assert context = @compressContext context
+            return receive context, null unless asm
             @contextRendering request, context, (c) ->
                 return receive context, c.toString()
         return prelude symbol, context, request
