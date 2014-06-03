@@ -83,7 +83,9 @@ module.exports.ModalFormular = class ModalFormular extends ModalWindow
     # sort of behavior, when `enter` key is pressed, it either sets
     # the focus to the next field or submits the form if it was last.
     configureKeyboardBehavior: @awaiting "configure-formular", ->
-        proceed = => $(".positive.button", @window).click()
+        pos = => return $ ".positive.button", this.window
+        disabled = (element) => $(element).is ".disabled"
+        proceed = => pb.click() unless disabled pb = pos()
         next = => return performFieldResolution arguments...
         textInputs = "input[type=text],input[type=password]"
         assert not _.isEmpty idc = @windowUid.toString()
