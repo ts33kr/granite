@@ -198,13 +198,15 @@ module.exports.Generic = class Generic extends Archetype
         assert ident = try kinded.identify() or null
         error = "could not find a %s in the registry"
         noKinded = "the supplied arg has to be class"
+        success = "Successfully accquired %s service"
         formatted = try format error, ident.toString()
         assert _.isArray registry = @router?.registry
         assert _.isObject(kinded.__super__), noKinded
         look = (fxc) -> try fxc.objectOf kinded, yes
         spoted = _.find(registry, look) or undefined
         assert _.isObject(spoted) or silent, formatted
-        try spotted.accuired? kinded, silent; spoted
+        logger.debug success.grey, try ident.underline
+        try spoted.accquired? kinded, silent; spoted
 
     # This routines sets up the infrastructure necessary for kernel
     # to properly intercept and process errors and exceptions. This
