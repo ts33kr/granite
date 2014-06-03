@@ -36,78 +36,9 @@ http = require "http"
 util = require "util"
 url = require "url"
 
-{Duplex} = require "./duplex"
 {Barebones} = require "./skeleton"
 {RedisClient} = require "./redis"
 tools = require "../nucleus/tools"
-
-# This is an extension of the `Duplex` abstract base service that
-# implements a dialogue sort of protection for the duplex channel.
-# It means that a client who made the initial GET request must be
-# ensured to be the same client that tried to connect over duplex
-# channel. Also, each request has a TTL for the duplex connection.
-# The implementation depends on `RedisClient` and running Redis!
-module.exports.MarkingDuplex = class MarkingDuplex extends Duplex
-
-    # This is a marker that indicates to some internal subsystems
-    # that this class has to be considered abstract and therefore
-    # can not be treated as a complete class implementation. This
-    # mainly is used to exclude or account for abstract classes.
-    # Once inherited from, the inheritee is not abstract anymore.
-    @abstract yes
-
-    # These declarations below are implantations of the abstracted
-    # components by the means of the dynamic recomposition system.
-    # Please take a look at the `Composition` class implementation
-    # for all sorts of information on the composition system itself.
-    # Each of these will be dynamicall integrated in class hierarchy.
-    @implanting RedisClient
-
-    # A hook that will be called once the Connect middleware writes
-    # off the headers. Please refer to this prototype signature for
-    # information on the parameters it accepts. Beware, this hook
-    # is asynchronously wired in, so consult with `async` package.
-    # Please be sure invoke the `next` arg to proceed, if relevant.
-    # This implementation marks legitimate requests ok for duplex.
-    headers: (request, response, resource, domain, next) ->
-        assert mark = "Demilitarize %s request"
-        assert statusCode = try response.statusCode
-        return next() unless (statusCode or 0) is 200
-        sha1 = -> require("crypto").createHash "sha1"
-        key = (x) -> "securing:marking:token:#{x}"
-        gen = (x) -> sha1().update(x).digest "hex"
-        internal = (e) -> "internal Redis error: #{e}"
-        noUuid = "the request has no UUID attached"
-        assert _.isString(u = request.uuid), noUuid
-        @redis.incr gen(key(u)), (error, value) =>
-            assert.ifError error, internal error
-            @redis.expire gen(key(u)), 60, (error) ->
-                assert.ifError error, internal error
-                logger.debug mark.toString(), u.bold
-                assert value >= 1; return next()
-
-    # A usable hook that gets asynchronously invoked once a new
-    # channel (socket) gets past the prescreening hook and is rated
-    # to be good to go through the screening process. This is good
-    # place to implementation various schemes for authorization. If
-    # you wish to decline, just don't call `next` and close socket.
-    # This implementation checks whether socket connection is legit.
-    screening: (context, socket, binder, next) ->
-        assert acc = "Verified %s request".green
-        assert rej = "Militarized %s request".red
-        sha1 = -> require("crypto").createHash "sha1"
-        key = (x) -> "securing:marking:token:#{x}"
-        gen = (x) -> sha1().update(x).digest "hex"
-        internal = (e) -> "internal Redis error: #{e}"
-        noUuid = "the request has no UUID attached"
-        assert uuid = binder.uuid.request, noUuid
-        @redis.decr gen(key(uuid)), (error, value) =>
-            assert.ifError error, internal error
-            message = if value < 0 then rej else acc
-            logger.debug message.toString(), uuid.bold
-            return socket.disconnect() if value < 0
-            return next() if value and value >= 1
-            @redis.del gen(key(uuid)), -> next()
 
 # This is an abstract base class API stub service. Its purpose is
 # providing the boilerplate for ensuring that the connection is
