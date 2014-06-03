@@ -48,14 +48,14 @@ Use http://ts33kr.github.io/granite for browsing.
   + Highly advanced code emission platform that is taking care of
   doing all the processing necessary to transfer the relevant code
   to the client site. The entire method hierarchies are transferred,
-  so that you can always access all the possibly overriden methods
+  so that you can always access all the possibly overridden methods
   in the base classes. On top of that, there is a special mechanism
   implemented that allows you to override type implementations that
   are used in the parent classes, without having to override any of
   the base classes coding (as long as types have similar interfaces).
-  And last, but not least - all of the code that is emited into the
+  And last, but not least - all of the code that is emitted into the
   client site is being taken apart and re-translated, using either
-  the comprssion & obfuscation or the code beautification toolkit,
+  the compression & obfuscation or the code beautification toolkit,
   depending on the scope and config.
 
   + A unique extension to the object system, written using pure
@@ -90,7 +90,7 @@ Use http://ts33kr.github.io/granite for browsing.
   for the reference coding and info.
 
   + A strong layer for implementing conventional application APIs.
-  The REST architecture is shipped out of the box, with posibility
+  The REST architecture is shipped out of the box, with possibility
   of deep customization to fit in any architecture on top of HTTP.
   Has a built in support for advanced features, like the embedded
   declarative documentation and testing subsystems wired into it.
@@ -102,10 +102,10 @@ Use http://ts33kr.github.io/granite for browsing.
   + A production grade load balancing and failover clustering
   provided right out of the box. Delivered by technology called
   [Seaport](https://github.com/substack/seaport) it provides a
-  lot of advanced functionality, such as the node autodiscovery
+  lot of advanced functionality, such as the node auto-discovery
   and no need for initial configuration. It allows to dynamically
   create star-like topologies in a matter of seconds, supporting
-  any order of brinding nodes up (master and slaves). The shipped
+  any order of bringing nodes up (master and slaves). The shipped
   balancing algorithm is a simple, session-sticky round robin. See
   [nucleus/scaled.coffee](library/nucleus/scaled.coffee) file for
   the scalable kernel implementation.
@@ -117,11 +117,11 @@ Use http://ts33kr.github.io/granite for browsing.
   to provide the flexible ability to embed the frontend dependencies
   directly into your components. The dependencies are intelligently
   resolved and automatically satisfied during the node bootloaing;
-  in a configurable maner. For the implementation coding see
+  in a configurable manner. For the implementation coding see
   [membrane/bower.coffee](library/membrane/bower.coffee).
 
   + An out of the box configuration system allows you to consume
-  configuration data (files) right away, wihtout setting up any
+  configuration data (files) right away, without setting up any
   sort of boilerplate. The system is based on a well known package
   called [NConf](https://github.com/flatiron/nconf). Refer to the
   [nucleus/scoping.coffee](library/nucleus/scoping.coffee) to get
@@ -146,7 +146,7 @@ Use http://ts33kr.github.io/granite for browsing.
   built into the framework, therefore requires virtually no configs at
   all; it just works out of the box. The system uses YAML file format
   to keep its translation tables. This allows for the tables to be very
-  human-oriented and therefore are extremly easy and fun to work with.
+  human-oriented and therefore are extremely easy and fun to work with.
   Please see [exposure/localized.coffee](library/exposure/localized.coffee)
   source code to familiarize yourself with the platform implementation.
   Also take a look at [locale/tracked.yaml](locale/tracked.yaml) for
