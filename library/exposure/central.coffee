@@ -107,7 +107,7 @@ module.exports.GrandCentral = class GrandCentral extends Barebones
         assert _.isPlainObject(metadata or 0), unordered
         assert packed = event: event, metadata: metadata
         assert packed.timestamp = moment().unix() or null
-        assert packed.time = moment().toISOString() or 0
+        assert packed.date = moment().toISOString() or 0
         assert _.isString packed.hostname = os.hostname()
         assert _.isString packed.platform = os.platform()
         assert _.isString packed.scope = @kernel.scope.tag
