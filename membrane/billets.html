@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>membrane/billets</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/billets"><meta name="groc-project-path" content="library/membrane/billets.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/billets.coffee">library/membrane/billets.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;&#x69;&#108;&#116;&#111;:&#116;s&#x33;&#51;&#107;&#x72;&#64;&#103;&#x6d;&#97;&#x69;&#x6c;&#x2e;&#x63;&#x6f;&#x6d;">&#116;s&#x33;&#51;&#107;&#x72;&#64;&#103;&#x6d;&#97;&#x69;&#x6c;&#x2e;&#x63;&#x6f;&#x6d;</a>
+<!DOCTYPE html><html lang="en"><head><title>membrane/billets</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/billets"><meta name="groc-project-path" content="library/membrane/billets.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/billets.coffee">library/membrane/billets.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;i&#x6c;&#x74;&#111;:&#x74;&#115;&#x33;&#51;&#x6b;&#114;&#64;&#103;&#x6d;&#97;&#105;l&#46;&#x63;o&#x6d;">&#x74;&#115;&#x33;&#51;&#x6b;&#114;&#64;&#103;&#x6d;&#97;&#105;l&#46;&#x63;o&#x6d;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">crypto = </span><span class="nx">require</span> <span class="s">&quot;crypto&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
 <span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
 <span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
@@ -53,7 +54,11 @@ This can also contain non-developer internals of the visual core.</p></div></div
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This server side method is called on the context prior to the
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Symbol declaration table, that states what keys, if those are
+vectors (arrays) should be exported and then merged with their
+counterparts in the destination, once the composition process
+takes place. See the <code>Archetype::composition</code> hook definition
+for more information. Keys are names, values can be anything.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@COMPOSITION_EXPORTS = </span><span class="nv">renderers: </span><span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This server side method is called on the context prior to the
 context being compiled and flushed down to the client site. The
 method is wired in an synchronous way for greater functionality.
 This is the place where you would be importing the dependencies.
@@ -79,7 +84,24 @@ An internal implementations in the framework might be using it.</p></div></div><
         <span class="nv">compilable = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">subject</span><span class="p">.</span><span class="nx">remote</span><span class="o">?</span><span class="p">.</span><span class="nx">compile</span>
         <span class="k">return</span> <span class="nx">scripts</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">subject</span>
         <span class="k">return</span> <span class="nx">sources</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span> <span class="k">if</span> <span class="nx">compilable</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">invalid</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method implements overridiable type installation mechanism
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">invalid</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Use this decorator to append a renderer function to sequence.
+These are server side, instance methods that will be invoked
+when the visual core is performing final assmbly/compilation
+of the context. Basically, it is when a programmatic context
+turns into a raw HTML/JS that gets then sent away to client.
+For more info, please refer to <code>Screenplay#contextRendering</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@rendering: </span><span class="nf">(renderer) -&gt;</span>
+        <span class="nv">noFunction = </span><span class="s">&quot;no rendering function given&quot;</span>
+        <span class="nv">wrongUsage = </span><span class="s">&quot;should accept &gt;= 2 arguments&quot;</span>
+        <span class="p">{</span><span class="nx">series</span><span class="p">,</span> <span class="nx">apply</span><span class="p">}</span> <span class="o">=</span> <span class="nx">async</span> <span class="o">or</span> <span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+        <span class="nv">fn = </span><span class="nf">(s) -&gt;</span> <span class="nf">(j, d, c) -&gt;</span> <span class="nx">series</span> <span class="nx">pp</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">@</span><span class="p">,</span> <span class="nx">s</span><span class="p">,</span> <span class="nx">j</span><span class="p">,</span> <span class="nx">d</span><span class="p">),</span> <span class="nx">c</span>
+        <span class="nv">pp = </span><span class="nf">(s, j, dm) -&gt;</span> <span class="p">(</span><span class="nx">apply</span> <span class="nx">f</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">@</span><span class="p">),</span> <span class="nx">j</span><span class="p">,</span> <span class="nx">dm</span> <span class="k">for</span> <span class="nx">f</span> <span class="k">in</span> <span class="nx">s</span><span class="p">)</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="nx">@renderers</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">clone</span> <span class="nx">previous</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="nx">fn</span> <span class="nx">previous</span> <span class="k">if</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">renderer</span><span class="p">),</span> <span class="nx">noFunction</span>
+        <span class="nx">assert</span> <span class="p">(</span><span class="nx">renderer</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">),</span> <span class="nx">wrongUsage</span>
+        <span class="vi">@renderers = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="p">[</span><span class="nx">renderer</span><span class="p">]</span>
+        <span class="nx">assert</span> <span class="vi">@renderers = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">@renderers</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method implements overridiable type installation mechanism
 similar to Beans in a way. It basically transfers remotable type
 (or a function) onto the remote site and aliases it under given
 token (name). The key here is this aliasing is done for every

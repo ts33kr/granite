@@ -1,0 +1,121 @@
+<!DOCTYPE html><html lang="en"><head><title>exposure/central</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/central"><meta name="groc-project-path" content="library/exposure/central.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/central.coffee">library/exposure/central.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#x61;&#105;&#x6c;&#116;&#x6f;:&#x74;&#115;&#51;&#51;&#x6b;&#114;&#64;&#x67;&#109;&#x61;&#x69;&#x6c;&#x2e;&#x63;&#111;&#109;">&#x74;&#115;&#51;&#51;&#x6b;&#114;&#64;&#x67;&#109;&#x61;&#x69;&#x6c;&#x2e;&#x63;&#111;&#109;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">redisio = </span><span class="nx">require</span> <span class="s">&quot;redis&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="nv">os = </span><span class="nx">require</span> <span class="s">&quot;os&quot;</span>
+
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/archetype&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span>
+<span class="p">{</span><span class="nx">RedisClient</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/redis&quot;</span>
+<span class="p">{</span><span class="nx">MongoClient</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/mongo&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An abstract class compound that provides unique API to be used in
+application code to programatically log, publish (via Redis) and
+store (using MongoDB) events, generated by the application code.
+This also includes arbitrary metadata supplied with the event, as
+as well as parameters that will be automatically appended to it.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.GrandCentral = </span><span class="k">class</span> <span class="nx">GrandCentral</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These declarations below are implantations of the abstracted
+components by the means of the dynamic recomposition system.
+Please take a look at the <code>Composition</code> class implementation
+for all sorts of information on the composition system itself.
+Each of these will be dynamicall integrated in class hierarchy.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@implanting</span> <span class="nx">RedisClient</span>
+    <span class="nx">@implanting</span> <span class="nx">MongoClient</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Create a subscription to the specified central event. It uses
+Redis publish/subscribe mechanism to listen to these events, so
+it easily crosses application boundaries. Along with the event,
+listener also receives an accompanied object that contains all
+of the data and information that pertain to event that occured.
+This data is being deserialize from JSON payload got for Redis.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@arriving: </span><span class="nf">(event, listener) -&gt;</span> <span class="nx">@intercept</span> <span class="s">&quot;redis-ready&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+        <span class="nv">caught = </span><span class="s">&quot;Got central %s (%s bytes) in %s&quot;</span>
+        <span class="nx">assert</span> <span class="nv">idc = </span><span class="nx">@kernel</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">identica</span><span class="p">()</span>
+        <span class="nv">pattern = </span><span class="s">&quot;grand-central:%s:%s&quot;</span> <span class="c1"># the channel</span>
+        <span class="nx">assert</span> <span class="nv">channel = </span><span class="nx">_</span><span class="p">.</span><span class="nx">sprintf</span> <span class="nx">pattern</span><span class="p">,</span> <span class="nx">idc</span><span class="p">,</span> <span class="nx">event</span>
+        <span class="nx">assert</span> <span class="nv">ident = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span> <span class="nv">port = </span><span class="k">try</span> <span class="nx">@redis</span><span class="p">.</span><span class="nx">port</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">host = </span><span class="k">try</span> <span class="nx">@redis</span><span class="p">.</span><span class="nx">host</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">opts = </span><span class="k">try</span> <span class="nx">@redis</span><span class="p">.</span><span class="nx">options</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nv">client = </span><span class="nx">redisio</span><span class="p">.</span><span class="nx">createClient</span> <span class="nx">port</span><span class="p">,</span> <span class="nx">host</span><span class="p">,</span> <span class="nx">opts</span>
+        <span class="nx">client</span><span class="p">.</span><span class="nx">subscribe</span> <span class="nx">channel</span> <span class="c1"># set subscription mode</span>
+        <span class="nx">client</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;unsubscribe&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="k">try</span> <span class="nx">client</span><span class="p">.</span><span class="nx">end</span><span class="p">()</span>
+        <span class="nx">client</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;message&quot;</span><span class="p">,</span> <span class="nf">(transported, message) -&gt;</span>
+            <span class="nv">unpacking = </span><span class="s">&quot;could not unpack the event data&quot;</span>
+            <span class="nx">assert</span> <span class="nx">transported</span> <span class="o">is</span> <span class="nx">channel</span><span class="p">,</span> <span class="s">&quot;inconsistent&quot;</span>
+            <span class="nv">unpacked = </span><span class="k">try</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">message</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span><span class="p">(</span><span class="nx">unpacked</span><span class="p">),</span> <span class="nx">unpacking</span>
+            <span class="nx">assert</span> <span class="nv">bs = </span><span class="nx">Buffer</span><span class="p">.</span><span class="nx">byteLength</span> <span class="nx">message</span><span class="p">,</span> <span class="s">&quot;utf8&quot;</span>
+            <span class="nx">assert</span> <span class="nv">ivent = </span><span class="nx">event</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">bold</span> <span class="o">or</span> <span class="kc">null</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">caught</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">ivent</span><span class="p">,</span> <span class="nx">bs</span><span class="p">,</span> <span class="nx">ident</span>
+            <span class="k">return</span> <span class="nx">listener</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">unpacked</span><span class="p">,</span> <span class="nx">event</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Push the specified event through the grand central mechanism.
+The event must be accompanied by the metadata object, if this
+object is not present - an empty one will be inserted. Also,
+in addition to the supplied metadata, the central will append
+some other useful data, when it will be build the container.
+The event will be persisted in the MongoDB and propagate to an
+every node that may listen to it via the pub/sub kit of Redis.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">central: </span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">metadata</span><span class="o">=</span><span class="k">new</span> <span class="nb">Object</span><span class="p">(),</span> <span class="nx">append</span><span class="p">)</span> <span class="nf">-&gt;</span>
+        <span class="nv">deficient = </span><span class="s">&quot;supplied event name is not correct&quot;</span>
+        <span class="nv">unordered = </span><span class="s">&quot;must have the valid metadata object&quot;</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;central:enabled&quot;</span><span class="p">)</span> <span class="o">is</span> <span class="kc">yes</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">event</span> <span class="o">or</span> <span class="kc">undefined</span><span class="p">),</span> <span class="nx">deficient</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span><span class="p">(</span><span class="nx">metadata</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">unordered</span>
+        <span class="nx">assert</span> <span class="nv">packed = event: </span><span class="nx">event</span><span class="p">,</span> <span class="nv">metadata: </span><span class="nx">metadata</span>
+        <span class="nx">assert</span> <span class="nv">packed.timestamp = </span><span class="nx">moment</span><span class="p">().</span><span class="nx">unix</span><span class="p">()</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nx">assert</span> <span class="nv">packed.date = </span><span class="nx">moment</span><span class="p">().</span><span class="nx">toISOString</span><span class="p">()</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">packed.hostname = </span><span class="nx">os</span><span class="p">.</span><span class="nx">hostname</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">packed.platform = </span><span class="nx">os</span><span class="p">.</span><span class="nx">platform</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">packed.scope = </span><span class="nx">@kernel</span><span class="p">.</span><span class="nx">scope</span><span class="p">.</span><span class="nx">tag</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">packed.server = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;server&quot;</span>
+        <span class="nv">append = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">)</span> <span class="o">or</span> <span class="nx">append</span>
+        <span class="nx">append</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">metadata</span><span class="p">,</span> <span class="nx">packed</span> <span class="k">if</span> <span class="nx">append</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">publishCentralEvent</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">packed</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A part of the internal implementation of the central events
+mechanism. Method implements the propagation semantic itself,
+once all of the preparations and container creation routines
+are finished and the event, along with its accompanied object
+is ready to be sent away, this method is invoked internally.
+It takes care of publishing the event into Mongo and Redis.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">publishCentralEvent: </span><span class="nf">(event, packed) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">cn = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;central:collection&quot;</span><span class="p">)</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nv">i = packed.identica = </span><span class="nx">@kernel</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">identica</span><span class="p">()</span>
+        <span class="nv">o = </span><span class="k">try</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;central:options&quot;</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Object</span><span class="p">()</span>
+        <span class="nv">emission = </span><span class="s">&quot;Publish central %s with %s bytes of data&quot;</span>
+        <span class="nx">@mongo</span><span class="p">.</span><span class="nx">createCollection</span> <span class="nx">cn</span><span class="p">,</span> <span class="nx">o</span><span class="p">,</span> <span class="nf">(error, collection) =&gt;</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">ifError</span> <span class="nx">error</span><span class="p">,</span> <span class="s">&quot;create collection fail&quot;</span>
+            <span class="nx">collection</span><span class="p">.</span><span class="nx">insert</span> <span class="nx">packed</span><span class="p">,</span> <span class="nf">(error, documents) =&gt;</span>
+                <span class="nv">inconsistent = </span><span class="s">&quot;do an inconsistent insert&quot;</span>
+                <span class="nx">assert</span><span class="p">.</span><span class="nx">ifError</span> <span class="nx">error</span><span class="p">,</span> <span class="s">&quot;doc insert failure&quot;</span>
+                <span class="nx">assert</span> <span class="nx">documents</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">inconsistent</span>
+                <span class="nv">pattern = </span><span class="s">&quot;grand-central:%s:%s&quot;</span> <span class="c1"># a channel</span>
+                <span class="nx">assert</span> <span class="nv">channel = </span><span class="nx">_</span><span class="p">.</span><span class="nx">sprintf</span> <span class="nx">pattern</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">event</span>
+                <span class="nx">assert</span> <span class="nv">stringified = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">packed</span>
+                <span class="nv">bs = </span><span class="nx">Buffer</span><span class="p">.</span><span class="nx">byteLength</span> <span class="nx">stringified</span><span class="p">,</span> <span class="s">&quot;utf8&quot;</span>
+                <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">emission</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">bold</span><span class="p">,</span> <span class="nx">bs</span>
+                <span class="k">return</span> <span class="nx">@redis</span><span class="p">.</span><span class="nx">publish</span> <span class="nx">channel</span><span class="p">,</span> <span class="nx">stringified</span></div></div></div></div></body></html>
