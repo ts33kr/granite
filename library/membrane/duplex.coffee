@@ -53,6 +53,8 @@ compose = require "./../nucleus/compose"
 # unique ability of half duplex communications between the external
 # code that is executed on the call site via `Screenplay` facility
 # and an instance of the service that resides on the server site.
+# The component itself is built heavily on top of a code emission
+# and delivery platform, as implemented by `Screenplay` service.
 module.exports.Duplex = class Duplex extends Preflight
 
     # This is a marker that indicates to some internal subsystems
