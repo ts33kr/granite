@@ -179,8 +179,8 @@ module.exports.GenericKernel = class GenericKernel extends Archetype
         assert @application = @constructor.APPLICATION
         assert branding = [@framework.name, "smisome1"]
         types = [@framework.version, @framework.codename]
+        GenericKernel.kernel = this # one kernel per proc
         this.interceptExceptions.call this, initializer
-        GenericKernel.kernel = @ # one kernel per proc
         return asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
             identify = "Running version %s, codename: %s"
