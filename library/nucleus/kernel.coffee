@@ -330,35 +330,45 @@ module.exports.Generic = class Generic extends Archetype
     # the configured addresses and ports. This method reads up the
     # scoping configuration in order to obtain the data necessary
     # for instantiating, configuring and launching up the servers.
+    # See the method implementation for info on the exact semantic.
     startupHttpsServer: ->
         assert server = nconf.get "server" or {}
         assert hostname = nconf.get "server:host" or 0
         assert _.isNumber(server.https), "no HTTPS port"
         assert _.isObject options = @resolveSslDetails()
         running = "Running HTTPS server at %s".magenta
+        arrived = "New #{"HTTPS".bold} connection at %s"
         location = "#{hostname}:#{server.https}".toString()
         logger.info running.underline, location.underline
         @secure = https.createServer options, @connect
         assert _.isObject @domain; @domain.add @secure
         do => @secure.listen server.https, hostname
         return @secure.on "connection", (socket) ->
+            key = socket.server?._connectionKey
+            key = try key.toString().underline
+            logger.debug arrived.green, key
             return socket.setNoDelay yes
 
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
     # scoping configuration in order to obtain the data necessary
     # for instantiating, configuring and launching up the servers.
+    # See the method implementation for info on the exact semantic.
     startupHttpServer: ->
         assert server = nconf.get "server" or {}
         assert hostname = nconf.get "server:host" or 0
         assert _.isNumber(server.http), "no HTTP port"
         running = "Running HTTP server at %s".magenta
+        arrived = "New #{"HTTP".bold} connection at %s"
         location = "#{hostname}:#{server.http}".toString()
         logger.info running.underline, location.underline
         @server = http.createServer @connect, undefined
         assert _.isObject @domain; @domain.add @server
         do => @server.listen server.http, hostname
         return @server.on "connection", (socket) ->
+            key = socket.server?._connectionKey
+            key = try key.toString().underline
+            logger.debug arrived.green, key
             return socket.setNoDelay yes
 
     # Setup and attach Socket.IO handlers to each of the servers.
