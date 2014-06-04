@@ -377,16 +377,35 @@ module.exports.GenericKernel = class GenericKernel extends Archetype
     # it just sets it up. Please refer to the Socket.IO docs for info.
     # Also, see the `configureSocketServers` method implementation.
     setupSocketServers: ->
+        killed = "Killed %s as orphaned socket".red
         assert _.isObject sconfig = nconf.get "socket"
+        assert txf = (fn) -> return setTimeout fn, 1000
         logger.info "Attaching Socket.IO to HTTPS server"
         logger.info "Attaching Socket.IO to HTTP server"
         newMessage = "New Socket.IO connected at %s server"
-        newSocket = (o) -> logger.debug newMessage.grey, o
+        k = (so) -> so.disconnect new Error "killed orphan"
+        logging = (st) -> logger.debug newMessage.grey, st
+        defects = (so) -> logger.debug killed, so.id.bold
+        discont = (so) -> so.emit "orphan"; defects so; k so
+        timeout = (so) -> -> try discont so unless so.owned
+        newSock = (st) -> (so) -> logging st; txf timeout(so)
         assert @secureSocket = socketio.listen @secure, sconfig
         assert @serverSocket = socketio.listen @server, sconfig
-        @domain.add @serverSocket; @domain.add @secureSocket
-        @secureSocket.on "connection", -> newSocket "HTTPS"
-        @serverSocket.on "connection", -> newSocket "HTTP"
+        @configureSocketServers @serverSocket, @secureSocket
+        this.secureSocket.on "connection", newSock "HTTPS"
+        this.serverSocket.on "connection", newSock "HTTP"
+
+    # This configuration utility sets up the environment for the
+    # Socket.IO server in the current kernel. Basically, this does
+    # the socket server configuration using the Socket.IO configure
+    # API to set the necessary options to opimize the performance.
+    # Please refer to the implementation for more info on options.
+    configureSocketServers: ->
+        assert not _.isEmpty servers = _.toArray arguments
+        @domain.add server for own server, index of servers
+        logger.info "Configuring the Socket.IO servers".cyan
+        assert @serverSocket in servers, "missing HTTP socket"
+        assert @secureSocket in servers, "missing HTTPS socket"
         return @on "redis-ready", (redis) => do (redis) =>
             message = "Attaching Redis storage to sockets"
             logger.debug message.toString().cyan if logger

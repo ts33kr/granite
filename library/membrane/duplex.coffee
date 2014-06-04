@@ -270,8 +270,7 @@ module.exports.Duplex = class Duplex extends Preflight
     # Refer to other `Duplex` methods for understanding what goes on.
     bootloader: @autocall z: +101, ->
         options = new Object reconnect: yes, url: @duplex
-        _.extend options, "reconnection delay": 3000 # millis
-        _.extend options, "reconnection limit": 3000 # linear
+        _.extend options, reconnectionDelay: 3000 # millis
         _.extend options, "max reconnection attempts": 99999
         try @socket = io.connect @duplex, options catch error
             message = "blew up Socket.IO: #{error.message}"
@@ -280,6 +279,7 @@ module.exports.Duplex = class Duplex extends Preflight
         failed = "failed to establish the Socket.IO connection"
         assert this.socket.emit, failed; this.socketFeedback()
         $(window).unload => @emit "unload"; @socket.emit "unload"
+        @socket.on "orphan", -> @io.disconnect(); @io.connect()
         osc = (listener) => this.socket.on "connect", listener
         osc => @socket.emit "screening", _.pick(@, @snapshot), =>
             assert @consumeProviders; @consumeProviders @socket
@@ -363,6 +363,8 @@ module.exports.Duplex = class Duplex extends Preflight
         assert ssecure = kernel.secureSocket, "no HTTPS socket"
         contexts = _.map [sserver, ssecure], resolve
         makeScreener = (context) => (socket) =>
+            owners = socket.owned ?= new Array()
+            owners.push this unless this in owners
             socket.on "screening", (binder, ack) =>
                 screening = @downstream screening: =>
                     bonding = [context, binder, socket, ack]
