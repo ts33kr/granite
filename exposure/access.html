@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>exposure/access</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/access"><meta name="groc-project-path" content="library/exposure/access.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/access.coffee">library/exposure/access.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;a&#105;&#x6c;&#x74;&#111;:t&#x73;&#x33;&#x33;&#107;&#114;&#64;&#x67;&#109;&#97;&#x69;&#x6c;&#x2e;&#x63;&#x6f;&#109;">t&#x73;&#x33;&#x33;&#107;&#114;&#64;&#x67;&#109;&#97;&#x69;&#x6c;&#x2e;&#x63;&#x6f;&#109;</a>
+<!DOCTYPE html><html lang="en"><head><title>exposure/access</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/access"><meta name="groc-project-path" content="library/exposure/access.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/access.coffee">library/exposure/access.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;&#105;&#108;&#116;&#111;:&#x74;s&#51;&#51;&#107;&#114;&#64;&#103;&#x6d;&#97;&#x69;&#108;&#46;&#x63;&#x6f;&#109;">&#x74;s&#51;&#51;&#107;&#114;&#64;&#103;&#x6d;&#97;&#x69;&#108;&#46;&#x63;&#x6f;&#109;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -46,11 +46,61 @@ Once inherited from, the inheritee is not abstract anymore.</p></div></div><div 
 for persisting the authenticated entity into the containers.
 It also will be used to retrieve the authenticated entity off
 the container. Definition may (and should) be overriden by
-the implementing services, in case if rename is necessary.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@ACCESS_ENTITY_SYMBOL = </span><span class="s">&quot;account&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Dereference the potentially existent entity from the session
+the implementing services, in case if rename is necessary.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@ACCESS_ENTITY_SYMBOL = </span><span class="s">&quot;account&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Symbol declaration table, that states what keys, if those are
+vectors (arrays) should be exported and then merged with their
+counterparts in the destination, once the composition process
+takes place. See the <code>Archetype::composition</code> hook definition
+for more information. Keys are names, values can be anything.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@COMPOSITION_EXPORTS = </span><span class="nv">resurrections: </span><span class="mi">1</span><span class="p">,</span> <span class="nv">hibernations: </span><span class="mi">1</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Add the supplied implementation function to the internal stack
+of functions that will be invoked every time the access system
+is resurrecting the entity out of the session. These functions
+will be called asynchronously, with an ability to abruptly end
+the execution. Please consult with the <code>async</code> package and the
+source code of this method for more details on the mechanics.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@resurrection: </span><span class="nf">(xoptions, ximplement) -&gt;</span>
+        <span class="nv">noOptions = </span><span class="s">&quot;the options must be an object&quot;</span>
+        <span class="nv">noImplement = </span><span class="s">&quot;must have implementation body&quot;</span>
+        <span class="nv">noSignature = </span><span class="s">&quot;function has invalid signature&quot;</span>
+        <span class="nv">message = </span><span class="s">&quot;Install session resurrector in %s&quot;</span>
+        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nv">implement = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span>
+        <span class="nv">options = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="nx">@resurrections</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nx">previous</span> <span class="k">unless</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">options</span> <span class="o">or</span> <span class="p">{}),</span> <span class="nx">noOptions</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">implement</span><span class="p">),</span> <span class="nx">noImplement</span>
+        <span class="nx">assert</span> <span class="p">(</span><span class="nx">implement</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">noSignature</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">bold</span>
+        <span class="nv">fn = </span><span class="nf">(arbitraryVector) -&gt;</span> <span class="k">return</span> <span class="nx">implement</span>
+        <span class="k">return</span> <span class="nx">fn</span> <span class="vi">@resurrections = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span>
+            <span class="nv">implement: </span><span class="nx">implement</span> <span class="o">or</span> <span class="nx">_</span><span class="p">.</span><span class="nx">noop</span>
+            <span class="nv">options: </span><span class="nx">options</span> <span class="o">or</span> <span class="nb">Object</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Add the supplied implementation function to the internal stack
+of functions that will be invoked every time the access system
+is hibernating the entity inside the session. These functions
+will be called asynchronously, with an ability to abruptly end
+the execution. Please consult with the <code>async</code> package and the
+source code of this method for more details on the mechanics.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@hibernation: </span><span class="nf">(xoptions, ximplement) -&gt;</span>
+        <span class="nv">noOptions = </span><span class="s">&quot;the options must be an object&quot;</span>
+        <span class="nv">noImplement = </span><span class="s">&quot;must have implementation body&quot;</span>
+        <span class="nv">noSignature = </span><span class="s">&quot;function has invalid signature&quot;</span>
+        <span class="nv">message = </span><span class="s">&quot;Install session hibernator in %s&quot;</span>
+        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nv">implement = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span>
+        <span class="nv">options = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="nx">@hibernations</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nx">previous</span> <span class="k">unless</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">options</span> <span class="o">or</span> <span class="p">{}),</span> <span class="nx">noOptions</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">implement</span><span class="p">),</span> <span class="nx">noImplement</span>
+        <span class="nx">assert</span> <span class="p">(</span><span class="nx">implement</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">noSignature</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">bold</span>
+        <span class="nv">fn = </span><span class="nf">(arbitraryVector) -&gt;</span> <span class="k">return</span> <span class="nx">implement</span>
+        <span class="k">return</span> <span class="nx">fn</span> <span class="vi">@hibernations = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span>
+            <span class="nv">implement: </span><span class="nx">implement</span> <span class="o">or</span> <span class="nx">_</span><span class="p">.</span><span class="nx">noop</span>
+            <span class="nv">options: </span><span class="nx">options</span> <span class="o">or</span> <span class="nb">Object</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Dereference the potentially existent entity from the session
 into the supplied container, where the session is residing. It
-basically retrieves the hibernated entity, ressurects it and
+basically retrieves the hibernated entity, resurrects it and
 defined the appropriate getter property on supplied container.
-If the entity or session does not exist, nothing gets defined.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">dereference: </span><span class="nf">(container, callback) -&gt;</span>
+If the entity or session does not exist, nothing gets defined.
+Please refer to source code, as it contains important details.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">dereference: </span><span class="nf">(container, callback) -&gt;</span>
+        <span class="p">{</span><span class="nx">series</span><span class="p">,</span> <span class="nx">apply</span><span class="p">}</span> <span class="o">=</span> <span class="nx">async</span> <span class="o">or</span> <span class="nx">require</span> <span class="s">&quot;async&quot;</span>
         <span class="nx">assert</span> <span class="nv">key = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">ACCESS_ENTITY_SYMBOL</span>
         <span class="nx">assert</span> <span class="nv">sid = </span><span class="s">&quot;x-authenticate-entity&quot;</span> <span class="c1"># external</span>
         <span class="nv">isVanillaSession = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">container</span><span class="p">.</span><span class="nx">cookie</span>
@@ -58,9 +108,13 @@ If the entity or session does not exist, nothing gets defined.</p></div></div><d
         <span class="k">return</span> <span class="nx">callback</span><span class="p">()</span> <span class="k">unless</span> <span class="nv">session = </span><span class="nx">container</span><span class="p">.</span><span class="nx">session</span>
         <span class="k">return</span> <span class="nx">callback</span><span class="p">()</span> <span class="k">unless</span> <span class="nv">content = </span><span class="nx">session</span><span class="p">[</span><span class="nx">sid</span><span class="p">]</span>
         <span class="k">delete</span> <span class="nx">container</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">has</span> <span class="nx">container</span><span class="p">,</span> <span class="nx">key</span>
-        <span class="nx">@ressurectEntity</span> <span class="o">?=</span> <span class="nf">(xc, xn) -&gt;</span> <span class="nx">xn</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">xc</span>
-        <span class="nx">@ressurectEntity</span> <span class="nx">content</span><span class="p">,</span> <span class="nf">(error, entity) =&gt;</span>
-            <span class="nv">format = </span><span class="nf">(m) -&gt;</span> <span class="s">&quot;ressurection error: </span><span class="si">#{</span><span class="nx">m</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nv">surrogate = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">resurrection</span><span class="p">()</span>
+        <span class="nv">functions = </span><span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">implement</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@</span> <span class="k">for</span> <span class="nx">o</span> <span class="k">in</span> <span class="nx">surrogate</span><span class="p">)</span>
+        <span class="nv">boxd = </span><span class="nf">(obj) -&gt;</span> <span class="p">(</span><span class="nx">apply</span> <span class="nx">fn</span><span class="p">,</span> <span class="nx">obj</span> <span class="k">for</span> <span class="nx">fn</span> <span class="k">in</span> <span class="nx">functions</span><span class="p">)</span>
+        <span class="nv">fasn = </span><span class="nf">(o, c) -&gt;</span> <span class="nx">series</span> <span class="nx">boxd</span><span class="p">(</span><span class="nx">o</span><span class="p">),</span> <span class="nf">(e, r) -&gt;</span> <span class="nx">c</span><span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">o</span><span class="p">)</span>
+        <span class="nx">@resurrectEntity</span> <span class="o">?=</span> <span class="nf">(c, fn) -&gt;</span> <span class="nx">fasn</span> <span class="nx">_</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">c</span><span class="p">),</span> <span class="nx">fn</span>
+        <span class="nx">@resurrectEntity</span> <span class="nx">content</span><span class="p">,</span> <span class="nf">(error, entity) =&gt;</span>
+            <span class="nv">format = </span><span class="nf">(m) -&gt;</span> <span class="s">&quot;resurrection error: </span><span class="si">#{</span><span class="nx">m</span><span class="si">}</span><span class="s">&quot;</span>
             <span class="nv">masked = </span><span class="nx">format</span> <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="k">if</span> <span class="nx">error</span>
             <span class="k">return</span> <span class="nx">callback</span> <span class="nb">Error</span> <span class="nx">masked</span> <span class="k">if</span> <span class="nx">error</span>
             <span class="nv">s = enumerable: </span><span class="kc">no</span><span class="p">,</span> <span class="nv">configurable: </span><span class="kc">yes</span>
@@ -68,12 +122,14 @@ If the entity or session does not exist, nothing gets defined.</p></div></div><d
             <span class="nv">p.get = s.get = </span><span class="nf">-&gt;</span> <span class="nx">entity</span> <span class="o">or</span> <span class="kc">undefined</span>
             <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nx">container</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">p</span>
             <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nx">session</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">p</span>
-            <span class="nx">@emit</span> <span class="s">&quot;ressurect&quot;</span><span class="p">,</span> <span class="nx">container</span><span class="p">,</span> <span class="nx">entity</span>
+            <span class="nx">@emit</span> <span class="s">&quot;resurrect&quot;</span><span class="p">,</span> <span class="nx">container</span><span class="p">,</span> <span class="nx">entity</span>
             <span class="nx">assert</span> <span class="nx">container</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span><span class="p">;</span> <span class="nx">callback</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Authenticate supplied entity as the authorized entity against
 the session found in the specified session container. Session
 container could be either a request or duplex socket or other
 member that has the session storage installed under <code>session</code>.
-The method also saves the session once it has authenticated.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">authenticate: </span><span class="nf">(container, entity, rme, callback) -&gt;</span>
+The method also saves the session once it has authenticated.
+Please refer to source code, as it contains important details.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">authenticate: </span><span class="nf">(container, entity, rme, callback) -&gt;</span>
+        <span class="p">{</span><span class="nx">series</span><span class="p">,</span> <span class="nx">apply</span><span class="p">}</span> <span class="o">=</span> <span class="nx">async</span> <span class="o">or</span> <span class="nx">require</span> <span class="s">&quot;async&quot;</span>
         <span class="nv">noSave = </span><span class="s">&quot;the session has not save function&quot;</span>
         <span class="nv">noSession = </span><span class="s">&quot;container has no session object&quot;</span>
         <span class="nv">message = </span><span class="s">&quot;Persisted %s entity against session&quot;</span>
@@ -82,7 +138,11 @@ The method also saves the session once it has authenticated.</p></div></div><div
         <span class="nx">assert</span> <span class="nv">symbol = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">ACCESS_ENTITY_SYMBOL</span>
         <span class="nx">assert</span> <span class="nv">session = </span><span class="nx">container</span><span class="o">?</span><span class="p">.</span><span class="nx">session</span><span class="p">,</span> <span class="nx">noSession</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">entity</span><span class="p">),</span> <span class="s">&quot;malformed entity&quot;</span>
-        <span class="nx">@hibernateEntity</span> <span class="o">?=</span> <span class="nf">(xe, xn) -&gt;</span> <span class="nx">xn</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">xe</span>
+        <span class="nv">surrogate = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">hibernation</span><span class="p">()</span>
+        <span class="nv">functions = </span><span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">implement</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@</span> <span class="k">for</span> <span class="nx">o</span> <span class="k">in</span> <span class="nx">surrogate</span><span class="p">)</span>
+        <span class="nv">boxd = </span><span class="nf">(obj) -&gt;</span> <span class="p">(</span><span class="nx">apply</span> <span class="nx">fn</span><span class="p">,</span> <span class="nx">obj</span> <span class="k">for</span> <span class="nx">fn</span> <span class="k">in</span> <span class="nx">functions</span><span class="p">)</span>
+        <span class="nv">fasn = </span><span class="nf">(o, c) -&gt;</span> <span class="nx">series</span> <span class="nx">boxd</span><span class="p">(</span><span class="nx">o</span><span class="p">),</span> <span class="nf">(e, r) -&gt;</span> <span class="nx">c</span><span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">o</span><span class="p">)</span>
+        <span class="nx">@hibernateEntity</span> <span class="o">?=</span> <span class="nf">(c, fn) -&gt;</span> <span class="nx">fasn</span> <span class="nx">_</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">c</span><span class="p">),</span> <span class="nx">fn</span>
         <span class="nx">@hibernateEntity</span> <span class="nx">entity</span><span class="p">,</span> <span class="nf">(error, content) =&gt;</span>
             <span class="k">return</span> <span class="nx">callback</span> <span class="nx">error</span><span class="p">,</span> <span class="kc">undefined</span> <span class="k">if</span> <span class="nx">error</span>
             <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">content</span><span class="p">),</span> <span class="s">&quot;no content&quot;</span>
@@ -98,7 +158,8 @@ The method also saves the session once it has authenticated.</p></div></div><div
 of the service. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">ignition: </span><span class="nf">(request, response, next) -&gt;</span>
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.
+This implementation is a gateway into the access control sys.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">ignition: </span><span class="nf">(request, response, next) -&gt;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">id = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nv">symbol = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">ACCESS_ENTITY_SYMBOL</span>
         <span class="nv">format = </span><span class="nf">(ms) -&gt;</span> <span class="s">&quot;ingition access error: </span><span class="si">#{</span><span class="nx">ms</span><span class="si">}</span><span class="s">&quot;</span>
@@ -106,7 +167,7 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
         <span class="nv">success = </span><span class="s">&quot;Got valid ignition entity at </span><span class="si">#{</span><span class="nx">id</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nv">set = </span><span class="s">&quot;Set %s to be access entity reference&quot;</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">atm</span><span class="p">,</span> <span class="k">try</span> <span class="nx">id</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">underline</span>
-        <span class="k">try</span> <span class="nx">@dereference</span> <span class="nx">request</span><span class="p">,</span> <span class="nf">(error, supply) =&gt;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">dereference</span> <span class="nx">request</span><span class="p">,</span> <span class="nf">(error, supply) =&gt;</span>
             <span class="nx">@emit</span> <span class="s">&quot;access-entity-ignition&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
             <span class="nv">s = succeeded = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">request</span><span class="p">[</span><span class="nx">symbol</span><span class="p">]</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">success</span><span class="p">.</span><span class="nx">yellow</span> <span class="k">if</span> <span class="nx">succeeded</span>
@@ -118,7 +179,9 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
 socket connection is going to be setup during the handshake.
 The method gets a set of parameters that maybe be useful to
 have by the actual implementation. Please remember thet the
-method is asynchronously wired, so be sure to call <code>next</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">handshaken: </span><span class="nf">(context, handshake, next) -&gt;</span>
+method is asynchronously wired, so be sure to call <code>next</code>.
+This implementation is a gateway into the access control sys.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">handshaken: </span><span class="nf">(context, socket, next) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">handshake = </span><span class="k">try</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">request</span> <span class="o">or</span> <span class="kc">null</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">id = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nv">symbol = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">ACCESS_ENTITY_SYMBOL</span>
         <span class="nv">format = </span><span class="nf">(ms) -&gt;</span> <span class="s">&quot;handshake access error: </span><span class="si">#{</span><span class="nx">ms</span><span class="si">}</span><span class="s">&quot;</span>
@@ -126,7 +189,7 @@ method is asynchronously wired, so be sure to call <code>next</code>.</p></div><
         <span class="nv">success = </span><span class="s">&quot;Got valid handshake entity at </span><span class="si">#{</span><span class="nx">id</span><span class="si">}</span><span class="s">&quot;</span>
         <span class="nv">set = </span><span class="s">&quot;Set %s to be access entity reference&quot;</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">atm</span><span class="p">,</span> <span class="k">try</span> <span class="nx">id</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">underline</span>
-        <span class="k">try</span> <span class="nx">@dereference</span> <span class="nx">handshake</span><span class="p">,</span> <span class="nf">(error, supply) =&gt;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">dereference</span> <span class="nx">handshake</span><span class="p">,</span> <span class="nf">(error, supply) =&gt;</span>
             <span class="nx">@emit</span> <span class="s">&quot;access-entity-handshake&quot;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...</span>
             <span class="nv">s = succeeded = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">handshake</span><span class="p">[</span><span class="nx">symbol</span><span class="p">]</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">success</span><span class="p">.</span><span class="nx">yellow</span> <span class="k">if</span> <span class="nx">succeeded</span>

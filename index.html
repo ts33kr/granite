@@ -52,15 +52,14 @@ Use http://ts33kr.github.io/granite for browsing.</p>
 <li><p>Highly advanced code emission platform that is taking care of
 doing all the processing necessary to transfer the relevant code
 to the client site. The entire method hierarchies are transferred,
-so that you can always access all the possibly overriden methods
+so that you can always access all the possibly overridden methods
 in the base classes. On top of that, there is a special mechanism
 implemented that allows you to override type implementations that
 are used in the parent classes, without having to override any of
 the base classes coding (as long as types have similar interfaces).
-And last, but not least - all of the code that is emited into the
+And last, but not least - all of the code that is emitted into the
 client site is being taken apart and re-translated, using either
-the comprssion &amp; obfuscation or the code beautification toolkit,
-depending on the scope and config.</p></li>
+obfuscation or the code beautification toolkit, depending on config.</p></li>
 <li><p>A unique extension to the object system, written using pure
 CoffeeScript that allows for completely transparent and dynamic
 multiple inheritance, modelled similar to the mixin concept. It
@@ -90,7 +89,7 @@ The channel uses latest, state-of-the-art technologies, such as
 <a href="library/membrane/bilateral.coffee">membrane/bilateral.coffee</a>
 for the reference coding and info.</p></li>
 <li><p>A strong layer for implementing conventional application APIs.
-The REST architecture is shipped out of the box, with posibility
+The REST architecture is shipped out of the box, with possibility
 of deep customization to fit in any architecture on top of HTTP.
 Has a built in support for advanced features, like the embedded
 declarative documentation and testing subsystems wired into it.
@@ -101,10 +100,10 @@ configuration for creating and discovering new services. See
 <li><p>A production grade load balancing and failover clustering
 provided right out of the box. Delivered by technology called
 <a href="https://github.com/substack/seaport">Seaport</a> it provides a
-lot of advanced functionality, such as the node autodiscovery
+lot of advanced functionality, such as the node auto-discovery
 and no need for initial configuration. It allows to dynamically
 create star-like topologies in a matter of seconds, supporting
-any order of brinding nodes up (master and slaves). The shipped
+any order of bringing nodes up (master and slaves). The shipped
 balancing algorithm is a simple, session-sticky round robin. See
 <a href="library/nucleus/scaled.coffee">nucleus/scaled.coffee</a> file for
 the scalable kernel implementation.</p></li>
@@ -115,10 +114,10 @@ coding as well as the server side coding. A frontend package manager
 to provide the flexible ability to embed the frontend dependencies
 directly into your components. The dependencies are intelligently
 resolved and automatically satisfied during the node bootloaing;
-in a configurable maner. For the implementation coding see
+in a configurable manner. For the implementation coding see
 <a href="library/membrane/bower.coffee">membrane/bower.coffee</a>.</p></li>
 <li><p>An out of the box configuration system allows you to consume
-configuration data (files) right away, wihtout setting up any
+configuration data (files) right away, without setting up any
 sort of boilerplate. The system is based on a well known package
 called <a href="https://github.com/flatiron/nconf">NConf</a>. Refer to the
 <a href="library/nucleus/scoping.coffee">nucleus/scoping.coffee</a> to get
@@ -141,11 +140,21 @@ platform. It is built on top of the client/server communication tools
 built into the framework, therefore requires virtually no configs at
 all; it just works out of the box. The system uses YAML file format
 to keep its translation tables. This allows for the tables to be very
-human-oriented and therefore are extremly easy and fun to work with.
+human-oriented and therefore are extremely easy and fun to work with.
 Please see <a href="library/exposure/localized.coffee">exposure/localized.coffee</a>
 source code to familiarize yourself with the platform implementation.
 Also take a look at <a href="locale/tracked.yaml">locale/tracked.yaml</a> for
 the real world example of translation tables for the specific service.</p></li>
+<li><p>Centralized mechanism for application level events publishing and
+book keeping. Basically, allows you to publish an application event
+that will be automatically propagated to all application nodes, via
+Redis pub/sub mechanism, and then the event and all its metadata will
+be stored in a capped collection in MongoDB. This toolkit gives you
+an ability to keep an effective application log and stream events
+from a tailable MongoDB cursor, receiving the real time information.
+Please see <a href="library/exposure/central.coffee">exposure/central.coffee</a>
+source code for the centralized messaging system implementation and
+all the available there relevant documentation.</p></li>
 </ul>
 
 <h2 id="disclaimer">Disclaimer</h2>
