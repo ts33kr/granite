@@ -187,6 +187,7 @@ module.exports.AccessGate = class AccessGate extends Barebones
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
+    # This implementation is a gateway into the access control sys.
     ignition: (request, response, next) ->
         assert _.isString id = @constructor.identify()
         assert symbol = @constructor.ACCESS_ENTITY_SYMBOL
@@ -210,6 +211,7 @@ module.exports.AccessGate = class AccessGate extends Barebones
     # The method gets a set of parameters that maybe be useful to
     # have by the actual implementation. Please remember thet the
     # method is asynchronously wired, so be sure to call `next`.
+    # This implementation is a gateway into the access control sys.
     handshaken: (context, socket, next) ->
         assert handshake = try socket.request or null
         assert _.isString id = @constructor.identify()
