@@ -272,6 +272,7 @@ module.exports.Duplex = class Duplex extends Preflight
         options = new Object reconnect: yes, url: @duplex
         _.extend options, reconnectionDelay: 3000 # millis
         _.extend options, "max reconnection attempts": 99999
+        _.extend options, transports: ["websocket"] # no XHR
         try @socket = io.connect @duplex, options catch error
             message = "blew up Socket.IO: #{error.message}"
             error.message = message.toString(); throw error
