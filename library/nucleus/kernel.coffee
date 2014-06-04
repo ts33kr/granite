@@ -113,8 +113,8 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
     # content. That is, it will expose it to the world (not list it).
     # The serving aspects can be configured via a passed in options.
     serveStaticDirectory: (directory, options={}) ->
-        assert cwd = process.cwd().toString()
-        solved = paths.relative cwd, directory
+        assert cwd = try process.cwd().toString()
+        solved = try paths.relative cwd, directory
         serving = "Serving %s as static assets dir"
         notExist = "The assets dir %s does not exist"
         fail = -> logger.warn notExist, solved.underline
