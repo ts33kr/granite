@@ -61,56 +61,6 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
     # for more information on semantics and the way of working it.
     @identica -> "#{@APPLICATION.name}@#{@APPLICATION.version}"
 
-    # A configuration routine that ensures the scope config has the
-    # Seaport hub related configuration data. If so, it proceeds to
-    # retrieving that info and using it to locate and connect to a
-    # Seaport hub, which is then installed as the kernel instance
-    # variable, so that it can be accessed by the other routines.
-    @configure "access the service Seaport hub", (next) ->
-        assert _.isString host = nconf.get "hub:host"
-        assert _.isNumber port = nconf.get "hub:port"
-        assert _.isObject opts = nconf.get "hub:opts"
-        @seaport = seaport.connect host, port, opts
-        assert _.isObject(@seaport), "seaport failed"
-        assert @seaport.register?, "a broken seaport"
-        shl = "#{host}:#{port}".toString().underline
-        msg = "Locate a Seaport hub at #{shl}".blue
-        logger.info msg; return next undefined
-
-    # Shutdown the kernel instance. This includes shutting down both
-    # HTTP and HTTPS server that may be running, stopping the router
-    # and unregistering all the services as a precauting. After that
-    # the scope is being dispersed and some events are being emited.
-    # This implementaton cleans up some of the scalability resources.
-    shutdownKernel: (reason, eol=yes) ->
-        util.puts require("os").EOL if eol
-        @emit "shutdownScaledKernel", arguments...
-        message = "Graceful shutdown of Scaled kernel"
-        try @spserver.close() if @spserver.close?
-        try @serverProxy.close() if @serverProxy?
-        try @secureProxy.close() if @secureProxy?
-        terminator = (proxy) -> try proxy.close()
-        _.each @queueOfHttps or Array(), terminator
-        _.each @queueOfHttp or Array(), terminator
-        logger.warn message.red; super reason, no
-
-    # The kernel preemption routine is called once the kernel has
-    # passed the initial launching and configuration phase, but is
-    # yet to start up the router, connect services and instantiate
-    # an actual application. This method gets passes continuation
-    # that does that. The method can either invoke it or omit it.
-    kernelPreemption: (continuation) ->
-        assert _.isObject(@options), "got no options"
-        either = @options.master or @options.instance
-        assert either, "no master and no instance mode"
-        return continuation() unless @options.master
-        logger.warn "The kernel is booting as master"
-        assert nconf.get("master"), "no master config"
-        assert not _.isEmpty @createSeaportServer()
-        assert not _.isEmpty @startupHttpsMaster()
-        assert not _.isEmpty @startupHttpMaster()
-        continuation.call @ if @options.instance
-
     # Prepare and setup an HTTPS master server. This server is the
     # proxy server that is going to consume all the HTTPS requests
     # and load balance the request to some of the instances. Please
@@ -322,3 +272,53 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
         logger.info msg.green, "#{record}".bold
         try config.server.http = record or null
         try nconf.defaults config; return super
+
+    # A configuration routine that ensures the scope config has the
+    # Seaport hub related configuration data. If so, it proceeds to
+    # retrieving that info and using it to locate and connect to a
+    # Seaport hub, which is then installed as the kernel instance
+    # variable, so that it can be accessed by the other routines.
+    @configure "access the service Seaport hub", (next) ->
+        assert _.isString host = nconf.get "hub:host"
+        assert _.isNumber port = nconf.get "hub:port"
+        assert _.isObject opts = nconf.get "hub:opts"
+        @seaport = seaport.connect host, port, opts
+        assert _.isObject(@seaport), "seaport failed"
+        assert @seaport.register?, "a broken seaport"
+        shl = "#{host}:#{port}".toString().underline
+        msg = "Locate a Seaport hub at #{shl}".blue
+        logger.info msg; return next undefined
+
+    # The kernel preemption routine is called once the kernel has
+    # passed the initial launching and configuration phase, but is
+    # yet to start up the router, connect services and instantiate
+    # an actual application. This method gets passes continuation
+    # that does that. The method can either invoke it or omit it.
+    kernelPreemption: (continuation) ->
+        assert _.isObject(@options), "got no options"
+        either = @options.master or @options.instance
+        assert either, "no master and no instance mode"
+        return continuation() unless @options.master
+        logger.warn "The kernel is booting as master"
+        assert nconf.get("master"), "no master config"
+        assert not _.isEmpty @createSeaportServer()
+        assert not _.isEmpty @startupHttpsMaster()
+        assert not _.isEmpty @startupHttpMaster()
+        continuation.call @ if @options.instance
+
+    # Shutdown the kernel instance. This includes shutting down both
+    # HTTP and HTTPS server that may be running, stopping the router
+    # and unregistering all the services as a precauting. After that
+    # the scope is being dispersed and some events are being emited.
+    # This implementaton cleans up some of the scalability resources.
+    shutdownKernel: (reason, eol=yes) ->
+        try util.puts require("os").EOL if eol
+        this.emit "shutdownScaledKernel", arguments...
+        message = "Graceful shutdown of Scaled kernel"
+        try @spserver.close() if @spserver.close?
+        try @serverProxy.close() if @serverProxy?
+        try @secureProxy.close() if @secureProxy?
+        terminator = (proxy) -> try proxy.close()
+        _.each @queueOfHttps or Array(), terminator
+        _.each @queueOfHttp or Array(), terminator
+        logger.warn message.red; super reason, no
