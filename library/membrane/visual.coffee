@@ -91,7 +91,9 @@ module.exports.Screenplay = class Screenplay extends VisualBillets
         ha xo $("<script>"), jstr o for o in javascript
         $('script[type*="javascript"]:empty').remove()
         assert not _.isEmpty doc = $.root().get(0) or 0
-        bound = this.constructor.rendering().bind this
+        m = (h) -> (ob) -> _.extend Object.create(h), ob
+        s = (h) -> m(h) request: request, context: context
+        bound = this.constructor.rendering().bind s this
         return bound $, doc, (error, results, others) ->
             assert.ifError error, "got rendering error"
             return callback dom(doc.children), $, doc
