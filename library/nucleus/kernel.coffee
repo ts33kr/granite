@@ -108,21 +108,6 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         assert @$identica = identica.toString()
         return @emit? "identica", arguments...
 
-    # Create and wire in an appropriate Connext middleware that will
-    # serve the specified directory as the directory with a static
-    # content. That is, it will expose it to the world (not list it).
-    # The serving aspects can be configured via a passed in options.
-    serveStaticDirectory: (directory, options={}) ->
-        assert cwd = try process.cwd().toString()
-        solved = try paths.relative cwd, directory
-        serving = "Serving %s as static assets dir"
-        notExist = "The assets dir %s does not exist"
-        fail = -> logger.warn notExist, solved.underline
-        return fail() unless fs.existsSync directory
-        middleware = connect.static directory, options
-        logger.info serving.cyan, solved.underline
-        @connect.use middleware; return this
-
     # An embedded system for adding ad-hoc configuration routines.
     # Supply the reasoning and the routine and this method will add
     # that routine to the configuration stack, to be launched once
@@ -469,6 +454,21 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         @serveStaticDirectory d, opts for d in dirs
         @serveStaticDirectory established, Object()
         @serveStaticDirectory pub(); return this
+
+    # Create and wire in an appropriate Connext middleware that will
+    # serve the specified directory as the directory with a static
+    # content. That is, it will expose it to the world (not list it).
+    # The serving aspects can be configured via a passed in options.
+    serveStaticDirectory: (directory, options={}) ->
+        assert cwd = try process.cwd().toString()
+        solved = try paths.relative cwd, directory
+        serving = "Serving %s as static assets dir"
+        notExist = "The assets dir %s does not exist"
+        fail = -> logger.warn notExist, solved.underline
+        return fail() unless fs.existsSync directory
+        middleware = connect.static directory, options
+        logger.info serving.cyan, solved.underline
+        @connect.use middleware; return this
 
     # This method sets up the necessary internal toolkits, such as
     # the determined scope and the router, which is then are wired
