@@ -272,7 +272,7 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
         log = (m, s) -> logger.info m, k(s), c(s), l(s)
         match = (s) -> "#{s.role}@#{s.version}" is identica
         assert @spserver = seaport.createServer opts or {}
-        assert _.isObject @domain; @domain.add @spserver
+        assert _.isObject @domain; try @domain.add @spserver
         logger.info create.magenta, l(host: host, port: port)
         @spserver.on "register", (s) -> log r, s if match s
         @spserver.on "free", (s) -> log f, s if match s
