@@ -82,9 +82,9 @@ module.exports.collectPackages = (closure, directory) ->
 # then revert to returning the original kernel embedded in framework.
 # Beware, this code logic is far from idea and therefor error prone.
 module.exports.cachedKernel = (limits) ->
-    origin = require("./scaled").Scaled
     assert _.isString limits, "no limits"
     limits = paths.resolve limits.toString()
+    origin = require("./scaled").ScaledKernel
     assert _.isObject(origin), "no kernel origin"
     limiter = (m) -> m.filename.indexOf(limits) is 0
     limited = _.filter require.cache, limiter
