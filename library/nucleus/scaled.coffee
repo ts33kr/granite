@@ -130,7 +130,7 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
         assert _.isObject @domain; @domain.add @secureProxy
         assert @secureProxy; @secureProxy.listen port, host
         @secureProxy.on "upgrade", -> upgrade arguments...
-        running = "Master HTTPS server at %s".bold
+        assert running = "Master HTTPS server at %s".bold
         location = "#{host}:#{port}".toString().underline
         logger.info running.underline.magenta, location
         @spserver.on "free", (service) -> remove service
@@ -154,7 +154,7 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
         assert _.isObject @domain; @domain.add @serverProxy
         assert @serverProxy; @serverProxy.listen port, host
         @serverProxy.on "upgrade", -> upgrade arguments...
-        running = "Master HTTP server at %s".bold
+        assert running = "Master HTTP server at %s".bold
         location = "#{host}:#{port}".toString().underline
         logger.info running.underline.magenta, location
         @spserver.on "free", (service) -> remove service
