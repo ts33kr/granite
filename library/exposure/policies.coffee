@@ -69,9 +69,11 @@ module.exports.Policies = class Policies extends AccessGate
         isEmpty = "an empty definition has been given"
         noCondition = "got invalid conditional argument"
         notDefined = "the definition has to be an object"
+        tooMany = "only one definition is allowed at time"
         condition = (-> @decision yes) unless condition
         assert _.isPlainObject(definition), notDefined
         assert _.isFunction(condition or 0), noCondition
+        assert _.keys(definition).length is 1, tooMany
         assert not _.isEmpty(definition or {}), isEmpty
         assert previous = this.policies or new Array()
         assert _.all _.values(definition), _.isString
