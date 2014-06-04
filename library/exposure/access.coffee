@@ -141,7 +141,8 @@ module.exports.AccessGate = class AccessGate extends Barebones
     # The method gets a set of parameters that maybe be useful to
     # have by the actual implementation. Please remember thet the
     # method is asynchronously wired, so be sure to call `next`.
-    handshaken: (context, handshake, next) ->
+    handshaken: (context, socket, next) ->
+        assert handshake = try socket.request or null
         assert _.isString id = @constructor.identify()
         assert symbol = @constructor.ACCESS_ENTITY_SYMBOL
         format = (ms) -> "handshake access error: #{ms}"
