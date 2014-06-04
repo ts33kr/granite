@@ -468,7 +468,7 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         return fail() unless fs.existsSync directory
         middleware = connect.static directory, options
         logger.info serving.cyan, solved.underline
-        @connect.use middleware; return this
+        try @connect.use middleware; return this
 
     # This method sets up the necessary internal toolkits, such as
     # the determined scope and the router, which is then are wired
