@@ -127,16 +127,23 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
     # Supply the reasoning and the routine and this method will add
     # that routine to the configuration stack, to be launched once
     # the kernel boots up. With no arguments it returns the launcher.
-    # This is a convenient way of running additions config routines.
+    # This is a convenient way of running additions config routines,
+    # when designing the derivative kernels with custom configuration.
     @configure: (explain, routine) ->
-        log = (o) -> logger.info "Configuring: %s", o.explain.bold
-        func = (t) -> (o) -> (a...) -> log o; o.routine.apply t, a
-        run = arguments.length is 0 and _.isArray @$configure or 0
-        assert _.isArray $configure = @$configure or new Array()
-        return (-> async.series _.map $configure, func @) if run
-        return (->) if not @$configure and not arguments.length
-        assert _.isFunction(routine), "invalid config routine"
-        assert _.isString(explain), "no explanation given"
+        {series, apply} = async or require "async"
+        assert _.isString config = "Configuring: %s"
+        bareCall = (try arguments.length or 0) is 0
+        run = bareCall and _.isArray @$configure or 0
+        gr = (o) -> try o.routine.apply.bind o.routine
+        lg = (o) -> logger.info config, o.explain.bold
+        fn = (t) -> (o) -> (a...) -> lg o; gr(o) t, a
+        assert _.isArray $configure = @$configure or []
+        return (-> series _.map $configure, fn @) if run
+        return (-> null) if not @$configure and bareCall
+        invRoutine = "supplied invalid config routine"
+        invExplain = "no explanation has been supplied"
+        assert _.isFunction(routine or 0), invRoutine
+        assert _.isString(explain or 0), invExplain
         return (@$configure ?= []).push new Object
             explain: explain, routine: routine
 
