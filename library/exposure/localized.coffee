@@ -103,7 +103,9 @@ module.exports.Localized = class Localized extends Duplex
         assert ident = @constructor.identify().underline
         assert notify = "Translation scope in %s for %s"
         counts = "Offload %s translations in %s into %s"
-        assert this.session = @request.session or Object()
+        args = [@translationLanguage, @translationMessages]
+        return implement.apply this, args if _.isFunction @t
+        this.session = @request.session unless @session
         this.setupTranslationTools silence, (lng, msg) =>
             assert not _.isEmpty(lng), "got no language"
             assert _.isObject(msg), "got no translation"
