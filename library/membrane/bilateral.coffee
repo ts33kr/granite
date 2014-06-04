@@ -52,6 +52,8 @@ compose = require "./../nucleus/compose"
 # of communicating between client and server sites. Original duplex
 # is oriented for client-to-service communications only, while this
 # compounds adds the service-to-client communication on top of that.
+# The component itself is built heavily on top of a code emission
+# and delivery platform, as implemented by `Screenplay` service.
 module.exports.Bilateral = class Bilateral extends Duplex
 
     # This is a marker that indicates to some internal subsystems
