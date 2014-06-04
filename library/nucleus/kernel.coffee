@@ -60,7 +60,7 @@ watch = require "./watch"
 # and the end user application constructed within the framework. It
 # is both an abstract base class as well as a ready to use bootstrap.
 # Please refer to the documentation of the methods for more info.
-module.exports.GenericKernel = class GenericKernel extends Archetype
+module.exports.GraniteKernel = class GraniteKernel extends Archetype
 
     # This static property should contain the loaded NPM package
     # module which is used by the kernel to draw different kinds
@@ -179,7 +179,7 @@ module.exports.GenericKernel = class GenericKernel extends Archetype
         assert @application = @constructor.APPLICATION
         assert branding = [@framework.name, "smisome1"]
         types = [@framework.version, @framework.codename]
-        GenericKernel.kernel = this # one kernel per proc
+        GraniteKernel.instance = this # one kernel allowed
         this.interceptExceptions.call this, initializer
         return asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error

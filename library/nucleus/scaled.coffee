@@ -43,7 +43,7 @@ util = require "util"
 fs = require "fs"
 
 {format} = require "util"
-{GenericKernel} = require "./kernel"
+{GraniteKernel} = require "./kernel"
 {HttpProxy} = require "http-proxy"
 
 # This is the descendant of the generic kernel that implements the
@@ -52,7 +52,7 @@ fs = require "fs"
 # technologies, such as service discovery library alongside with a
 # library that allows for effective proxying of the HTTP requests.
 # Normally this kernel should always be preferred over Generic one!
-module.exports.ScaledKernel = class ScaledKernel extends GenericKernel
+module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
 
     # This sets up the default identica for this kernel. It forms
     # an identica of a certain recommended format and populates it
