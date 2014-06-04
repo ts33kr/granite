@@ -87,23 +87,49 @@ module.exports.Localized = class Localized extends Duplex
             send setup, (f) -> @setupTranslationTools = f
             (inline -> @setupTranslationTools()); next()
 
+    # A routine intended for server side execution inside of the
+    # services that need to use the translation toolkit during the
+    # server side operations, such as context rendering and alike.
+    # This routine internally uses the same code that is used when
+    # the translation toolkit is loaded on the client side. Method
+    # implements some of the necessary scaffolding to invoke that
+    # same code in the standalone, server side environment itself.
+    this::i18n = this::withTranslation = (implement) ->
+        noImplement = "have no implementation function"
+        noIsolation = "the source scope is not isolated"
+        assert _.isFunction(implement or 0), noImplement
+        assert _.isObject(@request or null), noIsolation
+        assert silence = (message) -> # empty logging fn
+        assert ident = @constructor.identify().underline
+        assert notify = "Translation scope in %s for %s"
+        counts = "Offload %s translations in %s into %s"
+        assert this.session = @request.session or Object()
+        this.setupTranslationTools silence, (lng, msg) =>
+            assert not _.isEmpty(lng), "got no language"
+            assert _.isObject(msg), "got no translation"
+            assert count = _.keys(msg).length.toString()
+            try logger.debug notify.grey, lng.bold, ident
+            try logger.debug counts.grey, count.bold, lng
+            return implement.apply this, arguments
+
     # An automatically called external routine that will take care
     # of setting up the client site part of the translation toolkit.
     # This implementation requests the necessary translation tables
     # off the server provider. Once is acknowledged, a client side
     # routines are setup and associated with the language and table.
-    setupTranslationTools: @awaiting "booted", (force) ->
+    setupTranslationTools: @awaiting "booted", (log, ack) ->
         unexpected = "received malformed translation"
         unrecognized = "unrecognized language received"
         noted = "loaded %s translation messages for %s"
         sel = "using %s as the language selector for %s"
-        return if _.isFunction(@t) and force isnt true
+        return if _.isFunction @t # do not double call
+        assert loggingRoutine = try log or logger.info
         assert _.isFunction sprintf = _.sprintf # format
         pt = (o, v, key) -> delete o[key]; o[lc key] = v
         lc = (src) => return src.toString().toLowerCase()
         rx = (src) => @translationMessages?[lc src] or src
         try _.transform this.translationMessages or 0, pt
-        logger.info "installing the translation tookit"
+        loggingRoutine "installing the translation tookit"
         this.t = (s, a...) => sprintf "#{rx(s)}", a...
         this.th = (s, a...) => _.humanize this.t s, a...
         this.tt = (s, a...) => _.titleize this.t s, a...
@@ -113,8 +139,9 @@ module.exports.Localized = class Localized extends Duplex
             assert @translationMessages = translation
             assert @translationLanguage = language
             length = _.keys(translation).length
-            logger.info noted, length, @service
-            logger.info sel, language, @service
+            loggingRoutine noted, length, @service
+            loggingRoutine sel, language, @service
+            ack language, translation if ack
 
     # An out-of-the-box isolated provider that exposes translation
     # messages, provided by the service in the language requested.
