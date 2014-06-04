@@ -102,16 +102,16 @@ module.exports.Localized = class Localized extends Duplex
         assert silence = (message) -> # empty logging fn
         assert ident = @constructor.identify().underline
         assert notify = "Translation scope in %s for %s"
-        counts = "Offload %s translations in %s into %s"
+        counts = "Offload %s translations in %s into scope"
         args = [@translationLanguage, @translationMessages]
         return implement.apply this, args if _.isFunction @t
         this.session = @request.session unless @session
         this.setupTranslationTools silence, (lng, msg) =>
             assert not _.isEmpty(lng), "got no language"
             assert _.isObject(msg), "got no translation"
-            assert count = _.keys(msg).length.toString()
+            try count = _.keys(msg).length.toString().bold
             try logger.debug notify.grey, lng.bold, ident
-            try logger.debug counts.grey, count.bold, lng
+            try logger.debug counts.grey, count, lng.bold
             return implement.apply this, arguments
 
     # An automatically called external routine that will take care
@@ -160,6 +160,8 @@ module.exports.Localized = class Localized extends Duplex
         neg = negotiator.language(_.keys(cache) or [])
         selector = language or @session.language or neg
         selector = selector or "en" # hardcoded default
+        try delete this.session.language; sel = selector
+        @session.language ?= sel if neg and sel isnt "en"
         assert messages = cache[selector] or new Object
         amount = _.keys(messages).length # of messages
         banner = "Loaded %s messages for %s in %s".grey
