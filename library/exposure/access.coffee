@@ -64,36 +64,61 @@ module.exports.AccessGate = class AccessGate extends Barebones
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = ressurections: 1, hibernations: 1
+    @COMPOSITION_EXPORTS = resurrections: 1, hibernations: 1
 
     # Add the supplied implementation function to the internal stack
-    # of function that will be invoked each the time the access system
-    # is ressurecting the entity out of the session. These functions
+    # of functions that will be invoked every time the access system
+    # is resurrecting the entity out of the session. These functions
     # will be called asynchronously, with an ability to abruptly end
     # the execution. Please consult with the `async` package and the
     # source code of this method for more details on the mechanics.
-    @ressurection: (xoptions, ximplement) ->
+    @resurrection: (xoptions, ximplement) ->
         noOptions = "the options must be an object"
         noImplement = "must have implementation body"
         noSignature = "function has invalid signature"
-        message = "Install session ressurector in %s"
+        message = "Install session resurrector in %s"
         assert identify = this.identify().underline
         implement = _.find arguments, _.isFunction
         options = _.find arguments, _.isPlainObject
-        assert previous = @ressurections or Array()
+        assert previous = @resurrections or Array()
         return previous unless arguments.length > 0
         assert _.isObject(options or {}), noOptions
         assert _.isFunction(implement), noImplement
         assert (implement.length) > 1, noSignature
         logger.debug message.yellow, identify.bold
         fn = (arbitraryVector) -> return implement
-        return fn @ressurections = previous.concat
+        return fn @resurrections = previous.concat
+            implement: implement or _.noop
+            options: options or Object()
+
+    # Add the supplied implementation function to the internal stack
+    # of functions that will be invoked every time the access system
+    # is hibernating the entity inside the session. These functions
+    # will be called asynchronously, with an ability to abruptly end
+    # the execution. Please consult with the `async` package and the
+    # source code of this method for more details on the mechanics.
+    @hibernation: (xoptions, ximplement) ->
+        noOptions = "the options must be an object"
+        noImplement = "must have implementation body"
+        noSignature = "function has invalid signature"
+        message = "Install session hibernator in %s"
+        assert identify = this.identify().underline
+        implement = _.find arguments, _.isFunction
+        options = _.find arguments, _.isPlainObject
+        assert previous = @hibernations or Array()
+        return previous unless arguments.length > 0
+        assert _.isObject(options or {}), noOptions
+        assert _.isFunction(implement), noImplement
+        assert (implement.length) > 1, noSignature
+        logger.debug message.yellow, identify.bold
+        fn = (arbitraryVector) -> return implement
+        return fn @hibernations = previous.concat
             implement: implement or _.noop
             options: options or Object()
 
     # Dereference the potentially existent entity from the session
     # into the supplied container, where the session is residing. It
-    # basically retrieves the hibernated entity, ressurects it and
+    # basically retrieves the hibernated entity, resurrects it and
     # defined the appropriate getter property on supplied container.
     # If the entity or session does not exist, nothing gets defined.
     # Please refer to source code, as it contains important details.
@@ -106,13 +131,13 @@ module.exports.AccessGate = class AccessGate extends Barebones
         return callback() unless session = container.session
         return callback() unless content = session[sid]
         delete container[key] if _.has container, key
-        surrogate = _.unique @constructor.ressurection()
+        surrogate = _.unique @constructor.resurrection()
         functions = (o.implement.bind @ for o in surrogate)
         boxd = (obj) -> (apply fn, obj for fn in functions)
         fasn = (o, c) -> series boxd(o), (e, r) -> c(e, o)
-        @ressurectEntity ?= (c, fn) -> fasn _.clone(c), fn
-        @ressurectEntity content, (error, entity) =>
-            format = (m) -> "ressurection error: #{m}"
+        @resurrectEntity ?= (c, fn) -> fasn _.clone(c), fn
+        @resurrectEntity content, (error, entity) =>
+            format = (m) -> "resurrection error: #{m}"
             masked = format error.message if error
             return callback Error masked if error
             s = enumerable: no, configurable: yes
@@ -120,7 +145,7 @@ module.exports.AccessGate = class AccessGate extends Barebones
             p.get = s.get = -> entity or undefined
             Object.defineProperty container, key, p
             Object.defineProperty session, key, p
-            @emit "ressurect", container, entity
+            @emit "resurrect", container, entity
             assert container[key]?; callback()
 
     # Authenticate supplied entity as the authorized entity against
@@ -128,7 +153,9 @@ module.exports.AccessGate = class AccessGate extends Barebones
     # container could be either a request or duplex socket or other
     # member that has the session storage installed under `session`.
     # The method also saves the session once it has authenticated.
+    # Please refer to source code, as it contains important details.
     authenticate: (container, entity, rme, callback) ->
+        {series, apply} = async or require "async"
         noSave = "the session has not save function"
         noSession = "container has no session object"
         message = "Persisted %s entity against session"
@@ -137,7 +164,11 @@ module.exports.AccessGate = class AccessGate extends Barebones
         assert symbol = @constructor.ACCESS_ENTITY_SYMBOL
         assert session = container?.session, noSession
         assert _.isObject(entity), "malformed entity"
-        @hibernateEntity ?= (xe, xn) -> xn null, xe
+        surrogate = _.unique @constructor.hibernation()
+        functions = (o.implement.bind @ for o in surrogate)
+        boxd = (obj) -> (apply fn, obj for fn in functions)
+        fasn = (o, c) -> series boxd(o), (e, r) -> c(e, o)
+        @hibernateEntity ?= (c, fn) -> fasn _.clone(c), fn
         @hibernateEntity entity, (error, content) =>
             return callback error, undefined if error
             assert not _.isEmpty(content), "no content"
