@@ -160,7 +160,8 @@ module.exports.Localized = class Localized extends Duplex
         neg = negotiator.language(_.keys(cache) or [])
         selector = language or @session.language or neg
         selector = selector or "en" # hardcoded default
-        try delete this.session.language; sel = selector
+        assert not _.isEmpty(sel = selector), "lang fail"
+        delete @session.language unless @session.langlock
         @session.language ?= sel if neg and sel isnt "en"
         assert messages = cache[selector] or new Object
         amount = _.keys(messages).length # of messages
