@@ -59,12 +59,46 @@ module.exports.AccessGate = class AccessGate extends Barebones
     # the implementing services, in case if rename is necessary.
     @ACCESS_ENTITY_SYMBOL = "account"
 
+    # Symbol declaration table, that states what keys, if those are
+    # vectors (arrays) should be exported and then merged with their
+    # counterparts in the destination, once the composition process
+    # takes place. See the `Archetype::composition` hook definition
+    # for more information. Keys are names, values can be anything.
+    @COMPOSITION_EXPORTS = ressurections: 1, hibernations: 1
+
+    # Add the supplied implementation function to the internal stack
+    # of function that will be invoked each the time the access system
+    # is ressurecting the entity out of the session. These functions
+    # will be called asynchronously, with an ability to abruptly end
+    # the execution. Please consult with the `async` package and the
+    # source code of this method for more details on the mechanics.
+    @ressurection: (xoptions, ximplement) ->
+        noOptions = "the options must be an object"
+        noImplement = "must have implementation body"
+        noSignature = "function has invalid signature"
+        message = "Install session ressurector in %s"
+        assert identify = this.identify().underline
+        implement = _.find arguments, _.isFunction
+        options = _.find arguments, _.isPlainObject
+        assert previous = @ressurections or Array()
+        return previous unless arguments.length > 0
+        assert _.isObject(options or {}), noOptions
+        assert _.isFunction(implement), noImplement
+        assert (implement.length) > 1, noSignature
+        logger.debug message.yellow, identify.bold
+        fn = (arbitraryVector) -> return implement
+        return fn @ressurections = previous.concat
+            implement: implement or _.noop
+            options: options or Object()
+
     # Dereference the potentially existent entity from the session
     # into the supplied container, where the session is residing. It
     # basically retrieves the hibernated entity, ressurects it and
     # defined the appropriate getter property on supplied container.
     # If the entity or session does not exist, nothing gets defined.
+    # Please refer to source code, as it contains important details.
     dereference: (container, callback) ->
+        {series, apply} = async or require "async"
         assert key = @constructor.ACCESS_ENTITY_SYMBOL
         assert sid = "x-authenticate-entity" # external
         isVanillaSession = _.isObject container.cookie
@@ -72,7 +106,11 @@ module.exports.AccessGate = class AccessGate extends Barebones
         return callback() unless session = container.session
         return callback() unless content = session[sid]
         delete container[key] if _.has container, key
-        @ressurectEntity ?= (xc, xn) -> xn null, xc
+        surrogate = _.unique @constructor.ressurection()
+        functions = (o.implement.bind @ for o in surrogate)
+        boxd = (obj) -> (apply fn, obj for fn in functions)
+        fasn = (o, c) -> series boxd(o), (e, r) -> c(e, o)
+        @ressurectEntity ?= (c, fn) -> fasn _.clone(c), fn
         @ressurectEntity content, (error, entity) =>
             format = (m) -> "ressurection error: #{m}"
             masked = format error.message if error
@@ -126,7 +164,7 @@ module.exports.AccessGate = class AccessGate extends Barebones
         success = "Got valid ignition entity at #{id}"
         set = "Set %s to be access entity reference"
         logger.debug atm, try id.toString().underline
-        try @dereference request, (error, supply) =>
+        this.dereference request, (error, supply) =>
             @emit "access-entity-ignition", arguments...
             s = succeeded = _.isObject request[symbol]
             logger.debug success.yellow if succeeded
@@ -150,7 +188,7 @@ module.exports.AccessGate = class AccessGate extends Barebones
         success = "Got valid handshake entity at #{id}"
         set = "Set %s to be access entity reference"
         logger.debug atm, try id.toString().underline
-        try @dereference handshake, (error, supply) =>
+        this.dereference handshake, (error, supply) =>
             @emit "access-entity-handshake", arguments...
             s = succeeded = _.isObject handshake[symbol]
             logger.debug success.yellow if succeeded
