@@ -85,14 +85,18 @@ module.exports.cachedKernel = (limits) ->
     assert _.isString limits, "no limits"
     limits = paths.resolve limits.toString()
     origin = require("./scaled").ScaledKernel
+    generc = require("./scaled").GraniteKernel
     assert _.isObject(origin), "no kernel origin"
+    lost = -> throw new Error "cannot find kernel"
+    notKnown = (k) -> try k not in [origin, generic]
     limiter = (m) -> m.filename.indexOf(limits) is 0
-    limited = _.filter require.cache, limiter
-    spaces = _.map limited, (x) -> x.exports
-    hierarchy = (c) -> c.hierarchy().length
-    isKernel = (x) -> try x.derives? origin
-    values = _.flatten _.map(spaces, _.values)
-    objects = _.filter values, _.isObject
-    kernels = _.filter objects, isKernel
-    sorted = _.sortBy kernels, hierarchy
-    return _.last(sorted) or origin
+    limited = _.filter require.cache or {}, limiter
+    spaces = _.map limited, (xmod) -> xmod.exports
+    hierarchy = (c) -> c.hierarchy().length or 0
+    isKernel = (xcls) -> try xcls.derives? origin
+    values = try _.flatten _.map(spaces, _.values)
+    objects = _.filter values or [], _.isObject
+    kernels = _.filter objects or [], isKernel
+    derived = _.filter kernels or [], notKnown
+    sorted = _.sortBy derived or [], hierarchy
+    return _.last(sorted) or origin or lost()
