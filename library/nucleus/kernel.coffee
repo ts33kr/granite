@@ -337,7 +337,7 @@ module.exports.Generic = class Generic extends Archetype
         assert _.isNumber(server.https), "no HTTPS port"
         assert _.isObject options = @resolveSslDetails()
         running = "Running HTTPS server at %s".magenta
-        arrived = "New #{"HTTPS".bold} connection at %s"
+        arrived = "Incoming #{"HTTPS".bold} connection at %s"
         location = "#{hostname}:#{server.https}".toString()
         logger.info running.underline, location.underline
         @secure = https.createServer options, @connect
@@ -359,7 +359,7 @@ module.exports.Generic = class Generic extends Archetype
         assert hostname = nconf.get "server:host" or 0
         assert _.isNumber(server.http), "no HTTP port"
         running = "Running HTTP server at %s".magenta
-        arrived = "New #{"HTTP".bold} connection at %s"
+        arrived = "Incoming #{"HTTP".bold} connection at %s"
         location = "#{hostname}:#{server.http}".toString()
         logger.info running.underline, location.underline
         @server = http.createServer @connect, undefined
