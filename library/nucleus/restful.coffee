@@ -67,7 +67,7 @@ module.exports.Restful = class Restful extends Service
     # Especially useful for service with the same resource but with
     # different conditions, such as mobile only and desktop only.
     @condition: (synopsis, limitation) ->
-        return @$condition if arguments.length is 0
+        return @conditions if arguments.length is 0
         limitation = _.find arguments, _.isFunction
         generic = "service condition: #{limitation}"
         synopsis = generic unless _.isString synopsis
@@ -76,8 +76,8 @@ module.exports.Restful = class Restful extends Service
         assert _.isString(synopsis), "got no synopsis"
         assert _.isFunction(limitation), noLimitation
         assert limitation.length >= 3, wrongSignature
-        assert _.isArray inherited = @$condition or []
-        return @$condition = inherited.concat
+        assert _.isArray inherited = @conditions or []
+        return @conditions = inherited.concat
             limitation: limitation
             synopsis: synopsis
 
