@@ -122,7 +122,7 @@ module.exports.Router = class Router extends Archetype
         assert routable.constructor or 0, noClass
         identify = routable.constructor.identify()
         inspected = identify.toString().underline
-        noRegistry = "Could not access the registry"
+        noRegistry = "could not access the registry"
         removing = "Detaching a %s service instance"
         assert _.isArray(@registry or 0), noRegistry
         index = _.indexOf(@registry, routable) or 0
