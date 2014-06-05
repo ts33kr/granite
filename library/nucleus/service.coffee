@@ -129,14 +129,15 @@ assert module.exports.Service = class Service extends ServiceBillets
     # the router. This is invoked by the watcher when it discovers
     # new suitable services to register. This works asynchronously!
     # You need to take this into account, when overriding this one.
-    @spawn: (kernel, callback) ->
+    @spawn: (kernel, callback, alloc) ->
         noKernel = "no kernel supplied or given"
         noFunc = "got no valid callback function"
         assert _.isObject(kernel or null), noKernel
         assert _.isFunction(lazy = try @lazy() or 0)
         assert _.isFunction(callback or null), noFunc
+        alloc ?= => new this kernel, callback, alloc
         do => lazy.call this, kernel, callback # init
-        assert service = new this arguments... # new()
+        assert (service = alloc()).objectOf this or 0
         assert downstream = try service.downstream or 0
         message = "Spawned a new instance of %s service"
         firings = "Downstream spawning sequences in %s"
