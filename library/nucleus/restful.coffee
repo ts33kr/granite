@@ -155,7 +155,7 @@ module.exports.Restful = class Restful extends Service
         conditions = Array() unless _.isArray conditions
         identify = try @constructor?.identify().underline
         p = (i, cn) -> i.limitation request, response, cn
-        fails = "service #{identify} fails some conditions"
+        fails = "Service #{identify} fails some conditions"
         return super request, response, (decision) =>
             return decide no unless decision is yes
             async.every conditions, p, (confirms) ->
@@ -181,14 +181,12 @@ module.exports.Restful = class Restful extends Service
         response.on "header", -> partial variables...
         assert mw = @constructor.middleware().bind this
         signature = [request, response, variables...]
-        intake = (fn) => @downstream preprocess: fn
+        intake = (fn) => @downstream processing: fn
         go = (fn) => usp = intake fn; usp signature...
         go => mw(signature) (error, results, misc) =>
             assert expanded = _.clone variables or []
             expanded.push request.session or undefined
             this[method] request, response, expanded...
-            postprocess = @downstream postprocess: ->
-            postprocess request, response, variables...
 
     # Reject the request by sending an error descriptor object as a
     # response. The error descriptor is a top level object that will
@@ -203,13 +201,11 @@ module.exports.Restful = class Restful extends Service
         assert _.isFunction(@response.send), corrupted
         assert _.isObject(content or null), noContent
         assert this.__isolated, "broken spin off engine"
-        @emit "reject", @response, content, code, keepalive
         upload = => return @response.send code, content
-        prerejection = @downstream prerejection: =>
-            process.nextTick -> do -> try upload()
-            postrejection = @downstream postrejection: ->
-            return postrejection @response, content
-        return prerejection @response, content
+        flushd = => return process.nextTick -> upload()
+        rejection = this.downstream rejection: flushd
+        this.emit "reject", @response, arguments...
+        return rejection this.response, content
 
     # Push the supplied content to the requester by utilizing the
     # response object. This is effectively the same as calling the
@@ -227,8 +223,6 @@ module.exports.Restful = class Restful extends Service
         assert this.__isolated, "broken spin off engine"
         @emit "push", @response, content, code, keepalive
         upload = => return @response.send code, content
-        assert prepushing = @downstream prepushing: =>
-            process.nextTick -> do -> try upload()
-            postpushing = @downstream postpushing: ->
-            return postpushing @response, content
-        return prepushing @response, content
+        flushd = => return process.nextTick -> upload()
+        assert pushing = @downstream pushing: flushd
+        return pushing this.response, content

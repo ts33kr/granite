@@ -63,42 +63,21 @@ module.exports.Stubs = class Stubs extends Restful
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
-    preprocess: (request, response, resource, domain, next) -> next()
-
-    # A hook that will be called after invoking the API method
-    # implementation. Please refer to this prototype signature for
-    # information on the parameters it accepts. Beware, this hook
-    # is asynchronously wired in, so consult with `async` package.
-    # Please be sure invoke the `next` arg to proceed, if relevant.
-    postprocess: (request, response, resource, domain, next) -> next()
+    processing: (request, response, resource, domain, next) -> next()
 
     # A hook that will be called prior to sending the errors over
     # to the requester. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
-    prerejection: (response, content, next) -> next()
-
-    # A hook that will be called after the sending the errors over
-    # to the requester. Please refer to this prototype signature for
-    # information on the parameters it accepts. Beware, this hook
-    # is asynchronously wired in, so consult with `async` package.
-    # Please be sure invoke the `next` arg to proceed, if relevant.
-    postrejection: (response, content, next) -> next()
+    rejection: (response, content, next) -> next()
 
     # A hook that will be called prior to sending the content over
     # to the requester. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
-    prepushing: (response, content, next) -> next()
-
-    # A hook that will be called after the sending the content over
-    # to the requester. Please refer to this prototype signature for
-    # information on the parameters it accepts. Beware, this hook
-    # is asynchronously wired in, so consult with `async` package.
-    # Please be sure invoke the `next` arg to proceed, if relevant.
-    postpushing: (response, content, next) -> next()
+    pushing: (response, content, next) -> next()
 
     # This method should generally be used to obtain HTTP methods that
     # are allowed on this resources. This is not the only possible way
