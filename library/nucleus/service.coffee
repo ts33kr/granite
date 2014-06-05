@@ -62,6 +62,7 @@ module.exports.Service = class Service extends Archetype
     # the kernel instance as a parameter. You can override it as
     # you see fit, but be sure to invoke the super constructor and
     # it is highly advised to store the kernel instance in object.
+    # It is also taking care of assigning a service identification.
     constructor: (@kernel) -> super and @uuid = uuid.v4()
 
     # Either obtain or set the HTTP location of the current service.
