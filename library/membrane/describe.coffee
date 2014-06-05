@@ -36,15 +36,16 @@ http = require "http"
 util = require "util"
 url = require "url"
 
-{Stubs} = require "../nucleus/stubs"
+
 {Document} = require "./document"
+{RestfulStubs} = require "../nucleus/stubs"
 
 # This is an abstract base class API stub service. Its purpose is
 # providing the boilerplate for documentation and speicification of
 # the services using the built it documentation mechanisn. This class
 # provide not only function for definition but also for retrieval of
 # the documentation on either the per-service or all-at-once basis.
-module.exports.Descriptor = class Descriptor extends Stubs
+module.exports.Descriptor = class Descriptor extends RestfulStubs
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

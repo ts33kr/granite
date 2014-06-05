@@ -34,7 +34,7 @@ extendz = require "./extends"
 routing = require "./routing"
 service = require "./service"
 
-{Restful} = require "./restful"
+{RestfulService} = require "./restful"
 
 # An abstract base class with all of the HTTP methods, defined in
 # the HTTP specification and covered by the base implementation
@@ -42,7 +42,7 @@ service = require "./service"
 # will throw the 405, method not allowed HTTP error status code.
 # The methods have implementations, but marked as the unsupported.
 # The ABC also provides stubbed implementation for the API hooks.
-module.exports.Stubs = class Stubs extends Restful
+module.exports.RestfulStubs = class RestfulStubs extends RestfulService
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

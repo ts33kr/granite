@@ -44,7 +44,7 @@ routing = require "./routing"
 # to some arbitrary resource, determined by HTTP path and guarded
 # by the domain matching. This is the crucial piece of framework.
 # It supports strictly methods defined in the HTTP specification.
-module.exports.Restful = class Restful extends Service
+module.exports.RestfulService = class RestfulService extends Service
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

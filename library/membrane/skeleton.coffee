@@ -33,8 +33,8 @@ logger = require "winston"
 
 extendz = require "./../nucleus/extends"
 compose = require "./../nucleus/compose"
-{Stubs} = require "./../nucleus/stubs"
 
+{RestfulStubs} = require "./../nucleus/stubs"
 {Descriptor} = require "./describe"
 {Healthcare} = require "./health"
 
@@ -43,7 +43,7 @@ compose = require "./../nucleus/compose"
 # to some arbitrary resource, determined by HTTP path and guarded
 # by the domain matching. This is the crucial piece of framework.
 # It supports strictly methods defined in the HTTP specification.
-module.exports.Barebones = class Barebones extends Stubs
+module.exports.Barebones = class Barebones extends RestfulStubs
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
