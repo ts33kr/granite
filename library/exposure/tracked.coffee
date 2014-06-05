@@ -47,7 +47,7 @@ util = require "util"
 # the duplexed service life cycle, by issuing a visual popup style
 # notifications when most notable events occure on the service. It
 # reports connections events in additions to the exceptional ones.
-module.exports.TrackedDuplex = class TrackedDuplex extends DuplexCore
+assert module.exports.TrackDuplex = class TrackDuplex extends DuplexCore
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
