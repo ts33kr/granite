@@ -43,7 +43,8 @@ util = require "util"
 # and solution for managing different access and control policies of
 # the authenticated (or anonymous) entities. The compound is basically
 # ACL solution that functions on top of (but does not depend on) the
-# authentication facilities crafter and provided within a framework.
+# authentication facilities crafted and provided within a framework.
+# Please see the `AccessGate` implementation for better knowledge.
 module.exports.Policies = class Policies extends AccessGate
 
     # This is a marker that indicates to some internal subsystems
@@ -65,11 +66,13 @@ module.exports.Policies = class Policies extends AccessGate
     # using POJO notation, as in `qualifier: privilege` style. If
     # one more arg is given, then is treated as conditional func
     # that is run to determine the privilege, once is requested.
-    @granting: (definition, condition) ->
+    @granting: (xdefinition, xcondition) ->
         isEmpty = "an empty definition has been given"
         noCondition = "got invalid conditional argument"
         notDefined = "the definition has to be an object"
         tooMany = "only one definition is allowed at time"
+        condition = try _.find arguments, _.isFunction
+        definition = _.find arguments, _.isPlainObject
         condition = (-> @decision yes) unless condition
         assert _.isPlainObject(definition), notDefined
         assert _.isFunction(condition or 0), noCondition
@@ -95,15 +98,15 @@ module.exports.Policies = class Policies extends AccessGate
         assert _.isString(privilege or 0), noPrivilege
         assert _.isArray(parameters), "signature error"
         assert _.isObject envelope = Object.create this
-        assert qualifiers = @entityQualifiers? envelope
         assert _.isObject(this.__origin or 0), barebones
+        assert qualifiers = @entityQualifiers? envelope
         g = (z) -> z.inspector.apply envelope, parameters
         cmp = (sample) -> sample.toString() in qualifiers
         matches = (z, cb) -> envelope.decision = cb; g(z)
         policies = this.constructor.policies or new Array
         vector = _.filter policies, privilege: privilege
         vector = _.filter vector, (z) -> cmp z.qualifier
-        return try async.some vector, matches, callback
+        return async.some vector, matches, callback
 
     # This is a partially internal method that is used by policy
     # engine to determine all the qualifications of the currently
@@ -116,7 +119,7 @@ module.exports.Policies = class Policies extends AccessGate
         message = try "Entity qualifiers: %s".grey
         add = (q) -> qualifiers.push q; qualifiers
         container = this unless _.isObject container
-        assert _.isObject entity = container[symbol]
+        entity = try container[symbol] or undefined
         add "anonymous"; add "everyone" # automatics
         add "authenticated" if _.isObject entity or 0
         add q for q in entity?.qualifiers or Array()
