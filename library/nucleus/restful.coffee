@@ -57,6 +57,7 @@ module.exports.Restful = class Restful extends Service
     # this abstract base class. The array of methods is strictly
     # limited by the HTTP specification by default. You can though
     # override it and provie support for more methods, up to you.
+    # If you do, then be sure to provide the necessary stubbing.
     @SUPPORTED = ["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"]
 
     # Impose a conditional limitation on the service. The limiation
