@@ -128,11 +128,13 @@ module.exports.Service = class Service extends Archetype
         do => lazy.call this, kernel, callback # init
         assert service = new this arguments... # new()
         assert downstream = try service.downstream or 0
-        message = "Spawned a  new instance of %s service"
+        message = "Spawned a new instance of %s service"
+        firings = "Downstream spawning sequences in %s"
         identify = try @identify().toString().underline
         logger.debug message.grey, identify.toString()
         assert downstream = downstream.bind service
         assert instance = downstream instance: =>
+            logger.debug firings.grey, identify
             callback.call this, service, kernel
         instance kernel, service; return service
 
