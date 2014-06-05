@@ -93,6 +93,7 @@ module.exports.GoogleFonts = class GoogleFonts extends Preflight
         string = (val) -> return val.toString()
         isntEmpty = -> not _.isEmpty arguments...
         assert previous = @googlefonts or Array()
+        assert previous = try _.unique previous or []
         empty = "got an empty font typograph handler"
         assert _.isString(family), "no valid family"
         assert _.isArray(typographs), "no typographs"
