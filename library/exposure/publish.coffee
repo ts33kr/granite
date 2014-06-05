@@ -46,7 +46,7 @@ util = require "util"
 # encoded with JSON. Please refer to the implementation for info.
 # In addition to the documentation it also exposes a complement
 # set of service related data, such as health status and so on.
-module.exports.Publish = class Publish extends Barebones
+module.exports.PublishDocs = class PublishDocs extends Barebones
 
     # These invocations establish the parameters which are going
     # to be used for matching HTTP requests against this service.
