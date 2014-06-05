@@ -68,8 +68,8 @@ module.exports.Navigate = class Navigate extends Preflight
     # `external` tool and the gets transferred to a client by the
     # usual mechanisms defined in the `Screenplay` implementation.
     @mount: (xoptions, xendpoint, ximplement) ->
-        endpoint = _.find(arguments, _.isString) or null
-        implement = _.find(arguments, _.isFunction) or null
+        endpoint = _.find(arguments, _.isString) or 0
+        implement = _.find(arguments, _.isFunction) or 0
         options = _.find(arguments, _.isPlainObject) or {}
         assert _.isString(endpoint), "got invalid endpoint"
         assert _.isFunction(implement), "no implementation"
