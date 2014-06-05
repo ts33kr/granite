@@ -35,8 +35,6 @@ extendz = require "./../nucleus/extends"
 compose = require "./../nucleus/compose"
 
 {RestfulStubs} = require "./../nucleus/stubs"
-{Descriptor} = require "./describe"
-{Healthcare} = require "./health"
 
 # This is an abstract base class for every service in the system
 # and in the end user application that provides a REST interface
@@ -51,29 +49,6 @@ module.exports.Barebones = class Barebones extends RestfulStubs
     # mainly is used to exclude or account for abstract classes.
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
-
-    # These declarations below are implantations of the abstracted
-    # components by the means of the dynamic recomposition system.
-    # Please take a look at the `Composition` class implementation
-    # for all sorts of information on the composition system itself.
-    # Each of these will be dynamicall integrated in class hierarchy.
-    @implanting Descriptor
-    @implanting Healthcare
-
-    # This block describes certain method of abrbitrary service. The
-    # exact process of how it is being documented depends on how the
-    # documented function is implemented. Please refer to `Document`
-    # class and its module implementation for more information on it.
-    # Also, see `Descriptor` compound implementation for reference!
-    @OPTIONS (method, service, kernel) ->
-        @relevant "ts33kr.github.io/granite/membrane/skeleton.html"
-        @github "ts33kr", "granite", "library/membrane/skeleton.coffee"
-        @remark "This method is default implemented for each service"
-        @synopsis "Get a set of HTTP methods supported by service"
-        @outputs "An array of supported methods, JSON or string"
-        @markings framework: "critical", stable: "positive"
-        @version kernel.framework.version or undefined
-        @produces "application/json", "text/html"
 
     # This method should generally be used to obtain HTTP methods that
     # are allowed on this resources. This is not the only possible way
