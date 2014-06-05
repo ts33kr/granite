@@ -118,14 +118,20 @@ module.exports.Service = class Service extends Archetype
     # instance of the service, which is later will be registered in
     # the router. This is invoked by the watcher when it discovers
     # new suitable services to register. This works asynchronously!
+    # You need to take this into account, when overriding this one.
     @spawn: (kernel, callback) ->
         noKernel = "no kernel supplied or given"
-        assert _.isObject(kernel or 0), noKernel
-        assert _.isFunction lazy = try @lazy()
-        do => lazy.call this, kernel, callback
-        assert service = new this arguments...
-        assert downstream = service.downstream
-        downstream = try downstream.bind service
+        noFunc = "got no valid callback function"
+        assert _.isObject(kernel or null), noKernel
+        assert _.isFunction(lazy = try @lazy() or 0)
+        assert _.isFunction(callback or null), noFunc
+        do => lazy.call this, kernel, callback # init
+        assert service = new this arguments... # new()
+        assert downstream = try service.downstream or 0
+        message = "Spawned a  new instance of %s service"
+        identify = try @identify().toString().underline
+        logger.debug message.grey, identify.toString()
+        assert downstream = downstream.bind service
         assert instance = downstream instance: =>
             callback.call this, service, kernel
         instance kernel, service; return service
