@@ -147,6 +147,7 @@ assert module.exports.Service = class Service extends ServiceBillets
         assert instance = downstream instance: =>
             logger.debug firings.grey, identify
             callback.call this, service, kernel
+            try service.emit "instance", kernel
         instance kernel, service; return service
 
     # This method should process the already matched HTTP request.
