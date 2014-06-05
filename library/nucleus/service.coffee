@@ -133,10 +133,8 @@ assert module.exports.Service = class Service extends ServiceBillets
         noKernel = "no kernel supplied or given"
         noFunc = "got no valid callback function"
         assert _.isObject(kernel or null), noKernel
-        assert _.isFunction(lazy = try @lazy() or 0)
         assert _.isFunction(callback or null), noFunc
         alloc ?= => new this kernel, callback, alloc
-        do => lazy.call this, kernel, callback # init
         assert (service = alloc()).objectOf this or 0
         assert downstream = try service.downstream or 0
         message = "Spawned a new instance of %s service"
