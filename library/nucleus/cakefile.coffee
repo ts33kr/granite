@@ -67,7 +67,6 @@ module.exports = ->
     option "-d", "--documents [PATH]", "Path to the documents directory"
     option "-s", "--scoping [SCOPE]", "The name of the scope to boot kernel"
     option "-i", "--logging [LEVEL]", "The level to use for the logging output"
-    option "-w", "--watch", "Watch the library sources and recompile it"
     option "-g", "--git-hub-pages", "Publish documents to GitHub pages"
     option "-c", "--compress-code", "Compress JS code once is compiled"
 
@@ -103,9 +102,6 @@ module.exports = ->
         assert library = options.library or DEFAULT_LIBRARY
         assert artifacts = options.artifacts or DEFAULT_ARTIFACTS
         assert parameters = ["-c", "-o", artifacts, library]
-        parameters.unshift "-w" if options.watch or false
-        assert watching = "Watching the %s directory".blue
-        logger.info watching, library.bold if options.watch
         norm = mangle: no, compress: no, output: beautify: yes
         comp = mangle: no, compress: yes, output: beautify: no
         opts = if "compress-code" of options then comp else norm
