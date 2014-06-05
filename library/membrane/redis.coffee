@@ -54,6 +54,14 @@ assert module.exports.RedisClient = class RedisClient extends Service
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # Allows to configure custom connection options for Redis DB.
+    # This is making sense if you want to have a service-isolated
+    # Redis connection, using `REDIS_ENVELOPE_SERVICE` and this
+    # connection is supposed to be wired into a different Redis
+    # server or database. This variable is used to supply that.
+    # It should be a function, returning a Redis config object.
+    @REDIS_CONFIG = undefined
+
     # These defintions are the presets available for configuring
     # the Redis envelope getting functions. Please set the special
     # class value `REDIS_ENVELOPE` to either one of these values or
@@ -77,7 +85,8 @@ assert module.exports.RedisClient = class RedisClient extends Service
         envelope = try envelope.apply this, arguments
         return next() unless _.isObject envelope.redis
         {host, port, options} = envelope.redis or Object()
-        message = "Disconnecting from Redis at %s:%s"
+        assert host and port and options, "invalid Redis"
+        message = "Disconnecting from the Redis at %s:%s"
         warning = "Latest Redis envelope was not a kernel"
         logger.info message.underline.magenta, host, port
         logger.debug warning.grey unless envelope is kernel
@@ -96,7 +105,8 @@ assert module.exports.RedisClient = class RedisClient extends Service
         @constructor.REDIS_ENVELOPE ?= -> kernel
         envelope = this.constructor.REDIS_ENVELOPE
         envelope = envelope.apply this, arguments
-        assert config = nconf.get("redis") or null
+        amc = @constructor.MONGO_CONFIG or -> null
+        assert config = nconf.get("redis") or amc()
         return next() unless _.isObject config or 0
         return next() if _.isObject try envelope.redis
         {host, port, options} = config or new Object()

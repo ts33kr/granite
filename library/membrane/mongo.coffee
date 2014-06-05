@@ -54,6 +54,14 @@ assert module.exports.MongoClient = class MongoClient extends Service
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # Allows to configure custom connection options for Mongo DB.
+    # This is making sense if you want to have a service-isolated
+    # Mongo connection, using `MONGO_ENVELOPE_SERVICE` and this
+    # connection is supposed to be wired into a different Mongo
+    # server or database. This variable is used to supply that.
+    # It should be a function, returning a Mongo config object.
+    @MONGO_CONFIG = undefined
+
     # These defintions are the presets available for configuring
     # the Mongo envelope getting functions. Please set the special
     # class value `MONGO_ENVELOPE` to either one of these values or
@@ -77,8 +85,9 @@ assert module.exports.MongoClient = class MongoClient extends Service
         envelope = try envelope.apply this, arguments
         return next() unless _.isObject envelope.mongo
         database = envelope.mongo._db or envelope.mongo
-        {host, port, options} = database.serverConfig
-        message = "Disconnecting from Mongo at %s:%s"
+        assert _.isObject(database), "invalid DB present"
+        {host, port, options} = try database.serverConfig
+        message = "Disconnecting from the Mongo at %s:%s"
         warning = "Latest Mongo envelope was not a kernel"
         logger.info message.underline.magenta, host, port
         logger.debug warning.grey unless envelope is kernel
@@ -97,8 +106,9 @@ assert module.exports.MongoClient = class MongoClient extends Service
         @constructor.MONGO_ENVELOPE ?= -> kernel
         envelope = this.constructor.MONGO_ENVELOPE
         envelope = envelope.apply this, arguments
-        assert config = nconf.get("mongo") or null
-        return next() unless _.isObject config or 0
+        amc = @constructor.MONGO_CONFIG or -> null
+        assert config = nconf.get("mongo") or amc()
+        return next() unless _.isObject config or null
         return next() if _.isObject try envelope.mongo
         {host, port, options} = config or new Object()
         assert _.isString(host), "got invalid Mongo host"
@@ -123,7 +133,8 @@ assert module.exports.MongoClient = class MongoClient extends Service
         @constructor.MONGO_ENVELOPE ?= -> kernel
         envelope = this.constructor.MONGO_ENVELOPE
         envelope = try envelope.apply this, arguments
-        assert _.isObject config = nconf.get "mongo"
+        amc = @constructor.MONGO_CONFIG or -> undefined
+        assert config = try nconf.get("mongo") or amc
         assert.ifError error, "mongo failed: #{error}"
         assert.ok _.isObject envelope.mongo = client
         scope = _.isString database = config.database
