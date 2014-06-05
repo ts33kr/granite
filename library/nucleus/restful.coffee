@@ -154,6 +154,7 @@ module.exports.Restful = class Restful extends Service
         conditions = try @constructor.condition() or []
         conditions = Array() unless _.isArray conditions
         identify = try @constructor?.identify().underline
+        return decide no if @constructor.DISABLE_SERVICE
         p = (i, cn) -> i.limitation request, response, cn
         fails = "Service #{identify} fails some conditions"
         return super request, response, (decision) =>
