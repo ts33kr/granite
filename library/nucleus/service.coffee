@@ -50,6 +50,7 @@ scoping = require "./scoping"
 # and processing logic based on domain matches and RE match/extract
 # logics, to deal with paths. Remember that this service is just a
 # an internal base class, you generally should not use it directly.
+# Also, all of its functionality can be overriden by any service.
 module.exports.Service = class Service extends ServiceBillets
 
     # This is a marker that indicates to some internal subsystems
