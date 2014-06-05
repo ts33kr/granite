@@ -141,7 +141,7 @@ module.exports.Restful = class Restful extends Service
         identify = @constructor?.identify().underline
         assert _.isObject(request), "got invalid request"
         assert _.isFunction(next), "invalid continuation"
-        notify = "Unsupported HTTP method %s in %s"
+        notify = "Unsupported HTTP method call %s in %s"
         assert message = try codes[methodNotAllowed]
         doesJson = response.accepts(/json/) or false
         response.writeHead methodNotAllowed, message
