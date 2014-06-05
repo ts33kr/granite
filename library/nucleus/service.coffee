@@ -109,6 +109,14 @@ module.exports.Service = class Service extends ServiceBillets
     # Refer to the original constructor method for more information.
     qualified: -> @constructor.qualified arguments...
 
+    # This is an instance method that will be invoked by the router
+    # on every service, prior to actually registering it. Method is
+    # intended to ask the service itself if wants and deems okay to
+    # be registered with the current router and kernel. This sort of
+    # functionality can be used to disambiguate what services should
+    # be loaded at what environments and configuratin circumstances.
+    consenting: (kernel, router, consent) -> consent yes
+
     # Every service has to have a public constructor that accepts
     # the kernel instance as a parameter. You can override it as
     # you see fit, but be sure to invoke the super constructor and

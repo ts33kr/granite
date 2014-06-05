@@ -103,6 +103,7 @@ module.exports.ServiceRouter = class ServiceRouter extends Archetype
     register: (routable, callback) ->
         assert identify = try routable.constructor.identify()
         assert inspected = try identify.toString().underline
+        pio = (router, kernel, consent) -> return consent true
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{identify} has no valid matches method"
         goneProcess = "The #{identify} has no valid process method"
@@ -112,14 +113,15 @@ module.exports.ServiceRouter = class ServiceRouter extends Archetype
         throw new Error goneProcess.toString() unless passProcess
         duplicate = "the #{inspected} service already registered"
         assert not (routable in (@registry or [])), duplicate
-        assert register = routable.downstream register: =>
-            attaching = "Attaching %s service instance"
-            this.emit "register", routable, @kernel
-            (this.registry ?= []).unshift routable
-            logger.info attaching.blue, inspected
-            return unless _.isFunction callback
-            return callback routable, this
-        register @kernel, this; return @
+        (routable.consenting or pio) this, @kernel, (consent) =>
+            assert register = routable.downstream register: =>
+                attaching = "Attaching %s service instance"
+                this.emit "register", routable, @kernel
+                (this.registry ?= []).unshift routable
+                logger.info attaching.blue, inspected
+                return unless _.isFunction callback
+                return callback routable, this
+            register @kernel, this; return @
 
     # Unregister the supplied service instance from the kernel router.
     # You should call this method only after the service has been
