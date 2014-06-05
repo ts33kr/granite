@@ -71,6 +71,8 @@ module.exports.Navigate = class Navigate extends Preflight
         endpoint = _.find(arguments, _.isString) or 0
         implement = _.find(arguments, _.isFunction) or 0
         options = _.find(arguments, _.isPlainObject) or {}
+        m = "Mounting client site navigation path %s to %s"
+        assert identify = try @identify().underline or null
         assert _.isString(endpoint), "got invalid endpoint"
         assert _.isFunction(implement), "no implementation"
         assert not implement.remote?, "is already external"
@@ -78,6 +80,7 @@ module.exports.Navigate = class Navigate extends Preflight
         assert _.isFunction externed = external implement
         assert _.isObject externed.remote.meta ?= Object()
         assert ptr = endpoint: endpoint, options: options
+        logger.debug m.grey, endpoint.underline, idenity
         _.extend externed.remote.meta, ptr; externed
 
     # This is an external autocall routine that when invoked on the
