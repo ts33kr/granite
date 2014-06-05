@@ -46,7 +46,7 @@ nodemailer = require "nodemailer"
 # this compound in. It draws the necessary configuration data, then
 # sets up all the internal objects required. A mailer configuration
 # is done once only, then mailer persists on the kernel and reused.
-module.exports.EMailer = class EMailer extends Service
+assert module.exports.EmailClient = class EmailClient extends Service
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -55,20 +55,38 @@ module.exports.EMailer = class EMailer extends Service
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # These defintions are the presets available for configuring
+    # the email envelope getting functions. Please set the special
+    # class value `EMAIL_ENVELOPE` to either one of these values or
+    # to a custom function that will generate/retrieve the mailer
+    # envelope, when necessary. Depending on this, the system will
+    # generate a new connection on the container, if it does not
+    # contain an opened connection yet. The default container is
+    # the kernel preset using the `EMAIL_ENVELOPE_KERNEL` value.
+    @EMAIL_ENVELOPE_KERNEL = -> return @kernel
+    @EMAIL_ENVELOPE_SERVICE = -> @$email ?= {}
+
     # A hook that will be called prior to unregistering the service
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
+    # This implementation correctly ends email connection, if any.
     unregister: (kernel, router, next) ->
-        config = nconf.get("emailer") or undefined
+        @constructor.EMAIL_ENVELOPE ?= -> kernel
+        envelope = this.constructor.EMAIL_ENVELOPE
+        envelope = try envelope.apply this, arguments
+        config = try nconf.get("emailer") or undefined
+        return next() unless _.isObject config or null
         return next() unless _.isObject kernel.emailer
+        noConfig = "missing the emailer configuration"
         {transport, configure} = config or new Object()
         message = "Disconnecting mailer of %s transport"
         logger.info "#{message.magenta}", transport.bold
-        try this.emit "no-emailer", kernel.emailer, kernel
-        try kernel.emit "no-emailer", kernel.emailer or 0
-        kernel.emailer.close (->); delete kernel.emailer
+        try @emit "no-emailer", envelope.emailer, envelope
+        try kernel.emit "no-emailer", envelope.emailer
+        envelope.emailer.close (-> return) # empty CB
+        delete envelope.emailer if envelope.emailer?
         next.call this, undefined; return this
 
     # A hook that will be called prior to registering the service
@@ -76,10 +94,14 @@ module.exports.EMailer = class EMailer extends Service
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
+    # This implementation open a new mailer connection, if configed.
     register: (kernel, router, next) ->
+        @constructor.EMAIL_ENVELOPE ?= -> kernel
+        envelope = this.constructor.EMAIL_ENVELOPE
+        envelope = envelope.apply this, arguments
         config = nconf.get("emailer") or undefined
         return next() unless _.isObject config or 0
-        return next() if _.isObject kernel.emailer
+        return next() if _.isObject envelope.emailer
         {transport, configure} = config or Object()
         noTransport = "transport has to be a string"
         noConfigure = "configure has to be a object"
@@ -89,10 +111,10 @@ module.exports.EMailer = class EMailer extends Service
         assert _.isString(transport or 0), noTransport
         assert _.isObject(configure or 0), noConfigure
         logger.info message.magenta, transport.bold
-        kernel.emailer = try fx transport, configure
-        assert _.isObject(@kernel.emailer), intern
-        this.emit "emailer", kernel, kernel.emailer
-        kernel.emit "emailer", kernel.emailer or 0
+        envelope.emailer = try fx transport, configure
+        assert _.isObject(@envelope.emailer), intern
+        @emit "email-ok", envelope, envelope.emailer
+        kernel.emit "email-ok", envelope.emailer
         next.call this, undefined; return this
 
     # A hook that will be called prior to instantiating the service
@@ -100,15 +122,22 @@ module.exports.EMailer = class EMailer extends Service
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
+    # This implementation sets the mailer connection access handle.
     instance: (kernel, service, next) ->
+        @constructor.EMAIL_ENVELOPE ?= -> kernel
+        envelope = this.constructor.EMAIL_ENVELOPE
+        envelope = try envelope.apply this, arguments
         return next undefined if _.has service, "emailer"
+        @email = -> notify arguments; sender arguments...
+        ack = "Acquire e-mail client handle in %s".grey
+        sig = => this.emit "email-ok", @emailer or null
         notify = (seq) -> service.emit "emailing", seq...
         define = -> try Object.defineProperty arguments...
         sender = -> service.emailer.sendMail arguments...
-        @email = -> notify arguments; sender arguments...
         mkp = (prop) -> define service, "emailer", prop
-        dap = -> mkp arguments...; next(); return this
+        dap = -> mkp arguments...; next(); sig(); this
         dap enumerable: yes, configurable: no, get: ->
-            emailer = try @kernel.emailer or undefined
-            missing = "a kernel has no emailer client set"
+            emailer = try envelope.emailer or undefined
+            missing = "an envelope has no e-mail client"
+            try logger.debug ack, try identify.underline
             assert _.isObject(emailer), missing; emailer
