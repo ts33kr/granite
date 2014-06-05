@@ -70,7 +70,7 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
         message = "Redis session engine error at destroy"
         process = "Destroying a Redis stored session %s"
         logger.debug process.grey, try sid.underline
-        @redis.del qualified, (error, trailings...) ->
+        @redis.del qualified, (error, trailings...) =>
             @emit "session-destroy", sid, callback
             logger.error message.red, error if error
             return callback.call this, error if error
@@ -89,7 +89,7 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
         encFailed = "failed to encode payload to JSON"
         assert _.isObject(@redis), "no Redis client yet"
         assert not _.isEmpty(encoded or null), encFailed
-        @redis.setex qualified, expire, encoded, (error) ->
+        @redis.setex qualified, expire, encoded, (error) =>
             @emit "session-set", sid, session, callback
             logger.error message.red, error if error
             return callback.call this, error if error
@@ -104,7 +104,7 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
         message = "Redis session engine error at get"
         df = "failed to decode JSON payload on the get"
         assert _.isObject(@redis), "no Redis client yet"
-        @redis.get qualified, (error, data, trailings...) ->
+        @redis.get qualified, (error, data, trailings...) =>
             @emit "session-get", sid, data, callback
             logger.error message.red, error if error
             return callback.call this, error if error
