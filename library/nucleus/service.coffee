@@ -60,27 +60,6 @@ module.exports.Service = class Service extends ServiceBillets
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
-    # Every service has to have a public constructor that accepts
-    # the kernel instance as a parameter. You can override it as
-    # you see fit, but be sure to invoke the super constructor and
-    # it is highly advised to store the kernel instance in object.
-    # It is also taking care of assigning a service identification.
-    constructor: (@kernel) -> super and @uuid = uuid.v4()
-
-    # Either obtain or set the HTTP location of the current service.
-    # This method is a proxy that forwards the invocation to the
-    # service constructor, for the purpose of easy access to service
-    # location when programmatically operating on the instances. Do
-    # refer to the original constructor method for more information.
-    location: -> @constructor.location arguments...
-
-    # This method is a tool for obtaining a fully qualified path to
-    # access to the resource, according to the HTTP specification.
-    # This includes details such as host, port, path and alike. The
-    # method knows how to disambiguate between SSL and non SSL paths.
-    # Refer to the original constructor method for more information.
-    qualified: -> @constructor.qualified arguments...
-
     # A hook that will be called each time when the kernel beacon
     # is being fired. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
@@ -115,6 +94,27 @@ module.exports.Service = class Service extends ServiceBillets
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     ignition: (request, response, next) -> next()
+
+    # Either obtain or set the HTTP location of the current service.
+    # This method is a proxy that forwards the invocation to the
+    # service constructor, for the purpose of easy access to service
+    # location when programmatically operating on the instances. Do
+    # refer to the original constructor method for more information.
+    location: -> @constructor.location arguments...
+
+    # This method is a tool for obtaining a fully qualified path to
+    # access to the resource, according to the HTTP specification.
+    # This includes details such as host, port, path and alike. The
+    # method knows how to disambiguate between SSL and non SSL paths.
+    # Refer to the original constructor method for more information.
+    qualified: -> @constructor.qualified arguments...
+
+    # Every service has to have a public constructor that accepts
+    # the kernel instance as a parameter. You can override it as
+    # you see fit, but be sure to invoke the super constructor and
+    # it is highly advised to store the kernel instance in object.
+    # It is also taking care of assigning a service identification.
+    constructor: (@kernel) -> super and @uuid = uuid.v4()
 
     # An important method whose responsibility is to create a new
     # instance of the service, which is later will be registered in
