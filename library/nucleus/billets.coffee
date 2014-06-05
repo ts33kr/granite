@@ -59,25 +59,6 @@ module.exports.ServiceBillets = class ServiceBillets extends Archetype
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
-    # This method implements a clever little lazy initialize system
-    # for the services. Basically, if you supply a function to this
-    # method invocation, it will save it as a lazy config function,
-    # and execute it when the service is about to be spawned. But
-    # if you don't supply anything - it returns an executor method
-    # that will invoke all the lazy config functions in sequence.
-    @lazy: (implement) ->
-        apply = (s) => (method) => method.apply this, s
-        execute = => _.each @$lazy or [], apply arguments
-        assert id = try @identify().toString().underline
-        m = "Executing lazy configuration for #{id}".grey
-        return if this.lazyexc? and this.lazyexc is yes
-        logger.debug m unless (arguments.length or 0) > 0
-        @lazyexc = yes unless (arguments.length or 0) > 0
-        return execute unless (arguments.length or 0) > 0
-        executable = "please supply a valid lazy function"
-        assert _.isFunction(implement or null), executable
-        return @$lazy = (@$lazy or []).concat implement
-
     # This method provides a handy, convenient tool for obtainting a
     # stringified identificator tag (a reference) for a service class.
     # This tag is supposed to be something between machine and human
