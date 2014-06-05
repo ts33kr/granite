@@ -168,8 +168,10 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
     # from the master server (frontend) to actual server (backend)
     # that does the job of handling the request. The forwarder is
     # also responsible for rotating (round-robin) servers queue!
-    makeForwarder: (queue, kind, select) -> (request, response) =>
-        encrypted = request.connection.encrypted or no
+    makeForwarder: (queue, kind, select) -> (xrequest, xresponse) =>
+        assert request = _.find arguments, "connection"
+        assert response = _.find arguments, "writeHead"
+        encrypted = request.connection.encrypted or false
         assert u = try "#{request.url}".underline.yellow
         assert x = (encrypted and "HTTPS" or "HTTP").bold
         reason = "no instances found behind a frontend"
@@ -188,8 +190,11 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
     # on one of the master servers. This is the functionality that
     # is required for WebSockets and other similar transports to
     # perform its operation correctly in a distributed environment.
-    makeUpgraders: (queue, kind, select) -> (request, response) =>
-        encrypted = request.connection.encrypted or no
+    makeUpgraders: (queue, kind, select) -> (xrequest, xsocket) =>
+        assert request = _.find arguments, "connection"
+        assert socket = _.find arguments, "localAddress"
+        socket.writeHead = http.ServerResponse::writeHead
+        encrypted = request.connection.encrypted or false
         assert u = try "#{request.url}".underline.yellow
         assert x = (encrypted and "HTTPS" or "HTTP").bold
         reason = "no instances found behind a frontend"
