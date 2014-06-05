@@ -43,7 +43,8 @@ routing = require "./routing"
 # and in the end user application that provides a REST interface
 # to some arbitrary resource, determined by HTTP path and guarded
 # by the domain matching. This is the crucial piece of framework.
-# It supports strictly methods defined in the HTTP specification.
+# It supports strictly methods defined in the HTTP specification,
+# yet providing a tiny enough structure to be able to override it.
 module.exports.RestfulService = class RestfulService extends Service
 
     # This is a marker that indicates to some internal subsystems
