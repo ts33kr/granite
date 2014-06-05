@@ -192,8 +192,8 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
     # perform its operation correctly in a distributed environment.
     makeUpgraders: (queue, kind, select) -> (xrequest, xsocket) =>
         assert request = _.find arguments, "connection"
-        assert socket = _.find arguments, "localAddress"
-        socket.writeHead = http.ServerResponse::writeHead
+        assert response = _.find arguments, "localAddress"
+        response.writeHead = http.ServerResponse::writeHead
         encrypted = request.connection.encrypted or false
         assert u = try "#{request.url}".underline.yellow
         assert x = (encrypted and "HTTPS" or "HTTP").bold
