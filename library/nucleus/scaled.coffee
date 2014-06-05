@@ -321,7 +321,7 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
     # This implementaton cleans up some of the scalability resources.
     shutdownKernel: (reason, eol=yes) ->
         try util.puts require("os").EOL if eol
-        this.emit "shutdownScaledKernel", arguments...
+        this.emit "killed-scaled-kernel", arguments...
         message = "Graceful shutdown of Scaled kernel"
         try @spserver.close() if @spserver.close?
         try @serverProxy.close() if @serverProxy?
