@@ -103,8 +103,8 @@ assert module.exports.EmailClient = class EmailClient extends Service
         return next() unless _.isObject config or 0
         return next() if _.isObject envelope.emailer
         {transport, configure} = config or Object()
-        noTransport = "transport has to be a string"
-        noConfigure = "configure has to be a object"
+        noTransport = "transport has to be as a string"
+        noConfigure = "configure has to be as a object"
         msg = "Connecting mail client via %s transport"
         internal = "fail to initialize email transport"
         fx = (a...) -> nodemailer.createTransport a...
