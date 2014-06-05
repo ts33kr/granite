@@ -105,7 +105,7 @@ assert module.exports.RedisClient = class RedisClient extends Service
         @constructor.REDIS_ENVELOPE ?= -> kernel
         envelope = this.constructor.REDIS_ENVELOPE
         envelope = envelope.apply this, arguments
-        amc = @constructor.MONGO_CONFIG or -> null
+        amc = @constructor.REDIS_CONFIG or -> null
         assert config = nconf.get("redis") or amc()
         return next() unless _.isObject config or 0
         return next() if _.isObject try envelope.redis
