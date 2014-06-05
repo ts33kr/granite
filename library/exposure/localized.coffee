@@ -37,17 +37,17 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-{Duplex} = require "../membrane/duplex"
 {external} = require "../membrane/remote"
 {Barebones} = require "../membrane/skeleton"
 {Preflight} = require "../membrane/preflight"
+{DuplexCore} = require "../membrane/duplex"
 
 # This abstract compound provides the message localization services.
 # It is implemented as a tiny, but unified toolkit that includes all
 # the necessary instrumentation for the client site as well as for
 # the server site to perform text (message) internationalisation. It
 # shares the same concepts as I18N, Gettext and other similar kits.
-module.exports.Localized = class Localized extends Duplex
+module.exports.Localized = class Localized extends DuplexCore
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

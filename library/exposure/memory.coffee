@@ -40,7 +40,6 @@ util = require "util"
 {Zombie} = require "../nucleus/zombie"
 {OnlySsl} = require "../membrane/securing"
 {Barebones} = require "../membrane/skeleton"
-{Healthcare} = require "../membrane/health"
 
 # The memory monitor service is a zombie services that tracks usage
 # of the RAM by this process (ergo, by this node). The service drives

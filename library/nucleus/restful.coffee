@@ -121,7 +121,7 @@ module.exports.RestfulService = class RestfulService extends Service
     # that is decorated with this method will be isolated to be run
     # under the shadow of the real service instance. The process is
     # idempotent. Please refer to the implementation of this method
-    # and to the implementation of the `Duplex` for the information.
+    # and to the implementation of the `DuplexCore` for information.
     @spinoff: (implement) -> (request, response, signed) ->
         noImplement = "no valid implementation body"
         assert _.isFunction(implement), noImplement

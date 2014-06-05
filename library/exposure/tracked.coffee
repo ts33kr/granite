@@ -36,18 +36,18 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-{Duplex} = require "../membrane/duplex"
 {external} = require "../membrane/remote"
 {Localized} = require "../exposure/localized"
 {Barebones} = require "../membrane/skeleton"
 {Preflight} = require "../membrane/preflight"
+{DuplexCore} = require "../membrane/duplex"
 
 # This abstract compound provides the enhanced duplex facilities.
 # The functionality it implements aids in visual recoginitions of
 # the duplexed service life cycle, by issuing a visual popup style
 # notifications when most notable events occure on the service. It
 # reports connections events in additions to the exceptional ones.
-module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
+module.exports.TrackedDuplex = class TrackedDuplex extends DuplexCore
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -78,7 +78,7 @@ module.exports.TrackedDuplex = class TrackedDuplex extends Duplex
     @bower "toastr#2.0.x"
 
     # This method awaits for the `socketing` signal that is emited
-    # by the `Duplex` implementation once it successfuly creates a
+    # by the `DuplexCore` implementation once it successfuly creates a
     # socket object. When that happens, this code sucks up to the
     # socket events that indicate successful and fail conditions.
     # When either one is happens, it emits the `toastr` notice.

@@ -39,7 +39,6 @@ util = require "util"
 url = require "url"
 
 {Zombie} = require "../nucleus/zombie"
-{Duplex} = require "../membrane/duplex"
 {Preflight} = require "./preflight"
 {Screenplay} = require "./visual"
 

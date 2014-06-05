@@ -44,17 +44,17 @@ compose = require "./../nucleus/compose"
 {EventEmitter2} = require "eventemitter2"
 {remote, external} = require "./remote"
 {Barebones} = require "./skeleton"
+{DuplexCore} = require "./duplex"
 {Marshal} = require "./marshal"
-{Duplex} = require "./duplex"
 
-# The bilateral is an abstract compound built up on top of `Duplex`
+# The bilateral is an abstract compound built up on top of `DuplexCore`
 # commodity that facilitates full duplex, both ways (bilateral) way
 # of communicating between client and server sites. Original duplex
 # is oriented for client-to-service communications only, while this
 # compounds adds the service-to-client communication on top of that.
 # The component itself is built heavily on top of a code emission
 # and delivery platform, as implemented by `Screenplay` service.
-module.exports.Bilateral = class Bilateral extends Duplex
+module.exports.Bilateral = class Bilateral extends DuplexCore
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
