@@ -44,7 +44,7 @@ url = require "url"
 # make use of `RedisClient` and other wirings specific to framework.
 # It is highly recommended to use this storage engine in production
 # environments. Please refer to `plumbs` module for how to make use.
-module.exports.RedisSession = class RedisSession extends Zombie
+assert module.exports.RedisSession = class RedisSession extends Zombie
 
     # These declarations below are implantations of the abstracted
     # components by the means of the dynamic recomposition system.
@@ -57,6 +57,7 @@ module.exports.RedisSession = class RedisSession extends Zombie
     # abstract session store engine found in the standard Connect
     # shipment. This is necessary in order to inherit the default
     # implementations of some generic, engine agnostic methods.
+    # Refer to the inherited class implementation for refernce.
     _.extend @prototype, connect.session.Store.prototype
 
     # Part of the session engine interface contract implemenetation.
@@ -64,13 +65,13 @@ module.exports.RedisSession = class RedisSession extends Zombie
     # the storage to destroy a session with the specified session ID.
     # The session may or may not exist. Please refer to the `Connect`.
     destory: (sid, callback) ->
-        this.emit "session-destroy", sid, callback
         assert _.isString qualified = @namespaced sid
         assert _.isObject(@redis), "no Redis client yet"
         message = "Redis session engine error at destroy"
-        success = "Destroying a Redis stored session %s"
-        logger.debug message.gray, try sid.underline
+        process = "Destroying a Redis stored session %s"
+        logger.debug process.grey, try sid.underline
         @redis.del qualified, (error, trailings...) ->
+            @emit "session-destroy", sid, callback
             logger.error message.red, error if error
             return callback.call this, error if error
             return callback.apply this, arguments
@@ -80,14 +81,16 @@ module.exports.RedisSession = class RedisSession extends Zombie
     # the storage to suspend a session with the specified session ID.
     # The session may or may not exist. Please refer to the `Connect`.
     set: (sid, session, callback) ->
-        assert encoded = JSON.stringify session
-        @emit "session-set", sid, session, callback
+        assert encoded = try JSON.stringify session
         assert _.isString qualified = @namespaced sid
         expire = session?.cookie?.maxAge / 1000 | 0
         expire = 86400 unless expire and expire > 0
         message = "Redis session engine error at set"
+        encFailed = "failed to encode payload to JSON"
         assert _.isObject(@redis), "no Redis client yet"
+        assert not _.isEmpty(encoded or null), encFailed
         @redis.setex qualified, expire, encoded, (error) ->
+            @emit "session-set", sid, session, callback
             logger.error message.red, error if error
             return callback.call this, error if error
             return callback.apply this, arguments
@@ -97,15 +100,17 @@ module.exports.RedisSession = class RedisSession extends Zombie
     # the storage to retrieve a session with the specified session ID.
     # The session may or may not exist. Please refer to the `Connect`.
     get: (sid, callback) ->
-        @emit "session-get", sid, callback
         assert _.isString qualified = @namespaced sid
         message = "Redis session engine error at get"
+        df = "failed to decode JSON payload on the get"
         assert _.isObject(@redis), "no Redis client yet"
         @redis.get qualified, (error, data, trailings...) ->
+            @emit "session-get", sid, data, callback
             logger.error message.red, error if error
             return callback.call this, error if error
             return callback.call this unless data
-            json = JSON.parse data.toString()
+            assert data = try data.toString() or 0
+            assert json = try JSON.parse(data), df
             return callback undefined, json
 
     # Obtain and return a fully namespaced key name for the specified
