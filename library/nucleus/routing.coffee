@@ -37,7 +37,7 @@ util = require "util"
 # the supplied host, among other things. The exact matching logic
 # is up to the handlers that implement the corresponding methods.
 # This router just provides the infrastructure and boilerplating.
-module.exports.Router = class Router extends Archetype
+module.exports.ServiceRouter = class ServiceRouter extends Archetype
 
     # Every router has to have a public constructor that accepts
     # the kernel instance as a parameter. You can override it as

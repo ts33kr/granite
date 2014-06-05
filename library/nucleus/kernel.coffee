@@ -488,7 +488,7 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         assert this.scope.incorporate this, undefined
         logger.warn bare.toString().red unless mode
         logger.warn supd.toString().red, mode if mode
-        assert @router = new routing.Router this
+        assert @router = new routing.ServiceRouter @
         assert @middleware = @router.middleware
         @middleware = @middleware.bind @router
         assert _.isFunction @middleware; this
