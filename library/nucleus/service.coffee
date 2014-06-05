@@ -119,7 +119,7 @@ module.exports.Service = class Service extends Archetype
     # the router. This is invoked by the watcher when it discovers
     # new suitable services to register. This works asynchronously!
     @spawn: (kernel, callback) ->
-        noKernel = "no kernel supplied is given"
+        noKernel = "no kernel supplied or given"
         assert _.isObject(kernel or 0), noKernel
         assert _.isFunction lazy = try @lazy()
         do => lazy.call this, kernel, callback
