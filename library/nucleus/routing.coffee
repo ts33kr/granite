@@ -52,16 +52,18 @@ module.exports.ServiceRouter = class ServiceRouter extends Archetype
     # transfers the control to the pre-installed, default routable.
     # A set of tests are performed to ensure the logical integrity.
     middleware: (request, response, next) ->
-        assert incoming = "#{request.url.underline}"
+        assert incoming = try request.url.underline
         p = (i, c) -> i.matches request, response, c
-        final = (service) -> service.abstract() is no
+        final = (service) -> service.abstract?() is no
+        assert registry = @registry, "missing registry"
         signature = arguments if _.isArguments arguments
-        implemented = _.toArray _.filter @registry, final
+        implemented = _.toArray _.filter registry, final
         matching = "Incoming request %s matches %s service"
+        missing = "Request %s does not match to any service"
         async.detectSeries implemented, p, (recognized) =>
-            missing = "Request %s does not match any service"
-            logger.debug missing.grey, incoming unless recognized?
-            return next undefined unless _.isObject recognized
+            success = ok = _.isObject recognized or null
+            logger.debug missing.grey, incoming unless ok
+            return next undefined unless ok # shortcircuit
             assert constructor = recognized.constructor
             identify = constructor?.identify()?.underline
             @emit "recognized", recognized, signature...
@@ -74,11 +76,16 @@ module.exports.ServiceRouter = class ServiceRouter extends Archetype
     # the request off to the service for processing it. Normally it
     # should not be used outside of the router (middleware) coding.
     streamline: (recognized, request, response, next) ->
+        ignite = "Launch the ignition sequence in %s"
+        rescue = "Setup the rescue handler in the %s"
         assert signature = _.rest arguments or Array()
+        identify = try @constructor.identify().underline
         ignition = recognized.downstream ignition: ->
             assert domain = require("domain").create()
             processor = recognized.process.bind recognized
             polished = => processor.apply this, signature
+            logger.debug ignite.cyan, identify.toString()
+            logger.debug rescue.cyan, identify.toString()
             domain.add eem for eem in [request, response]
             domain.add recognized; domain.on "error", (error) =>
                 rescuing = recognized.downstream rescuing: ->
@@ -93,7 +100,7 @@ module.exports.ServiceRouter = class ServiceRouter extends Archetype
     # If something is wrong, this method will throw an exception.
     # The method is idempotent, ergo no duplication of routables.
     register: (routable, callback) ->
-        assert identify = routable.constructor.identify()
+        assert identify = try routable.constructor.identify()
         assert inspected = try identify.toString().underline
         [matches, process] = [routable.matches, routable.process]
         goneMatches = "The #{identify} has no valid matches method"
@@ -106,9 +113,9 @@ module.exports.ServiceRouter = class ServiceRouter extends Archetype
         assert not (routable in (@registry or [])), duplicate
         assert register = routable.downstream register: =>
             attaching = "Attaching %s service instance"
+            this.emit "register", routable, @kernel
+            (this.registry ?= []).unshift routable
             logger.info attaching.blue, inspected
-            @emit "register", routable, @kernel
-            (@registry ?= []).unshift routable
             return unless _.isFunction callback
             return callback routable, this
         register @kernel, this; return @
