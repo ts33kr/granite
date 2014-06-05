@@ -253,15 +253,19 @@ module.exports.Service = class Service extends Archetype
     # returns them to the caller. Override it to do some real job.
     # The captured groups may be used by the overrider or ditched.
     process: (request, response, next) ->
-        gdomain = null; gresource = null
-        resources = @constructor.resources or []
-        domains = @constructor.domains or [/^.+$/]
-        pathname = url.parse(request.url).pathname
-        hostname = _.first request.headers.host.split ":"
-        pdomain = (p) -> gdomain = hostname.match p
-        presource = (p) -> gresource = pathname.match p
-        pdomain = try _.find(domains, pdomain) or null
-        presource = _.find(resources, presource) or null
+        gdomain = null; gresource = null # var holders
+        assert resources = @constructor.resources or []
+        assert domains = @constructor.domains or [/^.+$/]
+        assert pathname = url.parse(request.url).pathname
+        assert identify = @constructor.identify().underline
+        hostname = try _.head request.headers.host.split ":"
+        assert not _.isEmpty hostname, "missing hostname"
+        pdomain = (repat) -> gdomain = hostname.match repat
+        presource = (repat) -> gresource = pathname.match repat
+        xdomain = try _.find(domains, pdomain) or null # side
+        xresource = _.find(resources, presource) or null # side
+        message = "Begin service processing sequence in %s"
+        logger.debug message.toString().yellow, identify
         assert gdomain isnt null, "missing the domain"
         assert gresource isnt null, "missing resource"
         @emit "process", gdomain, gresource, arguments...
