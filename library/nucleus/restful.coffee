@@ -123,10 +123,10 @@ module.exports.RestfulService = class RestfulService extends Service
     # idempotent. Please refer to the implementation of this method
     # and to the implementation of the `Duplex` for the information.
     @spinoff: (implement) -> (request, response, signed) ->
-        message = "Spinned off HTTP request at %s"
         noImplement = "no valid implementation body"
         assert _.isFunction(implement), noImplement
         assert _.isArguments capture = arguments or 0
+        m = "Spinned off incoming HTTP request at %s"
         shadow = request.shadow or Object.create this
         execute = -> implement.apply shadow, capture
         return execute() if _.isObject request.shadow
@@ -138,7 +138,7 @@ module.exports.RestfulService = class RestfulService extends Service
         e = get: -> try request[symbol] or undefined
         {AccessGate} = require "../exposure/access"
         symbol = try AccessGate.ACCESS_ENTITY_SYMBOL
-        logger.debug message.grey, try request.url
+        logger.debug m.grey, request.url?.underline
         Object.defineProperty shadow, "session", s
         Object.defineProperty shadow, symbol, e
         @emit "spinoff", capture...; execute()
