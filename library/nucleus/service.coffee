@@ -226,27 +226,6 @@ module.exports.Service = class Service extends Archetype
         assert @domains = (@domains or []).concat pattern
         logger.debug associate.grey, identify; return @
 
-    # This method handles the rescuing of the request/response pair
-    # when some error happens during the processing of the request
-    # under this service. This method is able to to deliver content
-    # as the response if it is desirable. If not, the request will
-    # simply be reject with Node.js/Connect. Beware about `next`!
-    rescuing: (error, request, response, next) ->
-        assert plain = try @constructor.identify()
-        assert expose = "failures:exposeExceptions"
-        assert not _.isEmpty method = request.method
-        identify = @constructor.identify().underline
-        template = "Exception in a #{method} at %s: %s"
-        logger.error template.red, identify, error.stack
-        @emit "failure", this, error, request, response
-        message = "Executed error rescue handler in %s"
-        logger.debug message.red, identify.toString()
-        return next() unless nconf.get(expose) is yes
-        response.setHeader "Content-Type", "text/plain"
-        response.writeHead 500, http.STATUS_CODES[500]
-        render = format template, plain, error.stack
-        response.end render; return next undefined
-
     # This method should process the already matched HTTP request.
     # But since this is an abstract base class, this implementation
     # only extracts the domain and pathname captured groups, and
@@ -277,14 +256,39 @@ module.exports.Service = class Service extends Archetype
     # that were used for configuring the class of this service.
     # It is async, so be sure to call the `decide` with boolean!
     matches: (request, response, decide) ->
-        resources = @constructor.resources or []
-        domains = @constructor.domains or [/^.+$/]
-        pathname = url.parse(request.url).pathname
-        hostname = _.first request.headers.host.split ":"
-        pdomain = (pattern) -> pattern.test hostname
-        presource = (pattern) -> pattern.test pathname
-        domainOk = try _.some(domains, pdomain) or no
-        resourceOk = _.some(resources, presource) or no
+        assert resources = @constructor.resources or []
+        assert domains = @constructor.domains or [/^.+$/]
+        assert pathname = url.parse(request.url).pathname
+        assert identify = @constructor.identify().underline
+        hostname = try _.head request.headers.host.split ":"
+        assert not _.isEmpty hostname, "missing hostname"
+        pdomain = (pattern) -> try pattern.test hostname
+        presource = (pattern) -> try pattern.test pathname
+        message = "Polling %s service for a basic match"
+        logger.debug message.toString().yellow, identify
+        domainOk = try _.some(domains, pdomain) or false
+        resourceOk = _.some(resources, presource) or false
         matches = domainOk is yes and resourceOk is yes
-        @emit "matches", matches, request, response
+        this.emit "matches", matches, request, response
         return decide domainOk and resourceOk
+
+    # This method handles the rescuing of the request/response pair
+    # when some error happens during the processing of the request
+    # under this service. This method is able to to deliver content
+    # as the response if it is desirable. If not, the request will
+    # simply be reject with Node.js/Connect. Beware about `next`!
+    rescuing: (error, request, response, next) ->
+        assert plain = try @constructor.identify()
+        assert expose = "failures:exposeExceptions"
+        assert not _.isEmpty method = request.method
+        identify = @constructor.identify().underline
+        template = "Exception in a #{method} at %s: %s"
+        logger.error template.red, identify, error.stack
+        @emit "failure", this, error, request, response
+        message = "Executed error rescue handler in %s"
+        logger.debug message.red, identify.toString()
+        return next() unless nconf.get(expose) is yes
+        response.setHeader "Content-Type", "text/plain"
+        response.writeHead 500, http.STATUS_CODES[500]
+        render = format template, plain, error.stack
+        response.end render; return next undefined
