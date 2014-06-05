@@ -151,12 +151,16 @@ module.exports.Restful = class Restful extends Service
     # that were used for configuring the class of this service.
     # It is async, so be sure to call the `decide` with boolean!
     matches: (request, response, decide) ->
-        conditions = try @constructor.condition() or []
+        assert _.isObject(request), "got invalid request"
+        assert _.isFunction(decide), "incorrect callback"
+        conditions = try @constructor.condition() or null
         conditions = Array() unless _.isArray conditions
         identify = try @constructor?.identify().underline
         return decide no if @constructor.DISABLE_SERVICE
         p = (i, cn) -> i.limitation request, response, cn
         fails = "Service #{identify} fails some conditions"
+        notify = "Running %s service conditional sequences"
+        logger.debug notify.toString(), identify.toString()
         return super request, response, (decision) =>
             return decide no unless decision is yes
             async.every conditions, p, (confirms) ->
