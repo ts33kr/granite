@@ -286,7 +286,7 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
     @configure "access the service Seaport hub", (next) ->
         nh = "no Seaport host found in the configuration"
         np = "no Seaport port found in the configuration"
-        np = "no Seaport opts found in the configuration"
+        nt = "no Seaport opts found in the configuration"
         assert _.isString(host = nconf.get "hub:host"), nh
         assert _.isNumber(port = nconf.get "hub:port"), np
         assert _.isObject(opts = nconf.get "hub:opts"), nt
