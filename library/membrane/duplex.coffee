@@ -46,7 +46,6 @@ compose = require "./../nucleus/compose"
 {remote, external} = require "./remote"
 {Barebones} = require "./skeleton"
 {Preflight} = require "./preflight"
-{Marshal} = require "./marshal"
 
 # This abstract base class can be used as either a direct parent or
 # a compound to the `Screenplay` abstract service. It provides the
@@ -135,8 +134,8 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
     # used only once per the domain declaration. See `provider`.
     @guarded: (method, socket) ->
         killOnError = "duplex:disconnectOnError"
-        assert _.isFunction o = Marshal.serialize
-        assert _.isFunction i = Marshal.deserialize
+        assert _.isFunction o = -> _.head arguments
+        assert _.isFunction i = -> _.head arguments
         assert guarded = require("domain").create()
         assert identify = try @identify().underline
         comparing = (value, opts) -> value is method
@@ -201,8 +200,8 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
     # protective nature. It also exposes some goodies for the provider.
     # Such as Socket.IO handle, session if available and the context.
     @covering: (method, socket, context, binder) ->
-        assert _.isFunction o = Marshal.serialize
-        assert _.isFunction i = Marshal.deserialize
+        assert _.isFunction o = -> try _.head arguments
+        assert _.isFunction i = -> try _.head arguments
         socket.on "disconnect", -> try guarded.dispose()
         session = try socket.request.session unless session
         socket.disconnect "no session found" unless session
@@ -319,8 +318,8 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
     # server site in the transferred context. Refer to the server
     # method called `publishProviders` for more information on it.
     consumeProviders: external (socket) ->
-        assert _.isFunction o = Marshal.serialize
-        assert _.isFunction i = Marshal.deserialize
+        assert _.isFunction o = -> try _.head arguments
+        assert _.isFunction i = -> try _.head arguments
         for provider in @providers then do (provider) =>
             msg = "#{provider} at #{@location}; nsp=#{@nsp}"
             logger.info "register context provider: #{msg}"

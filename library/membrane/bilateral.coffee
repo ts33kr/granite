@@ -45,7 +45,6 @@ compose = require "./../nucleus/compose"
 {remote, external} = require "./remote"
 {Barebones} = require "./skeleton"
 {DuplexCore} = require "./duplex"
-{Marshal} = require "./marshal"
 
 # The bilateral is an abstract compound built up on top of `DuplexCore`
 # commodity that facilitates full duplex, both ways (bilateral) way
@@ -111,8 +110,8 @@ module.exports.Bilateral = class Bilateral extends DuplexCore
     # socket channel that makes it available for the invocation by
     # the corresponding server site facilities implemented belows.
     bilateral: @autocall z: +102, ->
-        assert _.isFunction o = Marshal.serialize
-        assert _.isFunction i = Marshal.deserialize
+        assert _.isFunction o = -> _.head arguments
+        assert _.isFunction i = -> _.head arguments
         uplinking = "Uplink %s at #{@location}, nsp=%s"
         _.forIn this, (value, reference, context) =>
             return unless reference of (@uplinks or {})
@@ -138,8 +137,8 @@ module.exports.Bilateral = class Bilateral extends DuplexCore
         responded = "Uplink %s at #{identify} responded"
         noBinder = "the container has got no valid binder"
         notify = "got incorrect callback for the uplink"
-        assert _.isFunction try o = Marshal.serialize
-        assert _.isFunction try i = Marshal.deserialize
+        assert _.isFunction o = -> try _.head arguments
+        assert _.isFunction i = -> try _.head arguments
         return (sequence..., callback) => # a complex sig
             parameters = _.reject arguments, _.isFunction
             callback = (->) unless _.isFunction callback

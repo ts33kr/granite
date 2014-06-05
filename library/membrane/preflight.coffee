@@ -38,9 +38,7 @@ path = require "path"
 http = require "http"
 util = require "util"
 
-{Marshal} = require "./marshal"
 {BowerSupport} = require "./bower"
-
 {Extending} = require "../nucleus/extends"
 {Composition} = require "../nucleus/compose"
 {Archetype} = require "../nucleus/archetype"
@@ -236,4 +234,3 @@ module.exports.Preflight = class Preflight extends LToolkit
     @transfer Composition
     @transfer Extending
     @transfer Archetype
-    @transfer Marshal
