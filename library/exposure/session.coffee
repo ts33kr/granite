@@ -110,7 +110,7 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
             return callback.call this, error if error
             return callback.call this unless data
             assert data = try data.toString() or 0
-            assert json = try JSON.parse(data), df
+            assert json = (try JSON.parse(data)), df
             return callback undefined, json
 
     # Obtain and return a fully namespaced key name for the specified
