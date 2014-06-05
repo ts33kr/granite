@@ -134,7 +134,7 @@ assert module.exports.MongoClient = class MongoClient extends Service
         envelope = this.constructor.MONGO_ENVELOPE
         envelope = try envelope.apply this, arguments
         amc = @constructor.MONGO_CONFIG or -> undefined
-        assert config = try nconf.get("mongo") or amc
+        assert config = try nconf.get("mongo") or amc()
         assert.ifError error, "mongo failed: #{error}"
         assert.ok _.isObject envelope.mongo = client
         scope = _.isString database = config.database
