@@ -81,8 +81,8 @@ assert module.exports.EmailClient = class EmailClient extends Service
         return next() unless _.isObject kernel.emailer
         noConfig = "missing the emailer configuration"
         {transport, configure} = config or new Object()
-        message = "Disconnecting mailer of %s transport"
-        logger.info "#{message.magenta}", transport.bold
+        msg = "Disconnecting mail client of %s transport"
+        logger.info msg.underline.magenta, transport.bold
         try @emit "no-emailer", envelope.emailer, envelope
         try kernel.emit "no-emailer", envelope.emailer
         envelope.emailer.close (-> return) # empty CB
@@ -105,14 +105,14 @@ assert module.exports.EmailClient = class EmailClient extends Service
         {transport, configure} = config or Object()
         noTransport = "transport has to be a string"
         noConfigure = "configure has to be a object"
-        message = "Connecting mailer via %s transport"
-        intern = "failed to initialize email transport"
+        msg = "Connecting mail client via %s transport"
+        internal = "fail to initialize email transport"
         fx = (a...) -> nodemailer.createTransport a...
         assert _.isString(transport or 0), noTransport
         assert _.isObject(configure or 0), noConfigure
-        logger.info message.magenta, transport.bold
+        logger.info msg.underline.magenta, transport.bold
         envelope.emailer = try fx transport, configure
-        assert _.isObject(@envelope.emailer), intern
+        assert _.isObject(envelope.emailer), internal
         @emit "email-ok", envelope, envelope.emailer
         kernel.emit "email-ok", envelope.emailer
         next.call this, undefined; return this
