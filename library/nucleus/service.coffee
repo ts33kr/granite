@@ -155,7 +155,7 @@ module.exports.Service = class Service extends Archetype
     # readable. Typically, this is a short hash function, such as an
     # MD5 hash represented (stringified) with HEX digesting mechanism.
     @reference: ->
-        installed = _.isString @$reference
+        installed = try _.isString @$reference
         return @$reference if installed is yes
         noOrigin = "#{identify()} has no origin"
         assert hasher = crypto.createHash "md5"
@@ -185,7 +185,7 @@ module.exports.Service = class Service extends Archetype
     # resource regular expression pattern being unescaped to string.
     # Do not confuse it with `qualified` method that deals with URL.
     @location: (location) ->
-        current = => @$location or automatic
+        current = => try @$location or automatic
         automatic = _.head(@resources)?.unescape()
         return current() if arguments.length is 0
         isEmpty = "the location must not be empty"
