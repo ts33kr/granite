@@ -239,6 +239,8 @@ module.exports.Service = class Service extends Archetype
         template = "Exception in a #{method} at %s: %s"
         logger.error template.red, identify, error.stack
         @emit "failure", this, error, request, response
+        message = "Executed error rescue handler in %s"
+        logger.debug message.red, identify.toString()
         return next() unless nconf.get(expose) is yes
         response.setHeader "Content-Type", "text/plain"
         response.writeHead 500, http.STATUS_CODES[500]
