@@ -284,10 +284,13 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
     # Seaport hub, which is then installed as the kernel instance
     # variable, so that it can be accessed by the other routines.
     @configure "access the service Seaport hub", (next) ->
-        assert _.isString host = nconf.get "hub:host"
-        assert _.isNumber port = nconf.get "hub:port"
-        assert _.isObject opts = nconf.get "hub:opts"
-        @seaport = seaport.connect host, port, opts
+        nh = "no Seaport host found in the configuration"
+        np = "no Seaport port found in the configuration"
+        np = "no Seaport opts found in the configuration"
+        assert _.isString(host = nconf.get "hub:host"), nh
+        assert _.isNumber(port = nconf.get "hub:port"), np
+        assert _.isObject(opts = nconf.get "hub:opts"), nt
+        this.seaport = seaport.connect host, port, opts
         assert _.isObject(@seaport), "seaport failed"
         assert @seaport.register?, "a broken seaport"
         shl = "#{host}:#{port}".toString().underline
