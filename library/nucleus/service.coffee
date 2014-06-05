@@ -200,15 +200,19 @@ module.exports.Service = class Service extends Archetype
     # Supports implicit extraction of captured groups in the match.
     # Use this to configure what resources should match with service.
     @resource: (pattern) ->
-        assert identify = @identify().underline.toString()
-        regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
-        pattern = try regexify pattern if _.isString pattern
-        inspected = pattern.unescape()?.underline or pattern
-        associate = "Associating #{inspected} resource with %s"
-        notRegexp = "The #{inspected} is not a valid regexp"
-        assert _.isRegExp(pattern) and pattern.source, notRegexp
+        associate = "Associating %s resource with %s"
+        identify = @identify().underline.toString()
+        r = (s) -> new RegExp "^#{RegExp.escape(s)}$"
+        pattern = try r pattern if _.isString pattern
+        inspected = try pattern.unescape()?.underline
+        inspected = pattern unless _.isString inspected
+        source = not _.isEmpty try pattern.source or null
+        notReg = "the #{inspected} is not a valid regexp"
+        assert _.isRegExp(pattern) and source or 0, notReg
         assert @resources = (@resources or []).concat pattern
-        logger.debug associate.grey, identify; return this
+        assert @resources = _.unique this.resources or []
+        logger.debug associate, inspected, identify
+        return this # return itself for chaining...
 
     # This is a very basic method that adds the specified regular
     # expression pattern to the list of permitted domain patterns.
@@ -216,15 +220,19 @@ module.exports.Service = class Service extends Archetype
     # Supports implicit extraction of captured groups in the match.
     # Use this to configure what domains should match with service.
     @domain: (pattern) ->
-        assert identify = @identify().underline.toString()
-        regexify = (s) -> new RegExp "^#{RegExp.escape(s)}$"
-        pattern = try regexify pattern if _.isString pattern
-        inspected = pattern.unescape()?.underline or pattern
-        associate = "Associating #{inspected} domain with %s"
-        notRegexp = "The #{inspected} is not a valid regexp"
-        assert _.isRegExp(pattern) and pattern.source, notRegexp
+        associate = "Associating %s domain with %s"
+        identify = @identify().underline.toString()
+        r = (s) -> new RegExp "^#{RegExp.escape(s)}$"
+        pattern = try r pattern if _.isString pattern
+        inspected = try pattern.unescape()?.underline
+        inspected = pattern unless _.isString inspected
+        source = not _.isEmpty try pattern.source or null
+        notReg = "the #{inspected} is not a valid regexp"
+        assert _.isRegExp(pattern) and source or 0, notReg
         assert @domains = (@domains or []).concat pattern
-        logger.debug associate.grey, identify; return @
+        assert @domains = _.unique this.domains or []
+        logger.debug associate, inspected, identify
+        return this # return itself for chaining...
 
     # This method should process the already matched HTTP request.
     # But since this is an abstract base class, this implementation
