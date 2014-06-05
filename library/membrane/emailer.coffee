@@ -127,7 +127,10 @@ assert module.exports.EmailClient = class EmailClient extends Service
         @constructor.EMAIL_ENVELOPE ?= -> kernel
         envelope = this.constructor.EMAIL_ENVELOPE
         envelope = try envelope.apply this, arguments
+        identify = try @constructor.identify().underline
+        sending = "Sending an email off %s service".yellow
         return next undefined if _.has service, "emailer"
+        @on "emailing", -> logger.warn sending, identify
         @email = -> notify arguments; sender arguments...
         ack = "Acquire e-mail client handle in %s".grey
         sig = => this.emit "email-ok", @emailer or null
