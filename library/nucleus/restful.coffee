@@ -75,7 +75,7 @@ module.exports.RestfulService = class RestfulService extends Service
     # Especially useful for service with the same resource but with
     # different conditions, such as mobile only and desktop only.
     @condition: (synopsis, limitation) ->
-        return @conditions if arguments.length is 0
+        return try @conditions if arguments.length is 0
         limitation = try _.find arguments, _.isFunction
         generic = "service condition: #{limitation.name}"
         try synopsis = generic unless _.isString synopsis
