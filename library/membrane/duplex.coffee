@@ -353,6 +353,30 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
                 sentence socket, name, value, args
         return next undefined
 
+    # A hook that will be called prior to unregistering the service
+    # implementation. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    unregister: (kernel, router, next) ->
+        pure = /[a-zA-Z0-9\/-_]+/.test @location()
+        resolve = (handler) => try handler.of @location()
+        assert pure, "service location is not pure enough"
+        assert sserver = kernel.serverSocket, "no HTTP socket"
+        assert ssecure = kernel.secureSocket, "no HTTPS socket"
+        assert f = "Disconnecting %s socket handle".toString()
+        l = (socket) -> logger.warn f.magenta, socket.id.bold
+        p = (c) -> l(c); c.emit "shutdown", -> c.disconnect()
+        assert contexts = _.map [sserver, ssecure], resolve
+        _.each contexts, (context, vector, addition) =>
+            try context.removeAllListeners "connection"
+            intern = "missing a client listing registry"
+            assert _.isObject(context.connected), intern
+            assert clients = _.values context.connected
+            assert clients = _.unique clients # go once
+            do -> p client for client, index in clients
+        return next undefined
+
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
@@ -378,28 +402,4 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
             assert applied = @authorization context
             context.use applied.bind this # middleware
             return context.on "connection", screener
-        return next undefined
-
-    # A hook that will be called prior to unregistering the service
-    # implementation. Please refer to this prototype signature for
-    # information on the parameters it accepts. Beware, this hook
-    # is asynchronously wired in, so consult with `async` package.
-    # Please be sure invoke the `next` arg to proceed, if relevant.
-    unregister: (kernel, router, next) ->
-        pure = /[a-zA-Z0-9\/-_]+/.test @location()
-        resolve = (handler) => try handler.of @location()
-        assert pure, "service location is not pure enough"
-        assert sserver = kernel.serverSocket, "no HTTP socket"
-        assert ssecure = kernel.secureSocket, "no HTTPS socket"
-        assert f = "Disconnecting %s socket handle".toString()
-        l = (socket) -> logger.warn f.magenta, socket.id.bold
-        p = (c) -> l(c); c.emit "shutdown", -> c.disconnect()
-        assert contexts = _.map [sserver, ssecure], resolve
-        _.each contexts, (context, vector, addition) =>
-            try context.removeAllListeners "connection"
-            intern = "missing a client listing registry"
-            assert _.isObject(context.connected), intern
-            assert clients = _.values context.connected
-            assert clients = _.unique clients # go once
-            do -> p client for client, index in clients
         return next undefined
