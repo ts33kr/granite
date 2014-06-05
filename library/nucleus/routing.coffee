@@ -57,6 +57,7 @@ module.exports.ServiceRouter = class ServiceRouter extends Archetype
         final = (service) -> service.abstract() is no
         signature = arguments if _.isArguments arguments
         implemented = _.toArray _.filter @registry, final
+        matching = "Incoming request %s matches %s service"
         async.detectSeries implemented, p, (recognized) =>
             missing = "Request %s does not match any service"
             logger.debug missing.grey, incoming unless recognized?
@@ -64,7 +65,6 @@ module.exports.ServiceRouter = class ServiceRouter extends Archetype
             assert constructor = recognized.constructor
             identify = constructor?.identify()?.underline
             @emit "recognized", recognized, signature...
-            matching = "Request %s matches %s service"
             logger.debug matching.grey, incoming, identify
             return @streamline recognized, signature...
 
