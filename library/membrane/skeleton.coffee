@@ -84,9 +84,13 @@ module.exports.Barebones = class Barebones extends RestfulStubs
         assert knowns = try @constructor.SUPPORTED
         doesJson = response.accepts(/json/) or false
         pathname = try url.parse(request.url).pathname
+        assert _.isString(pathname), "could not get path"
+        assert _.isObject(request), "got invalid request"
+        assert _.isObject(response), "got invalid response"
         checkIfSupported = (m) => @[m] isnt @unsupported
         supported = try _.filter knowns, checkIfSupported
         descriptor = methods: supported, resource: pathname
         return this.push response, descriptor if doesJson
-        assert formatted = supported.join(", ") + "\r\n"
+        assert _.isString formatted = supported.join ", "
+        assert formatted = _.sprintf "%s\r\n", formatted
         response.send formatted.toString(); return @
