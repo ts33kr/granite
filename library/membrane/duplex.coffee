@@ -372,6 +372,7 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
             intern = "missing a client listing registry"
             assert _.isObject(context.connected), intern
             assert clients = _.values context.connected
+            assert clients = _.filter clients, "connected"
             assert clients = _.unique clients # go once
             do -> p client for client, index in clients
         return next undefined
