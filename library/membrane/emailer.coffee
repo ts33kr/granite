@@ -55,6 +55,14 @@ assert module.exports.EmailClient = class EmailClient extends Service
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # Allows to configure custom connection options for e-mailer.
+    # This is making sense if you want to have a service-isolated
+    # Mongo connection, using `EMAIL_ENVELOPE_SERVICE` and this
+    # connection is supposed to be wired into a different email
+    # provider or account. This variable is used to supply that.
+    # It should be a function, returning a mailer config object.
+    @EMAIL_CONFIG = undefined
+
     # These defintions are the presets available for configuring
     # the email envelope getting functions. Please set the special
     # class value `EMAIL_ENVELOPE` to either one of these values or
@@ -76,7 +84,8 @@ assert module.exports.EmailClient = class EmailClient extends Service
         @constructor.EMAIL_ENVELOPE ?= -> kernel
         envelope = this.constructor.EMAIL_ENVELOPE
         envelope = try envelope.apply this, arguments
-        config = try nconf.get("emailer") or undefined
+        amc = @constructor.MONGO_CONFIG or -> undefined
+        config = try nconf.get("emailer") or try amc()
         return next() unless _.isObject config or null
         return next() unless _.isObject kernel.emailer
         noConfig = "missing the emailer configuration"
@@ -99,7 +108,8 @@ assert module.exports.EmailClient = class EmailClient extends Service
         @constructor.EMAIL_ENVELOPE ?= -> kernel
         envelope = this.constructor.EMAIL_ENVELOPE
         envelope = envelope.apply this, arguments
-        config = nconf.get("emailer") or undefined
+        amc = @constructor.MONGO_CONFIG or -> null
+        config = try nconf.get("emailer") or amc()
         return next() unless _.isObject config or 0
         return next() if _.isObject envelope.emailer
         {transport, configure} = config or Object()
