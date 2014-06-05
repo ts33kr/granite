@@ -64,12 +64,12 @@ module.exports.RedisSession = class RedisSession extends Zombie
     # the storage to destroy a session with the specified session ID.
     # The session may or may not exist. Please refer to the `Connect`.
     destory: (sid, callback) ->
-        @emit "session-destroy", sid, callback
+        this.emit "session-destroy", sid, callback
         assert _.isString qualified = @namespaced sid
-        message = "Redis session engine error at destroy"
         assert _.isObject(@redis), "no Redis client yet"
-        message = "Destroying a Redis stored session %"
-        logger.debug message.gray, "#{sid}".underline
+        message = "Redis session engine error at destroy"
+        success = "Destroying a Redis stored session %s"
+        logger.debug message.gray, try sid.underline
         @redis.del qualified, (error, trailings...) ->
             logger.error message.red, error if error
             return callback.call this, error if error
