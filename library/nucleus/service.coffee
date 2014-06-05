@@ -131,7 +131,7 @@ module.exports.Service = class Service extends Archetype
         instance kernel, service; return service
 
     # This method implements a clever little lazy initialize system
-    # for the services. Basically, if you supply a fucntion to this
+    # for the services. Basically, if you supply a function to this
     # method invocation, it will save it as a lazy config function,
     # and execute it when the service is about to be spawned. But
     # if you don't supply anything - it returns an executor method
@@ -193,46 +193,6 @@ module.exports.Service = class Service extends Archetype
         assert _.isString(location), noLocation
         assert not _.isEmpty(location), isEmpty
         @$location = location.toString(); this
-
-    # This is a very basic method that adds the specified regular
-    # expression pattern to the list of permitted resource patterns.
-    # The patterns are associated with a service class, not object.
-    # Supports implicit extraction of captured groups in the match.
-    # Use this to configure what resources should match with service.
-    @resource: (pattern) ->
-        associate = "Associating %s resource with %s"
-        identify = @identify().underline.toString()
-        r = (s) -> new RegExp "^#{RegExp.escape(s)}$"
-        pattern = try r pattern if _.isString pattern
-        inspected = try pattern.unescape()?.underline
-        inspected = pattern unless _.isString inspected
-        source = not _.isEmpty try pattern.source or null
-        notReg = "the #{inspected} is not a valid regexp"
-        assert _.isRegExp(pattern) and source or 0, notReg
-        assert @resources = (@resources or []).concat pattern
-        assert @resources = _.unique this.resources or []
-        logger.debug associate, inspected, identify
-        return this # return itself for chaining...
-
-    # This is a very basic method that adds the specified regular
-    # expression pattern to the list of permitted domain patterns.
-    # The patterns are associated with a service class, not object.
-    # Supports implicit extraction of captured groups in the match.
-    # Use this to configure what domains should match with service.
-    @domain: (pattern) ->
-        associate = "Associating %s domain with %s"
-        identify = @identify().underline.toString()
-        r = (s) -> new RegExp "^#{RegExp.escape(s)}$"
-        pattern = try r pattern if _.isString pattern
-        inspected = try pattern.unescape()?.underline
-        inspected = pattern unless _.isString inspected
-        source = not _.isEmpty try pattern.source or null
-        notReg = "the #{inspected} is not a valid regexp"
-        assert _.isRegExp(pattern) and source or 0, notReg
-        assert @domains = (@domains or []).concat pattern
-        assert @domains = _.unique this.domains or []
-        logger.debug associate, inspected, identify
-        return this # return itself for chaining...
 
     # This method should process the already matched HTTP request.
     # But since this is an abstract base class, this implementation
@@ -300,3 +260,43 @@ module.exports.Service = class Service extends Archetype
         response.writeHead 500, http.STATUS_CODES[500]
         render = format template, plain, error.stack
         response.end render; return next undefined
+
+    # This is a very basic method that adds the specified regular
+    # expression pattern to the list of permitted resource patterns.
+    # The patterns are associated with a service class, not object.
+    # Supports implicit extraction of captured groups in the match.
+    # Use this to configure what resources should match with service.
+    @resource: (pattern) ->
+        associate = "Associating %s resource with %s"
+        identify = @identify().underline.toString()
+        r = (s) -> new RegExp "^#{RegExp.escape(s)}$"
+        pattern = try r pattern if _.isString pattern
+        inspected = try pattern.unescape()?.underline
+        inspected = pattern unless _.isString inspected
+        source = not _.isEmpty try pattern.source or null
+        notReg = "the #{inspected} is not a valid regexp"
+        assert _.isRegExp(pattern) and source or 0, notReg
+        assert @resources = (@resources or []).concat pattern
+        assert @resources = _.unique this.resources or []
+        logger.debug associate, inspected, identify
+        return this # return itself for chaining...
+
+    # This is a very basic method that adds the specified regular
+    # expression pattern to the list of permitted domain patterns.
+    # The patterns are associated with a service class, not object.
+    # Supports implicit extraction of captured groups in the match.
+    # Use this to configure what domains should match with service.
+    @domain: (pattern) ->
+        associate = "Associating %s domain with %s"
+        identify = @identify().underline.toString()
+        r = (s) -> new RegExp "^#{RegExp.escape(s)}$"
+        pattern = try r pattern if _.isString pattern
+        inspected = try pattern.unescape()?.underline
+        inspected = pattern unless _.isString inspected
+        source = not _.isEmpty try pattern.source or null
+        notReg = "the #{inspected} is not a valid regexp"
+        assert _.isRegExp(pattern) and source or 0, notReg
+        assert @domains = (@domains or []).concat pattern
+        assert @domains = _.unique this.domains or []
+        logger.debug associate, inspected, identify
+        return this # return itself for chaining...
