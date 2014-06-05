@@ -60,6 +60,13 @@ module.exports.Restful = class Restful extends Service
     # If you do, then be sure to provide the necessary stubbing.
     @SUPPORTED = ["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"]
 
+    # Symbol declaration table, that states what keys, if those are
+    # vectors (arrays) should be exported and then merged with their
+    # counterparts in the destination, once the composition process
+    # takes place. See the `Archetype::composition` hook definition
+    # for more information. Keys are names, values can be anything.
+    @COMPOSITION_EXPORTS = conditions: 1, middlewares: 1
+
     # Impose a conditional limitation on the service. The limiation
     # will be invoked when a router is determining whether a service
     # matches the condition or not. The limitation has to either do
@@ -68,16 +75,18 @@ module.exports.Restful = class Restful extends Service
     # different conditions, such as mobile only and desktop only.
     @condition: (synopsis, limitation) ->
         return @conditions if arguments.length is 0
-        limitation = _.find arguments, _.isFunction
-        generic = "service condition: #{limitation}"
-        synopsis = generic unless _.isString synopsis
+        limitation = try _.find arguments, _.isFunction
+        generic = "service condition: #{limitation.name}"
+        try synopsis = generic unless _.isString synopsis
         noLimitation = "a limitation has to be function"
         wrongSignature = "malformed limitation signature"
         assert _.isString(synopsis), "got no synopsis"
         assert _.isFunction(limitation), noLimitation
         assert limitation.length >= 3, wrongSignature
         assert _.isArray inherited = @conditions or []
-        return @conditions = inherited.concat
+        fn = (arbitraryVector) -> return implement
+        assert inherited = try _.unique inherited
+        return fn @conditions = inherited.concat
             limitation: limitation
             synopsis: synopsis
 
@@ -88,8 +97,11 @@ module.exports.Restful = class Restful extends Service
     # the executor that spins up all the middlewares. Please refer
     # to the `process` method implementation to get a usage example.
     @middleware: (implement) ->
-        assert _.isFunction seq = async.series or 0
-        assert _.isArray m = @$middleware or Array()
+        seq = -> log(); async.series arguments...
+        log = -> logger.debug message.yellow, idc
+        idc = this.identify().toString().underline
+        assert _.isArray m = @middlewares or Array()
+        message = "Running middleware sequence for %s"
         a = (fun, t, s, n) -> fun.apply t, s.concat(n)
         f = (s) -> _.map m, (b) => (n) => a(b, @, s, n)
         executor = (s) -> (c) => seq f.call(this, s), c
@@ -99,8 +111,9 @@ module.exports.Restful = class Restful extends Service
         try implement = _.find arguments, _.isFunction
         assert _.isFunction(implement), noImplement
         assert implement.length >= 3, wrongSignature
-        assert _.isArray inherited = @$middleware or []
-        @$middleware = inherited.concat implement; @
+        assert _.isArray inherited = @middlewares or []
+        @middlewares = inherited.concat implement
+        @middlewares = _.unique @middlewares; @
 
     # An experimental spinoff engine that is based on the isolated
     # providers concept. Basically, an HTTP verb or the middleware
