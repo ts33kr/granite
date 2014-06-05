@@ -135,13 +135,19 @@ module.exports.Restful = class Restful extends Service
     # Can be used from the outside, but generally should not be done.
     # Will be invoked if a method is not defined or not implemented.
     unsupported: (request, response, next) ->
+        method = try request.method.toUpperCase()
         assert codes = http.STATUS_CODES or Object()
         assert methodNotAllowed = code = 405 # HTTP
+        identify = @constructor?.identify().underline
+        assert _.isObject(request), "got invalid request"
+        assert _.isFunction(next), "invalid continuation"
+        notify = "Unsupported HTTP method %s in %s"
         assert message = try codes[methodNotAllowed]
         doesJson = response.accepts(/json/) or false
         response.writeHead methodNotAllowed, message
         descriptor = error: "#{message}", code: code
         @emit "unsupported", request, response, next
+        logger.debug notify.red, identify, method.bold
         return response.send descriptor if doesJson
         response.send message.toString(); return @
 
