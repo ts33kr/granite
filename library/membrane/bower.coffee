@@ -73,6 +73,7 @@ module.exports.BowerSupport = class BowerSupport extends Screenplay
         noOptions = "options must be an object"
         ent = "an entrypoint has to be a string"
         assert previous = @bowerings or Array()
+        assert previous = try _.unique previous
         assert _.isString(entry), ent if entry
         assert _.isObject(options), noOptions
         assert _.isString(target), noTarget
