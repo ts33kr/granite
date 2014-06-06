@@ -38,6 +38,7 @@ url = require "url"
 
 {Zombie} = require "../nucleus/zombie"
 {RedisClient} = require "../membrane/redis"
+{GraniteKernel} = require "../nucleus/kernel"
 
 # This zombie service exposes session storage engine implementation.
 # This implementation uses Redis to store the session data. It does
@@ -64,14 +65,18 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
     # This method is supposed to be called when a session engine asks
     # the storage to destroy a session with the specified session ID.
     # The session may or may not exist. Please refer to the `Connect`.
-    destory: (sid, callback) ->
+    # The backing storage in use is Redis via the `RedisClient` class.
+    this::destory = this::destroySession = (sid, callback) ->
         assert _.isString qualified = @namespaced sid
         assert _.isObject(@redis), "no Redis client yet"
         message = "Redis session engine error at destroy"
         process = "Destroying a Redis stored session %s"
-        logger.debug process.grey, try sid.underline
+        assert kernel = @kernel or GraniteKernel.instance
+        logger.debug process.grey, try sid.underline or 0
+        assert _.isArray hosting = [this, kernel] or null
+        forward = => h.emit arguments... for h in hosting
         @redis.del qualified, (error, trailings...) =>
-            @emit "session-destroy", sid, callback
+            forward "session-destroy", this, sid, error
             logger.error message.red, error if error
             return callback.call this, error if error
             return callback.apply this, arguments
@@ -80,7 +85,8 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
     # This method is supposed to be called when a session engine asks
     # the storage to suspend a session with the specified session ID.
     # The session may or may not exist. Please refer to the `Connect`.
-    set: (sid, session, callback) ->
+    # The backing storage in use is Redis via the `RedisClient` class.
+    this::set = this::writeSession = (sid, session, callback) ->
         assert encoded = try JSON.stringify session
         assert _.isString qualified = @namespaced sid
         expire = session?.cookie?.maxAge / 1000 | 0
@@ -89,8 +95,11 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
         encFailed = "failed to encode payload to JSON"
         assert _.isObject(@redis), "no Redis client yet"
         assert not _.isEmpty(encoded or null), encFailed
+        assert kernel = @kernel or GraniteKernel.instance
+        assert _.isArray hosting = [this, kernel] or null
+        forward = => h.emit arguments... for h in hosting
         @redis.setex qualified, expire, encoded, (error) =>
-            @emit "session-set", sid, session, callback
+            forward "session-set", this, sid, session
             logger.error message.red, error if error
             return callback.call this, error if error
             return callback.apply this, arguments
@@ -99,13 +108,17 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
     # This method is supposed to be called when a session engine asks
     # the storage to retrieve a session with the specified session ID.
     # The session may or may not exist. Please refer to the `Connect`.
-    get: (sid, callback) ->
+    # The backing storage in use is Redis via the `RedisClient` class.
+    this::get = this::restoreSession = (sid, callback) ->
         assert _.isString qualified = @namespaced sid
         message = "Redis session engine error at get"
         df = "failed to decode JSON payload on the get"
         assert _.isObject(@redis), "no Redis client yet"
+        assert kernel = @kernel or GraniteKernel.instance
+        assert _.isArray hosting = [this, kernel] or null
+        forward = => h.emit arguments... for h in hosting
         @redis.get qualified, (error, data, trailings...) =>
-            @emit "session-get", sid, data, callback
+            forward "session-get", this, sid, data
             logger.error message.red, error if error
             return callback.call this, error if error
             return callback.call this unless data
@@ -117,7 +130,8 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
     # session ID. It tried to lookup the prefix from a configuration.
     # If no configure prefix is found, use the default hardcoded one.
     # A supplied session ID tag must conform to a set of restrictions.
-    namespaced: (sid, prefixOverride) ->
+    # Namespacing is used here to avoid collisions in the Redis DB.
+    this::namespaced = this::nid = (sid, prefixOverride) ->
         noSid = "sid argument has to be non empty"
         wrongSid = "sid argument has to be a string"
         assert not _.isEmpty(sid), noSid.toString()
