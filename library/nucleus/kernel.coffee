@@ -53,7 +53,7 @@ watch = require "./watch"
 
 {format} = require "util"
 {RedisStore} = require "socket.io"
-{Archetype} = require "./archetype"
+{Archetype} = require "./arche"
 
 # This is a primary gateway interface for the framework. This class
 # provides methods and routines necessary to bootstrap the framework

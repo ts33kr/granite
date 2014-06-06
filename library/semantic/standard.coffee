@@ -23,12 +23,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
-{Zombie} = require "../nucleus/zombie"
+{Archetype} = require "../nucleus/arche"
 {remote, cc} = require "../membrane/remote"
-{Archetype} = require "../nucleus/archetype"
-{Preflight} = require "../membrane/preflight"
-{GoogleFonts} = require "../exposure/fonting"
-
 {Formular} = require "./formular"
 
 # This is a formular implementation that provides standard controls

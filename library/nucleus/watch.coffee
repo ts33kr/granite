@@ -43,7 +43,7 @@ routing = require "./routing"
 service = require "./service"
 
 {Zombie} = require "./zombie"
-{Archetype} = require "./archetype"
+{Archetype} = require "./arche"
 
 # Watcher is responsible for automatic discovery and hot loading of
 # the modules that contain services. It can be configured to watch

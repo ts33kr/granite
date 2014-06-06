@@ -40,7 +40,7 @@ routing = require "./routing"
 scoping = require "./scoping"
 
 {format} = require "util"
-{Archetype} = require "./archetype"
+{Archetype} = require "./arche"
 {urlOfServer} = require "./tools"
 {urlOfMaster} = require "./tools"
 

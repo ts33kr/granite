@@ -41,7 +41,7 @@ util = require "util"
 {BowerSupport} = require "./bower"
 {Extending} = require "../nucleus/extends"
 {Composition} = require "../nucleus/compose"
-{Archetype} = require "../nucleus/archetype"
+{Archetype} = require "../nucleus/arche"
 
 # This abstract base class service is an extension of the Screenplay
 # family that provides some tools for further initialization and set

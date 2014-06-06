@@ -35,7 +35,7 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-{Archetype} = require "../nucleus/archetype"
+{Archetype} = require "../nucleus/arche"
 {Barebones} = require "../membrane/skeleton"
 
 # An abstract base compound that provides an extensive functionality

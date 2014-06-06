@@ -36,7 +36,7 @@ http = require "http"
 util = require "util"
 
 {AccessGate} = require "./access"
-{Archetype} = require "../nucleus/archetype"
+{Archetype} = require "../nucleus/arche"
 {Barebones} = require "../membrane/skeleton"
 
 # An abstract base compound that provides an extensive functionality

@@ -37,7 +37,7 @@ http = require "http"
 util = require "util"
 os = require "os"
 
-{Archetype} = require "../nucleus/archetype"
+{Archetype} = require "../nucleus/arche"
 {Barebones} = require "../membrane/skeleton"
 {RedisClient} = require "../membrane/redis"
 {MongoClient} = require "../membrane/mongo"

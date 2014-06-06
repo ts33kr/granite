@@ -37,7 +37,7 @@ routing = require "./routing"
 scoping = require "./scoping"
 
 {Service} = require "./service"
-{Archetype} = require "./archetype"
+{Archetype} = require "./arche"
 {GraniteKernel} = require "./kernel"
 
 # This is an abstract base class that represents zombie service. A

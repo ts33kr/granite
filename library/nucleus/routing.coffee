@@ -30,7 +30,7 @@ assert = require "assert"
 async = require "async"
 util = require "util"
 
-{Archetype} = require "./archetype"
+{Archetype} = require "./arche"
 
 # A simple yet solid HTTP request router. This is designed to map
 # HTTP requests to the correpsonding handlers by examining URL and

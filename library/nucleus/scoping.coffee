@@ -36,9 +36,9 @@ util = require "util"
 fs = require "fs"
 
 {spawn} = require "child_process"
-{Archetype} = require "./archetype"
 {rmdirSyncRecursive} = require "wrench"
 {mkdirSyncRecursive} = require "wrench"
+{Archetype} = require "./arche"
 
 # This is a primary gateway interface for the framework. This class
 # provides methods and routines necessary to bootstrap the framework
