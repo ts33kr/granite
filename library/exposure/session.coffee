@@ -45,6 +45,7 @@ url = require "url"
 # make use of `RedisClient` and other wirings specific to framework.
 # It is highly recommended to use this storage engine in production
 # environments. Please refer to `plumbs` module for how to make use.
+# Normally, you would not use this zombie class instance directly.
 assert module.exports.RedisSession = class RedisSession extends Zombie
 
     # These declarations below are implantations of the abstracted
@@ -66,6 +67,7 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
     # the storage to destroy a session with the specified session ID.
     # The session may or may not exist. Please refer to the `Connect`.
     # The backing storage in use is Redis via the `RedisClient` class.
+    # Take a look at the source for understanding how keys are formed.
     this::destory = this::destroySession = (sid, callback) ->
         prefix = nconf.get "session:redis:prefix"
         prefix = prefix or "session:redis:storage"
@@ -89,6 +91,7 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
     # the storage to suspend a session with the specified session ID.
     # The session may or may not exist. Please refer to the `Connect`.
     # The backing storage in use is Redis via the `RedisClient` class.
+    # Take a look at the source for understanding how keys are formed.
     this::set = this::writeSession = (sid, session, callback) ->
         prefix = nconf.get "session:redis:prefix"
         prefix = prefix or "session:redis:storage"
@@ -117,6 +120,7 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
     # the storage to retrieve a session with the specified session ID.
     # The session may or may not exist. Please refer to the `Connect`.
     # The backing storage in use is Redis via the `RedisClient` class.
+    # Take a look at the source for understanding how keys are formed.
     this::get = this::restoreSession = (sid, callback) ->
         prefix = nconf.get "session:redis:prefix"
         prefix = prefix or "session:redis:storage"
