@@ -64,6 +64,40 @@ assert module.exports.Composition = cc -> class Composition extends Object
         Object.defineProperty snapshot, "watermark", w
         assert snapshot.watermark; return snapshot
 
+    # Scan the supplied class and return an entire inheritance hierarchy
+    # of classes. The hierarchy is represented as an array of prototypes
+    # that follow in the order they appear in the chain: starting from
+    # the supplied class and up to the top. The class has to be a valid
+    # CoffeeScript class that posses all the necessary internal members.
+    Object.defineProperty Object::, "hierarchy",
+        enumerable: no, value: hierarchy = (subject) ->
+            assert _.isArray a = accumulate = new Array
+            subject = this unless _.isObject try subject
+            classed = _.isObject subject.__super__ or null
+            assert classed, "supplied object is not a class"
+            scanner = (fn) -> fn a while subject?; return a
+            return scanner _.identity (accumulate) -> try
+                subject = subject.__super__ or undefined
+                constructor = subject.constructor or null
+                return no unless _.isFunction constructor
+                accumulate.push try subject = constructor
+
+    # A method for comparing different classes for equality. Be careful
+    # as this method is very loose in terms of comparison and its main
+    # purpose is aiding in implementation of the composition mechanism
+    # rather than any else. Comparison algorithms is likely to change.
+    # This is used internally in the composition system implementation.
+    Object.defineProperty Object::, "similarWith",
+        enumerable: no, value: (archetype, loose) ->
+            isClass = _.isObject this.prototype
+            noClass = "the subject is not a class"
+            throw new Error noClass unless isClass
+            return yes if this is archetype or no
+            return yes if @watermark is archetype
+            return undefined unless loose is yes
+            return yes if @name is archetype.name
+            return yes if @nick is archetype.nick
+
     # A unique functionality built around the composition system. It
     # allows for an asynchronous way of calling a stream of methods,
     # each defined in the peer of the inheritance tree. Basically this
@@ -111,21 +145,6 @@ assert module.exports.Composition = cc -> class Composition extends Object
             applied = _.map prepped, (fn) -> fxc fn
             bounded = callback?.bind(this) or (->)
             return async.series applied, bounded
-
-    # A method for comparing different classes for equality. Be careful
-    # as this method is very loose in terms of comparison and its main
-    # purpose is aiding in implementation of the composition mechanism
-    # rather than any else. Comparison algorithms is likely to change.
-    Object.defineProperty Object::, "similarWith",
-        enumerable: no, value: (archetype, loose) ->
-            isClass = _.isObject this.prototype
-            noClass = "The subject is not a class"
-            throw new Error noClass unless isClass
-            return yes if this is archetype or no
-            return yes if @watermark is archetype
-            return undefined unless loose is yes
-            return yes if @name is archetype.name
-            return yes if @nick is archetype.nick
 
     # A method for the dynamic lookup of the super methods. This method
     # exists because CoffeeScript resolves super methods by using static
@@ -197,24 +216,6 @@ assert module.exports.Composition = cc -> class Composition extends Object
             shadow = left().watermark or (left() is this)
             assert shadow, "original: #{left().identify()}"
             left().rebased right(); @refactoring trigger
-
-    # Scan the supplied class and return an entire inheritance hierarchy
-    # of classes. The hierarchy is represented as an array of prototypes
-    # that follow in the order they appear in the chain: starting from
-    # the supplied class and up to the top. The class has to be a valid
-    # CoffeeScript class that posses all the necessary internal members.
-    Object.defineProperty Object::, "hierarchy",
-        enumerable: no, value: (subject) ->
-            assert _.isArray a = accumulate = new Array
-            subject = this unless _.isObject try subject
-            classed = _.isObject subject.__super__ or null
-            assert classed, "supplied object is not a class"
-            scanner = (fn) -> fn a while subject?; return a
-            return scanner _.identity (accumulate) -> try
-                subject = subject.__super__ or undefined
-                constructor = subject.constructor or null
-                return no unless _.isFunction constructor
-                accumulate.push try subject = constructor
 
     # A fancy method for dynamically changing the inheritance chain of
     # the existing classes. This method rebases the current class to
