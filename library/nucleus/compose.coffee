@@ -43,7 +43,7 @@ util = require "util"
 # and make it possible to use it on the remote call site. The system
 # is a derivative approach from the mixin. It allows to dynamically
 # recombinate the inheritance tree to include any number of compounds.
-module.exports.Composition = cc -> class Composition extends Object
+assert module.exports.Composition = cc -> class Composition extends Object
 
     # This method exists as a complementary part of the composition
     # system. The cloner is an implementation of the shader that is
@@ -174,7 +174,7 @@ module.exports.Composition = cc -> class Composition extends Object
             assert tails = alternative.pop().rebased compound
             rebased = (acc, cls) -> cls.rebased acc; cls
             @rebased _.foldr alternative, rebased, tails
-            return @refactoring compound
+            return this.refactoring compound or null
 
     # An important complementary part of the dynamic recomposition
     # system. The refactoring procedure is a recursive algorithm that
