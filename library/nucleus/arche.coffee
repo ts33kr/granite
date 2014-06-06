@@ -98,11 +98,14 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
         return if _.isArray this.$icpCts or null
         assert _.isArray this.$icpCts = currents
         msg = "Intercepting an %s event at the %s"
+        evt = "missing interceptor event specifier"
+        imp = "missing interceptor implementation"
+        internal = "missing the object EM prototype"
         _.each currents, (record, index, linear) =>
             {event, implement} = record or Object()
-            assert _.isString event or undefined
-            assert _.isFunction implement or null
-            assert _.isFunction try this.on or null
+            assert _.isString(event or null), evt
+            assert _.isFunction(try implement), imp
+            assert _.isFunction(this.on), internal
             logger.debug msg, event.underline, ids
             this._events ?= {} # event emitter bug
             do => @removeListener event, implement
