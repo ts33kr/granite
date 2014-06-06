@@ -82,22 +82,6 @@ assert module.exports.Composition = cc -> class Composition extends Object
                 return no unless _.isFunction constructor
                 accumulate.push try subject = constructor
 
-    # A method for comparing different classes for equality. Be careful
-    # as this method is very loose in terms of comparison and its main
-    # purpose is aiding in implementation of the composition mechanism
-    # rather than any else. Comparison algorithms is likely to change.
-    # This is used internally in the composition system implementation.
-    Object.defineProperty Object::, "similarWith",
-        enumerable: no, value: (archetype, loose) ->
-            isClass = _.isObject this.prototype
-            noClass = "the subject is not a class"
-            throw new Error noClass unless isClass
-            return yes if this is archetype or no
-            return yes if @watermark is archetype
-            return undefined unless loose is yes
-            return yes if @name is archetype.name
-            return yes if @nick is archetype.nick
-
     # A unique functionality built around the composition system. It
     # allows for an asynchronous way of calling a stream of methods,
     # each defined in the peer of the inheritance tree. Basically this
@@ -236,3 +220,19 @@ assert module.exports.Composition = cc -> class Composition extends Object
             assert this.__super__ = baseclass.prototype
             try this.prototype = new ctor() or original
             _.extend this.prototype, original; this
+
+    # A method for comparing different classes for equality. Be careful
+    # as this method is very loose in terms of comparison and its main
+    # purpose is aiding in implementation of the composition mechanism
+    # rather than any else. Comparison algorithms is likely to change.
+    # This is used internally in the composition system implementation.
+    Object.defineProperty Object::, "similarWith",
+        enumerable: no, value: (archetype, loose) ->
+            isClass = _.isObject this.prototype
+            noClass = "the subject is not a class"
+            throw new Error noClass unless isClass
+            return yes if this is archetype or no
+            return yes if @watermark is archetype
+            return undefined unless loose is yes
+            return yes if @name is archetype.name
+            return yes if @nick is archetype.nick
