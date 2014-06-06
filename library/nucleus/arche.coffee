@@ -125,4 +125,5 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
         inmerge = (x) -> _.unique previous.concat x
         execute = (fnc) => fnc.call this; implement
         execute -> return @interceptors = inmerge
-            implement: implement, event: event
+            implement: implement or null
+            event: try event.toString()
