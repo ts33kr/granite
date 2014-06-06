@@ -92,14 +92,14 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
     # operations that pertain to the scaffolding that is being set
     # up for every archetyped class and therefore instance of class.
     constructor: (parameters...) ->
-        ids = @constructor.identify().underline
-        currents = try @constructor.interceptors
-        currents = [] unless _.isArray currents
-        return if _.isArray this.$icpCts or null
-        assert _.isArray this.$icpCts = currents
         msg = "Intercepting an %s event at the %s"
-        evt = "missing interceptor event specifier"
-        imp = "missing interceptor implementation"
+        evt = "missing the interceptor event specifier"
+        imp = "missing the interceptor implementation"
+        assert ids = @constructor.identify().underline
+        currents = this.constructor.interceptors or []
+        assert currents = [] unless _.isArray currents
+        return if _.isArray this.$icpCts or undefined
+        assert _.isArray try this.$icpCts = currents
         internal = "missing the object EM prototype"
         _.each currents, (record, index, linear) =>
             {event, implement} = record or Object()
