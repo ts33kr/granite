@@ -23,6 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+async = require "async"
 assert = require "assert"
 logger = require "winston"
 uuid = require "node-uuid"
@@ -43,7 +44,7 @@ scoping = require "./scoping"
 # does live within the service infrastructure. The zombie exhibits
 # singleton behavior. Typically zombies are used from outside of the
 # service infrastructure, yet zombies service themvselves reside in.
-module.exports.Zombie = class Zombie extends Service
+assert module.exports.Zombie = class Zombie extends Service
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -71,40 +72,39 @@ module.exports.Zombie = class Zombie extends Service
     # only extracts the domain and pathname captured groups, and
     # returns them to the caller. Override it to do some real job.
     # The captured groups may be used by the overrider or ditched.
-    process: (request, response, next) -> undefined
-
-    # Obtain an instance of this zombie services. This method does
-    # implement the singleton behavior pattern. Beware however that
-    # although you will always get an instance handle from this method
-    # although there is no guarantee that this handle is initialized!
-    @obtain: (kernel, callback) ->
-        instantiated = => _.has @, "instance"
-        return @instance if (try instantiated())
-        internal = "got an internal zombie error"
-        assert _.isFunction lazy = try @lazy()
-        do -> lazy.call this, kernel, callback
-        assert @instance = new this arguments...
-        assert instantiated() is yes, internal
-        assert downstream = @instance.downstream
-        assert downstream = downstream.bind @instance
-        assert singleton = downstream singleton: ->
-            return unless _.isFunction callback
-            callback.call this, @instance, kernel
-        singleton kernel, @instance; @instance
+    process: (request, response, next) -> next undefined
 
     # An important method whose responsibility is to create a new
     # instance of the service, which is later will be registered in
     # the router. This is invoked by the watcher when it discovers
     # new suitable services to register. This works asynchronously!
-    @spawn: (kernel, callback) ->
-        noKernel = "got no valid kernel"
-        assert _.isObject kernel, noKernel
-        assert _.isObject service = @obtain()
-        constructor = service.constructor or ->
-        constructor.apply service, arguments
-        assert downstream = service.downstream
-        assert downstream = downstream.bind service
-        assert instance = downstream instance: ->
-            return unless _.isFunction callback
-            callback.call this, service, kernel
-        instance kernel, service; service
+    # You need to take this into account, when overriding this one.
+    @spawn: (kernel, c, a) -> super kernel, c, => @obtain kernel
+
+    # Obtain an instance of this zombie services. This method does
+    # implement the singleton behavior pattern. Beware however that
+    # although you will always get an instance handle from this method
+    # there is no any sort guarantee that this handle is initialized!
+    # Please use this method, rather than trying to do it via `new`.
+    @obtain: (kernel, callback) ->
+        {apply, series} = async or require "async"
+        assert identify = try @identify().underline
+        nc = "the supplied callback is not a function"
+        internalErr = "internal zombie spawning error"
+        dstreamError = "something wrong at downstream"
+        instantiated = => return _.has this, "instance"
+        define = -> Object.defineProperty arguments...
+        makeProp = (pp) => define this, "instance", pp
+        return this.instance if instantiated() is yes
+        assert makeProp value: new this(arguments...)
+        assert (try instantiated()) is yes, internalErr
+        notify = "Spawned a zombie instance of the %s"
+        logger.debug notify.yellow, identify.toString()
+        assert downstream = this.instance.downstream
+        assert downstream = downstream.bind @instance
+        assert _.isFunction(downstream), dstreamError
+        assert _.isFunction(callback), nc if callback
+        @instance.emit "mk-zombie", @instance, kernel
+        f = apply callback or (->), @instance, kernel
+        assert singleton = downstream singleton: f
+        singleton kernel, @instance; @instance
