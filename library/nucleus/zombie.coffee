@@ -38,6 +38,7 @@ scoping = require "./scoping"
 
 {Service} = require "./service"
 {Archetype} = require "./archetype"
+{GraniteKernel} = require "./kernel"
 
 # This is an abstract base class that represents zombie service. A
 # zombie service is a service that does not match any request but
@@ -86,9 +87,10 @@ assert module.exports.Zombie = class Zombie extends Service
     # although you will always get an instance handle from this method
     # there is no any sort guarantee that this handle is initialized!
     # Please use this method, rather than trying to do it via `new`.
-    @obtain: (kernel, callback) ->
+    this.obtain = this.zombieInstance = (kernel, callback) ->
         {apply, series} = async or require "async"
         assert identify = try @identify().underline
+        kernel = GraniteKernel.instance unless kernel
         nc = "the supplied callback is not a function"
         internalErr = "internal zombie spawning error"
         dstreamError = "something wrong at downstream"
