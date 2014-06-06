@@ -48,8 +48,8 @@ bundles = require "./bundles"
 routing = require "./routing"
 service = require "./service"
 scoping = require "./scoping"
+scanner = require "./scanner"
 plumbs = require "./plumbs"
-watch = require "./watch"
 
 {format} = require "util"
 {RedisStore} = require "socket.io"
@@ -154,7 +154,7 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
             assert not _.isEmpty @startupHttpsServer()
             assert not _.isEmpty @startupHttpServer()
             assert not _.isEmpty @setupSocketServers()
-            assert not _.isEmpty @setupHotloadWatcher()
+            assert not _.isEmpty @setupModuleScanner()
             assert identica = @constructor.identica()
             logger.info manifest, identica.bold
             logger.info message.red; return @
@@ -266,23 +266,30 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
             prepared = _.map(services, eua) or Array()
             async.series prepared, (err, res) -> null
 
-    # Instantiate a hot swapping watcher for this kernel and setup
-    # the watcher per the scoping configuration to watch for certain
-    # directories. Please refer to the `Watcher` implementation for
-    # more information on its operations and configuration routines.
-    setupHotloadWatcher: ->
-        assert @watcher = new watch.Watcher this
-        subjects = nconf.get("watch:dirs") or null
-        config = nconf.get("layout:config") or null
-        library = nconf.get("layout:library") or null
-        assert _.isArray(subjects), "no watch configured"
-        assert _.isString(library), "no library layout"
-        assert _.isString(config), "no config layout"
-        watch = @watcher.watchDirectory.bind @watcher
-        watch paths.resolve __dirname, "../exposure"
-        watch paths.resolve __dirname, "../semantic"
-        watch directory for directory in subjects
-        watch library; watch config; return this
+    # Allocate a module scanner insrance for this kernel and setup
+    # the scanner per the scoping configuration to monitor certain
+    # directories. Please reference the `ModuleScanner` comppnent
+    # implementation for more information on its operations and a
+    # configuration routines and facilities. The scanner itself is
+    # is a zombie services, therefore is instantuated accordingly.
+    setupModuleScanner: ->
+        makeFailed = "failed to make module scanner"
+        message = "Allocate %s service as dir monitor"
+        @scanner = scanner.ModuleScanner.obtain this
+        assert _.isObject(scanner or null), makeFailed
+        identify = @scanner.constructor.identify().bold
+        logger.info message.yellow, identify.toString()
+        configs = try nconf.get("layout:config") or null
+        subjects = try nconf.get("scanner:dirs") or null
+        library = try nconf.get("layout:library") or null
+        assert _.isArray(subjects), "scanner not configed"
+        assert _.isString(configs), "no configure layout"
+        assert _.isString(library), "no library layouts"
+        monitor = @scanner.monitorDirectory.bind @scanner
+        monitor paths.resolve __dirname, "../exposure"
+        monitor paths.resolve __dirname, "../semantic"
+        monitor directory for directory in subjects
+        monitor library; monitor configs; this
 
     # The utilitary method that is being called by either the kernel
     # or scope implementation to establish the desirable facade for
