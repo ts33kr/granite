@@ -41,7 +41,6 @@ scoping = require "./scoping"
 
 {format} = require "util"
 {Archetype} = require "./arche"
-{ServiceBillets} = require "./billets"
 {urlOfServer} = require "./tools"
 {urlOfMaster} = require "./tools"
 
@@ -51,7 +50,7 @@ scoping = require "./scoping"
 # logics, to deal with paths. Remember that this service is just a
 # an internal base class, you generally should not use it directly.
 # Also, all of its functionality can be overriden by any service.
-assert module.exports.Service = class Service extends ServiceBillets
+assert module.exports.Service = class Service extends Archetype
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -95,6 +94,30 @@ assert module.exports.Service = class Service extends ServiceBillets
     # Please be sure invoke the `next` arg to proceed, if relevant.
     ignition: (request, response, next) -> next()
 
+    # This instance method is a shortcut that internally makes use
+    # of the service disposition data, obtained by call underlying
+    # method `disposition` of the service class itself. The alias
+    # exists primarily for the purpose of supporting some legacy
+    # constructs defined well before the underlying method were.
+    # For the new code, you should perhaps use `disposition`.
+    reference: -> @constructor.disposition().reference
+
+    # This instance method is a shortcut that internally makes use
+    # of the service disposition data, obtained by call underlying
+    # method `disposition` of the service class itself. The alias
+    # exists primarily for the purpose of supporting some legacy
+    # constructs defined well before the underlying method were.
+    # For the new code, you should perhaps use `disposition`.
+    location: -> @constructor.disposition().location
+
+    # This instance method is a shortcut that internally makes use
+    # of the service disposition data, obtained by call underlying
+    # method `disposition` of the service class itself. The alias
+    # exists primarily for the purpose of supporting some legacy
+    # constructs defined well before the underlying method were.
+    # For the new code, you should perhaps use `disposition`.
+    qualified: -> @constructor.disposition().master
+
     # This is an instance method that will be invoked by the router
     # on every service, prior to actually registering it. Method is
     # intended to ask the service itself if wants and deems okay to
@@ -133,6 +156,36 @@ assert module.exports.Service = class Service extends ServiceBillets
             callback.call this, service, kernel
             try service.emit "instance", kernel
         instance kernel, service; return service
+
+    # This method is used to obtain all the available dosposition
+    # data of this services. Disposition data is basically the data
+    # related to HTTP locations (supposedly) of the service using
+    # the different variations. This also includes some of internal
+    # referential data that does not pertain to HTTP per se. Please
+    # refer to the method source code for the detailed information.
+    @disposition: (forceSsl=no) ->
+        securing = require "../membrane/securing"
+        assert hasher = try crypto.createHash "md5"
+        noAbsolute = "the service origin is missing"
+        assert absolute = this.origin?.id, noAbsolute
+        assert _.isString(noAbsolute), "invalid origin"
+        assert _.isString identify = try this.identify()
+        assert factor = "#{absolute}:#{identify}" or 0
+        onlySsl = @derives securing.OnlySsl or forceSsl
+        digest = try hasher.update(factor).digest "hex"
+        deduce = try _.head(this.resources)?.unescape()
+        assert not _.isEmpty(digest), "MD5 digest fail"
+        assert $reference = digest or this.reference?()
+        assert internal = "/#{$reference}/#{identify}"
+        $location = deduce or @location?() or internal
+        $location = internal unless $location or null
+        $server = try urlOfServer onlySsl, $location
+        $master = try urlOfMaster onlySsl, $location
+        return new Object # make and return summary
+            reference: $reference or null
+            location: $location or null
+            server: $server or null
+            master: $master or null
 
     # This method should process the already matched HTTP request.
     # But since this is an abstract base class, this implementation

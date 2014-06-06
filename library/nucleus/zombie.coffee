@@ -53,13 +53,6 @@ assert module.exports.Zombie = class Zombie extends Service
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
-    # Either obtain or set the HTTP location of the current service.
-    # If not location has been set, but the one is requested then
-    # the deduced default is returned. Default location is the first
-    # resource regular expression pattern being unescaped to string.
-    # Do not confuse it with `qualified` method that deals with URL.
-    @location: -> "/#{@reference()}/#{@identify()}"
-
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the
     # domain/host and the path, in accordance with the patterns
