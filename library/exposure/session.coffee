@@ -77,7 +77,7 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
         process = "Destroying a Redis stored session %s"
         assert kernel = @kernel or GraniteKernel.instance
         logger.debug process.grey, try sid.underline or 0
-        assert _.isArray hosting = [this, kernel] or null
+        assert _.all try hosting = [this, kernel] or null
         forward = => h.emit arguments... for h in hosting
         assert _.isString qualified = "#{prefix}:#{sid}"
         @redis.del qualified, (error, trailings...) =>
@@ -106,7 +106,7 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
         assert not _.isEmpty(encoded or null), encFailed
         assert kernel = @kernel or GraniteKernel.instance
         logger.debug process.grey, try sid.underline or 0
-        assert _.isArray hosting = [this, kernel] or null
+        assert _.all try hosting = [this, kernel] or null
         forward = => h.emit arguments... for h in hosting
         assert _.isString qualified = try "#{prefix}:#{sid}"
         @redis.setex qualified, expire, encoded, (error) =>
@@ -131,7 +131,7 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
         assert _.isObject(@redis), "no Redis client yet"
         assert kernel = @kernel or GraniteKernel.instance
         logger.debug process.grey, try sid.underline or 0
-        assert _.isArray hosting = [this, kernel] or null
+        assert _.all try hosting = [this, kernel] or null
         forward = => h.emit arguments... for h in hosting
         assert _.isString qualified = try "#{prefix}:#{sid}"
         @redis.get qualified, (error, data, trailings...) =>
