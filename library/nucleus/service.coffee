@@ -182,10 +182,10 @@ assert module.exports.Service = class Service extends Archetype
         $server = try urlOfServer onlySsl, $location
         $master = try urlOfMaster onlySsl, $location
         return new Object # make and return summary
-            reference: $reference or null
-            location: $location or null
-            server: $server or null
-            master: $master or null
+            reference: $reference or null # MD5-ed
+            location: $location or null # relative
+            server: $server or null # server URL
+            master: $master or null # master URL
 
     # This method should process the already matched HTTP request.
     # But since this is an abstract base class, this implementation
