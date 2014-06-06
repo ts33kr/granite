@@ -121,6 +121,7 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
         assert _.isString(event), "malformed event"
         assert _.isFunction(implement), "#{misused}"
         previous = this.interceptors or new Array()
+        previous = _.unique previous or new Array()
         inmerge = (x) -> _.unique previous.concat x
         execute = (fnc) => fnc.call this; implement
         execute -> return @interceptors = inmerge
