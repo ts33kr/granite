@@ -77,7 +77,7 @@ assert module.exports.Zombie = class Zombie extends Service
 
     # An important method whose responsibility is to create a new
     # instance of the service, which is later will be registered in
-    # the router. This is invoked by the watcher when it discovers
+    # the router. This is invoked by the kernel when it discovering
     # new suitable services to register. This works asynchronously!
     # You need to take this into account, when overriding this one.
     @spawn: (kernel, c, a) -> super kernel, c, => @obtain kernel
