@@ -59,6 +59,20 @@ module.exports.ServiceBillets = class ServiceBillets extends Archetype
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # Either obtain or set the HTTP location of the current service.
+    # This method is a proxy that forwards the invocation to the
+    # service constructor, for the purpose of easy access to service
+    # location when programmatically operating on the instances. Do
+    # refer to the original constructor method for more information.
+    location: -> @constructor.location arguments...
+
+    # This method is a tool for obtaining a fully qualified path to
+    # access to the resource, according to the HTTP specification.
+    # This includes details such as host, port, path and alike. The
+    # method knows how to disambiguate between SSL and non SSL paths.
+    # Refer to the original constructor method for more information.
+    qualified: -> @constructor.qualified arguments...
+
     # This method provides a handy, convenient tool for obtainting a
     # stringified identificator tag (a reference) for a service class.
     # This tag is supposed to be something between machine and human
