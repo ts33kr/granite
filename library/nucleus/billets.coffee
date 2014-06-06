@@ -69,7 +69,7 @@ module.exports.ServiceBillets = class ServiceBillets extends Archetype
         return @$reference if installed is yes
         noOrigin = "#{identify()} has no origin"
         assert hasher = crypto.createHash "md5"
-        assert location = @origin.id, noOrigin
+        assert location = @origin?.id, noOrigin
         assert factor = "#{location}:#{@identify()}"
         digest = hasher.update(factor).digest "hex"
         assert digest; return @$reference = digest
