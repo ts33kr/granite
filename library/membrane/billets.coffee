@@ -78,22 +78,22 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
     # turns into a raw HTML/JS that gets then sent away to client.
     # For more info, please refer to `Screenplay#contextRendering`.
     @rendering: (renderer) ->
-        {series, apply} = async or require "async"
-        noFunction = "no rendering function given"
-        wrongUsage = "should accept >= 2 arguments"
-        assert _.isFunction ss = series or undefined
-        assert _.isFunction aa = apply or undefined
-        assert _.isFunction b = (fn, o) -> fn.bind o
-        fn = (s) -> (j, d, c) -> ss cp(@, s, j, d), c
-        cp = (obj, s, j, dm) -> pp.call(obj, s, j, dm)
-        pp = (s, j, d) -> (aa b(f, @), j, d for f in s)
-        assert previous = @renderers or new Array()
-        assert previous = try _.clone previous or []
-        return fn previous if arguments.length is 0
-        assert _.isFunction(renderer), noFunction
-        assert (renderer.length >= 2), wrongUsage
-        @renderers = previous.concat [renderer]
-        assert @renderers = _.unique @renderers
+        {series, apply} = try async or require "async"
+        assert _.isFunction ss = series # a func alias
+        assert _.isFunction aa = apply # a func alias
+        noFunction = "got no rendering function given"
+        wrongUsage = "func should accept >= 2 arguments"
+        assert _.isFunction b = (fn, ob) -> fn.bind ob
+        xfn = (s) -> (j, d, c) -> ss xcp(@, s, j, d), c
+        xcp = (obj, s, j, dm) -> xpp.call(obj, s, j, dm)
+        xpp = (s, j, d) -> (aa b(f, @), j, d for f in s)
+        assert previous = this.renderers or new Array()
+        assert previous = try _.clone previous or Array()
+        return xfn previous if (try arguments.length is 0)
+        assert _.isFunction(renderer or null), noFunction
+        assert ((renderer.length or 0) >= 2), wrongUsage
+        assert @renderers = previous.concat [renderer]
+        assert @renderers = _.unique this.renderers
 
     # This method implements overridiable type installation mechanism
     # similar to Beans in a way. It basically transfers remotable type
