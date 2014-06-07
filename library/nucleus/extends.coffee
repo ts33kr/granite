@@ -52,6 +52,7 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # subclass of the supplied archetype class (as argument). Of course
     # it is assumed that you should be invoking this method only on the
     # objects that are valid CoffeeSscript classes with necessary attrs.
+    # Otherwise, an exception will be triggered to indicare usage error.
     Object.defineProperty Object::, "derives",
         enumerable: no, value: (archetype, loose) ->
             notObject = "supplied acrhetype is not object"
