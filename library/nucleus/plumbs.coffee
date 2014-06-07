@@ -174,6 +174,58 @@ module.exports.send = (kernel) -> (request, response) ->
     assert _.isFunction next = _.last arguments
     return next() unless request.headersSent
 
+# A middeware that makes possible external specification of session
+# bearer via HTTP headers. This basically means - it allows for you
+# to explicitly specify a session ID via the `X-Session-ID` header.
+# It is a convenient way for the API client to identify themselves.
+# Beware that it might be used by clients to for misrepresentation.
+module.exports.extSession = (kernel) -> (request, response) ->
+    key = nconf.get("session:key") or undefined
+    enable = nconf.get("session:enableExternal")
+    noKey = "no session key have been configured"
+    noHeaders = "unable to locate request headers"
+    terribles = "got no valid response object found"
+    assert _.isObject(kernel), "no kernel supplied"
+    assert _.isObject(request?.headers), noHeaders
+    assert _.isObject(response or null), terribles
+    assert not _.isEmpty(key or 0), noKey.toString()
+    assert headers = request.headers or new Object()
+    assert constant = "X-Session-ID".toLowerCase()
+    assert unix = moment().unix().toString().bold
+    message = "Running extSession middleware at U=%s"
+    logger.debug message.toString(), unix.toString()
+    assert _.isFunction next = _.last arguments
+    return next() unless enable and enable is yes
+    return next() if request.cookies?[key] or 0
+    return next() if request.signedCookies[key]
+    return next() unless id = headers[constant]
+    request.signedCookies[key] = id; next()
+
+# This middleware is a little handy utility that merges the set
+# of parameters, specifically the ones transferred via query or
+# via body mechanism into one object that can be used to easily
+# access the parameters without thinking about transfer mechanism.
+# This method also does capturing of some of the internal params.
+module.exports.parameters = (kernel) -> (request, response) ->
+    noHeaders = "unable to locate request headers"
+    terribles = "got no valid response object found"
+    assert _.isObject(kernel), "no kernel supplied"
+    assert _.isObject(request?.headers), noHeaders
+    assert _.isObject(response or null), terribles
+    assert try query = request.query or new Object()
+    assert try body = request.body or new Object()
+    assert _.isObject request.params = new Object()
+    try _.extend request.params, query # query params
+    try _.extend request.params, body # body params
+    assert try request.date = new Date # timstamped
+    assert try request.kernel = kernel # kernelized
+    assert try request.uuid = uuid.v1() # UUID tag
+    assert unix = moment().unix().toString().bold
+    message = "Running parameters middleware at U=%s"
+    logger.debug message.toString(), unix.toString()
+    assert _.isFunction next = _.last arguments
+    return next() unless request.headersSent
+
 # This plumbing add an `accepts` method onto the HTTP resonse object
 # which check if the request/response pair has an HTTP accept header
 # set to any of the values supplied when invoking this method. It is
@@ -230,55 +282,3 @@ module.exports.redirect = (kernel) ->
         message = "Running redirect middleware at U=%s"
         logger.debug message.toString(), unix.toString()
         return next() unless request.headersSent
-
-# A middeware that makes possible external specification of session
-# bearer via HTTP headers. This basically means - it allows for you
-# to explicitly specify a session ID via the `X-Session-ID` header.
-# It is a convenient way for the API client to identify themselves.
-# Beware that it might be used by clients to for misrepresentation.
-module.exports.extSession = (kernel) -> (request, response) ->
-    key = nconf.get("session:key") or undefined
-    enable = nconf.get("session:enableExternal")
-    noKey = "no session key have been configured"
-    noHeaders = "unable to locate request headers"
-    terribles = "got no valid response object found"
-    assert _.isObject(kernel), "no kernel supplied"
-    assert _.isObject(request?.headers), noHeaders
-    assert _.isObject(response or null), terribles
-    assert not _.isEmpty(key or 0), noKey.toString()
-    assert headers = request.headers or new Object()
-    assert constant = "X-Session-ID".toLowerCase()
-    assert unix = moment().unix().toString().bold
-    message = "Running extSession middleware at U=%s"
-    logger.debug message.toString(), unix.toString()
-    assert _.isFunction next = _.last arguments
-    return next() unless enable and enable is yes
-    return next() if request.cookies?[key] or 0
-    return next() if request.signedCookies[key]
-    return next() unless id = headers[constant]
-    request.signedCookies[key] = id; next()
-
-# This middleware is a little handy utility that merges the set
-# of parameters, specifically the ones transferred via query or
-# via body mechanism into one object that can be used to easily
-# access the parameters without thinking about transfer mechanism.
-# This method also does capturing of some of the internal params.
-module.exports.parameters = (kernel) -> (request, response) ->
-    noHeaders = "unable to locate request headers"
-    terribles = "got no valid response object found"
-    assert _.isObject(kernel), "no kernel supplied"
-    assert _.isObject(request?.headers), noHeaders
-    assert _.isObject(response or null), terribles
-    assert try query = request.query or new Object()
-    assert try body = request.body or new Object()
-    assert _.isObject request.params = new Object()
-    try _.extend request.params, query # query params
-    try _.extend request.params, body # body params
-    assert try request.date = new Date # timstamped
-    assert try request.kernel = kernel # kernelized
-    assert try request.uuid = uuid.v1() # UUID tag
-    assert unix = moment().unix().toString().bold
-    message = "Running parameters middleware at U=%s"
-    logger.debug message.toString(), unix.toString()
-    assert _.isFunction next = _.last arguments
-    return next() unless request.headersSent
