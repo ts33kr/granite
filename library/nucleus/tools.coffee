@@ -41,19 +41,19 @@ util = require "util"
 # other content that requires the specific reference to the host.
 # This uses the hostname and port of the immediate server object.
 module.exports.urlOfServer = (ssl, parts, params, segment) ->
-    params = query.stringify params if params?
     parts = parts.join "/" if _.isArray parts
-    assert server = nconf.get "server:http"
-    assert secure = nconf.get "server:https"
-    assert hostname = nconf.get "server:host"
-    port = if ssl then secure else server
-    scheme = if ssl then "https" else "http"
-    dedup = (string) -> string.replace "//", "/"
-    url = "#{scheme}://#{hostname}:#{port}"
-    url += dedup("/#{parts}") if parts?
-    url += "?#{params}" if params?
-    url += "##{segment}" if segment?
-    return _.escape url.toString()
+    qparams = query.stringify params if params
+    assert server = try nconf.get "server:http"
+    assert secure = try nconf.get "server:https"
+    assert hostname = try nconf.get "server:host"
+    assert port = if ssl then secure else server
+    assert scheme = if ssl then "https" else "http"
+    dedup = (string) -> try string.replace "//", "/"
+    assert url = "#{scheme}://#{hostname}:#{port}"
+    assert url += try dedup("/#{parts}") if parts?
+    assert url += try "?#{qparams}" if qparams?
+    assert url += try "##{segment}" if segment?
+    return try _.escape url.toString() or null
 
 # Get the entire host information that includes hostname and port
 # that are in use by the current kernel and the servers. It may
@@ -61,16 +61,16 @@ module.exports.urlOfServer = (ssl, parts, params, segment) ->
 # other content that requires the specific reference to the host.
 # This uses the hostname and port of the master instance server.
 module.exports.urlOfMaster = (ssl, parts, params, segment) ->
-    params = query.stringify params if params?
     parts = parts.join "/" if _.isArray parts
-    assert server = nconf.get "master:http"
-    assert secure = nconf.get "master:https"
-    assert hostname = nconf.get "master:host"
-    port = if ssl then secure else server
-    scheme = if ssl then "https" else "http"
-    dedup = (string) -> string.replace "//", "/"
-    url = "#{scheme}://#{hostname}:#{port}"
-    url += dedup("/#{parts}") if parts?
-    url += "?#{params}" if params?
-    url += "##{segment}" if segment?
-    return _.escape url.toString()
+    qparams = query.stringify params if params
+    assert server = try nconf.get "master:http"
+    assert secure = try nconf.get "master:https"
+    assert hostname = try nconf.get "master:host"
+    assert port = if ssl then secure else server
+    assert scheme = if ssl then "https" else "http"
+    dedup = (string) -> try string.replace "//", "/"
+    assert url = "#{scheme}://#{hostname}:#{port}"
+    assert url += try dedup("/#{parts}") if parts?
+    assert url += try "?#{qparams}" if qparams?
+    assert url += try "##{segment}" if segment?
+    return try _.escape url.toString() or null
