@@ -57,7 +57,14 @@ module.exports.AccessGate = class AccessGate extends Barebones
     # It also will be used to retrieve the authenticated entity off
     # the container. Definition may (and should) be overriden by
     # the implementing services, in case if rename is necessary.
-    @ACCESS_ENTITY_SYMBOL = "account"
+    @ACCESS_CONTAINER_SYMBOL = "account"
+
+    # This definition specifies the symbol (key) that will be used
+    # for persisting the entity carrier object into the session obj.
+    # It also will be used to retrieve the authenticated entity off
+    # the session objs. Definition may (and should) be overriden by
+    # the implementing services, in case if rename is necessary.
+    @ACCESS_SESSION_SYMBOL = "x-authenticate-entity"
 
     # Symbol declaration table, that states what keys, if those are
     # vectors (arrays) should be exported and then merged with their
@@ -124,7 +131,8 @@ module.exports.AccessGate = class AccessGate extends Barebones
     # Please refer to source code, as it contains important details.
     dereference: (container, callback) ->
         {series, apply} = async or require "async"
-        assert key = @constructor.ACCESS_ENTITY_SYMBOL
+        key = @constructor.ACCESS_CONTAINER_SYMBOL
+        assert not _.isEmpty(key), "no access symbol"
         assert sid = "x-authenticate-entity" # external
         isVanillaSession = _.isObject container.cookie
         container = session: container if isVanillaSession
@@ -161,8 +169,9 @@ module.exports.AccessGate = class AccessGate extends Barebones
         message = "Persisted %s entity against session"
         isVanillaSession = _.isObject container.cookie
         container = session: container if isVanillaSession
-        assert symbol = @constructor.ACCESS_ENTITY_SYMBOL
+        symbol = @constructor.ACCESS_CONTAINER_SYMBOL
         assert session = container?.session, noSession
+        assert not _.isEmpty(symbol), "no access symbol"
         assert _.isObject(entity), "malformed entity"
         surrogate = _.unique @constructor.hibernation()
         functions = (o.implement.bind @ for o in surrogate)
@@ -189,8 +198,9 @@ module.exports.AccessGate = class AccessGate extends Barebones
     # Please be sure invoke the `next` arg to proceed, if relevant.
     # This implementation is a gateway into the access control sys.
     ignition: (request, response, next) ->
+        symbol = @constructor.ACCESS_CONTAINER_SYMBOL
+        assert not _.isEmpty(symbol), "no access symbol"
         assert _.isString id = @constructor.identify()
-        assert symbol = @constructor.ACCESS_ENTITY_SYMBOL
         format = (ms) -> "ingition access error: #{ms}"
         atm = "Attempting ignition dereferencing at %s"
         success = "Got valid ignition entity at #{id}"
@@ -213,9 +223,10 @@ module.exports.AccessGate = class AccessGate extends Barebones
     # method is asynchronously wired, so be sure to call `next`.
     # This implementation is a gateway into the access control sys.
     handshaken: (context, socket, next) ->
+        symbol = @constructor.ACCESS_CONTAINER_SYMBOL
+        assert not _.isEmpty(symbol), "no access symbol"
         assert handshake = try socket.request or null
         assert _.isString id = @constructor.identify()
-        assert symbol = @constructor.ACCESS_ENTITY_SYMBOL
         format = (ms) -> "handshake access error: #{ms}"
         atm = "Attempting handshake dereferencing at %s"
         success = "Got valid handshake entity at #{id}"
