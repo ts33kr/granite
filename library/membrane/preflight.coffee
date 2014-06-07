@@ -79,6 +79,23 @@ module.exports.RToolkit = class RToolkit extends BowerSupport
         this.remotes = previous.concat subject
         this.remotes = _.unique @remotes or []
 
+    # Use this method in the `prelude` scope to bring dependencies into
+    # the scope. This method supports JavaScript scripts as a link or
+    # JavaScript sources passed in as the remote objects. Please refer
+    # to the implementation and the class for more information on it.
+    # An internal implementations in the framework might be using it.
+    inject: (context, subject, symbol) ->
+        assert caching = context.caching ?= new Object()
+        scripts = -> assert context.scripts.push subject
+        sources = -> assert context.sources.push compile()
+        compile = -> subject.remote.compile caching, symbol
+        invalid = "not a remote object and not a JS link"
+        assert _.isObject(context), "got invalid context"
+        compilable = _.isFunction subject.remote?.compile
+        return scripts.call this if _.isString subject
+        return sources.call this if compilable
+        throw new Error invalid.toString()
+
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
     # method is wired in an asynchronous way for greater functionality.
