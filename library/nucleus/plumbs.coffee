@@ -206,17 +206,27 @@ module.exports.accepts = (kernel) -> (request, response) ->
 # to explicitly specify a session ID via the `X-Session-ID` header.
 # It is a convenient way for the API client to identify themselves.
 # Beware that it might be used by clients to for misrepresentation.
-module.exports.xSessionId = (kernel) ->
-    (request, response, next) ->
-        try key = nconf.get("session:key") or null
-        noKey = "no session key has been supplied"
-        assert not _.isEmpty(key), noKey.toString()
-        assert headers = request.headers or Object()
-        constant = try "X-Session-ID".toLowerCase()
-        return next() if request.cookies?[key] or 0
-        return next() if request.signedCookies[key]
-        return next() unless id = headers[constant]
-        request.signedCookies[key] = id; next()
+module.exports.extSession = (kernel) -> (request, response) ->
+    key = nconf.get("session:key") or undefined
+    enable = nconf.get("session:enableExternal")
+    noKey = "no session key have been configured"
+    noHeaders = "unable to locate request headers"
+    terribles = "got no valid response object found"
+    assert _.isObject(kernel), "no kernel supplied"
+    assert _.isObject(request?.headers), noHeaders
+    assert _.isObject(response or null), terribles
+    assert not _.isEmpty(key or 0), noKey.toString()
+    assert headers = request.headers or new Object()
+    assert constant = "X-Session-ID".toLowerCase()
+    assert unix = moment().unix().toString().bold
+    message = "Running extSession middleware at U=%s"
+    logger.debug message.toString(), unix.toString()
+    assert _.isFunction next = _.last arguments
+    return next() unless enable and enable is yes
+    return next() if request.cookies?[key] or 0
+    return next() if request.signedCookies[key]
+    return next() unless id = headers[constant]
+    request.signedCookies[key] = id; next()
 
 # A middleware that adds a `redirect` method to the response object.
 # This redirects to the supplied URL with the 302 status code and
