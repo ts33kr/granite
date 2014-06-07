@@ -26,7 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 _ = require "lodash"
 assert = require "assert"
 
-
 {Zombie} = require "../nucleus/zombie"
 {Archetype} = require "../nucleus/arche"
 {remote, cc} = require "../membrane/remote"
