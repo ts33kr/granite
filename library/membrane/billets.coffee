@@ -69,7 +69,7 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = renderers: yes
+    @COMPOSITION_EXPORTS = renderers: yes, considerations: yes
 
     # Use this decorator to append a renderer function to sequence.
     # These are server side, instance methods that will be invoked
@@ -106,8 +106,8 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
     @considering: (signature) ->
         message = "Set consideration of %s in %s"
         assert remotes = this.remotes or new Array()
-        assert previous = @$considerations or Object()
-        return previous if (try arguments.length) is 0
+        assert previous = @considerations or new Array()
+        return _.object previous unless arguments.length
         identify = this.identify().toString().underline
         incorrect = "argument should be key/value pair"
         singleArg = "one definition possible at a time"
@@ -120,8 +120,7 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
         remotes.push value if (try value.remote.compile)
         raw = (try value.remote?.symbol) or ("#{value}")
         logger.debug message.grey, token.bold, identify
-        assert this.$considerations = _.clone previous
-        return this.$considerations[token] = raw
+        @considerations = previous.concat [[token, raw]]
 
     # This is a highly specialized method that is defined solely for
     # the purpose of creating the medium to advanced components that
