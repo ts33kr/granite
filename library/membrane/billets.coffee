@@ -38,9 +38,9 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-tools = require "./../nucleus/tools"
-extendz = require "./../nucleus/extends"
-compose = require "./../nucleus/compose"
+tools = require "../nucleus/toolkit"
+extendz = require "../nucleus/extends"
+compose = require "../nucleus/compose"
 
 {EOL} = require "os"
 {format} = require "util"

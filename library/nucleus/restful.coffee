@@ -33,7 +33,7 @@ colors = require "colors"
 logger = require "winston"
 
 _ = require "lodash"
-tools = require "./tools"
+tools = require "./toolkit"
 extendz = require "./extends"
 routing = require "./routing"
 {STATUS_CODES} = require "http"

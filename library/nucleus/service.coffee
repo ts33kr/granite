@@ -41,8 +41,8 @@ scoping = require "./scoping"
 
 {format} = require "util"
 {Archetype} = require "./arche"
-{urlOfServer} = require "./tools"
-{urlOfMaster} = require "./tools"
+{urlOfServer} = require "./toolkit"
+{urlOfMaster} = require "./toolkit"
 
 # This is an abstract base class for every kind of service in this
 # framework and the end user application. It provides the matching

@@ -38,7 +38,7 @@ url = require "url"
 
 {Barebones} = require "./skeleton"
 {RedisClient} = require "./redis"
-tools = require "../nucleus/tools"
+tools = require "../nucleus/toolkit"
 
 # This is an abstract base class API stub service. Its purpose is
 # providing the boilerplate for ensuring that the connection is
