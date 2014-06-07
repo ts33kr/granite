@@ -263,24 +263,24 @@ assert module.exports.Screenplay = class Screenplay extends VisualBillets
     # context with the service and request related data and events.
     # Optionally, a existent object can be transformed into context.
     assembleContext: (symbol, request, asm, stock, receive) ->
-        noPrelude = "no prelude method detected"
-        assert _.isFunction(@prelude), noPrelude
-        assert _.isObject context = stock or {}
-        @energizeContext.call @, context, symbol
-        run = (fn) => fn symbol, context, request
-        run prelude = this.downstream prelude: =>
-            context.snapshot = try _.keys context
-            assert @deployContext context, symbol
-            assert @inlineAutocalls context, symbol
+        noPrelude = "got no prelude method detected"
+        assert _.isFunction(this.prelude), noPrelude
+        assert _.isObject context = stock or Object()
+        this.energizeContext.call @, context, symbol
+        execute = (fn) => fn symbol, context, request
+        execute prelude = this.downstream prelude: =>
+            context.snapshot = try _.keys(context)
+            assert this.deployContext context, symbol
+            assert this.inlineAutocalls context, symbol
             context.inline -> assert try @root = $root
-            context.inline -> @emit "installed", this
-            context.inline -> (@root.eco ?= []).push @
+            context.inline -> this.emit "installed", @
             context.inline -> this.externals.push "root"
             context.inline -> this.externals.push "eco"
+            context.inline -> (@root.eco ?= []).push @
             context.inline -> assert @broadcast = ->
                 this.root.emit.apply $root, arguments
             assert context = @compressContext context
-            return receive context, null unless asm
+            return receive context, false unless asm
             @contextRendering request, context, (c) ->
                 return receive context, c.toString()
 
