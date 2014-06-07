@@ -215,10 +215,13 @@ assert module.exports.Screenplay = class Screenplay extends VisualBillets
     # Method also does some optimizations, such as scripts unifying.
     compressContext: (context) ->
         assert compression = "visual:compression"
+        identify = @constructor.identify().underline
         sources = _.toArray context.sources or Array()
         scripts = _.toArray context.scripts or Array()
         emptySources = "context JS sources are empty"
         u = (val) -> val.match(RegExp "^(.+)/(.+)$")[2]
+        message = "Do context compression sequence in %s"
+        logger.debug message.yellow, identify.toString()
         assert context.sheets = _.unique context.sheets
         assert context.invokes = _.unique context.invokes
         assert context.styles = _.unique context.styles
@@ -264,16 +267,16 @@ assert module.exports.Screenplay = class Screenplay extends VisualBillets
         assert _.isFunction(@prelude), noPrelude
         assert _.isObject context = stock or {}
         @energizeContext.call @, context, symbol
-        run = (fn) -> fn symbol, context, request
+        run = (fn) => fn symbol, context, request
         run prelude = this.downstream prelude: =>
             context.snapshot = try _.keys context
             assert @deployContext context, symbol
             assert @inlineAutocalls context, symbol
+            context.inline -> assert try @root = $root
             context.inline -> @emit "installed", this
             context.inline -> (@root.eco ?= []).push @
             context.inline -> this.externals.push "root"
             context.inline -> this.externals.push "eco"
-            context.inline -> assert try @root = $root
             context.inline -> assert @broadcast = ->
                 this.root.emit.apply $root, arguments
             assert context = @compressContext context
