@@ -192,7 +192,7 @@ module.exports.extSession = (kernel) -> (request, response) ->
     assert headers = request.headers or new Object()
     assert constant = "X-Session-ID".toLowerCase()
     assert unix = moment().unix().toString().bold
-    message = "Running extSession middleware at U=%s"
+    message = "Running ext-session middleware at U=%s"
     logger.debug message.toString(), unix.toString()
     assert _.isFunction next = _.last arguments
     return next() unless enable and enable is yes
@@ -238,7 +238,12 @@ module.exports.accepts = (kernel) -> (request, response) ->
     assert _.isObject(kernel), "no kernel supplied"
     assert _.isObject(request?.headers), noHeaders
     assert _.isObject(response or null), terribles
-    response.accepts = (mimes...) -> # response func
+    assert unix = moment().unix().toString().bold
+    message = "Running accepting middleware at U=%s"
+    logger.debug message.toString(), unix.toString()
+    assert _.isFunction next = try _.last arguments
+    fn = (arg) -> next() unless request.headersSent
+    fn response.accepts = (mimes...) -> # response fn
         handles = (pattern) -> try pattern.test accept
         patternize = (s) -> new RegExp RegExp.escape s
         accept = do -> request?.headers?.accept or ""
@@ -247,11 +252,6 @@ module.exports.accepts = (kernel) -> (request, response) ->
         strings = _.map strings, patternize.bind this
         assert merged = try _.merge(regexps, strings)
         return _.find(merged, handles) or undefined
-    assert unix = moment().unix().toString().bold
-    message = "Running accepting middleware at U=%s"
-    logger.debug message.toString(), unix.toString()
-    assert _.isFunction next = _.last arguments
-    return next() unless request.headersSent
 
 # A middleware that adds a `redirect` method to the response object.
 # This redirects to the supplied URL with the 302 status code and
@@ -268,7 +268,11 @@ module.exports.redirect = (kernel) ->
         assert _.isObject(request?.headers), noHeaders
         assert _.isObject(response or null), terribles
         assert _.isFunction next = try _.last arguments
-        assert response.redirect = (url, status) ->
+        assert unix = moment().unix().toString().bold
+        message = "Running redirect middleware at U=%s"
+        logger.debug message.toString(), unix.toString()
+        fn = (arg) -> next() unless request.headersSent
+        fn assert response.redirect = (url, status) ->
             assert to = try url.toString().underline
             assert from = try request.url?.underline
             assert relocated = status or 302 or null
@@ -278,7 +282,3 @@ module.exports.redirect = (kernel) ->
             response.writeHead relocated, message
             logger.debug redirect.red, from, to
             return try response.end undefined
-        assert unix = moment().unix().toString().bold
-        message = "Running redirect middleware at U=%s"
-        logger.debug message.toString(), unix.toString()
-        return next() unless request.headersSent
