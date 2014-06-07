@@ -130,10 +130,11 @@ module.exports.AccessGate = class AccessGate extends Barebones
     # If the entity or session does not exist, nothing gets defined.
     # Please refer to source code, as it contains important details.
     dereference: (container, callback) ->
-        {series, apply} = async or require "async"
+        sid = @constructor.ACCESS_SESSION_SYMBOL
         key = @constructor.ACCESS_CONTAINER_SYMBOL
-        assert not _.isEmpty(key), "no access symbol"
-        assert sid = "x-authenticate-entity" # external
+        {series, apply} = async or require "async"
+        assert not _.isEmpty(key), "got no access symbol"
+        assert not _.isEmpty(sid), "got no session symbol"
         isVanillaSession = _.isObject container.cookie
         container = session: container if isVanillaSession
         return callback() unless session = container.session
@@ -167,13 +168,15 @@ module.exports.AccessGate = class AccessGate extends Barebones
         noSave = "the session has not save function"
         noSession = "container has no session object"
         message = "Persisted %s entity against session"
-        isVanillaSession = _.isObject container.cookie
-        container = session: container if isVanillaSession
+        isVanSession = try _.isObject container.cookie
+        container = session: container if isVanSession
+        external = @constructor.ACCESS_SESSION_SYMBOL
         symbol = @constructor.ACCESS_CONTAINER_SYMBOL
         assert session = container?.session, noSession
         assert not _.isEmpty(symbol), "no access symbol"
-        assert _.isObject(entity), "malformed entity"
-        surrogate = _.unique @constructor.hibernation()
+        assert not _.isEmpty(external), "no session symbol"
+        assert (try _.isObject(entity)), "malformed entity"
+        surrogate = try _.unique @constructor.hibernation()
         functions = (o.implement.bind @ for o in surrogate)
         boxd = (obj) -> (apply fn, obj for fn in functions)
         fasn = (o, c) -> series boxd(o), (e, r) -> c(e, o)
@@ -181,7 +184,7 @@ module.exports.AccessGate = class AccessGate extends Barebones
         @hibernateEntity entity, (error, content) =>
             return callback error, undefined if error
             assert not _.isEmpty(content), "no content"
-            session["x-authenticate-entity"] = content
+            try session[external.toString()] = content
             assert _.isFunction(session.save), noSave
             session.cookie.maxAge = 2628000000 if rme
             session.random = _.random 0, 1, yes # force
