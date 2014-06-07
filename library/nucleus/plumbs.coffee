@@ -201,6 +201,36 @@ module.exports.accepts = (kernel) -> (request, response) ->
     assert _.isFunction next = _.last arguments
     return next() unless request.headersSent
 
+# A middleware that adds a `redirect` method to the response object.
+# This redirects to the supplied URL with the 302 status code and
+# the corresponding reason phrase. This method also sets some of the
+# necessary headers, such as nullary `Content-Length` and some other.
+# The redirected-to URL should be a valid, qualified URL to send to.
+module.exports.redirect = (kernel) ->
+    assert redirect = "Redirecting from %s to %s"
+    noHeaders = "unable to locate request headers"
+    terribles = "got no valid response object found"
+    assert _.isObject(kernel), "no kernel supplied"
+    assert codes = http.STATUS_CODES or new Object()
+    return (request, response) -> # middleware itself
+        assert _.isObject(request?.headers), noHeaders
+        assert _.isObject(response or null), terribles
+        assert _.isFunction next = try _.last arguments
+        assert response.redirect = (url, status) ->
+            assert to = try url.toString().underline
+            assert from = try request.url?.underline
+            assert relocated = status or 302 or null
+            assert message = codes[relocated] or null
+            response.setHeader "Location", url # to
+            response.setHeader "Content-Length", 0
+            response.writeHead relocated, message
+            logger.debug redirect.red, from, to
+            return try response.end undefined
+        assert unix = moment().unix().toString().bold
+        message = "Running redirect middleware at U=%s"
+        logger.debug message.toString(), unix.toString()
+        return next() unless request.headersSent
+
 # A middeware that makes possible external specification of session
 # bearer via HTTP headers. This basically means - it allows for you
 # to explicitly specify a session ID via the `X-Session-ID` header.
@@ -227,23 +257,6 @@ module.exports.extSession = (kernel) -> (request, response) ->
     return next() if request.signedCookies[key]
     return next() unless id = headers[constant]
     request.signedCookies[key] = id; next()
-
-# A middleware that adds a `redirect` method to the response object.
-# This redirects to the supplied URL with the 302 status code and
-# the corresponding reason phrase. This method also sets some of the
-# necessary headers, such as nullary `Content-Length` and some other.
-# The redirected-to URL should be a valid, qualified URL to send to.
-module.exports.redirect = (kernel) ->
-    (request, response, next) ->
-        response.redirect = (url, status) ->
-            assert relocated = status or 302
-            assert codes = http.STATUS_CODES
-            assert message = codes[relocated]
-            response.setHeader "Location", url
-            response.setHeader "Content-Length", 0
-            response.writeHead relocated, message
-            return try response.end undefined
-        next() unless request.headersSent
 
 # This middleware is a little handy utility that merges the set
 # of parameters, specifically the ones transferred via query or
