@@ -131,7 +131,7 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
     # The function itself is set to be invoked by autocall mechanism.
     @transferred: (intermediate) -> ->
         noFunction = "no valid intermediate function"
-        assert _.isFunction(intermediate), noFuntion
+        assert _.isFunction(intermediate), noFunction
         supplied = _.toArray arguments or new Array()
         intermediate = _.head eval "[#{intermediate}]"
         x = _.isString try intermediate.remote?.source
