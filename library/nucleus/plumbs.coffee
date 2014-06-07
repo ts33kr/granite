@@ -263,14 +263,22 @@ module.exports.extSession = (kernel) -> (request, response) ->
 # via body mechanism into one object that can be used to easily
 # access the parameters without thinking about transfer mechanism.
 # This method also does capturing of some of the internal params.
-module.exports.parameters = (kernel) ->
-    (request, response, next) ->
-        body = request.body or Object()
-        query = request.query or Object()
-        request.params = Object.create {}
-        try _.extend request.params, query
-        try _.extend request.params, body
-        assert try request.date = new Date
-        assert try request.kernel = kernel
-        assert try request.uuid = uuid.v1()
-        next() unless request.headersSent
+module.exports.parameters = (kernel) -> (request, response) ->
+    noHeaders = "unable to locate request headers"
+    terribles = "got no valid response object found"
+    assert _.isObject(kernel), "no kernel supplied"
+    assert _.isObject(request?.headers), noHeaders
+    assert _.isObject(response or null), terribles
+    assert try query = request.query or new Object()
+    assert try body = request.body or new Object()
+    assert _.isObject request.params = new Object()
+    try _.extend request.params, query # query params
+    try _.extend request.params, body # body params
+    assert try request.date = new Date # timstamped
+    assert try request.kernel = kernel # kernelized
+    assert try request.uuid = uuid.v1() # UUID tag
+    assert unix = moment().unix().toString().bold
+    message = "Running parameters middleware at U=%s"
+    logger.debug message.toString(), unix.toString()
+    assert _.isFunction next = _.last arguments
+    return next() unless request.headersSent
