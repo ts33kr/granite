@@ -50,9 +50,9 @@ module.exports.urlOfServer = (ssl, parts, params, segment) ->
     assert scheme = if ssl then "https" else "http"
     dedup = (string) -> try string.replace "//", "/"
     assert url = "#{scheme}://#{hostname}:#{port}"
-    assert url += (try dedup("/#{parts}")) if parts?
-    assert url += (try "?#{qparams}") if qparams?
-    assert url += (try "##{segment}") if segment?
+    assert url += (try dedup("/#{parts}")) if parts
+    assert url += (try "?#{qparams}") if qparams
+    assert url += (try "##{segment}") if segment
     return try _.escape url.toString() or null
 
 # Get the entire host information that includes hostname and port
@@ -70,7 +70,7 @@ module.exports.urlOfMaster = (ssl, parts, params, segment) ->
     assert scheme = if ssl then "https" else "http"
     dedup = (string) -> try string.replace "//", "/"
     assert url = "#{scheme}://#{hostname}:#{port}"
-    assert url += (try dedup("/#{parts}")) if parts?
-    assert url += (try "?#{qparams}") if qparams?
-    assert url += (try "##{segment}") if segment?
+    assert url += (try dedup("/#{parts}")) if parts
+    assert url += (try "?#{qparams}") if qparams
+    assert url += (try "##{segment}") if segment
     return try _.escape url.toString() or null
