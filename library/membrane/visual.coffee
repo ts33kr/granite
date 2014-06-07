@@ -48,6 +48,7 @@ compose = require "../nucleus/compose"
 {STATUS_CODES} = require "http"
 {Barebones} = require "./skeleton"
 {remote, external} = require "./remote"
+{TransitToolkit} = require "./transit"
 {VisualBillets} = require "./billets"
 {coffee} = require "./runtime"
 
@@ -65,6 +66,13 @@ assert module.exports.Screenplay = class Screenplay extends VisualBillets
     # mainly is used to exclude or account for abstract classes.
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
+
+    # These declarations below are implantations of the abstracted
+    # components by the means of the dynamic recomposition system.
+    # Please take a look at the `Composition` class implementation
+    # for all sorts of information on the composition system itself.
+    # Each of these will be dynamicall integrated in class hierarchy.
+    @implanting TransitToolkit
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
