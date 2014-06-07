@@ -71,23 +71,6 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
     # for more information. Keys are names, values can be anything.
     @COMPOSITION_EXPORTS = renderers: yes
 
-    # Use this method in the `prelude` scope to bring dependencies into
-    # the scope. This method supports JavaScript scripts as a link or
-    # JavaScript sources passed in as the remote objects. Please refer
-    # to the implementation and the class for more information on it.
-    # An internal implementations in the framework might be using it.
-    inject: (context, subject, symbol) ->
-        assert caching = context.caching ?= new Object()
-        scripts = -> assert context.scripts.push subject
-        sources = -> assert context.sources.push compile()
-        compile = -> subject.remote.compile caching, symbol
-        invalid = "not a remote object and not a JS link"
-        assert _.isObject(context), "got invalid context"
-        compilable = _.isFunction subject.remote?.compile
-        return scripts.call this if _.isString subject
-        return sources.call this if compilable
-        throw new Error invalid.toString()
-
     # Use this decorator to append a renderer function to sequence.
     # These are server side, instance methods that will be invoked
     # when the visual core is performing final assmbly/compilation
