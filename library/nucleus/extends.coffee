@@ -89,18 +89,6 @@ assert module.exports.Extending = cc -> class Extending extends Object
             return @watermark.name if shadowed
             return @identify typeof this
 
-    # This method is a stub that must be called in the abstract methods
-    # who do not have any implementation. When called, this method will
-    # spit out the relevant error about the caller method. It would say
-    # that the method is abstract and has no implementation attached to.
-    Object.defineProperty Object::, "unimplemented",
-        enumerable: no, value: (archarguments) ->
-            assert stack = strace.get arguments.callee
-            caller = _.head(stack or Array()) or undefined
-            assert identification = caller.getMethodName()
-            naming = "abstract method #{identification}"
-            throw new Error "#{naming} is not implemented"
-
     # A universal method to both check and set the indicator of whether
     # an object is an abstract class or not. This is very useful for
     # implementing proper architectural abstractions and concretizations.
