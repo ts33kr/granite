@@ -130,14 +130,14 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
     # the intermediate (client side) function that was supplied here.
     # The function itself is set to be invoked by autocall mechanism.
     @transferred: (intermediate) -> ->
-        noFun = "no valid intermediate function"
-        assert _.isFunction(intermediate), noFun
-        supplied = _.toArray arguments or Array()
-        intermediate = eval("[#{intermediate}]")[0]
-        x = _.isString intermediate.remote?.source
-        prepared = intermediate # default prepared
-        prepared = @autocall intermediate unless x
-        assert not _.isEmpty method = prepared or 0
+        noFunction = "no valid intermediate function"
+        assert _.isFunction(intermediate), noFuntion
+        supplied = _.toArray arguments or new Array()
+        intermediate = _.head eval "[#{intermediate}]"
+        x = _.isString try intermediate.remote?.source
+        prepared = intermediate # default prepared fnc
+        prepared = this.autocall intermediate unless x
+        assert not _.isEmpty method = prepared or null
         @prototype[_.uniqueId "__bts_trans_"] = method
         assert leaking = method.remote.leaking or {}
         i = _.isFunction; j = JSON.stringify # aliases
