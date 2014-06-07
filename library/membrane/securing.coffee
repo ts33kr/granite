@@ -41,7 +41,7 @@ url = require "url"
 tools = require "../nucleus/toolkit"
 
 # This is an abstract base class API stub service. Its purpose is
-# providing the boilerplate for ensuring that the connection is
+# providing the boilerplate for ensuring that HTTP/S connection is
 # going through the master server! If a request is not going via
 # master server then deny current request with an error code. Be
 # aware that this compound will be effective for all HTTP methods.
@@ -75,7 +75,7 @@ module.exports.OnlyMaster = class OnlyMaster extends Barebones
         return response.end content
 
 # This is an abstract base class API stub service. Its purpose is
-# providing the boilerplate for ensuring that the connection is
+# providing the boilerplate for ensuring that HTTP/S connection is
 # going through the HTTPS channel. If a request is not going via
 # SSL transport then redirect the current request to such one. Be
 # aware that this compound will be effective for all HTTP methods.
