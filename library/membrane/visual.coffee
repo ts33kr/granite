@@ -264,22 +264,22 @@ assert module.exports.Screenplay = class Screenplay extends VisualBillets
         assert _.isFunction(@prelude), noPrelude
         assert _.isObject context = stock or {}
         @energizeContext.call @, context, symbol
-        assert prelude = @downstream prelude: =>
+        run = -> (f) -> f symbol, context, request
+        run prelude = this.downstream prelude: =>
             context.snapshot = try _.keys context
             assert @deployContext context, symbol
             assert @inlineAutocalls context, symbol
             context.inline -> @emit "installed", this
-            context.inline -> assert try @root = $root
             context.inline -> (@root.eco ?= []).push @
             context.inline -> this.externals.push "root"
             context.inline -> this.externals.push "eco"
+            context.inline -> assert try @root = $root
             context.inline -> assert @broadcast = ->
                 this.root.emit.apply $root, arguments
             assert context = @compressContext context
             return receive context, null unless asm
             @contextRendering request, context, (c) ->
                 return receive context, c.toString()
-        return prelude symbol, context, request
 
     # An internally used routine, part of the context assembly proc.
     # It is used to extend either a fresh or passed in stock object
