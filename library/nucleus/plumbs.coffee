@@ -54,10 +54,10 @@ module.exports.logger = (kernel) ->
     writer = (d) -> logger.log level, filter d
     msg = "Configure logger middleware at U=%s"
     assert stamp = moment().unix().toString()
-    assert options = stream: write: writer
-    assert options.format = "#{format}"
-    logger.debug msg, (try stamp.bold)
-    return try connect.logger options
+    options = new Object stream: write: writer
+    assert options.format = format.toString()
+    logger.debug msg.toString(), stamp.bold
+    return try connect.logger options or {}
 
 # This middleware is really a wrapper around the `Connect` session
 # middleware. The reason it wraps it is to automatically configure
