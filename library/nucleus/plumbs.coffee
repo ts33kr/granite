@@ -53,6 +53,7 @@ module.exports.logger = (kernel) ->
     filter = (s) -> s.replace "\n", new String()
     writer = (d) -> logger.log level, filter d
     msg = "Configure logger middleware at U=%s"
+    assert _.isObject(kernel), "got no kernel"
     assert stamp = moment().unix().toString()
     options = new Object stream: write: writer
     assert options.format = format.toString()
@@ -68,6 +69,7 @@ module.exports.session = (kernel) ->
     nso = "no session configuration options"
     assert options = try nconf.get("session")
     assert shallow = try _.clone options or {}
+    assert _.isObject(kernel), "got no kernel"
     redis = _.isObject nconf.get("redis") or 0
     assert _.isObject(options), nso.toString()
     assert ux = moment().unix().toString().bold
