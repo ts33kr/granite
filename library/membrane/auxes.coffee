@@ -47,7 +47,7 @@ url = require "url"
 # of the parent services, restricted to the context of their own.
 # This compound handles the wiring of these services within the
 # intestines of the parent service that includes this component.
-module.exports.Auxiliaries = class Auxiliaries extends Preflight
+assert module.exports.Auxiliaries = class Auxiliaries extends Preflight
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
