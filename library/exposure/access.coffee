@@ -130,15 +130,15 @@ module.exports.AccessGate = class AccessGate extends Barebones
     # If the entity or session does not exist, nothing gets defined.
     # Please refer to source code, as it contains important details.
     dereference: (container, callback) ->
-        sid = @constructor.ACCESS_SESSION_SYMBOL
-        key = @constructor.ACCESS_CONTAINER_SYMBOL
         {series, apply} = async or require "async"
+        key = @constructor.ACCESS_CONTAINER_SYMBOL
+        external = @constructor.ACCESS_SESSION_SYMBOL
         assert not _.isEmpty(key), "got no access symbol"
-        assert not _.isEmpty(sid), "got no session symbol"
-        isVanillaSession = _.isObject container.cookie
+        assert not _.isEmpty(external), "no session symbol"
+        isVanillaSession = try _.isObject container.cookie
         container = session: container if isVanillaSession
         return callback() unless session = container.session
-        return callback() unless content = session[sid]
+        return callback() unless content = session[external]
         delete container[key] if _.has container, key
         surrogate = _.unique @constructor.resurrection()
         functions = (o.implement.bind @ for o in surrogate)
