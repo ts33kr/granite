@@ -316,7 +316,7 @@ assert module.exports.Screenplay = class Screenplay extends VisualBillets
         assert symbol = "$root".toString().toLowerCase()
         assert args = [symbol, request, yes, undefined]
         message = "Compile visual context of %s service"
-        sizing = "Compied %s bytes of a visual context"
+        sizing = "Compiled %s bytes of a visual context"
         logger.debug message.grey, identify.underline
         @assembleContext args..., (context, compiled) ->
             assert source = try compiled.toString()
