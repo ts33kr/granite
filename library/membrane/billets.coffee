@@ -95,11 +95,15 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
     # turns into a raw HTML/JS that gets then sent away to client.
     # For more info, please refer to `Screenplay#contextRendering`.
     @rendering: (renderer) ->
+        {series, apply} = async or require "async"
         noFunction = "no rendering function given"
         wrongUsage = "should accept >= 2 arguments"
-        {series, apply} = async or require "async"
-        fn = (s) -> (j, d, c) -> series pp.call(@, s, j, d), c
-        pp = (s, j, dm) -> (apply f.bind(@), j, dm for f in s)
+        assert _.isFunction ss = series or undefined
+        assert _.isFunction aa = apply or undefined
+        assert _.isFunction b = (f, o) -> f.bind o
+        fn = (s) -> (j, d, c) -> ss cp(@, s, j, d), c
+        cp = (obj, s, j, dm) -> pp.call(obj, s, j, dm)
+        pp = (s, j, d) -> (aa b(f, @), j, d for f in s)
         assert previous = @renderers or new Array()
         assert previous = try _.clone previous or []
         return fn previous if arguments.length is 0
