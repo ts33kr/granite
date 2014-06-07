@@ -100,7 +100,7 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
         wrongUsage = "should accept >= 2 arguments"
         assert _.isFunction ss = series or undefined
         assert _.isFunction aa = apply or undefined
-        assert _.isFunction b = (f, o) -> f.bind o
+        assert _.isFunction b = (fn, o) -> fn.bind o
         fn = (s) -> (j, d, c) -> ss cp(@, s, j, d), c
         cp = (obj, s, j, dm) -> pp.call(obj, s, j, dm)
         pp = (s, j, d) -> (aa b(f, @), j, d for f in s)
