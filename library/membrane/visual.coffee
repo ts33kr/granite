@@ -66,6 +66,30 @@ assert module.exports.Screenplay = class Screenplay extends VisualBillets
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # This server side method is called on the context prior to the
+    # context being compiled and flushed down to the client site. The
+    # method is wired in an synchronous way for greater functionality.
+    # This is the place where you would be importing the dependencies.
+    # Pay attention that most implementations side effect the context.
+    prelude: (symbol, context, request, next) ->
+        nri = "no UUID request identification tagging"
+        misidentified = "cannot locate class identifier"
+        message = "Running basic prelude protocol in %s"
+        noParams = "cannot find parameters in the request"
+        noQuali = "no service qualified URL found in here"
+        noLocator = "no service relation URL found in here"
+        noServiceId = "cannot find unique ID of a service"
+        assert identify = i = this.constructor.identify()
+        logger.debug message.cyan, i.toString().underline
+        assert context.service = identify, misidentified
+        assert context.params = request.params, noParams
+        assert context.uuid = request: request.uuid, nri
+        assert context.qualified = @qualified(), noQuali
+        assert context.location = @location(), noLocator
+        assert context.uuid.service = @uuid, noServiceId
+        assert context.url = request.url, "missing URL"
+        return next.call this # proceed with prelude
+
     # This is an internal routine that performs the task of compiling
     # a screenplay context into a valid HTML document to be rendered
     # and launched on the client (browser side). Please refer to the
@@ -292,10 +316,11 @@ assert module.exports.Screenplay = class Screenplay extends VisualBillets
         sizing = "Compied %s bytes of a visual context"
         logger.debug message.grey, identify.underline
         @assembleContext args..., (context, compiled) ->
-            length = do -> compiled.length or undefined
+            assert source = try compiled.toString()
+            length = Buffer.byteLength source, "utf8"
             logger.debug sizing.grey, "#{length}".bold
             assert _.isString response.charset = "utf-8"
             response.setHeader "Content-Length", length
             response.setHeader "Content-Type", "text/html"
             response.writeHead 200, STATUS_CODES[200]
-            return response.end compiled.toString()
+            response.end source.toString(), "utf-8"

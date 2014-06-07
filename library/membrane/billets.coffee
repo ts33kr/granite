@@ -71,21 +71,6 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
     # for more information. Keys are names, values can be anything.
     @COMPOSITION_EXPORTS = renderers: yes
 
-    # This server side method is called on the context prior to the
-    # context being compiled and flushed down to the client site. The
-    # method is wired in an synchronous way for greater functionality.
-    # This is the place where you would be importing the dependencies.
-    # Pay attention that most implementations side effect the context.
-    prelude: (symbol, context, request, next) ->
-        context.service = @constructor.identify()
-        context.params = request.params or {}
-        context.uuid = request: request.uuid
-        context.qualified = @qualified()
-        context.location = @location()
-        context.uuid.service = @uuid
-        context.url = request.url
-        return next.call this
-
     # Use this method in the `prelude` scope to bring dependencies into
     # the scope. This method supports JavaScript scripts as a link or
     # JavaScript sources passed in as the remote objects. Please refer
