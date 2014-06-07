@@ -180,18 +180,26 @@ module.exports.send = (kernel) -> (request, response) ->
 # very useful to use this method to negiotate the content type field.
 # This is a very dummy way of asking if a client supports something,
 # for a propert content negotiation please see the `send` plumbing.
-module.exports.accepts = (kernel) ->
-    (request, response, next) ->
-        response.accepts = (mimes...) ->
-            handles = (pattern) -> pattern.test accept
-            patternize = (s) -> new RegExp RegExp.escape s
-            accept = do -> request?.headers?.accept or ""
-            regexps = _.filter mimes, (sx) ->_.isRegExp sx
-            strings = _.filter mimes, (sx) ->_.isString sx
-            strings = _.map strings, patternize.bind this
-            assert merged = _.merge(regexps, strings) or []
-            return _.find(merged, handles) or undefined
-        next() unless request.headersSent
+module.exports.accepts = (kernel) -> (request, response) ->
+    noHeaders = "unable to locate request headers"
+    terribles = "got no valid response object found"
+    assert _.isObject(kernel), "no kernel supplied"
+    assert _.isObject(request?.headers), noHeaders
+    assert _.isObject(response or null), terribles
+    response.accepts = (mimes...) -> # response func
+        handles = (pattern) -> try pattern.test accept
+        patternize = (s) -> new RegExp RegExp.escape s
+        accept = do -> request?.headers?.accept or ""
+        regexps = _.filter mimes, (sx) ->_.isRegExp sx
+        strings = _.filter mimes, (sx) ->_.isString sx
+        strings = _.map strings, patternize.bind this
+        assert merged = try _.merge(regexps, strings)
+        return _.find(merged, handles) or undefined
+    assert unix = moment().unix().toString().bold
+    message = "Running accepting middleware at U=%s"
+    logger.debug message.toString(), unix.toString()
+    assert _.isFunction next = _.last arguments
+    return next() unless request.headersSent
 
 # A middeware that makes possible external specification of session
 # bearer via HTTP headers. This basically means - it allows for you
