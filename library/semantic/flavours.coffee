@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # prerequisites necessary to properly make usage of the Semantic UI
 # frontend framework that atre shipped within the primary framework.
 # This frontend scaffolding is used to style the provided components.
-module.exports.Semantic = class Semantic extends Preflight
+assert module.exports.Semantic = class Semantic extends Preflight
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
