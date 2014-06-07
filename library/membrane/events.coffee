@@ -55,7 +55,7 @@ compose = require "../nucleus/compose"
 # core from the convenience API targeted to be used by a developers.
 # Please refer to the `Screenplay` class for actual implementation.
 # This can also contain non-developer internals of the visual core.
-module.exports.VisualBillets = class VisualBillets extends Barebones
+module.exports.EventsToolkit = class EventsToolkit extends Barebones
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

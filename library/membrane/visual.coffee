@@ -49,7 +49,7 @@ compose = require "../nucleus/compose"
 {Barebones} = require "./skeleton"
 {remote, external} = require "./remote"
 {TransitToolkit} = require "./transit"
-{VisualBillets} = require "./billets"
+{EventsToolkit} = require "./events"
 {coffee} = require "./runtime"
 
 # This is an abstract service that provides the unique functionality
@@ -58,7 +58,7 @@ compose = require "../nucleus/compose"
 # This ABC constitutes a primary tool for writing UI/UX with Granite.
 # Please consult the implementation for more information on the system.
 # Also, please reference parent class for the important external APIs.
-assert module.exports.Screenplay = class Screenplay extends VisualBillets
+assert module.exports.Screenplay = class Screenplay extends Barebones
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -73,6 +73,7 @@ assert module.exports.Screenplay = class Screenplay extends VisualBillets
     # for all sorts of information on the composition system itself.
     # Each of these will be dynamicall integrated in class hierarchy.
     @implanting TransitToolkit
+    @implanting EventsToolkit
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
