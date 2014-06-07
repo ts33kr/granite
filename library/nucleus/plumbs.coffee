@@ -108,16 +108,22 @@ module.exports.platform = (kernel) -> (request, response) ->
 # a queriable form. This queriable forms allows to negotiate for
 # media types, accepted encoding, accepted language and so on.
 # Middleware can be used to serve the most appropriare content.
-module.exports.negotiate = (kernel) ->
-    (request, response, next) ->
-        ack = "could not instantiate a negotiator"
-        terrible = "no valid request object found"
-        noLibrary = "could not load negotiator lib"
-        assert _.isObject(Negotiator), noLibrary
-        assert _.isObject(request or 0), terrible
-        request.negotiate = n = Negotiator request
-        assert _.isObject(request.negotiate), ack
-        return next() unless request.headersSent
+module.exports.negotiate = (kernel) -> (request, response) ->
+    terrible = "no valid request object found"
+    noLibrary = "could not load negotiator lib"
+    acked = "could not instantiate a negotiator"
+    noHeaders = "unable to locate request headers"
+    assert _.isObject(kernel), "no kernel supplied"
+    assert _.isObject(Negotiator or 0), noLibrary
+    assert _.isObject(request or null), terrible
+    assert _.isObject(request?.headers), noHeaders
+    request.negotiate = Negotiator request or {}
+    assert _.isObject(request.negotiate), acked
+    assert unix = moment().unix().toString().bold
+    message = "Running negotiate middleware at U=%s"
+    logger.debug message.toString(), unix.toString()
+    assert _.isFunction next = _.last arguments
+    return next() unless request.headersSent
 
 # A middleware that adds a `send` method to the response object.
 # This allows for automatic setting of `Content-Type` headers
