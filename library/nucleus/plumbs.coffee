@@ -44,30 +44,39 @@ util = require "util"
 # that pipes all the request logs to the `Winston` instances that
 # is used throughout the framework to provide logging capabilities.
 # The format is takes from the `NConf` config or the default `dev`.
+# Refer to the implementation source code for more information.
 module.exports.logger = (kernel) ->
     assert levelKey = "log:request:level"
     assert formatKey = "log:request:format"
-    format = nconf.get(formatKey) or "dev"
-    level = nconf.get(levelKey) or "debug"
-    filter = (s) -> s.replace "\n", String()
+    format = try nconf.get(formatKey) or "dev"
+    level = try nconf.get(levelKey) or "debug"
+    filter = (s) -> s.replace "\n", new String()
     writer = (d) -> logger.log level, filter d
+    msg = "Configure logger middleware at U=%s"
+    assert stamp = moment().unix().toString()
     assert options = stream: write: writer
     assert options.format = "#{format}"
+    logger.debug msg, (try stamp.bold)
     return try connect.logger options
 
 # This middleware is really a wrapper around the `Connect` session
 # middleware. The reason it wraps it is to automatically configure
 # the session storage using the kernel and scoping configuration
-# data. It is automatically connected by the kernel instance.
+# data. This is automatically connected by the kernel instance.
+# Refer to the implementation source code for more information.
 module.exports.session = (kernel) ->
-    redis = _.isObject nconf.get "redis" or 0
-    options = nconf.get "session" or undefined
-    noSession = "No session settings in the scope"
+    nso = "no session configuration options"
+    assert options = try nconf.get("session")
+    assert shallow = try _.clone options or {}
+    redis = _.isObject nconf.get("redis") or 0
+    assert _.isObject(options), nso.toString()
+    assert ux = moment().unix().toString().bold
     useRedis = "Using Redis session storage engine"
-    options.store = RedisSession.obtain() if redis
-    assert _.isObject(options), noSession.toString()
+    message = "Configure session middleware at U=%s"
+    shallow.store = RedisSession.obtain() if redis
+    logger.debug message.toString(), ux.toString()
     logger.info useRedis.toString().blue if redis
-    return connect.session options or new Object
+    return connect.session shallow or new Object
 
 # This middleware uses an external library to parse the incoming
 # user agent identification string into a platform description
