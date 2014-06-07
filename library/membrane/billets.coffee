@@ -121,9 +121,11 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
     # This allows you to override type definitions that may be used in
     # the parent classes, without having to replace implementation code.
     @considering: (signature) ->
+        message = "Set consideration of %s in %s"
         assert remotes = this.remotes or new Array()
         assert previous = @$considerations or Object()
         return previous if (try arguments.length) is 0
+        identify = this.identify().toString().underline
         incorrect = "argument should be key/value pair"
         singleArg = "one definition possible at a time"
         fx = "value should be either remote or function"
@@ -134,6 +136,7 @@ module.exports.VisualBillets = class VisualBillets extends Barebones
         assert _.isFunction(value) or value.remote?, fx
         remotes.push value if (try value.remote.compile)
         raw = (try value.remote?.symbol) or ("#{value}")
+        logger.debug message.grey, token.bold, identify
         assert this.$considerations = _.clone previous
         return this.$considerations[token] = raw
 
