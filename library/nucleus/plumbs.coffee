@@ -130,17 +130,23 @@ module.exports.negotiate = (kernel) -> (request, response) ->
 # based on the content that is being sent away. Use this method
 # rather than writing and ending the request in a direct way.
 # Is implemented using the external `response-send` library.
-module.exports.send = (kernel) ->
-    (request, response, next) ->
-        ack = "could not attach a response sender"
-        noLibrary = "could not load sender library"
-        terrible = "no valid response object found"
-        assert _.isFunction(send?.json), noLibrary
-        assert _.isObject(response or 0), terrible
-        assert response.send = send, ack.toString()
-        assert response.json = send.json spaces: 4
-        response.req = request unless response.req
-        return next() unless request.headersSent
+module.exports.send = (kernel) -> (request, response) ->
+    ack = "could not attach response sender method"
+    noLibrary = "could not load the sender library"
+    terrible = "got no valid response object found"
+    noHeaders = "unable to locate request headers"
+    assert _.isObject(kernel), "no kernel supplied"
+    assert _.isFunction(try (send.json)), noLibrary
+    assert _.isObject(response or null), terrible
+    assert _.isObject(request?.headers), noHeaders
+    assert (try response.send = send), ack.toString()
+    assert response.json = try (send.json spaces: 4)
+    try response.req = request unless response.req
+    assert unix = moment().unix().toString().bold
+    message = "Running sending middleware at U=%s"
+    logger.debug message.toString(), unix.toString()
+    assert _.isFunction next = _.last arguments
+    return next() unless request.headersSent
 
 # This middleware is a wrapper around the `toobusy` module providing
 # the functinality that helps to prevent the server shutting down due
