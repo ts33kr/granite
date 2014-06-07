@@ -83,23 +83,23 @@ module.exports.session = (kernel) ->
 # object. If the user agent string is absent from the requesting
 # entity then the platform will not be defined on request object.
 # Refer to the implementation source code for more information.
-module.exports.platform = (kernel) ->
-    (request, response, next) ->
-        intern = "could not parse the platform data"
-        noParser = "platform parse library malfunction"
-        noPlatform = "missing platform middleware lib"
-        noHeaders = "unable to locate request headers"
-        assert _.isObject(platform or null), noPlatform
-        assert _.isObject(request?.headers), noHeaders
-        assert _.isFunction(platform?.parse), noParser
-        agent = request.headers["user-agent"] or null
-        return next() if not agent or _.isEmpty agent
-        assert unix = moment().unix().toString().bold
-        message = "Running platform middleware at U=%s"
-        logger.debug message.toString(), unix.toString()
-        request.platform = try (platform.parse agent)
-        assert _.isObject(request.platform), intern
-        return next() unless request.headersSent
+module.exports.platform = (kernel) -> (request, response) ->
+    intern = "could not parse the platform data"
+    noParser = "platform parse library malfunction"
+    noPlatform = "missing platform middleware lib"
+    noHeaders = "unable to locate request headers"
+    assert _.isObject(platform or null), noPlatform
+    assert _.isObject(request?.headers), noHeaders
+    assert _.isFunction(platform?.parse), noParser
+    agent = request.headers["user-agent"] or null
+    return next() if not agent or _.isEmpty agent
+    assert unix = moment().unix().toString().bold
+    message = "Running platform middleware at U=%s"
+    logger.debug message.toString(), unix.toString()
+    request.platform = try (platform.parse agent)
+    assert _.isObject(request.platform), intern
+    assert _.isFunction next = _.last arguments
+    return next() unless request.headersSent
 
 # This middleware uses an external library to parse the incoming
 # request metadata and then coerce it by using the standards to
