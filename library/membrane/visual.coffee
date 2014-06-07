@@ -264,7 +264,7 @@ assert module.exports.Screenplay = class Screenplay extends VisualBillets
         assert _.isFunction(@prelude), noPrelude
         assert _.isObject context = stock or {}
         @energizeContext.call @, context, symbol
-        run = (ff) -> fn symbol, context, request
+        run = (fn) -> fn symbol, context, request
         run prelude = this.downstream prelude: =>
             context.snapshot = try _.keys context
             assert @deployContext context, symbol
