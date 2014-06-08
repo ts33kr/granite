@@ -62,7 +62,7 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
     # for more information. Keys are names, values can be anything.
     @COMPOSITION_EXPORTS = bowerings: yes
 
-    # Install the specified package via Bower into the specific
+    # Install the specified packages via Bower into the specific
     # location within the system that is figured out automatically.
     # All packages installed via Bower will be served as the static
     # assets, by using the `pub` env dir. The package installation
