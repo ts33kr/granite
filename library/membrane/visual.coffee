@@ -51,6 +51,8 @@ compose = require "../nucleus/compose"
 {TransferToolkit} = require "./transfer"
 {TransitToolkit} = require "./transit"
 {EventsToolkit} = require "./events"
+{LinksToolkit} = require "./linkage"
+{BowerToolkit} = require "./bower"
 {coffee} = require "./runtime"
 
 # This is an abstract service that provides the unique functionality
@@ -76,6 +78,8 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
     @implanting TransferToolkit
     @implanting TransitToolkit
     @implanting EventsToolkit
+    @implanting LinksToolkit
+    @implanting BowerToolkit
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The

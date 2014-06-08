@@ -38,8 +38,7 @@ path = require "path"
 http = require "http"
 util = require "util"
 
-{EOL} = require "os"
-{Screenplay} = require "./visual"
+{Barebones} = require "./skeleton"
 {rmdirSyncRecursive} = require "wrench"
 
 # This abstract base class provides the dynamic Bower support for
@@ -47,7 +46,7 @@ util = require "util"
 # allows for each service to have its own, isolated tree of packages
 # that will be dynamically installed via Bower package manager. The
 # implementation provides convenient way of requiring frontend libs.
-module.exports.BowerSupport = class BowerSupport extends Screenplay
+module.exports.BowerToolkit = class BowerToolkit extends Barebones
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
