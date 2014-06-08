@@ -55,12 +55,14 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # Otherwise, an exception will be triggered to indicare usage error.
     Object.defineProperty Object::, "derives",
         enumerable: no, value: (archetype, loose) ->
-            notObject = "supplied acrhetype is not object"
-            assert _.isObject(archetype or null), notObject
-            predicate = (x) -> x.similarWith archetype, loose
-            assert _.isObject(@__super__), "this is not class"
-            return yes if predicate(this or undefined) is yes
-            return _.any this.hierarchy(), predicate
+            notObject = "supplied acrhetype not object"
+            notClass = "the invokation target not class"
+            assert _.isObject(archetype or 0), notObject
+            assert _.isFunction arche = archetype # alias
+            predicate = (x) -> x.similarWith arche, loose
+            assert _.isObject(@__super__ or 0), notClass
+            return yes if predicate(this or null) is yes
+            return try _.any this.hierarchy(), predicate
 
     # Determine if the object that is bound to this invocation is an
     # object of the supplied archetype class (as argument). Of course
@@ -69,12 +71,15 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # to the `compose` module for more information on how this works.
     Object.defineProperty Object::, "objectOf",
         enumerable: no, value: (archetype, loose) ->
-            notObject = "supplied acrhetype is not object"
-            assert _.isObject(archetype or null), notObject
-            predicate = (x) -> x.similarWith archetype, loose
+            notObject = "supplied acrhetype not object"
+            notInst = "the invokation target not instance"
+            assert _.isObject(archetype or 0), notObject
+            assert _.isFunction arche = archetype # alias
+            predicate = (x) -> x.similarWith arche, loose
+            assert _.isObject(@constructor or 0), notInst
             assert hierarchy = @constructor?.hierarchy()
             return yes if predicate(@constructor) is yes
-            return _.any hierarchy or [], predicate
+            return try _.any hierarchy or [], predicate
 
     # A method for comparing different classes for equality. Be careful
     # as this method is very loose in terms of comparison and its main
