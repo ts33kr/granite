@@ -126,16 +126,17 @@ assert module.exports.Extending = cc -> class Extending extends Object
             return @$abstract = this if boolean
             delete @$abstract; @$abstract is @
 
-    # Extend the native RegExp object to implement method for escaping
-    # a supplied string. Escaping here means substituting all the RE
-    # characters so that it can be used inside of the regular expression
-    # pattern. The implementation was borrowed from StackOverflow thread.
-    # Otherwise, an exception will be triggered to indicare usage error.
-    RegExp.escape = (string) ->
-        noString = "please supply valid input"
-        assert not _.isEmpty(string), noString
-        primary = /[-\/\\^$*+?.()|[\]{}]/g
-        string.replace primary, "\\$&"
+    # Collect all the matches of the regular expression against of the
+    # supplied string. This method basically gathers all the matches that
+    # sequentially matches against the input string and packs them into
+    # an array which is handed to the invoker. Be sure to set the G flag.
+    # Please see the implementation source code for the more information.
+    RegExp::collect = (string) ->
+        matches = new Array undefined
+        noString = "got no string supplied"
+        assert _.isString(string), noString
+        matches.push m while m = @exec string
+        assert matches; return matches
 
     # Extend the native RegExp object to implement method for unescaping
     # a supplied string. Unscaping here means substituting all the RE back
@@ -148,14 +149,13 @@ assert module.exports.Extending = cc -> class Extending extends Object
         string = @source.replace /\\\//g, "/"
         return string.replace /[\$\^]/g, ""
 
-    # Collect all the matches of the regular expression against of the
-    # supplied string. This method basically gathers all the matches that
-    # sequentially matches against the input string and packs them into
-    # an array which is handed to the invoker. Be sure to set the G flag.
-    # Please see the implementation source code for the more information.
-    RegExp::collect = (string) ->
-        matches = new Array undefined
-        noString = "got no string supplied"
-        assert _.isString(string), noString
-        matches.push m while m = @exec string
-        assert matches; return matches
+    # Extend the native RegExp object to implement method for escaping
+    # a supplied string. Escaping here means substituting all the RE
+    # characters so that it can be used inside of the regular expression
+    # pattern. The implementation was borrowed from StackOverflow thread.
+    # Otherwise, an exception will be triggered to indicare usage error.
+    RegExp.escape = (string) ->
+        noString = "please supply valid input"
+        assert not _.isEmpty(string), noString
+        primary = /[-\/\\^$*+?.()|[\]{}]/g
+        string.replace primary, "\\$&"
