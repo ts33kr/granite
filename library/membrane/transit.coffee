@@ -59,6 +59,7 @@ module.exports.TransitToolkit = class TransitToolkit extends Barebones
     # mainly is used to exclude or account for abstract classes.
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
+
     # Symbol declaration table, that states what keys, if those are
     # vectors (arrays) should be exported and then merged with their
     # counterparts in the destination, once the composition process
