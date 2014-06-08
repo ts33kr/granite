@@ -133,7 +133,7 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # sequentially matches against the input string and packs them into
     # an array which is handed to the invoker. Be sure to set the G flag.
     # Please see the implementation source code for the more information.
-    RegExp::collect = (string) ->
+    RegExp::collect = regexpCollect = (string) ->
         assert matches = new Array, "acc error"
         empty = "the supplied argument is empty"
         noString = "got no valid string supplied"
@@ -149,7 +149,7 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # characters so that it cannot be used inside of the regular expression
     # pattern. The implementation was borrowed from StackOverflow thread.
     # Please see the implementation source code for the more information.
-    RegExp::unescape = ->
+    RegExp::unescape = regexpUnescape = ->
         broken = "got a broken regular expression"
         failure = "unexpected error while process"
         esource = "the source reg patter is empty"
@@ -165,7 +165,7 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # characters so that it can be used inside of the regular expression
     # pattern. The implementation was borrowed from StackOverflow thread.
     # Otherwise, an exception will be triggered to indicare usage error.
-    RegExp.escape = (string) ->
+    RegExp.escape = regexpEscape = (string) ->
         empty = "the supplied argument is empty"
         noString = "please supply the valid input"
         fail = "unexpected error while processing"
