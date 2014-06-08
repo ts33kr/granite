@@ -128,6 +128,22 @@ assert module.exports.Extending = cc -> class Extending extends Object
             return this.$abstract = this if boolean
             delete @$abstract; @$abstract is this
 
+    # Extend the native RegExp object to implement method for escaping
+    # a supplied string. Escaping here means substituting all the RE
+    # characters so that it can be used inside of the regular expression
+    # pattern. The implementation was borrowed from StackOverflow thread.
+    # Otherwise, an exception will be triggered to indicare usage error.
+    RegExp.escape = regexpEscape = (string) ->
+        empty = "the supplied argument is empty"
+        noString = "please supply the valid input"
+        fail = "unexpected error while processing"
+        assert _.isString(string or null), noString
+        assert not _.isEmpty(string or 0), empty
+        assert primary = /[-\/\\^$*+?.()|[\]{}]/g
+        replaced = string.replace primary, "\\$&"
+        assert not _.isEmpty(replaced or 0), fail
+        return replaced # return the escape str
+
     # Collect all the matches of the regular expression against of the
     # supplied string. This method basically gathers all the matches that
     # sequentially matches against the input string and packs them into
@@ -159,19 +175,3 @@ assert module.exports.Extending = cc -> class Extending extends Object
         string = try string.replace /[\$\^]/g, ""
         assert _.isString(string or null), failure
         return string # return the unescpaed str
-
-    # Extend the native RegExp object to implement method for escaping
-    # a supplied string. Escaping here means substituting all the RE
-    # characters so that it can be used inside of the regular expression
-    # pattern. The implementation was borrowed from StackOverflow thread.
-    # Otherwise, an exception will be triggered to indicare usage error.
-    RegExp.escape = regexpEscape = (string) ->
-        empty = "the supplied argument is empty"
-        noString = "please supply the valid input"
-        fail = "unexpected error while processing"
-        assert _.isString(string or null), noString
-        assert not _.isEmpty(string or 0), empty
-        assert primary = /[-\/\\^$*+?.()|[\]{}]/g
-        replaced = string.replace primary, "\\$&"
-        assert not _.isEmpty(replaced or 0), fail
-        return replaced # return the escape str
