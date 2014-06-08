@@ -132,11 +132,13 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # an array which is handed to the invoker. Be sure to set the G flag.
     # Please see the implementation source code for the more information.
     RegExp::collect = (string) ->
-        matches = new Array undefined
-        noString = "got no string supplied"
-        assert _.isString(string), noString
-        matches.push m while m = @exec string
-        assert matches; return matches
+        assert matches = new Array, "acc error"
+        empty = "the supplied argument is empty"
+        noString = "got no valid string supplied"
+        assert _.isString(string or 0), noString
+        assert not _.isEmpty(string or 0), empty
+        matches.push mx while mx = @exec string
+        assert _.isArray matches; return matches
 
     # Extend the native RegExp object to implement method for unescaping
     # a supplied string. Unscaping here means substituting all the RE back
