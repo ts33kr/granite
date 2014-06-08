@@ -38,10 +38,6 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-tools = require "../nucleus/toolkit"
-extendz = require "../nucleus/extends"
-compose = require "../nucleus/compose"
-
 {EOL} = require "os"
 {format} = require "util"
 {STATUS_CODES} = require "http"
