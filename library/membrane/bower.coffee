@@ -62,43 +62,6 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
     # for more information. Keys are names, values can be anything.
     @COMPOSITION_EXPORTS = bowerings: yes
 
-    # Install the specified packages via Bower into the specific
-    # location within the system that is figured out automatically.
-    # All packages installed via Bower will be served as the static
-    # assets, by using the `pub` env dir. The package installation
-    # is per service and automatically will be included in `prelude`.
-    @bower: (target, entry, options={}) ->
-        ent = "an entrypoint has to be a valid string"
-        noTarget = "target must be a Bower package spec"
-        noOptions = "options must be a plain JS object"
-        assert previous = this.bowerings or new Array()
-        assert previous = try _.unique(previous) or null
-        assert _.isString(entry or null), ent if entry
-        assert _.isObject(options or null), noOptions
-        assert _.isString(target or null), noTarget
-        return this.bowerings = previous.concat
-            options: options or Object()
-            entry: entry or undefined
-            target: target.toString()
-
-    # Either get or set the bower sink directory name. If no args
-    # supplied the method will return the automatically deduced the
-    # bower sink. If you supply an argument the method will set it
-    # as a bower sink and later will return it, unless overriden by
-    # the global configuration. See the implementation for the info.
-    @bowerSink: (sink) ->
-        assert hash = try crypto.createHash("md5") or 0
-        identity = try this.identify().underline or null
-        assert id = hash.update(@identify()).digest "hex"
-        automatic = => try global or this.$bowerSink or id
-        notify = "Bower sink directory for %s set to %s"
-        global = nconf.get "bower:globalSinkDirectory"
-        return automatic() if arguments.length is 0
-        assert _.isString(sink), "has to be a string"
-        assert not _.isEmpty(sink), "got empty sink"
-        logger.debug notify.cyan, identity, sink
-        return @$bowerSink = try sink.toString()
-
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
@@ -203,3 +166,40 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
             ext = (fxt) -> path.extname(file) is fxt
             context.scripts.push file if ext ".js"
             context.sheets.push file if ext ".css"
+
+    # Either get or set the bower sink directory name. If no args
+    # supplied the method will return the automatically deduced the
+    # bower sink. If you supply an argument the method will set it
+    # as a bower sink and later will return it, unless overriden by
+    # the global configuration. See the implementation for the info.
+    this.bowerSink = this.bowerDirectory = (sink) ->
+        assert hash = try crypto.createHash("md5") or 0
+        identity = try this.identify().underline or null
+        assert id = hash.update(@identify()).digest "hex"
+        automatic = => try global or this.$bowerSink or id
+        notify = "Bower sink directory for %s set to %s"
+        global = nconf.get "bower:globalSinkDirectory"
+        return automatic() if arguments.length is 0
+        assert _.isString(sink), "has to be a string"
+        assert not _.isEmpty(sink), "got empty sink"
+        logger.debug notify.cyan, identity, sink
+        return @$bowerSink = try sink.toString()
+
+    # Install the specified packages via Bower into the specific
+    # location within the system that is figured out automatically.
+    # All packages installed via Bower will be served as the static
+    # assets, by using the `pub` env dir. The package installation
+    # is per service and automatically will be included in `prelude`.
+    @bower: (target, entry, options={}) ->
+        ent = "an entrypoint has to be a valid string"
+        noTarget = "target must be a Bower package spec"
+        noOptions = "options must be a plain JS object"
+        assert previous = this.bowerings or new Array()
+        assert previous = try _.unique(previous) or null
+        assert _.isString(entry or null), ent if entry
+        assert _.isObject(options or null), noOptions
+        assert _.isString(target or null), noTarget
+        return this.bowerings = previous.concat
+            options: options or Object()
+            entry: entry or undefined
+            target: target.toString()
