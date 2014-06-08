@@ -48,6 +48,7 @@ compose = require "../nucleus/compose"
 {STATUS_CODES} = require "http"
 {Barebones} = require "./skeleton"
 {remote, external} = require "./remote"
+{TransferToolkit} = require "./transfer"
 {TransitToolkit} = require "./transit"
 {EventsToolkit} = require "./events"
 {coffee} = require "./runtime"
@@ -72,6 +73,7 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
     # Please take a look at the `Composition` class implementation
     # for all sorts of information on the composition system itself.
     # Each of these will be dynamicall integrated in class hierarchy.
+    @implanting TransferToolkit
     @implanting TransitToolkit
     @implanting EventsToolkit
 

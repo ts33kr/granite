@@ -43,85 +43,12 @@ util = require "util"
 {Composition} = require "../nucleus/compose"
 {Archetype} = require "../nucleus/arche"
 
-# This abstract base class service is an extension of the Screenplay
-# family that provides some tools for further initialization and set
-# up. These preparations will be nececessary no matter what sort of
-# Screenplay functionality you are going to implement. Currently the
-# purpose of preflight is drawing in the remoted and Bower packages.
-module.exports.RToolkit = class RToolkit extends BowerSupport
-
-    # This is a marker that indicates to some internal subsystems
-    # that this class has to be considered abstract and therefore
-    # can not be treated as a complete class implementation. This
-    # mainly is used to exclude or account for abstract classes.
-    # Once inherited from, the inheritee is not abstract anymore.
-    @abstract yes
-
-    # Symbol declaration table, that states what keys, if those are
-    # vectors (arrays) should be exported and then merged with their
-    # counterparts in the destination, once the composition process
-    # takes place. See the `Archetype::composition` hook definition
-    # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = remotes: yes
-
-    # A directive to mark the certain remote class or object to be
-    # included in the `Screenplay` context that is going to be emited
-    # and deployed on the client site. Basically, use this to bring
-    # in all the remote classes that you need to the remote call site.
-    # Refer to the remote compilation procedures for more information.
-    @transfer: (subject) ->
-        assert previous = @remotes or Array()
-        qualify = try subject.remote.compile
-        noRemote = "the subject is not remote"
-        noPrevious = "invalid previous remotes"
-        assert _.isArray(previous), noPrevious
-        assert _.isFunction(qualify), noRemote
-        this.remotes = previous.concat subject
-        this.remotes = _.unique @remotes or []
-
-    # Use this method in the `prelude` scope to bring dependencies into
-    # the scope. This method supports JavaScript scripts as a link or
-    # JavaScript sources passed in as the remote objects. Please refer
-    # to the implementation and the class for more information on it.
-    # An internal implementations in the framework might be using it.
-    inject: (context, subject, symbol) ->
-        assert caching = context.caching ?= new Object()
-        scripts = -> assert context.scripts.push subject
-        sources = -> assert context.sources.push compile()
-        compile = -> subject.remote.compile caching, symbol
-        invalid = "not a remote object and not a JS link"
-        assert _.isObject(context), "got invalid context"
-        compilable = _.isFunction subject.remote?.compile
-        return scripts.call this if _.isString subject
-        return sources.call this if compilable
-        throw new Error invalid.toString()
-
-    # This server side method is called on the context prior to the
-    # context being compiled and flushed down to the client site. The
-    # method is wired in an asynchronous way for greater functionality.
-    # This is the place where you would be importing the dependencies.
-    # Pay attention that most implementations side effect the context.
-    prelude: (symbol, context, request, next) ->
-        d = nconf.get("visual:logging") is no
-        context.inline -> `assert = chai.assert`
-        context.inline -> `assert(logger = log)`
-        context.inline -> `assert($logger = log)`
-        context.inline -> try logger.enableAll()
-        (context.inline -> logger.disableAll()) if d
-        context.inline -> _.mixin _.string.exports()
-        context.inline -> $(document).ready =>
-            this.emit "document", document, this
-        assert remotes = @constructor.remotes or []
-        assert uniques = _.unique remotes or Array()
-        @inject context, blob for blob in uniques
-        return do => next.call this, undefined
-
 # A complementary part of the preflight procedures that provides the
 # ability to create and emit arbitrary linkage in the contexts that
 # are going to be assembled within the current preflight hierarchy.
 # The facilities of this toolkit should typically be used when you
 # need to link to a static asset file, within any domain or path.
-module.exports.LToolkit = class LToolkit extends RToolkit
+module.exports.LToolkit = class LToolkit extends BowerSupport
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
