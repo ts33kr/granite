@@ -76,6 +76,22 @@ assert module.exports.Extending = cc -> class Extending extends Object
             return yes if predicate(@constructor) is yes
             return _.any hierarchy or [], predicate
 
+    # A method for comparing different classes for equality. Be careful
+    # as this method is very loose in terms of comparison and its main
+    # purpose is aiding in implementation of the composition mechanism
+    # rather than any else. Comparison algorithms is likely to change.
+    # This is used internally in the composition system implementation.
+    Object.defineProperty Object::, "similarWith",
+        enumerable: no, value: (archetype, loose) ->
+            isClass = _.isObject this.prototype
+            noClass = "the subject is not a class"
+            throw new Error noClass unless isClass
+            return yes if this is archetype or no
+            return yes if @watermark is archetype
+            return undefined unless loose is yes
+            return yes if @name is archetype.name
+            return yes if @nick is archetype.nick
+
     # This extension provides a convenient interface for looking up and
     # setting up the object identifification tag. This tag is usually a
     # class or function name, nick or an arbitraty name set with this

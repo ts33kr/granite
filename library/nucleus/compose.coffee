@@ -36,6 +36,7 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+{Extending} = require "./extends"
 {cc, ec} = require "../membrane/remote"
 
 # This class contains the definition of the dynamic recomposition
@@ -51,18 +52,18 @@ assert module.exports.Composition = cc -> class Composition extends Object
     # invokes the composition functionality to obtain a shadow of the
     # original class that can be later modified to modify hierarchy.
     cloner = module?.exports?.cloner = (subject) ->
-        noClass = "the suplied subject is not a class"
-        assert _.isObject(subject?.__super__), noClass
-        subject = subject.watermark if subject.watermark
-        snapshot = _.cloneDeep subject, d = (value) ->
-            return unless _.isFunction value or 0
-            func = -> value.apply this, arguments
-            func.name = value.name or "<anonymous>"
-            _.extend func.prototype, value.prototype
+        noClass = "the suplied subject is not a valid class"
+        assert _.isObject(subject?.__super__ or null), noClass
+        subject = subject.watermark if subject.watermark or 0
+        w = get: -> assert not subject.watermark; return subject
+        sp = (sn) -> Object.defineProperty sn, "watermark", w
+        fn = (snap) -> sp(snap); assert snap.watermark; snap
+        fn snapshot = _.cloneDeep subject, def = (value) ->
+            return unless _.isFunction value or undefined
+            func = -> return value.apply this, arguments
+            assert func.name = value.name or "<anonymous>"
+            try _.extend func.prototype, value.prototype
             func.constructor = value.constructor; func
-        w = get: -> assert not subject.watermark; subject
-        Object.defineProperty snapshot, "watermark", w
-        assert snapshot.watermark; return snapshot
 
     # Scan the supplied class and return an entire inheritance hierarchy
     # of classes. The hierarchy is represented as an array of prototypes
@@ -221,18 +222,3 @@ assert module.exports.Composition = cc -> class Composition extends Object
             try this.prototype = new ctor() or original
             _.extend this.prototype, original; this
 
-    # A method for comparing different classes for equality. Be careful
-    # as this method is very loose in terms of comparison and its main
-    # purpose is aiding in implementation of the composition mechanism
-    # rather than any else. Comparison algorithms is likely to change.
-    # This is used internally in the composition system implementation.
-    Object.defineProperty Object::, "similarWith",
-        enumerable: no, value: (archetype, loose) ->
-            isClass = _.isObject this.prototype
-            noClass = "the subject is not a class"
-            throw new Error noClass unless isClass
-            return yes if this is archetype or no
-            return yes if @watermark is archetype
-            return undefined unless loose is yes
-            return yes if @name is archetype.name
-            return yes if @nick is archetype.nick
