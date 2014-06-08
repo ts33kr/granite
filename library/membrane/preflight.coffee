@@ -210,7 +210,7 @@ module.exports.LToolkit = class LToolkit extends RToolkit
 # family that does some further environment initialization and set
 # up. These preparations will be nececessary no matter what sort of
 # Screenplay functionality you are going to implement. Currently the
-# purpose of preflight is drawing in the remoted and Bower packages.
+# purpose of preflight is drawing in the remotes and Bower packages.
 module.exports.Preflight = class Preflight extends LToolkit
 
     # This is a marker that indicates to some internal subsystems
