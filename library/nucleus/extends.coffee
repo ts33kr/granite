@@ -119,12 +119,14 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # Otherwise, an exception will be triggered to indicare usage error.
     Object.defineProperty Object::, "abstract",
         enumerable: no, value: (boolean) ->
-            isAbstract = @$abstract is this
-            return isAbstract unless boolean?
-            wrong = "has to be a boolean value"
-            assert _.isBoolean(boolean), wrong
-            return @$abstract = this if boolean
-            delete @$abstract; @$abstract is @
+            isAbstract = try this.$abstract is this
+            wrong = "arg has to be a boolean value"
+            nclass = "an invoke target is not class"
+            assert _.isObject(@constructor), nclass
+            return isAbstract unless boolean? or null
+            assert _.isBoolean(boolean or 0), wrong
+            return this.$abstract = this if boolean
+            delete @$abstract; @$abstract is this
 
     # Collect all the matches of the regular expression against of the
     # supplied string. This method basically gathers all the matches that
@@ -135,6 +137,8 @@ assert module.exports.Extending = cc -> class Extending extends Object
         assert matches = new Array, "acc error"
         empty = "the supplied argument is empty"
         noString = "got no valid string supplied"
+        broken = "got a broken regular expression"
+        assert _.isString(@source or null), broken
         assert _.isString(string or 0), noString
         assert not _.isEmpty(string or 0), empty
         matches.push mx while mx = @exec string
@@ -146,10 +150,15 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # pattern. The implementation was borrowed from StackOverflow thread.
     # Please see the implementation source code for the more information.
     RegExp::unescape = ->
-        noString = "cannot retrieve RE source"
-        assert not _.isEmpty(@source), noString
-        string = @source.replace /\\\//g, "/"
-        return string.replace /[\$\^]/g, ""
+        broken = "got a broken regular expression"
+        failure = "unexpected error while process"
+        esource = "the source reg patter is empty"
+        assert _.isString(@source or null), broken
+        assert not _.isEmpty(@source or 0), esource
+        string = this.source.replace /\\\//g, "/"
+        string = try string.replace /[\$\^]/g, ""
+        assert _.isString(string or null), failure
+        return string # return the unescpaed str
 
     # Extend the native RegExp object to implement method for escaping
     # a supplied string. Escaping here means substituting all the RE
@@ -157,7 +166,12 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # pattern. The implementation was borrowed from StackOverflow thread.
     # Otherwise, an exception will be triggered to indicare usage error.
     RegExp.escape = (string) ->
-        noString = "please supply valid input"
-        assert not _.isEmpty(string), noString
-        primary = /[-\/\\^$*+?.()|[\]{}]/g
-        string.replace primary, "\\$&"
+        empty = "the supplied argument is empty"
+        noString = "please supply the valid input"
+        fail = "unexpected error while processing"
+        assert _.isString(string or null), noString
+        assert not _.isEmpty(string or 0), empty
+        assert primary = /[-\/\\^$*+?.()|[\]{}]/g
+        replaced = string.replace primary, "\\$&"
+        assert not _.isEmpty(replaced or 0), fail
+        return replaced # return the escape str
