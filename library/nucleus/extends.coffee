@@ -80,6 +80,7 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # setting up the object identifification tag. This tag is usually a
     # class or function name, nick or an arbitraty name set with this
     # method. If nothing found, the methods falls back to some default.
+    # Otherwise, an exception will be triggered to indicare usage error.
     Object.defineProperty Object::, "identify",
         enumerable: no, value: (identificator) ->
             shadowed = _.isObject @watermark
@@ -94,6 +95,7 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # an object is an abstract class or not. This is very useful for
     # implementing proper architectural abstractions and concretizations.
     # Use this method rather than directly setting and check for markers.
+    # Otherwise, an exception will be triggered to indicare usage error.
     Object.defineProperty Object::, "abstract",
         enumerable: no, value: (boolean) ->
             isAbstract = @$abstract is this
@@ -107,6 +109,7 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # a supplied string. Escaping here means substituting all the RE
     # characters so that it can be used inside of the regular expression
     # pattern. The implementation was borrowed from StackOverflow thread.
+    # Otherwise, an exception will be triggered to indicare usage error.
     RegExp.escape = (string) ->
         noString = "please supply valid input"
         assert not _.isEmpty(string), noString
@@ -117,6 +120,7 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # a supplied string. Unscaping here means substituting all the RE back
     # characters so that it cannot be used inside of the regular expression
     # pattern. The implementation was borrowed from StackOverflow thread.
+    # Please see the implementation source code for the more information.
     RegExp::unescape = ->
         noString = "cannot retrieve RE source"
         assert not _.isEmpty(@source), noString
@@ -127,6 +131,7 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # supplied string. This method basically gathers all the matches that
     # sequentially matches against the input string and packs them into
     # an array which is handed to the invoker. Be sure to set the G flag.
+    # Please see the implementation source code for the more information.
     RegExp::collect = (string) ->
         matches = new Array undefined
         noString = "got no string supplied"
