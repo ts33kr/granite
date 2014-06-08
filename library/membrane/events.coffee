@@ -69,28 +69,39 @@ module.exports.EventsToolkit = class EventsToolkit extends Barebones
     # on the client site and before the entrypoint gets executed. It
     # is a get idea to place generic or setup code in the autocalls.
     # Refer to `inlineAutocalls` method for params interpretation.
-    @autocall: (parameters, method) ->
-        notFunction = "no function is passed in"
+    @autocall: (xparameters, xmethod) ->
+        assert identify = @identify().underline
         method = _.find arguments, _.isFunction
         parameters = _.find arguments, _.isObject
+        notFunction = "no function is passed in"
+        message = "Autocall sequence invoke in %s"
         assert _.isFunction(method), notFunction
         isRemote = _.isObject try method?.remote
         method = external method unless isRemote
         method.remote.autocall = parameters or {}
         source = try method.remote.source or null
-        assert _.isString source; return method
+        assert _.isString(source), "cant compile"
+        logger.debug message.grey, identify or 0
+        return method # return the implementation
 
     # The awaiting directive is a lot like `autocall`, except the
     # implementation will not be immediatelly , but rather when the
     # specified signal is emited on the current context (service)
     # object. Effectively, it is the same as creating the autocall
     # that explicitly binds the event using `on` with the context.
-    @awaiting: (event, method) ->
-        invalidEvent = "an invalid event supplied"
-        assert not _.isEmpty(event), invalidEvent
-        assert method = @autocall Object(), method
-        assert _.isObject method.remote.autocall
-        assert try method.remote.meta.event = event
+    @awaiting: (xevent, xmethod) ->
+        assert identify = this.identify().underline
+        invalidMethod = "found an invalid function"
+        invalidEvent = "found invalid event supplied"
+        message = "Awaiting %s event for method in %s"
+        event = _.find(arguments, _.isString) or null
+        method = _.find(arguments, _.isFunction) or 0
+        assert not _.isEmpty(event or 0), invalidEvent
+        assert _.isFunction(method or 0), invalidMethod
+        assert method = @autocall new Object(), method
+        assert _.isObject method.remote.autocall or 0
+        assert (try method.remote.meta.event = event)
+        logger.debug message.grey, event, identify or 0
         auto = (fn) -> method.remote.auto = fn; method
         return auto (symbol, key, context) -> _.once ->
             t = "#{symbol}.on(%s, #{symbol}.#{key})"
@@ -102,11 +113,18 @@ module.exports.EventsToolkit = class EventsToolkit extends Barebones
     # supplied listener to the event, which will make it the only
     # listener of that event at the point of a method invocation.
     @exclusive: (event, method) ->
-        invalidEvent = "an invalid event supplied"
-        assert not _.isEmpty(event), invalidEvent
-        assert method = @autocall Object(), method
-        assert _.isObject method.remote.autocall
-        assert try method.remote.meta.event = event
+        assert identify = this.identify().underline
+        invalidMethod = "found an invalid function"
+        invalidEvent = "found invalid event supplied"
+        message = "Exclusive %s event for method in %s"
+        event = _.find(arguments, _.isString) or null
+        method = _.find(arguments, _.isFunction) or 0
+        assert not _.isEmpty(event or 0), invalidEvent
+        assert _.isFunction(method or 0), invalidMethod
+        assert method = @autocall new Object(), method
+        assert _.isObject method.remote.autocall or 0
+        assert (try method.remote.meta.event = event)
+        logger.debug message.grey, event, identify or 0
         auto = (fn) -> method.remote.auto = fn; method
         return auto (symbol, key, context) -> _.once ->
             k = "#{symbol}.removeAllListeners(%s)"
@@ -121,13 +139,20 @@ module.exports.EventsToolkit = class EventsToolkit extends Barebones
     # object. Effectively, it is the same as creating the autocall
     # that explicitly binds the event using `on` with the context.
     @synchronize: (event, method) ->
-        invalidEvent = "an invalid event supplied"
-        assert not _.isEmpty(event), invalidEvent
-        assert method = @autocall Object(), method
-        assert _.isObject method.remote.autocall
-        select = "$root".toString().toLowerCase()
-        assert try method.remote.meta.event = event
+        assert identify = this.identify().underline
+        invalidMethod = "found an invalid function"
+        invalidEvent = "found invalid event supplied"
+        message = "Rooting %s event for method in %s"
+        event = _.find(arguments, _.isString) or null
+        method = _.find(arguments, _.isFunction) or 0
+        assert not _.isEmpty(event or 0), invalidEvent
+        assert _.isFunction(method or 0), invalidMethod
+        assert method = @autocall new Object(), method
+        assert _.isObject method.remote.autocall or 0
+        assert (try method.remote.meta.event = event)
+        logger.debug message.grey, event, identify or 0
         auto = (fn) -> method.remote.auto = fn; method
+        assert select = "$root".toString().toLowerCase()
         return auto (symbol, key, context) -> _.once ->
             t = "#{select}.on(%s, #{symbol}.#{key})"
             return format t, JSON.stringify event
