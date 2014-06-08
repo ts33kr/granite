@@ -38,107 +38,18 @@ path = require "path"
 http = require "http"
 util = require "util"
 
-{BowerSupport} = require "./bower"
+{Barebones} = require "./skeleton"
+{Screenplay} = require "./visual"
 {Extending} = require "../nucleus/extends"
 {Composition} = require "../nucleus/compose"
 {Archetype} = require "../nucleus/arche"
-
-# A complementary part of the preflight procedures that provides the
-# ability to create and emit arbitrary linkage in the contexts that
-# are going to be assembled within the current preflight hierarchy.
-# The facilities of this toolkit should typically be used when you
-# need to link to a static asset file, within any domain or path.
-module.exports.LToolkit = class LToolkit extends BowerSupport
-
-    # This is a marker that indicates to some internal subsystems
-    # that this class has to be considered abstract and therefore
-    # can not be treated as a complete class implementation. This
-    # mainly is used to exclude or account for abstract classes.
-    # Once inherited from, the inheritee is not abstract anymore.
-    @abstract yes
-
-    # Symbol declaration table, that states what keys, if those are
-    # vectors (arrays) should be exported and then merged with their
-    # counterparts in the destination, once the composition process
-    # takes place. See the `Archetype::composition` hook definition
-    # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = jscripts: 1, stsheets: 1, metatags: 1
-
-    # This server side method is called on the context prior to the
-    # context being compiled and flushed down to the client site. The
-    # method is wired in an asynchronous way for greater functionality.
-    # This is the place where you would be importing the dependencies.
-    # Pay attention that most implementations side effect the context.
-    prelude: (symbol, context, request, next) ->
-        assert jscripts = @constructor.jscripts or []
-        assert stsheets = @constructor.stsheets or []
-        assert metatags = @constructor.metatags or []
-        assert jscripts = _.unique jscripts or Array()
-        assert stsheets = _.unique stsheets or Array()
-        assert metatags = _.unique metatags or Array()
-        assert _.isFunction context.sheets.push or null
-        assert _.isFunction context.scripts.push or null
-        assert _.isFunction context.metatag.push or null
-        context.metatag.push mettag for mettag in metatags
-        context.scripts.push script for script in jscripts
-        context.sheets.push sheet for sheet in stsheets
-        return do => next.call this, undefined
-
-    # This is a preflight directive that can be used to generate and
-    # emit meta tags for the client browser. The directive expects a
-    # aggregate definition (an object) whose key/value pairs will be
-    # diretly corellated as parameter name and value for a meta tag
-    # definition. Any number of pairs (parameters) may be supplied.
-    @metatag: (aggregate) ->
-        failed = "param has to be the plain object"
-        noPrevious = "got invalid previous metatags"
-        assert previous = @metatags or new Array()
-        assert _.isEmpty a = accumulate = new Array
-        assert _.isArray(previous or 0), noPrevious
-        assert _.isPlainObject(aggregate), failed
-        f = (val, key) -> "#{key}=\x22#{val}\x22"
-        _.map aggregate, (v, k) -> a.push f(v, k)
-        assert _.isString j = accumulate.join " "
-        @metatags = previous.concat j.toString()
-
-    # This is a preflight directive that can be used to link any
-    # arbitrary JavaScript file source. Is important do understand
-    # that this directive only compiles the appropriate statement
-    # to be transferred to the server and it is up to you to ensure
-    # the existence of that file and its ability to be downloaded.
-    @javascript: (xoptions, xdirection) ->
-        assert previous = @jscripts or Array()
-        options = _.find arguments, _.isObject
-        direction = _.find arguments, _.isString
-        indirect = "an inalid direction supplied"
-        noPrevious = "invalid previous jscripts"
-        assert _.isArray(previous), noPrevious
-        assert _.isString(direction), indirect
-        @jscripts = previous.concat direction
-        assert @jscripts = _.unique @jscripts
-
-    # This is a preflight directive that can be used to link any
-    # arbitrary CSS style file source. Is important do understand
-    # that this directive only compiles the appropriate statement
-    # to be transferred to the server and it is up to you to ensure
-    # the existence of that file and its ability to be downloaded.
-    @stylesheet: (xoptions, xdirection) ->
-        assert previous = @stsheets or Array()
-        options = _.find arguments, _.isObject
-        direction = _.find arguments, _.isString
-        indirect = "an inalid direction supplied"
-        noPrevious = "invalid previous stsheets"
-        assert _.isArray(previous), noPrevious
-        assert _.isString(direction), indirect
-        @stsheets = previous.concat direction
-        assert @stsheets = _.unique @stsheets
 
 # This abstract base class service is an extension of the Screenplay
 # family that does some further environment initialization and set
 # up. These preparations will be nececessary no matter what sort of
 # Screenplay functionality you are going to implement. Currently the
 # purpose of preflight is drawing in the remotes and Bower packages.
-module.exports.Preflight = class Preflight extends LToolkit
+module.exports.Preflight = class Preflight extends Screenplay
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
