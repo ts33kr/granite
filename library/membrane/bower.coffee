@@ -68,15 +68,15 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
     # assets, by using the `pub` env dir. The package installation
     # is per service and automatically will be included in `prelude`.
     @bower: (target, entry, options={}) ->
-        noTarget = "target must be a string"
-        noOptions = "options must be an object"
-        ent = "an entrypoint has to be a string"
-        assert previous = @bowerings or Array()
-        assert previous = try _.unique previous
-        assert _.isString(entry), ent if entry
-        assert _.isObject(options), noOptions
-        assert _.isString(target), noTarget
-        return @bowerings = previous.concat
+        ent = "an entrypoint has to be a valid string"
+        noTarget = "target must be a Bower package spec"
+        noOptions = "options must be a plain JS object"
+        assert previous = this.bowerings or new Array()
+        assert previous = try _.unique(previous) or null
+        assert _.isString(entry or null), ent if entry
+        assert _.isObject(options or null), noOptions
+        assert _.isString(target or null), noTarget
+        return this.bowerings = previous.concat
             options: options or Object()
             entry: entry or undefined
             target: target.toString()
@@ -87,10 +87,10 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
     # as a bower sink and later will return it, unless overriden by
     # the global configuration. See the implementation for the info.
     @bowerSink: (sink) ->
-        identity = try this.identify().underline
-        assert hash = try crypto.createHash "md5"
-        id = hash.update(@identify()).digest "hex"
-        automatic = => global or @$bowerSink or id
+        assert hash = try crypto.createHash("md5") or 0
+        identity = try this.identify().underline or null
+        assert id = hash.update(@identify()).digest "hex"
+        automatic = => try global or this.$bowerSink or id
         notify = "Bower sink directory for %s set to %s"
         global = nconf.get "bower:globalSinkDirectory"
         return automatic() if arguments.length is 0
@@ -105,13 +105,16 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     register: (kernel, router, next) ->
-        assert hash = crypto.createHash "md5"
+        assert hash = try crypto.createHash "md5"
         assert hash.update @constructor.identify()
-        assert id = try @constructor.bowerSink()
-        bowerings = @constructor.bowerings ?= Array()
-        options = _.map(bowerings, (bow) -> bow.options)
+        assert idc = try this.constructor.bowerSink()
+        assert _.isObject(kernel), "got no kernel object"
+        assert _.isObject(router), "got no router object"
+        assert _.isFunction(next), "got no next function"
+        bowerings = @constructor.bowerings ?= new Array()
+        options = _.map(bowerings, (bowr) -> bowr.options)
         options = _.merge Object.create(Object()), options...
-        directory = kernel.scope.managed "pub", "bower", id
+        directory = kernel.scope.managed "pub", "bower", idc
         assert _.isString(directory), "error with Bower dir"
         options.directory = bowerings.directory = directory
         targets = _.map bowerings, (b) -> return b.target
@@ -129,6 +132,8 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
         assert install = bower.commands.install or 0
         bowerings = @constructor.bowerings ?= Array()
         assert installer = install targets, {}, options
+        assert _.isObject(kernel), "got no kernel object"
+        assert _.isFunction(next), "got no next function"
         kernel.domain.add installer if kernel.domain.add
         assert removing = "Clense (rm) Bower sink at %s"
         assert _.isString directory = bowerings.directory
@@ -148,37 +153,24 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
                 logger.debug message.cyan, variable...
             return next.call this, undefined
 
-    # This complicated definition is used to produce and then install
-    # a method that is going to be cached and used for each request
-    # once the initial Bower package installation is done. Please do
-    # refer to the `prelude` implementation in this class for the info.
-    # Please, refer to the method implementation for understanding.
-    cachier: (sorter, finder, paths) -> (context) ->
-        assert sorted = _.sortBy paths, sorter
-        assert files = _.flatten _.values sorted
-        locate = (f) -> _.findKey paths, resides(f)
-        resides = (f) -> (x) -> f is x or try f in x
-        for file in files then do (paths, file) ->
-            bowering = finder null, locate(file)
-            entry = bowering?.entry or undefined
-            assert formatted = "#{file}/#{entry}"
-            context.scripts.push formatted if entry
-            return unless _.isEmpty entry?.toString()
-            ext = (e) -> path.extname(file) is e
-            context.scripts.push file if ext ".js"
-            context.sheets.push file if ext ".css"
-
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
     # method is wired in an asynchronous way for greater functionality.
     # This is the place where you would be importing the dependencies.
     # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
-        assert list = bower.commands.list or 0
-        bowerings = @constructor.bowerings ?= []
-        cached context if cached = bowerings.cached
-        return next undefined if _.isFunction cached
+        assert list = bower.commands.list or null
+        bowerings = @constructor.bowerings ?= Array()
+        cached context if cached = try bowerings.cached
+        return next undefined if _.isFunction cached or 0
+        identify = try @constructor.identify().underline
         assert options = directory: bowerings.directory
+        message = "Executing the Bower sequences in %s"
+        logger.debug message.yellow, identify.toString()
+        assert _.isString(symbol), "cannot found symbol"
+        assert _.isObject(context), "located no context"
+        assert _.isObject(request), "located no request"
+        assert _.isFunction(next), "got no next function"
         esc = (reg) -> new RegExp RegExp.escape "#{reg}"
         match = (k) -> (b) -> return esc(k).test b.target
         sorter = (v, k) -> _.findIndex bowerings, match(k)
@@ -187,3 +179,27 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
             assert scope = [sorter, finder, paths]
             bowerings.cached = @cachier scope...
             bowerings.cached context; next()
+
+    # This complicated definition is used to produce and then install
+    # a method that is going to be cached and used for each request
+    # once the initial Bower package installation is done. Please do
+    # refer to the `prelude` implementation in this class for the info.
+    # Please, refer to the method implementation for understanding.
+    cachier: (sorter, finder, paths) -> (context) ->
+        assert sorted = try _.sortBy paths, sorter
+        assert files = try _.flatten _.values sorted
+        locate = (fx) -> _.findKey paths, resides(fx)
+        resides = (f) -> (x) -> f is x or try f in x
+        assert _.isFunction(sorter), "no sorter func"
+        assert _.isFunction(finder), "no finder func"
+        assert _.isObject(context), "no contex object"
+        assert not _.isEmpty(paths), "no paths array"
+        for file in files then do (paths, file) ->
+            bowering = try finder null, locate(file)
+            entry = try bowering?.entry or undefined
+            assert formatted = try "#{file}/#{entry}"
+            context.scripts.push formatted if entry
+            return unless _.isEmpty entry?.toString()
+            ext = (fxt) -> path.extname(file) is fxt
+            context.scripts.push file if ext ".js"
+            context.sheets.push file if ext ".css"
