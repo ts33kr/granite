@@ -104,13 +104,13 @@ assert module.exports.Extending = cc -> class Extending extends Object
     # Otherwise, an exception will be triggered to indicare usage error.
     Object.defineProperty Object::, "identify",
         enumerable: no, value: (identificator) ->
-            shadowed = _.isObject @watermark
-            set = => @$identify = identificator
+            shadowed = _.isObject this.watermark
+            set = => this.$identify = identificator
             return set() if _.isString identificator
             return @$identify if _.isString @$identify
-            return @name unless _.isEmpty @name
-            return @watermark.name if shadowed
-            return @identify typeof this
+            return @name unless _.isEmpty this.name
+            return this.watermark.name if shadowed
+            return this.identify typeof this # gen
 
     # A universal method to both check and set the indicator of whether
     # an object is an abstract class or not. This is very useful for
