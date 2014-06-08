@@ -53,7 +53,7 @@ compose = require "../nucleus/compose"
 # compounds adds the service-to-client communication on top of that.
 # The component itself is built heavily on top of a code emission
 # and delivery platform, as implemented by `Screenplay` service.
-module.exports.Bilateral = class Bilateral extends DuplexCore
+assert module.exports.Bilateral = class Bilateral extends DuplexCore
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -68,16 +68,23 @@ module.exports.Bilateral = class Bilateral extends DuplexCore
     # This is the place where you would be importing the dependencies.
     # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
-        _.forIn this, (value, name, service) =>
+        assert _.isString(symbol), "cannot found symbol"
+        assert _.isObject(context), "located no context"
+        assert _.isObject(request), "located no request"
+        assert _.isFunction(next), "got no next function"
+        identify = try @constructor.identify().underline
+        message = "Executing the bilateral linkage in %s"
+        logger.debug message.yellow, identify.toString()
+        execution = (arg) => next.call this, undefined
+        execution _.forIn this, (value, name, service) =>
             setter = "#{symbol}.#{name}.%s = (%s)"
             directives = value?.uplink?.directives
             return unless _.isPlainObject directives
             assert json = try JSON.stringify directives
             template = format setter, "directives", json
             context.invokes.push "\r\n#{template}\r\n"
-            uplinks = context.uplinks ?= new Object
-            uplinks[name] = directives; return @
-        return next.call this, undefined
+            uplinks = context.uplinks ?= new Object()
+            uplinks[name] = directives; return this
 
     # Declarate the supplied implementation function as the uplink.
     # An uplink is an external (remote) function published on socket
@@ -110,15 +117,18 @@ module.exports.Bilateral = class Bilateral extends DuplexCore
     # socket channel that makes it available for the invocation by
     # the corresponding server site facilities implemented belows.
     bilateral: @autocall z: +102, ->
-        assert _.isFunction o = -> _.head arguments
-        assert _.isFunction i = -> _.head arguments
-        uplinking = "Uplink %s at #{@location}, nsp=%s"
-        _.forIn this, (value, reference, context) =>
-            return unless reference of (@uplinks or {})
-            assert mangled = "#{@location}/#{reference}"
-            mangled += "/#{nsp}" if _.isString nsp = @nsp
-            assert value; return @socket.on mangled, =>
-                try logger.info uplinking, reference, nsp
+        assert _.isFunction o = -> try _.head arguments
+        assert _.isFunction i = -> try _.head arguments
+        assert _.isString(@service), "invalid service data"
+        assert _.isString(@location), "location misconfied"
+        assert _.isString(@nsp), "bilateral nsp malfunction"
+        try uplinking = "Uplink %s at #{@location}, nsp=%s"
+        _.forIn this, (value, reference, context) => do =>
+            return unless reference of (this.uplinks or {})
+            assert mangled = try "#{@location}/#{reference}"
+            mangled += "/#{nsp}" if _.isString nsp = this.nsp
+            assert value; return this.socket.on mangled, =>
+                try logger.info uplinking, reference, nsp or 0
                 value.call this, i(arguments)..., (params...) =>
                     id = @socket.sacks = (@socket.sacks ?= 0) + 1
                     ack = type: "ack", name: mangled, ack: "data"
@@ -142,10 +152,10 @@ module.exports.Bilateral = class Bilateral extends DuplexCore
         return (sequence..., callback) => # a complex sig
             parameters = _.reject arguments, _.isFunction
             callback = (->) unless _.isFunction callback
-            assert _.isFunction(callback or 0), notify
-            assert mangled = "#{@location()}/#{name}"
-            assert binder = socket.binder, noBinder
-            mangled += "/#{nsp}" if nsp = binder.nsp
+            assert _.isFunction(callback or null), notify
+            assert mangled = try "#{@location()}/#{name}"
+            assert (try binder = socket.binder), noBinder
+            mangled += "/#{nsp}" if nsp = try binder.nsp
             try logger.debug uplinking.cyan, name.bold
             socket.emit mangled, o(parameters)..., a = =>
                 key = _.findKey socket.acks, (x) -> x is a
