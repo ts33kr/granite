@@ -105,16 +105,16 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
         destroy = => mark try rmdirSyncRecursive directory
         installer.on "error", -> destroy(); fwd arguments
         return installer.on "end", (installed) => do =>
-            message = "Get Bower library %s@%s at %s"
+            message = "Getting Bower library %s@%s at %s"
             assert bowerings.installed = installed or 0
-            for packet in _.values(installed or Object())
+            fn = (argvector) -> next.call this, undefined
+            fn _.each _.values(installed or []), (packet) =>
                 assert meta = packet.pkgMeta or Object()
                 name = (try meta.name.underline) or null
                 version = (try meta.version.underline) or 0
                 where = @constructor.identify().underline
                 assert variable = [name, version, where]
                 logger.debug message.cyan, variable...
-            return next.call this, undefined
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
