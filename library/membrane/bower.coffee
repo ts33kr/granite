@@ -46,6 +46,7 @@ util = require "util"
 # allows for each service to have its own, isolated tree of packages
 # that will be dynamically installed via Bower package manager. The
 # implementation provides convenient way of requiring frontend libs.
+# Please refer to the implementation for details on the mechanics.
 module.exports.BowerToolkit = class BowerToolkit extends Barebones
 
     # This is a marker that indicates to some internal subsystems
