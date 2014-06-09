@@ -82,7 +82,7 @@ assert module.exports.ApiService = class ApiService extends Barebones
         assert mw = @constructor.middleware().bind this
         signature = [request, response, variables...]
         message = "Executing Crossroads routing in %s"
-        intake = (fn) => @downstream processing: fn
+        intake = (func) => downstream processing: func
         go = (fn) => usp = intake fn; usp signature...
         go => mw(signature) (error, results, misc) =>
             assert expanded = _.clone variables or []
