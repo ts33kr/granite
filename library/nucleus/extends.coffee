@@ -57,12 +57,15 @@ assert module.exports.Extending = cc -> class Extending extends Object
         enumerable: no, value: (archetype, loose) ->
             notObject = "supplied acrhetype not object"
             notClass = "the invocation target not class"
+            noTree = "cannot retrieve the hierarchy tree"
             assert _.isObject(archetype or 0), notObject
             assert _.isFunction arche = archetype # alias
             predicate = (x) -> x.similarWith arche, loose
             assert _.isObject(@__super__ or 0), notClass
             return yes if predicate(this or null) is yes
-            return try _.any this.hierarchy(), predicate
+            assert hierarchy = (try this.hierarchy()) or 0
+            assert _.isArray(hierarchy or null), noTree
+            return try _.any hierarchy or [], predicate
 
     # Determine if the object that is bound to this invocation is an
     # object of the supplied archetype class (as argument). Of course
@@ -73,11 +76,13 @@ assert module.exports.Extending = cc -> class Extending extends Object
         enumerable: no, value: (archetype, loose) ->
             notObject = "supplied acrhetype not object"
             notInst = "the invocation target not instance"
+            noTree = "cannot retrieve the hierarchy tree"
             assert _.isObject(archetype or 0), notObject
             assert _.isFunction arche = archetype # alias
             predicate = (x) -> x.similarWith arche, loose
             assert _.isObject(@constructor or 0), notInst
             assert hierarchy = @constructor?.hierarchy()
+            assert _.isArray(hierarchy or null), noTree
             return yes if predicate(@constructor) is yes
             return try _.any hierarchy or [], predicate
 
