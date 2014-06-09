@@ -65,6 +65,14 @@ assert module.exports.ApiService = class ApiService extends Barebones
     # for more information. Keys are names, values can be anything.
     @COMPOSITION_EXPORTS = definitions: yes
 
+    # Walk over list of supported HTTP methods/verbs, defined in
+    # the `RestfulService` abstract base class member `SUPPORTED`
+    # and create a shorthand route definition for an every method.
+    # These shorthand definitions will greatly simplify making new
+    # routes, since they are much shorter than using a full blown
+    # signature of the `define` method in this abstract base class.
+    (do (m) => @[m] = -> @api m, arguments...) for m in @SUPPORTED
+
     # Process the already macted HTTP request according to the REST
     # specification. That is, see if the request method conforms to
     # to the RFC, and if so, dispatch it onto corresponding method
@@ -82,7 +90,7 @@ assert module.exports.ApiService = class ApiService extends Barebones
         assert mw = @constructor.middleware().bind this
         signature = [request, response, variables...]
         message = "Executing Crossroads routing in %s"
-        intake = (func) => downstream processing: func
+        intake = (func) => @downstream processing: func
         go = (fn) => usp = intake fn; usp signature...
         go => mw(signature) (error, results, misc) =>
             assert expanded = _.clone variables or []
@@ -114,7 +122,9 @@ assert module.exports.ApiService = class ApiService extends Barebones
         p = (i, cn) -> i.limitation request, response, cn
         fails = "Service #{identify} fails some conditions"
         notify = "Running %s service conditional sequences"
+        message = "Polling %s service for Crossroads match"
         logger.debug notify.toString(), identify.toString()
+        logger.debug message.toString().cyan, identify
         return async.every conditions, p, (confirms) =>
             logger.debug fails.yellow unless confirms
             return decide false unless confirms is yes
@@ -136,11 +146,12 @@ assert module.exports.ApiService = class ApiService extends Barebones
     # This implementation sets up the internals of the API service
     # that will allow to properly expose and execute the methods.
     register: (kernel, router, next) ->
-        msgs = "Setting up Crossroads service in %s"
+        noted = "Setting up %s Crossroads routes in %s"
         invalidDefs = "invalid type of the definitions"
         emptyDoc = "the document sequence is not emptied"
         noCrossr = "unable to load a Crossroads library"
         noInh = "cannot be inherited from both toolkits"
+        createRouteWrapper = @createRouteWrapper.bind this
         try identify = @constructor.identify().underline
         assert not (try this.objectOf Screenplay), noInh
         assert crs = @crossroads = crossroads.create()
@@ -148,23 +159,34 @@ assert module.exports.ApiService = class ApiService extends Barebones
         assert _.isArray(defines or null), invalidDefs
         assert _.isEmpty(@constructor.doc()), emptyDoc
         assert _.isObject(@crossroads or 0), noCrossr
-        logger.debug msgs.yellow, identify.toString()
-        execute = (fn) -> async.each defines, fn, next
-        return execute (definition, next) => # register
-            register = "Adding Crossroads route %s to %s"
-            assert method = try definition.method or null
-            assert implement = definition.implement or 0
-            assert rules = rls = definition.rules or {}
-            assert not _.isEmpty mask = definition.mask
-            assert p = (mask.source or mask).underline
-            logger.debug register.magenta, p, identify
-            fr = (q) => q.method.toUpperCase() is method
-            rx = (r) => r.rules = rls; rls.request_ = fr
-            fx = (f) => rx crs.addRoute mask, f; next()
-            fx (shadow, parameters...) -> # the wrapper
-                assert (shadow.__isolated or 0) is yes
-                assert _.isObject shadow.__origin or 0
-                implement.apply shadow, parameters
+        assert amount = defines.length.toString().bold
+        try logger.debug noted.yellow, amount, identify
+        async.each defines, createRouteWrapper, next
+
+    # Part of the internal implementation of the API engine. It
+    # is used to create the wrapping around the Crossroads route
+    # handler. This wrapping is very tightly inegrated with this
+    # abstract base class internals, as well as with the internal
+    # design of some of the parent classes, namely `RestfulService`.
+    # The wrapping provides important boilerplate to set up scope.
+    createRouteWrapper: (definition, next) ->
+        register = "Adding Crossroads route %s to %s"
+        noCross = "no Crossroads router in the service"
+        assert _.isObject(crs = @crossroads), noCross
+        identify = @constructor.identify().underline
+        assert method = try definition.method or null
+        assert implement = definition.implement or 0
+        assert rules = rls = definition.rules or {}
+        assert not _.isEmpty mask = definition.mask
+        assert p = (mask.source or mask).underline
+        logger.debug register.magenta, p, identify
+        fr = (q) => q.method.toUpperCase() is method
+        rx = (r) => r.rules = rls; rls.request_ = fr
+        fx = (f) => rx crs.addRoute mask, f; next()
+        fx (shadow, parameters...) -> # the wrapper
+            assert (shadow.__isolated or 0) is yes
+            assert _.isObject shadow.__origin or 0
+            implement.apply shadow, parameters
 
     # Class directive that sets the specified documentations in
     # the documentation sequence that will be used & emptied when
@@ -224,11 +246,10 @@ assert module.exports.ApiService = class ApiService extends Barebones
     # for matching this API. Please consult with a `Crossroads`
     # package for information on the mask, which can be string
     # or a regular expression. Also, please see implementation.
-    this.define = this.api = (method, mask, ximplement) ->
+    this.define = this.api = (method, mask, implement) ->
         wrongMask = "a mask has to be string or regex"
         noImplement = "no implementation fn supplied"
         invalidMeth = "an HTTP method is not a string"
-        implement = _.find(arguments, _.isFunction)
         maskStr = _.isString(mask or null) or false
         maskReg = _.isRegExp(mask or null) or false
         assert previous = @definitions or new Array()
