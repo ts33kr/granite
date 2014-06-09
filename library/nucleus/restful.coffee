@@ -198,6 +198,7 @@ module.exports.RestfulService = class RestfulService extends Service
         known = method in @constructor.SUPPORTED
         tokens = Service::process.apply @, arguments
         return @unsupported arguments... unless known
+        assert this.__isolated, "spin-off engine fail"
         missing = "a #{method} method not implemented"
         throw new Error missing unless method of this
         variables = [tokens.resource, tokens.domain]
