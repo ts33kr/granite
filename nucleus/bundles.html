@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>nucleus/bundles</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/bundles"><meta name="groc-project-path" content="library/nucleus/bundles.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/bundles.coffee">library/nucleus/bundles.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;ai&#x6c;&#x74;&#111;:&#x74;&#115;&#x33;3k&#x72;&#x40;&#x67;&#x6d;&#97;&#105;&#108;&#x2e;&#x63;&#x6f;&#x6d;">&#x74;&#115;&#x33;3k&#x72;&#x40;&#x67;&#x6d;&#97;&#105;&#108;&#x2e;&#x63;&#x6f;&#x6d;</a>
+<!DOCTYPE html><html lang="en"><head><title>nucleus/bundles</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/bundles"><meta name="groc-project-path" content="library/nucleus/bundles.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/bundles.coffee">library/nucleus/bundles.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;&#x69;&#x6c;&#116;&#111;:&#x74;&#115;3&#51;&#x6b;&#x72;&#x40;&#x67;&#x6d;&#97;&#105;&#x6c;.&#x63;&#x6f;&#109;">&#x74;&#115;3&#51;&#x6b;&#x72;&#x40;&#x67;&#x6d;&#97;&#105;&#x6c;.&#x63;&#x6f;&#109;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ The scope contains all the configuration defaults of Granite.</p></div></div><di
     <span class="vi">@defaults.central = </span><span class="nv">enabled: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">collection: </span><span class="s">&quot;g-central&quot;</span>
     <span class="vi">@defaults.central.options = </span><span class="nv">capped: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">size: </span><span class="mi">2147483648</span>
     <span class="vi">@defaults.session.key = </span><span class="s">&quot;granite.session.identification&quot;</span>
-    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">reboot: </span><span class="kc">false</span>
+    <span class="vi">@defaults.scanner = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">reboot: </span><span class="kc">false</span>
     <span class="vi">@defaults.threshold = </span><span class="nv">lag: </span><span class="mi">70</span><span class="p">,</span> <span class="nv">reason: </span><span class="s">&quot;overloaded&quot;</span>
     <span class="vi">@defaults.visual = </span><span class="nv">compression: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">beautify: </span><span class="kc">no</span>
     <span class="vi">@defaults.memory = </span><span class="nv">limit: </span><span class="mi">256</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
@@ -60,6 +60,7 @@ The scope contains all the configuration defaults of Granite.</p></div></div><di
     <span class="vi">@defaults.balancer = </span><span class="nv">sticky: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">ttl: </span><span class="mi">60</span>
     <span class="vi">@defaults.kernel = </span><span class="nv">crashOnException: </span><span class="kc">yes</span>
     <span class="vi">@defaults.duplex = </span><span class="nv">disconnectOnError: </span><span class="kc">yes</span>
+    <span class="vi">@defaults.session.enableExternal = </span><span class="kc">yes</span>
     <span class="vi">@defaults.assets = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">opts: </span><span class="p">{}</span>
     <span class="vi">@defaults.beacon = </span><span class="nv">interval: </span><span class="mi">60000</span>
     <span class="vi">@defaults.socket = </span><span class="s">&quot;log level&quot;</span><span class="o">:</span> <span class="mi">0</span>
@@ -84,7 +85,7 @@ The scope contains all the configuration defaults of Granite.</p></div></div><di
     <span class="vi">@defaults.central = </span><span class="nv">enabled: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">collection: </span><span class="s">&quot;g-central&quot;</span>
     <span class="vi">@defaults.central.options = </span><span class="nv">capped: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">size: </span><span class="mi">2147483648</span>
     <span class="vi">@defaults.session.key = </span><span class="s">&quot;granite.session.identification&quot;</span>
-    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">reboot: </span><span class="kc">false</span>
+    <span class="vi">@defaults.scanner = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">reboot: </span><span class="kc">false</span>
     <span class="vi">@defaults.threshold = </span><span class="nv">lag: </span><span class="mi">70</span><span class="p">,</span> <span class="nv">reason: </span><span class="s">&quot;overloaded&quot;</span>
     <span class="vi">@defaults.visual = </span><span class="nv">compression: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">beautify: </span><span class="kc">no</span>
     <span class="vi">@defaults.memory = </span><span class="nv">limit: </span><span class="mi">256</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
@@ -92,6 +93,7 @@ The scope contains all the configuration defaults of Granite.</p></div></div><di
     <span class="vi">@defaults.balancer = </span><span class="nv">sticky: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">ttl: </span><span class="mi">60</span>
     <span class="vi">@defaults.kernel = </span><span class="nv">crashOnException: </span><span class="kc">yes</span>
     <span class="vi">@defaults.duplex = </span><span class="nv">disconnectOnError: </span><span class="kc">yes</span>
+    <span class="vi">@defaults.session.enableExternal = </span><span class="kc">yes</span>
     <span class="vi">@defaults.assets = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">opts: </span><span class="p">{}</span>
     <span class="vi">@defaults.beacon = </span><span class="nv">interval: </span><span class="mi">60000</span>
     <span class="vi">@defaults.socket = </span><span class="s">&quot;log level&quot;</span><span class="o">:</span> <span class="mi">0</span>
@@ -116,7 +118,7 @@ The scope contains all the configuration defaults of Granite.</p></div></div><di
     <span class="vi">@defaults.central = </span><span class="nv">enabled: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">collection: </span><span class="s">&quot;g-central&quot;</span>
     <span class="vi">@defaults.central.options = </span><span class="nv">capped: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">size: </span><span class="mi">2147483648</span>
     <span class="vi">@defaults.session.key = </span><span class="s">&quot;granite.session.identification&quot;</span>
-    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">reboot: </span><span class="mi">100</span>
+    <span class="vi">@defaults.scanner = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">reboot: </span><span class="mi">100</span>
     <span class="vi">@defaults.threshold = </span><span class="nv">lag: </span><span class="mi">70</span><span class="p">,</span> <span class="nv">reason: </span><span class="s">&quot;overloaded&quot;</span>
     <span class="vi">@defaults.visual = </span><span class="nv">compression: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">beautify: </span><span class="kc">yes</span>
     <span class="vi">@defaults.memory = </span><span class="nv">limit: </span><span class="mi">256</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
@@ -124,6 +126,7 @@ The scope contains all the configuration defaults of Granite.</p></div></div><di
     <span class="vi">@defaults.balancer = </span><span class="nv">sticky: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">ttl: </span><span class="mi">60</span>
     <span class="vi">@defaults.kernel = </span><span class="nv">crashOnException: </span><span class="kc">yes</span>
     <span class="vi">@defaults.duplex = </span><span class="nv">disconnectOnError: </span><span class="kc">no</span>
+    <span class="vi">@defaults.session.enableExternal = </span><span class="kc">yes</span>
     <span class="vi">@defaults.assets = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">opts: </span><span class="p">{}</span>
     <span class="vi">@defaults.beacon = </span><span class="nv">interval: </span><span class="mi">60000</span>
     <span class="vi">@defaults.socket = </span><span class="s">&quot;log level&quot;</span><span class="o">:</span> <span class="mi">0</span>
@@ -148,7 +151,7 @@ The scope contains all the configuration defaults of Granite.</p></div></div><di
     <span class="vi">@defaults.central = </span><span class="nv">enabled: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">collection: </span><span class="s">&quot;g-central&quot;</span>
     <span class="vi">@defaults.central.options = </span><span class="nv">capped: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">size: </span><span class="mi">2147483648</span>
     <span class="vi">@defaults.session.key = </span><span class="s">&quot;granite.session.identification&quot;</span>
-    <span class="vi">@defaults.watch = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">reboot: </span><span class="mi">100</span>
+    <span class="vi">@defaults.scanner = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">force: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">reboot: </span><span class="mi">100</span>
     <span class="vi">@defaults.threshold = </span><span class="nv">lag: </span><span class="mi">70</span><span class="p">,</span> <span class="nv">reason: </span><span class="s">&quot;overloaded&quot;</span>
     <span class="vi">@defaults.visual = </span><span class="nv">compression: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">beautify: </span><span class="kc">yes</span>
     <span class="vi">@defaults.memory = </span><span class="nv">limit: </span><span class="mi">256</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
@@ -156,6 +159,7 @@ The scope contains all the configuration defaults of Granite.</p></div></div><di
     <span class="vi">@defaults.balancer = </span><span class="nv">sticky: </span><span class="kc">yes</span><span class="p">,</span> <span class="nv">ttl: </span><span class="mi">60</span>
     <span class="vi">@defaults.kernel = </span><span class="nv">crashOnException: </span><span class="kc">yes</span>
     <span class="vi">@defaults.duplex = </span><span class="nv">disconnectOnError: </span><span class="kc">no</span>
+    <span class="vi">@defaults.session.enableExternal = </span><span class="kc">yes</span>
     <span class="vi">@defaults.assets = </span><span class="nv">dirs: </span><span class="p">[],</span> <span class="nv">opts: </span><span class="p">{}</span>
     <span class="vi">@defaults.beacon = </span><span class="nv">interval: </span><span class="mi">60000</span>
     <span class="vi">@defaults.socket = </span><span class="s">&quot;log level&quot;</span><span class="o">:</span> <span class="mi">0</span>

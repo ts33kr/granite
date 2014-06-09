@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>nucleus/zombie</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/zombie"><meta name="groc-project-path" content="library/nucleus/zombie.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/zombie.coffee">library/nucleus/zombie.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#x61;&#105;&#x6c;&#116;&#111;:&#x74;&#115;&#x33;&#51;&#x6b;&#114;&#64;&#103;&#x6d;&#97;&#x69;l&#x2e;&#x63;&#111;&#109;">&#x74;&#115;&#x33;&#51;&#x6b;&#114;&#64;&#103;&#x6d;&#97;&#x69;l&#x2e;&#x63;&#111;&#109;</a>
+<!DOCTYPE html><html lang="en"><head><title>nucleus/zombie</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/zombie"><meta name="groc-project-path" content="library/nucleus/zombie.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/zombie.coffee">library/nucleus/zombie.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;a&#105;&#108;&#x74;o:&#x74;&#115;&#51;&#51;&#x6b;&#x72;&#64;&#x67;&#109;&#97;&#x69;&#108;&#x2e;&#99;&#111;&#109;">&#x74;&#115;&#51;&#51;&#x6b;&#x72;&#64;&#x67;&#109;&#97;&#x69;&#108;&#x2e;&#99;&#111;&#109;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -21,7 +21,8 @@ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
 <span class="nv">uuid = </span><span class="nx">require</span> <span class="s">&quot;node-uuid&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
@@ -34,19 +35,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div
 <span class="nv">scoping = </span><span class="nx">require</span> <span class="s">&quot;./scoping&quot;</span>
 
 <span class="p">{</span><span class="nx">Service</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./service&quot;</span>
-<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./archetype&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract base class that represents zombie service. A
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./arche&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract base class that represents zombie service. A
 zombie service is a service that does not match any request but
 does live within the service infrastructure. The zombie exhibits
 singleton behavior. Typically zombies are used from outside of the
-service infrastructure, yet zombies service themvselves reside in.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Zombie = </span><span class="k">class</span> <span class="nx">Zombie</span> <span class="k">extends</span> <span class="nx">Service</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+service infrastructure, yet zombies service themvselves reside in.</p></div></div><div class="code"><div class="wrapper"><span class="nx">assert</span> <span class="nv">module.exports.Zombie = </span><span class="k">class</span> <span class="nx">Zombie</span> <span class="k">extends</span> <span class="nx">Service</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Either obtain or set the HTTP location of the current service.
-If not location has been set, but the one is requested then
-the deduced default is returned. Default location is the first
-resource regular expression pattern being unescaped to string.
-Do not confuse it with <code>qualified</code> method that deals with URL.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@location: </span><span class="nf">-&gt;</span> <span class="s">&quot;/</span><span class="si">#{</span><span class="nx">@reference</span><span class="p">()</span><span class="si">}</span><span class="s">/</span><span class="si">#{</span><span class="nx">@identify</span><span class="p">()</span><span class="si">}</span><span class="s">&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method determines whether the supplied HTTP request
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method determines whether the supplied HTTP request
 matches this service. This is determined by examining the
 domain/host and the path, in accordance with the patterns
 that were used for configuring the class of this service.
@@ -54,34 +51,35 @@ It is async, so be sure to call the <code>decide</code> with boolean!</p></div><
 But since this is an abstract base class, this implementation
 only extracts the domain and pathname captured groups, and
 returns them to the caller. Override it to do some real job.
-The captured groups may be used by the overrider or ditched.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">process: </span><span class="nf">(request, response, next) -&gt;</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Obtain an instance of this zombie services. This method does
+The captured groups may be used by the overrider or ditched.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">process: </span><span class="nf">(request, response, next) -&gt;</span> <span class="nx">next</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An important method whose responsibility is to create a new
+instance of the service, which is later will be registered in
+the router. This is invoked by the kernel when it discovering
+new suitable services to register. This works asynchronously!
+You need to take this into account, when overriding this one.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@spawn: </span><span class="nf">(kernel, c, a) -&gt;</span> <span class="k">super</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@obtain</span> <span class="nx">kernel</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Obtain an instance of this zombie services. This method does
 implement the singleton behavior pattern. Beware however that
 although you will always get an instance handle from this method
-although there is no guarantee that this handle is initialized!</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@obtain: </span><span class="nf">(kernel, callback) -&gt;</span>
-        <span class="nv">instantiated = </span><span class="o">=&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">has</span> <span class="nx">@</span><span class="p">,</span> <span class="s">&quot;instance&quot;</span>
-        <span class="k">return</span> <span class="nx">@instance</span> <span class="k">if</span> <span class="p">(</span><span class="k">try</span> <span class="nx">instantiated</span><span class="p">())</span>
-        <span class="nv">internal = </span><span class="s">&quot;got an internal zombie error&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nv">lazy = </span><span class="k">try</span> <span class="nx">@lazy</span><span class="p">()</span>
-        <span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">lazy</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">callback</span>
-        <span class="nx">assert</span> <span class="vi">@instance = </span><span class="k">new</span> <span class="k">this</span> <span class="nx">arguments</span><span class="p">...</span>
-        <span class="nx">assert</span> <span class="nx">instantiated</span><span class="p">()</span> <span class="o">is</span> <span class="kc">yes</span><span class="p">,</span> <span class="nx">internal</span>
-        <span class="nx">assert</span> <span class="nv">downstream = </span><span class="nx">@instance</span><span class="p">.</span><span class="nx">downstream</span>
+there is no any sort guarantee that this handle is initialized!
+Please use this method, rather than trying to do it via <code>new</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="k">this</span><span class="p">.</span><span class="nv">obtain = </span><span class="k">this</span><span class="p">.</span><span class="nv">zombieInstance = </span><span class="nf">(kernel, callback) -&gt;</span>
+        <span class="p">{</span><span class="nx">apply</span><span class="p">,</span> <span class="nx">series</span><span class="p">}</span> <span class="o">=</span> <span class="nx">async</span> <span class="o">or</span> <span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">try</span> <span class="nx">@identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="p">{</span><span class="nx">GraniteKernel</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./kernel&quot;</span> <span class="c1"># cycle</span>
+        <span class="nv">kernel = </span><span class="nx">GraniteKernel</span><span class="p">.</span><span class="nx">instance</span> <span class="k">unless</span> <span class="nx">kernel</span>
+        <span class="nv">nc = </span><span class="s">&quot;the supplied callback is not a function&quot;</span>
+        <span class="nv">internalErr = </span><span class="s">&quot;internal zombie spawning error&quot;</span>
+        <span class="nv">dstreamError = </span><span class="s">&quot;something wrong at downstream&quot;</span>
+        <span class="nv">instantiated = </span><span class="o">=&gt;</span> <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">has</span> <span class="k">this</span><span class="p">,</span> <span class="s">&quot;instance&quot;</span>
+        <span class="nv">define = </span><span class="nf">-&gt;</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="nv">makeProp = </span><span class="nf">(pp) =&gt;</span> <span class="nx">define</span> <span class="k">this</span><span class="p">,</span> <span class="s">&quot;instance&quot;</span><span class="p">,</span> <span class="nx">pp</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">instance</span> <span class="k">if</span> <span class="nx">instantiated</span><span class="p">()</span> <span class="o">is</span> <span class="kc">yes</span>
+        <span class="nx">assert</span> <span class="nx">makeProp</span> <span class="nv">value: </span><span class="k">new</span> <span class="k">this</span><span class="p">(</span><span class="nx">arguments</span><span class="p">...)</span>
+        <span class="nx">assert</span> <span class="p">(</span><span class="k">try</span> <span class="nx">instantiated</span><span class="p">())</span> <span class="o">is</span> <span class="kc">yes</span><span class="p">,</span> <span class="nx">internalErr</span>
+        <span class="nv">notify = </span><span class="s">&quot;Spawned a zombie instance of the %s&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">notify</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">downstream = </span><span class="k">this</span><span class="p">.</span><span class="nx">instance</span><span class="p">.</span><span class="nx">downstream</span>
         <span class="nx">assert</span> <span class="nv">downstream = </span><span class="nx">downstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@instance</span>
-        <span class="nx">assert</span> <span class="nv">singleton = </span><span class="nx">downstream</span> <span class="nv">singleton: </span><span class="nf">-&gt;</span>
-            <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">callback</span>
-            <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">@instance</span><span class="p">,</span> <span class="nx">kernel</span>
-        <span class="nx">singleton</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">@instance</span><span class="p">;</span> <span class="nx">@instance</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An important method whose responsibility is to create a new
-instance of the service, which is later will be registered in
-the router. This is invoked by the watcher when it discovers
-new suitable services to register. This works asynchronously!</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@spawn: </span><span class="nf">(kernel, callback) -&gt;</span>
-        <span class="nv">noKernel = </span><span class="s">&quot;got no valid kernel&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">noKernel</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">service = </span><span class="nx">@obtain</span><span class="p">()</span>
-        <span class="nv">constructor = </span><span class="nx">service</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">or</span> <span class="nf">-&gt;</span>
-        <span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">arguments</span>
-        <span class="nx">assert</span> <span class="nv">downstream = </span><span class="nx">service</span><span class="p">.</span><span class="nx">downstream</span>
-        <span class="nx">assert</span> <span class="nv">downstream = </span><span class="nx">downstream</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">service</span>
-        <span class="nx">assert</span> <span class="nv">instance = </span><span class="nx">downstream</span> <span class="nv">instance: </span><span class="nf">-&gt;</span>
-            <span class="k">return</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">callback</span>
-            <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">kernel</span>
-        <span class="nx">instance</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">service</span><span class="p">;</span> <span class="nx">service</span></div></div></div></div></body></html>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">downstream</span><span class="p">),</span> <span class="nx">dstreamError</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">callback</span><span class="p">),</span> <span class="nx">nc</span> <span class="k">if</span> <span class="nx">callback</span>
+        <span class="nx">@instance</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;mk-zombie&quot;</span><span class="p">,</span> <span class="nx">@instance</span><span class="p">,</span> <span class="nx">kernel</span>
+        <span class="nv">f = </span><span class="nx">apply</span> <span class="nx">callback</span> <span class="o">or</span> <span class="p">(</span><span class="nf">-&gt;</span><span class="p">),</span> <span class="nx">@instance</span><span class="p">,</span> <span class="nx">kernel</span>
+        <span class="nx">assert</span> <span class="nv">singleton = </span><span class="nx">downstream</span> <span class="nv">singleton: </span><span class="nx">f</span>
+        <span class="nx">singleton</span> <span class="nx">kernel</span><span class="p">,</span> <span class="nx">@instance</span><span class="p">;</span> <span class="nx">@instance</span></div></div></div></div></body></html>

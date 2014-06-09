@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>membrane/visual</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/visual"><meta name="groc-project-path" content="library/membrane/visual.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/visual.coffee">library/membrane/visual.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#x61;&#105;&#108;&#116;&#111;:&#x74;&#115;&#51;&#51;&#107;&#x72;&#x40;&#103;m&#x61;&#105;&#x6c;&#x2e;c&#x6f;&#109;">&#x74;&#115;&#51;&#51;&#107;&#x72;&#x40;&#103;m&#x61;&#105;&#x6c;&#x2e;c&#x6f;&#109;</a>
+<!DOCTYPE html><html lang="en"><head><title>membrane/visual</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/visual"><meta name="groc-project-path" content="library/membrane/visual.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/visual.coffee">library/membrane/visual.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;&#105;&#108;&#116;&#111;:&#116;&#x73;&#x33;&#51;&#107;&#x72;&#64;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#x63;&#x6f;m">&#116;&#x73;&#x33;&#51;&#107;&#x72;&#64;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#x63;&#x6f;m</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -37,26 +37,59 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 
-<span class="nv">tools = </span><span class="nx">require</span> <span class="s">&quot;./../nucleus/tools&quot;</span>
-<span class="nv">extendz = </span><span class="nx">require</span> <span class="s">&quot;./../nucleus/extends&quot;</span>
-<span class="nv">compose = </span><span class="nx">require</span> <span class="s">&quot;./../nucleus/compose&quot;</span>
+<span class="nv">tools = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/toolkit&quot;</span>
+<span class="nv">extendz = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/extends&quot;</span>
+<span class="nv">compose = </span><span class="nx">require</span> <span class="s">&quot;../nucleus/compose&quot;</span>
 
 <span class="p">{</span><span class="nx">EOL</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;os&quot;</span>
 <span class="p">{</span><span class="nx">format</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 <span class="p">{</span><span class="nx">STATUS_CODES</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
 <span class="p">{</span><span class="nx">remote</span><span class="p">,</span> <span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./remote&quot;</span>
-<span class="p">{</span><span class="nx">VisualBillets</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./billets&quot;</span>
+<span class="p">{</span><span class="nx">TransferToolkit</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./transfer&quot;</span>
+<span class="p">{</span><span class="nx">TransitToolkit</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./transit&quot;</span>
+<span class="p">{</span><span class="nx">EventsToolkit</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./events&quot;</span>
+<span class="p">{</span><span class="nx">LinksToolkit</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./linkage&quot;</span>
+<span class="p">{</span><span class="nx">BowerToolkit</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./bower&quot;</span>
 <span class="p">{</span><span class="nx">coffee</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./runtime&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract service that provides the unique functionality
 of rendering the server side store code on the client side with all
 its dependencies, such as classes and class hierarchies and even more.
 This ABC constitutes a primary tool for writing UI/UX with Granite.
 Please consult the implementation for more information on the system.
-Also, please reference parent class for the important external APIs.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Screenplay = </span><span class="k">class</span> <span class="nx">Screenplay</span> <span class="k">extends</span> <span class="nx">VisualBillets</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+Also, please reference parent class for the important external APIs.</p></div></div><div class="code"><div class="wrapper"><span class="nx">assert</span> <span class="nv">module.exports.Screenplay = </span><span class="k">class</span> <span class="nx">Screenplay</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an internal routine that performs the task of compiling
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These declarations below are implantations of the abstracted
+components by the means of the dynamic recomposition system.
+Please take a look at the <code>Composition</code> class implementation
+for all sorts of information on the composition system itself.
+Each of these will be dynamicall integrated in class hierarchy.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@implanting</span> <span class="nx">TransferToolkit</span>
+    <span class="nx">@implanting</span> <span class="nx">TransitToolkit</span>
+    <span class="nx">@implanting</span> <span class="nx">EventsToolkit</span>
+    <span class="nx">@implanting</span> <span class="nx">LinksToolkit</span>
+    <span class="nx">@implanting</span> <span class="nx">BowerToolkit</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This server side method is called on the context prior to the
+context being compiled and flushed down to the client site. The
+method is wired in an synchronous way for greater functionality.
+This is the place where you would be importing the dependencies.
+Pay attention that most implementations side effect the context.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(symbol, context, request, next) -&gt;</span>
+        <span class="nv">nri = </span><span class="s">&quot;no UUID request identification tagging&quot;</span>
+        <span class="nv">misidentified = </span><span class="s">&quot;cannot locate class identifier&quot;</span>
+        <span class="nv">message = </span><span class="s">&quot;Running basic prelude protocol in %s&quot;</span>
+        <span class="nv">noParams = </span><span class="s">&quot;cannot find parameters in the request&quot;</span>
+        <span class="nv">noQuali = </span><span class="s">&quot;no service qualified URL found in here&quot;</span>
+        <span class="nv">noLocator = </span><span class="s">&quot;no service relation URL found in here&quot;</span>
+        <span class="nv">noServiceId = </span><span class="s">&quot;cannot find unique ID of a service&quot;</span>
+        <span class="nx">assert</span> <span class="nv">identify = i = </span><span class="k">this</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">cyan</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nx">assert</span> <span class="nv">context.service = </span><span class="nx">identify</span><span class="p">,</span> <span class="nx">misidentified</span>
+        <span class="nx">assert</span> <span class="nv">context.params = </span><span class="nx">request</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="nx">noParams</span>
+        <span class="nx">assert</span> <span class="nv">context.uuid = request: </span><span class="nx">request</span><span class="p">.</span><span class="nx">uuid</span><span class="p">,</span> <span class="nx">nri</span>
+        <span class="nx">assert</span> <span class="nv">context.qualified = </span><span class="nx">@qualified</span><span class="p">(),</span> <span class="nx">noQuali</span>
+        <span class="nx">assert</span> <span class="nv">context.location = </span><span class="nx">@location</span><span class="p">(),</span> <span class="nx">noLocator</span>
+        <span class="nx">assert</span> <span class="nv">context.uuid.service = </span><span class="nx">@uuid</span><span class="p">,</span> <span class="nx">noServiceId</span>
+        <span class="nx">assert</span> <span class="nv">context.url = </span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span> <span class="s">&quot;missing URL&quot;</span>
+        <span class="k">return</span> <span class="nx">next</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span> <span class="c1"># proceed with prelude</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an internal routine that performs the task of compiling
 a screenplay context into a valid HTML document to be rendered
 and launched on the client (browser side). Please refer to the
 implementation for greater understanding of what it does exactly.
@@ -168,10 +201,13 @@ JS sources in the context and minifies &amp; compresses those into
 one blob using the library called UglifyJS2. See it for info.
 Method also does some optimizations, such as scripts unifying.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">compressContext: </span><span class="nf">(context) -&gt;</span>
         <span class="nx">assert</span> <span class="nv">compression = </span><span class="s">&quot;visual:compression&quot;</span>
+        <span class="nv">identify = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
         <span class="nv">sources = </span><span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span> <span class="nx">context</span><span class="p">.</span><span class="nx">sources</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
         <span class="nv">scripts = </span><span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span> <span class="nx">context</span><span class="p">.</span><span class="nx">scripts</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
         <span class="nv">emptySources = </span><span class="s">&quot;context JS sources are empty&quot;</span>
         <span class="nv">u = </span><span class="nf">(val) -&gt;</span> <span class="nx">val</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nb">RegExp</span> <span class="s">&quot;^(.+)/(.+)$&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="nv">message = </span><span class="s">&quot;Do context compression sequence in %s&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nv">context.sheets = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">context</span><span class="p">.</span><span class="nx">sheets</span>
         <span class="nx">assert</span> <span class="nv">context.invokes = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">context</span><span class="p">.</span><span class="nx">invokes</span>
         <span class="nx">assert</span> <span class="nv">context.styles = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">context</span><span class="p">.</span><span class="nx">styles</span>
@@ -207,26 +243,26 @@ creates a proper empty context that conforms to the necessary
 restrictions. Then it runs the internal machinery to fill the
 context with the service and request related data and events.
 Optionally, a existent object can be transformed into context.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">assembleContext: </span><span class="nf">(symbol, request, asm, stock, receive) -&gt;</span>
-        <span class="nv">noPrelude = </span><span class="s">&quot;no prelude method detected&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">@prelude</span><span class="p">),</span> <span class="nx">noPrelude</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">context = </span><span class="nx">stock</span> <span class="o">or</span> <span class="p">{}</span>
-        <span class="nx">@energizeContext</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">symbol</span>
-        <span class="nx">assert</span> <span class="nv">prelude = </span><span class="nx">@downstream</span> <span class="nv">prelude: </span><span class="o">=&gt;</span>
-            <span class="nv">context.snapshot = </span><span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">keys</span> <span class="nx">context</span>
-            <span class="nx">assert</span> <span class="nx">@deployContext</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">symbol</span>
-            <span class="nx">assert</span> <span class="nx">@inlineAutocalls</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">symbol</span>
-            <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="nx">@emit</span> <span class="s">&quot;installed&quot;</span><span class="p">,</span> <span class="k">this</span>
+        <span class="nv">noPrelude = </span><span class="s">&quot;got no prelude method detected&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">prelude</span><span class="p">),</span> <span class="nx">noPrelude</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">context = </span><span class="nx">stock</span> <span class="o">or</span> <span class="nb">Object</span><span class="p">()</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">energizeContext</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">symbol</span>
+        <span class="nv">execute = </span><span class="nf">(fn) =&gt;</span> <span class="nx">fn</span> <span class="nx">symbol</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">request</span>
+        <span class="nx">execute</span> <span class="nv">prelude = </span><span class="k">this</span><span class="p">.</span><span class="nx">downstream</span> <span class="nv">prelude: </span><span class="o">=&gt;</span>
+            <span class="nv">context.snapshot = </span><span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">context</span><span class="p">)</span>
+            <span class="nx">assert</span> <span class="k">this</span><span class="p">.</span><span class="nx">deployContext</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">symbol</span>
+            <span class="nx">assert</span> <span class="k">this</span><span class="p">.</span><span class="nx">inlineAutocalls</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">symbol</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="nx">assert</span> <span class="k">try</span> <span class="vi">@root = </span><span class="nx">$root</span>
-            <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="nx">@root</span><span class="p">.</span><span class="nx">eco</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">@</span>
+            <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;installed&quot;</span><span class="p">,</span> <span class="nx">@</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">externals</span><span class="p">.</span><span class="nx">push</span> <span class="s">&quot;root&quot;</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">externals</span><span class="p">.</span><span class="nx">push</span> <span class="s">&quot;eco&quot;</span>
+            <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="nx">@root</span><span class="p">.</span><span class="nx">eco</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">@</span>
             <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="nx">assert</span> <span class="vi">@broadcast = </span><span class="nf">-&gt;</span>
                 <span class="k">this</span><span class="p">.</span><span class="nx">root</span><span class="p">.</span><span class="nx">emit</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">$root</span><span class="p">,</span> <span class="nx">arguments</span>
             <span class="nx">assert</span> <span class="nv">context = </span><span class="nx">@compressContext</span> <span class="nx">context</span>
-            <span class="k">return</span> <span class="nx">receive</span> <span class="nx">context</span><span class="p">,</span> <span class="kc">null</span> <span class="k">unless</span> <span class="nx">asm</span>
+            <span class="k">return</span> <span class="nx">receive</span> <span class="nx">context</span><span class="p">,</span> <span class="kc">false</span> <span class="k">unless</span> <span class="nx">asm</span>
             <span class="nx">@contextRendering</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nf">(c) -&gt;</span>
-                <span class="k">return</span> <span class="nx">receive</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nx">prelude</span> <span class="nx">symbol</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">request</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An internally used routine, part of the context assembly proc.
+                <span class="k">return</span> <span class="nx">receive</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An internally used routine, part of the context assembly proc.
 It is used to extend either a fresh or passed in stock object
 with all the commodities that should be present on contexts.
 This includes utilitiy methods and member definitions that all
@@ -254,13 +290,14 @@ The method is an HTTP verb, coherent with the REST interface.</p></div></div><di
         <span class="nx">assert</span> <span class="nv">symbol = </span><span class="s">&quot;$root&quot;</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">toLowerCase</span><span class="p">()</span>
         <span class="nx">assert</span> <span class="nv">args = </span><span class="p">[</span><span class="nx">symbol</span><span class="p">,</span> <span class="nx">request</span><span class="p">,</span> <span class="kc">yes</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">]</span>
         <span class="nv">message = </span><span class="s">&quot;Compile visual context of %s service&quot;</span>
-        <span class="nv">sizing = </span><span class="s">&quot;Compied %s bytes of a visual context&quot;</span>
+        <span class="nv">sizing = </span><span class="s">&quot;Compiled %s bytes of a visual context&quot;</span>
         <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">underline</span>
         <span class="nx">@assembleContext</span> <span class="nx">args</span><span class="p">...,</span> <span class="nf">(context, compiled) -&gt;</span>
-            <span class="nv">length = </span><span class="nx">do</span> <span class="nf">-&gt;</span> <span class="nx">compiled</span><span class="p">.</span><span class="nx">length</span> <span class="o">or</span> <span class="kc">undefined</span>
+            <span class="nx">assert</span> <span class="nv">source = </span><span class="k">try</span> <span class="nx">compiled</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+            <span class="nv">length = </span><span class="nx">Buffer</span><span class="p">.</span><span class="nx">byteLength</span> <span class="nx">source</span><span class="p">,</span> <span class="s">&quot;utf8&quot;</span>
             <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">sizing</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">length</span><span class="si">}</span><span class="s">&quot;</span><span class="p">.</span><span class="nx">bold</span>
             <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">response.charset = </span><span class="s">&quot;utf-8&quot;</span>
             <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s">&quot;Content-Length&quot;</span><span class="p">,</span> <span class="nx">length</span>
             <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s">&quot;text/html&quot;</span>
             <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span> <span class="mi">200</span><span class="p">,</span> <span class="nx">STATUS_CODES</span><span class="p">[</span><span class="mi">200</span><span class="p">]</span>
-            <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">end</span> <span class="nx">compiled</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div></div></body></html>
+            <span class="nx">response</span><span class="p">.</span><span class="nx">end</span> <span class="nx">source</span><span class="p">.</span><span class="nx">toString</span><span class="p">(),</span> <span class="s">&quot;utf-8&quot;</span></div></div></div></div></body></html>

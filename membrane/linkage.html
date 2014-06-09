@@ -1,0 +1,135 @@
+<!DOCTYPE html><html lang="en"><head><title>membrane/linkage</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/linkage"><meta name="groc-project-path" content="library/membrane/linkage.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/linkage.coffee">library/membrane/linkage.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;&#x69;&#108;&#x74;&#x6f;:&#116;&#x73;&#51;&#51;&#107;&#x72;&#64;gm&#97;il&#x2e;&#x63;&#x6f;&#x6d;">&#116;&#x73;&#51;&#51;&#107;&#x72;&#64;gm&#97;il&#x2e;&#x63;&#x6f;&#x6d;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">bower = </span><span class="nx">require</span> <span class="s">&quot;bower&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">crypto = </span><span class="nx">require</span> <span class="s">&quot;crypto&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">path = </span><span class="nx">require</span> <span class="s">&quot;path&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">BowerSupport</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./bower&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
+<span class="p">{</span><span class="nx">Extending</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/extends&quot;</span>
+<span class="p">{</span><span class="nx">Composition</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/compose&quot;</span>
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/arche&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A complementary part of the preflight procedures that provides the
+ability to create and emit arbitrary linkage in the contexts that
+are going to be assembled within the current preflight hierarchy.
+The facilities of this toolkit should typically be used when you
+need to link to a static asset file, within any domain or path.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.LinksToolkit = </span><span class="k">class</span> <span class="nx">LinksToolkit</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Symbol declaration table, that states what keys, if those are
+vectors (arrays) should be exported and then merged with their
+counterparts in the destination, once the composition process
+takes place. See the <code>Archetype::composition</code> hook definition
+for more information. Keys are names, values can be anything.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@COMPOSITION_EXPORTS = </span><span class="nv">jscripts: </span><span class="mi">1</span><span class="p">,</span> <span class="nv">stsheets: </span><span class="mi">1</span><span class="p">,</span> <span class="nv">metatags: </span><span class="mi">1</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This server side method is called on the context prior to the
+context being compiled and flushed down to the client site. The
+method is wired in an asynchronous way for greater functionality.
+This is the place where you would be importing the dependencies.
+Pay attention that most implementations side effect the context.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(symbol, context, request, next) -&gt;</span>
+        <span class="nv">identify = </span><span class="k">try</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nv">message = </span><span class="s">&quot;Flushing out the JS/CSS linkage in %s&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">symbol</span><span class="p">),</span> <span class="s">&quot;cannot found symbol&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">context</span><span class="p">),</span> <span class="s">&quot;located no context&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">request</span><span class="p">),</span> <span class="s">&quot;located no request&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">next</span><span class="p">),</span> <span class="s">&quot;got no next function&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nv">gx = </span><span class="nf">(key) =&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">constructor</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nv">sx = </span><span class="nf">(key, s) =&gt;</span> <span class="nx">context</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">push</span> <span class="nx">v</span> <span class="k">for</span> <span class="nx">v</span> <span class="k">in</span> <span class="nx">s</span>
+        <span class="nv">fx = </span><span class="nf">(inp, out) =&gt;</span> <span class="k">try</span> <span class="nx">sx</span> <span class="nx">out</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">unique</span><span class="p">(</span><span class="nx">gx</span><span class="p">(</span><span class="nx">inp</span><span class="p">))</span>
+        <span class="nv">ax = </span><span class="nf">(mapping) =&gt;</span> <span class="nx">fx</span><span class="p">(</span><span class="nx">k</span><span class="p">,</span> <span class="nx">v</span><span class="p">)</span> <span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="k">of</span> <span class="nx">mapping</span>
+        <span class="nx">ax</span> <span class="nv">metatags: </span><span class="s">&quot;metatag&quot;</span> <span class="c1"># map metatags to context</span>
+        <span class="nx">ax</span> <span class="nv">jscripts: </span><span class="s">&quot;scripts&quot;</span> <span class="c1"># map scripts to context</span>
+        <span class="nx">ax</span> <span class="nv">stsheets: </span><span class="s">&quot;sheets&quot;</span> <span class="c1"># map styles to context</span>
+        <span class="k">return</span> <span class="nx">do</span> <span class="o">=&gt;</span> <span class="nx">next</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span> <span class="c1"># asynchronous</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a preflight directive that can be used to generate and
+emit meta tags for the client browser. The directive expects a
+aggregate definition (an object) whose key/value pairs will be
+diretly corellated as parameter name and value for a meta tag
+definition. Any number of pairs (parameters) may be supplied.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@metatag: </span><span class="nf">(aggregate) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nv">failed = </span><span class="s">&quot;argument has to be the plain object&quot;</span>
+        <span class="nv">message = </span><span class="s">&quot;Setting metatags information in %s&quot;</span>
+        <span class="nv">noPrevious = </span><span class="s">&quot;found invalid previous metatags&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">values</span><span class="p">(</span><span class="nx">aggregate</span><span class="p">),</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">)</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="k">this</span><span class="p">.</span><span class="nx">metatags</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">a = accumulate = </span><span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">previous</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">noPrevious</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span><span class="p">(</span><span class="nx">aggregate</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">failed</span>
+        <span class="nv">format = </span><span class="nf">(val, key) -&gt;</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">=\x22</span><span class="si">#{</span><span class="nx">val</span><span class="si">}</span><span class="s">\x22&quot;</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">aggregate</span><span class="p">,</span> <span class="nf">(v, k) -&gt;</span> <span class="nx">a</span><span class="p">.</span><span class="nx">push</span> <span class="nx">format</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">joined = </span><span class="nx">accumulate</span><span class="p">.</span><span class="nx">join</span> <span class="s">&quot; &quot;</span>
+        <span class="vi">@metatags = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">joined</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">underline</span>
+        <span class="k">return</span> <span class="nx">aggregate</span> <span class="c1"># return the object back</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a preflight directive that can be used to link any
+arbitrary JavaScript file source. Is important do understand
+that this directive only compiles the appropriate statement
+to be transferred to the server and it is up to you to ensure
+the existence of that file and its ability to be downloaded.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@javascript: </span><span class="nf">(xparameter, xdirection) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="k">this</span><span class="p">.</span><span class="nx">jscripts</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nv">parameter = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span> <span class="o">or</span> <span class="p">[],</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span>
+        <span class="nv">direction = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span> <span class="o">or</span> <span class="p">[],</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span>
+        <span class="nv">message = </span><span class="s">&quot;Adding JavaScript information in %s&quot;</span>
+        <span class="nv">indirect = </span><span class="s">&quot;an inalid direction have supplied&quot;</span>
+        <span class="nv">noPrevious = </span><span class="s">&quot;found invalid previous jscripts&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">a = accumulate = </span><span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">previous</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">noPrevious</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">direction</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">indirect</span>
+        <span class="nv">format = </span><span class="nf">(val, key) -&gt;</span> <span class="k">return</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">=</span><span class="si">#{</span><span class="nx">val</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">parameter</span><span class="p">,</span> <span class="nf">(v, k) -&gt;</span> <span class="nx">a</span><span class="p">.</span><span class="nx">push</span> <span class="nx">format</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">joined = </span><span class="nx">accumulate</span><span class="p">.</span><span class="nx">join</span> <span class="s">&quot;&amp;&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">underline</span>
+        <span class="nx">direction</span> <span class="o">+=</span> <span class="s">&quot;?</span><span class="si">#{</span><span class="nx">joined</span><span class="si">}</span><span class="s">&quot;</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">a</span>
+        <span class="nx">assert</span> <span class="vi">@jscripts = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">direction</span>
+        <span class="nx">assert</span> <span class="vi">@jscripts = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="k">this</span><span class="p">.</span><span class="nx">jscripts</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a preflight directive that can be used to link any
+arbitrary CSS style file source. Is important do understand
+that this directive only compiles the appropriate statement
+to be transferred to the server and it is up to you to ensure
+the existence of that file and its ability to be downloaded.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@stylesheet: </span><span class="nf">(xoptions, xdirection) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="k">this</span><span class="p">.</span><span class="nx">stsheets</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nv">parameter = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span> <span class="o">or</span> <span class="p">[],</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span>
+        <span class="nv">direction = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span> <span class="o">or</span> <span class="p">[],</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span>
+        <span class="nv">message = </span><span class="s">&quot;Adding Stylesheet information in %s&quot;</span>
+        <span class="nv">indirect = </span><span class="s">&quot;an inalid direction have supplied&quot;</span>
+        <span class="nv">noPrevious = </span><span class="s">&quot;found invalid previous stsheets&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">a = accumulate = </span><span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">previous</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">noPrevious</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">direction</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">indirect</span>
+        <span class="nv">format = </span><span class="nf">(val, key) -&gt;</span> <span class="k">return</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">=</span><span class="si">#{</span><span class="nx">val</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">parameter</span><span class="p">,</span> <span class="nf">(v, k) -&gt;</span> <span class="nx">a</span><span class="p">.</span><span class="nx">push</span> <span class="nx">format</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">joined = </span><span class="nx">accumulate</span><span class="p">.</span><span class="nx">join</span> <span class="s">&quot;&amp;&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">underline</span>
+        <span class="nx">direction</span> <span class="o">+=</span> <span class="s">&quot;?</span><span class="si">#{</span><span class="nx">joined</span><span class="si">}</span><span class="s">&quot;</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">a</span>
+        <span class="nx">assert</span> <span class="vi">@stsheets = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">direction</span>
+        <span class="nx">assert</span> <span class="vi">@stsheets = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="k">this</span><span class="p">.</span><span class="nx">stsheets</span></div></div></div></div></body></html>

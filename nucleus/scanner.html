@@ -1,0 +1,172 @@
+<!DOCTYPE html><html lang="en"><head><title>nucleus/scanner</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/scanner"><meta name="groc-project-path" content="library/nucleus/scanner.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/scanner.coffee">library/nucleus/scanner.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;a&#x69;&#x6c;&#x74;&#x6f;:&#x74;&#115;&#x33;&#x33;&#107;&#114;&#x40;&#x67;&#109;&#x61;i&#x6c;&#46;&#x63;&#x6f;&#x6d;">&#x74;&#115;&#x33;&#x33;&#107;&#114;&#x40;&#x67;&#109;&#x61;i&#x6c;&#46;&#x63;&#x6f;&#x6d;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">chokidar = </span><span class="nx">require</span> <span class="s">&quot;chokidar&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">paths = </span><span class="nx">require</span> <span class="s">&quot;path&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="nv">fs = </span><span class="nx">require</span> <span class="s">&quot;fs&quot;</span>
+
+<span class="p">{</span><span class="nx">Zombie</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./zombie&quot;</span>
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./arche&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The module scanner is a brand new module scanning facility. Is
+built on top of the service architecture and itself is a zombie.
+It takes care of scanning the supplied directories for new modules.
+When new modules are discobered, the toolkit scans a module content
+to see if there are any service to be attached. The toolkit is also
+taking care of monitoring when a module changes and handling that.</p></div></div><div class="code"><div class="wrapper"><span class="nx">assert</span> <span class="nv">module.exports.ModuleScanner = </span><span class="k">class</span> <span class="nx">ModuleScanner</span> <span class="k">extends</span> <span class="nx">Zombie</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This defines the set of filename extensions that this service
+should interpret as valid system modules, and therefore do the
+fully fledged procssing of those. That is, require the module
+when it is discovered, scan for available services there and
+continue monitoring the module to see when there are changes.
+Default values will be processing JavaScript and CoffeeScript.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@MODULE_EXTENSIONS = </span><span class="p">[</span><span class="s">&quot;.js&quot;</span><span class="p">,</span> <span class="s">&quot;.coffee&quot;</span><span class="p">]</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method is being fired off once some directory changes.
+When that happens, this mehod will see if all the approriate
+conditions are met, and if so - invoke the instance rebooting
+sequence. It will also ensure that if there are multiple (lot)
+of changes at once, nothing bad happens and a reboot sequence
+will be upheld and properly executed, if configured to do so.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">directoryChanged: </span><span class="nf">(path) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">located = </span><span class="s">&quot;Changes located at %s&quot;</span><span class="p">.</span><span class="nx">cyan</span>
+        <span class="nv">msg = </span><span class="s">&quot;Going to reboot the kernel in %s millisec&quot;</span>
+        <span class="nv">reason = </span><span class="s">&quot;Rebooting the kernel due to the changes&quot;</span>
+        <span class="nv">forever = </span><span class="s">&quot;not launched under Forever environment&quot;</span>
+        <span class="nx">assert</span> <span class="nv">relative = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">relative</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="nx">path</span>
+        <span class="k">return</span> <span class="kc">no</span> <span class="k">unless</span> <span class="nv">reboot = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;scanner:reboot&quot;</span>
+        <span class="k">return</span> <span class="kc">no</span> <span class="k">if</span> <span class="p">(</span><span class="nx">reboot</span> <span class="o">is</span> <span class="kc">false</span><span class="p">)</span> <span class="o">or</span> <span class="p">(</span><span class="nx">reboot</span> <span class="o">is</span> <span class="kc">null</span><span class="p">)</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">reboot</span><span class="p">),</span> <span class="s">&quot;reboot should be an int&quot;</span>
+        <span class="nv">refuse = </span><span class="nf">(w) -&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="s">&quot;Cease rebooting: %s&quot;</span><span class="p">,</span> <span class="nx">w</span>
+        <span class="k">return</span> <span class="nx">refuse</span> <span class="nx">forever</span> <span class="k">unless</span> <span class="p">(</span><span class="k">try</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;forever&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">yes</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">@rebooting</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nv">timer = </span><span class="nf">(millisec, fnx) -&gt;</span> <span class="nx">setTimeout</span> <span class="nx">fnx</span><span class="p">,</span> <span class="nx">millisec</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">red</span><span class="p">,</span> <span class="nx">reboot</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">located</span><span class="p">,</span> <span class="nx">relative</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nv">killer = </span><span class="nf">(exp) =&gt;</span> <span class="nx">@kernel</span><span class="p">.</span><span class="nx">shutdownKernel</span> <span class="nx">exp</span><span class="p">,</span> <span class="kc">false</span>
+        <span class="k">return</span> <span class="vi">@rebooting = </span><span class="nx">timer</span> <span class="nx">reboot</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">killer</span> <span class="nx">reason</span>
+        <span class="nv">send = </span><span class="o">=&gt;</span> <span class="nx">hst</span><span class="p">.</span><span class="nx">emit</span> <span class="nx">arguments</span><span class="p">...</span> <span class="k">for</span> <span class="nx">hst</span> <span class="k">in</span> <span class="nx">hosting</span>
+        <span class="nx">assert</span> <span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span> <span class="nv">hosting = </span><span class="p">[</span><span class="k">this</span><span class="p">,</span> <span class="nx">@kernel</span><span class="p">]</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="k">return</span> <span class="nx">send</span> <span class="s">&quot;directory-changed&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">path</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method is being fired off once a new module discovered.
+When that happens, this method will fire up all a necessary
+routine. This involves loading the module, if it has not been
+loaded yet, bailing out if an error happens during that one.
+If everything is okay, the method then transfers control to
+the routine the internal routine - <code>extractServiceObjects</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">candidateDiscovered: </span><span class="nf">(path) -&gt;</span>
+        <span class="nv">fail = </span><span class="s">&quot;could not resolve to the absolute path&quot;</span>
+        <span class="nx">assert</span> <span class="nv">current = </span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="s">&quot;a CWD get fail&quot;</span>
+        <span class="nx">assert</span> <span class="nv">modules = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">MODULE_EXTENSIONS</span>
+        <span class="nx">assert</span> <span class="nv">absolute = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">realpathSync</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span> <span class="o">or</span> <span class="nx">fail</span>
+        <span class="nx">assert</span> <span class="nv">extension = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">extname</span> <span class="nx">absolute</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="k">return</span> <span class="kc">false</span> <span class="k">unless</span> <span class="nx">extension</span> <span class="k">in</span> <span class="p">(</span><span class="nx">modules</span> <span class="o">or</span> <span class="p">[])</span>
+        <span class="nx">assert</span> <span class="nv">resolved = </span><span class="nx">require</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">absolute</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="k">return</span> <span class="kc">false</span> <span class="k">if</span> <span class="nx">resolved</span> <span class="o">is</span> <span class="nx">require</span><span class="p">.</span><span class="nx">main</span><span class="p">.</span><span class="nx">filename</span>
+        <span class="nv">addition = </span><span class="s">&quot;Discover module at %s&quot;</span><span class="p">.</span><span class="nx">cyan</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">relative = r = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">relative</span> <span class="nx">current</span><span class="p">,</span> <span class="nx">path</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">addition</span><span class="p">,</span> <span class="nx">relative</span><span class="p">.</span><span class="nx">underline</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nv">handle = </span><span class="nf">(err) -&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="nx">fail</span><span class="p">.</span><span class="nx">red</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nx">stack</span>
+        <span class="k">try</span> <span class="nx">require</span> <span class="nx">resolved</span> <span class="k">catch</span> <span class="nx">error</span> <span class="k">then</span> <span class="nx">handle</span> <span class="nx">error</span>
+        <span class="nv">ss = </span><span class="k">this</span><span class="p">.</span><span class="nx">extractServiceObjects</span><span class="p">(</span><span class="nx">resolved</span><span class="p">)</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nv">send = </span><span class="o">=&gt;</span> <span class="nx">hst</span><span class="p">.</span><span class="nx">emit</span> <span class="nx">arguments</span><span class="p">...</span> <span class="k">for</span> <span class="nx">hst</span> <span class="k">in</span> <span class="nx">hosting</span>
+        <span class="nx">assert</span> <span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span> <span class="nv">hosting = </span><span class="p">[</span><span class="k">this</span><span class="p">,</span> <span class="nx">@kernel</span><span class="p">]</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="k">return</span> <span class="nx">send</span> <span class="s">&quot;candidate-discovered&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">path</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Once a module has been discovered, resolved and successfully
+loaded, this routine is being involved on it. What it does is
+it scans the <code>exports</code> namespace in the module and then checks
+every single value there if it is a module that can be loaded.
+Such module are ebery subclasses of <code>Service</code> that are final.
+Meaning not abstract or otherwise marked as not for loading.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">extractServiceObjects: </span><span class="nf">(resolved) -&gt;</span>
+        <span class="nv">cacheErr = </span><span class="s">&quot;could not find discovery in a cache&quot;</span>
+        <span class="nx">assert</span> <span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;./service&quot;</span> <span class="c1"># no cycles</span>
+        <span class="nx">assert</span> <span class="nv">cached = </span><span class="nx">require</span><span class="p">.</span><span class="nx">cache</span><span class="p">[</span><span class="nx">resolved</span><span class="p">],</span> <span class="nx">cacheErr</span>
+        <span class="nx">assert</span> <span class="nv">queue = </span><span class="k">try</span> <span class="k">this</span><span class="p">.</span><span class="nx">allocateOperationsQueue</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">exports = </span><span class="p">(</span><span class="nx">cached</span> <span class="o">or</span> <span class="p">{}).</span><span class="nx">exports</span> <span class="o">or</span> <span class="nb">Object</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">exports = </span><span class="nx">_</span><span class="p">.</span><span class="nx">values</span><span class="p">(</span><span class="nx">exports</span><span class="p">)</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nv">proto = </span><span class="nf">(sv) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">sv</span><span class="p">)</span> <span class="o">and</span> <span class="nx">sv</span><span class="p">.</span><span class="nx">prototype</span>
+        <span class="nv">servc = </span><span class="nf">(sv) -&gt;</span> <span class="k">try</span> <span class="nx">sv</span><span class="p">.</span><span class="nx">derives</span> <span class="nx">service</span><span class="p">.</span><span class="nx">Service</span>
+        <span class="nv">typed = </span><span class="nf">(sv) -&gt;</span> <span class="k">return</span> <span class="nx">proto</span><span class="p">(</span><span class="nx">sv</span><span class="p">)</span> <span class="o">and</span> <span class="nx">servc</span><span class="p">(</span><span class="nx">sv</span><span class="p">)</span>
+        <span class="nv">final = </span><span class="nf">(sv) -&gt;</span> <span class="nx">typed</span><span class="p">(</span><span class="nx">sv</span><span class="p">)</span> <span class="o">and</span> <span class="o">not</span> <span class="nx">sv</span><span class="p">.</span><span class="nx">abstract</span><span class="p">()</span>
+        <span class="nv">notmk = </span><span class="nf">(sv) -&gt;</span> <span class="o">not</span> <span class="nx">sv</span><span class="p">.</span><span class="nx">STOP_AUTO_DISCOVERY</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nx">assert</span> <span class="nv">services = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">exports</span> <span class="o">or</span> <span class="p">[],</span> <span class="nx">final</span>
+        <span class="nx">assert</span> <span class="nv">services = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">services</span> <span class="o">or</span> <span class="p">[],</span> <span class="nx">notmk</span>
+        <span class="nx">assert</span> <span class="nv">services = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span><span class="p">(</span><span class="nx">services</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">())</span>
+        <span class="nv">service.origin = </span><span class="nx">cached</span> <span class="k">for</span> <span class="nx">service</span> <span class="k">in</span> <span class="nx">services</span>
+        <span class="nx">queue</span><span class="p">.</span><span class="nx">push</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">services</span><span class="p">,</span> <span class="nf">(s) -&gt;</span> <span class="nv">service: </span><span class="nx">s</span><span class="p">)</span>
+        <span class="nv">send = </span><span class="o">=&gt;</span> <span class="nx">h</span><span class="p">.</span><span class="nx">emit</span> <span class="nx">arguments</span><span class="p">...</span> <span class="k">for</span> <span class="nx">h</span> <span class="k">in</span> <span class="nx">hosting</span>
+        <span class="nx">assert</span> <span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span> <span class="nv">hosting = </span><span class="p">[</span><span class="k">this</span><span class="p">,</span> <span class="nx">@kernel</span><span class="p">]</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nx">send</span> <span class="s">&quot;extr-services&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">resolved</span><span class="p">,</span> <span class="nx">services</span>
+        <span class="k">return</span> <span class="nx">services</span><span class="p">.</span><span class="nx">length</span> <span class="o">or</span> <span class="mi">0</span> <span class="c1"># services found</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Obtain an operations queue of this scanner instance. This queue
+is responsible for processing either a service registration or
+a service unregistration. The queueing mechanism is necessary in
+order to make sure of correct sequencing of all the operations.
+It aids is avoiding the race conditions during modules changes.
+Consult with the <code>queue</code> member of the <code>async</code> packing/module.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">allocateOperationsQueue: </span><span class="nf">-&gt;</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">queue</span> <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="k">this</span><span class="p">.</span><span class="nx">queue</span>
+        <span class="nv">identify = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">router = </span><span class="k">this</span><span class="p">.</span><span class="nx">kernel</span><span class="p">.</span><span class="nx">router</span>
+        <span class="nx">assert</span> <span class="nv">register = </span><span class="nx">router</span><span class="p">.</span><span class="nx">register</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">router</span>
+        <span class="nx">assert</span> <span class="nv">unregister = </span><span class="nx">router</span><span class="p">.</span><span class="nx">unregister</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">router</span>
+        <span class="nv">missingOperation = </span><span class="s">&quot;specify an operation to exec&quot;</span>
+        <span class="nv">collides = </span><span class="s">&quot;use either register or unregister op&quot;</span>
+        <span class="nv">created = </span><span class="s">&quot;Create seuquence operation queue at %s&quot;</span>
+        <span class="k">try</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">created</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nv">sequential = </span><span class="nf">(fn) =&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nv">queue = </span><span class="nx">async</span><span class="p">.</span><span class="nx">queue</span> <span class="nx">fn</span><span class="p">,</span> <span class="mi">1</span>
+        <span class="nv">throttle = </span><span class="nf">(fn) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">debounce</span> <span class="nx">fn</span><span class="p">,</span> <span class="mi">50</span> <span class="c1"># 50 millisecs</span>
+        <span class="k">return</span> <span class="nx">sequential</span> <span class="nx">throttle</span> <span class="nf">(operation, callback) =&gt;</span>
+            <span class="nv">acknowledge = </span><span class="nf">-&gt;</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span>
+            <span class="nv">applicate = </span><span class="nf">(inp) -&gt;</span> <span class="nx">register</span> <span class="nx">inp</span><span class="p">,</span> <span class="nx">acknowledge</span>
+            <span class="nv">opService = </span><span class="k">try</span> <span class="nx">operation</span><span class="p">.</span><span class="nx">service</span> <span class="o">or</span> <span class="kc">undefined</span>
+            <span class="nv">opDestroy = </span><span class="k">try</span> <span class="nx">operation</span><span class="p">.</span><span class="nx">destroy</span> <span class="o">or</span> <span class="kc">undefined</span>
+            <span class="nx">assert</span> <span class="nx">opService</span> <span class="o">or</span> <span class="nx">opDestroy</span><span class="p">,</span> <span class="nx">missingOperation</span>
+            <span class="nx">assert</span> <span class="o">not</span> <span class="p">(</span><span class="nx">opService</span> <span class="o">and</span> <span class="nx">opDestroy</span><span class="p">),</span> <span class="nx">collides</span>
+            <span class="nx">opService</span><span class="p">.</span><span class="nx">spawn</span> <span class="nx">@kernel</span><span class="p">,</span> <span class="nx">applicate</span> <span class="k">if</span> <span class="nx">opService</span>
+            <span class="nx">unregister</span> <span class="nx">opDestroy</span><span class="p">,</span> <span class="nx">acknowledge</span> <span class="k">if</span> <span class="nx">opDestroy</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Register the supplied directory to be monitored by the module
+scanner. The directory will be automatically resolved in the
+relation to the current working directory (CWD) of a process.
+New modules will be discovered off this directory. When the
+directory changes, the scanner will reboot the kernel, if
+it is configured this way. Please reference source coding.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">monitorDirectory: </span><span class="nf">(directory) -&gt;</span>
+        <span class="nv">notString = </span><span class="s">&quot;the directory is not a valud string&quot;</span>
+        <span class="nv">notExists = </span><span class="s">&quot;Dir %s does not exist, no monitoring&quot;</span>
+        <span class="nv">chokidarOff = </span><span class="s">&quot;the Chokidar library malfunctions&quot;</span>
+        <span class="nv">monitoring = </span><span class="s">&quot;Monitoring %s directory for modules&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">directory</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">notString</span>
+        <span class="nv">exists = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span> <span class="nx">directory</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nv">relative = </span><span class="nx">paths</span><span class="p">.</span><span class="nx">relative</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="nx">directory</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nv">esync = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">realpathSync</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="k">if</span> <span class="nv">abs = </span><span class="nx">esync</span><span class="p">(</span><span class="nx">relative</span><span class="p">)</span> <span class="k">in</span> <span class="nx">@tracks</span> <span class="o">?=</span> <span class="p">[]</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">tracks</span><span class="p">.</span><span class="nx">push</span> <span class="nx">abs</span> <span class="k">unless</span> <span class="nx">abs</span> <span class="k">in</span> <span class="nx">@tracks</span> <span class="o">?=</span> <span class="p">[]</span>
+        <span class="nv">formats = </span><span class="p">[</span><span class="nx">notExists</span><span class="p">.</span><span class="nx">red</span><span class="p">,</span> <span class="nx">relative</span><span class="p">.</span><span class="nx">underline</span><span class="p">]</span>
+        <span class="k">return</span> <span class="k">try</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">warn</span> <span class="nx">formats</span><span class="p">...</span> <span class="k">unless</span> <span class="nx">exists</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span> <span class="nx">monitoring</span><span class="p">.</span><span class="nx">blue</span><span class="p">,</span> <span class="nx">relative</span><span class="p">.</span><span class="nx">underline</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">chokidar</span><span class="p">.</span><span class="nx">watch</span><span class="p">,</span> <span class="nx">chokidarOff</span>
+        <span class="nv">send = </span><span class="o">=&gt;</span> <span class="nx">h</span><span class="p">.</span><span class="nx">emit</span> <span class="nx">arguments</span><span class="p">...</span> <span class="k">for</span> <span class="nx">h</span> <span class="k">in</span> <span class="nx">hosting</span>
+        <span class="nx">assert</span> <span class="k">try</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span> <span class="nv">hosting = </span><span class="p">[</span><span class="k">this</span><span class="p">,</span> <span class="nx">@kernel</span><span class="p">]</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nx">assert</span> <span class="nv">monitor = </span><span class="nx">chokidar</span><span class="p">.</span><span class="nx">watch</span> <span class="nx">directory</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nx">monitor</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;unlink&quot;</span><span class="p">,</span> <span class="nx">@directoryChanged</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@</span>
+        <span class="nx">monitor</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;change&quot;</span><span class="p">,</span> <span class="nx">@directoryChanged</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@</span>
+        <span class="nx">monitor</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;add&quot;</span><span class="p">,</span> <span class="nx">@candidateDiscovered</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@</span>
+        <span class="nx">send</span> <span class="s">&quot;monitor-dir&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">directory</span><span class="p">,</span> <span class="nx">monitor</span></div></div></div></div></body></html>

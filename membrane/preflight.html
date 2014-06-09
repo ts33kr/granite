@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>membrane/preflight</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/preflight"><meta name="groc-project-path" content="library/membrane/preflight.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/preflight.coffee">library/membrane/preflight.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;&#x69;&#108;&#116;&#111;:&#116;&#115;&#51;3&#107;&#114;&#x40;g&#109;&#x61;&#x69;&#x6c;&#x2e;c&#x6f;m">&#116;&#115;&#51;3&#107;&#114;&#x40;g&#109;&#x61;&#x69;&#x6c;&#x2e;c&#x6f;m</a>
+<!DOCTYPE html><html lang="en"><head><title>membrane/preflight</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/preflight"><meta name="groc-project-path" content="library/membrane/preflight.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/preflight.coffee">library/membrane/preflight.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;&#105;&#108;&#116;&#111;:&#x74;&#x73;&#51;&#x33;&#107;&#114;&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#x2e;&#99;&#111;&#109;">&#x74;&#x73;&#51;&#x33;&#107;&#114;&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#x2e;&#99;&#111;&#109;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -36,126 +36,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div
 <span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 
-<span class="p">{</span><span class="nx">Marshal</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./marshal&quot;</span>
-<span class="p">{</span><span class="nx">BowerSupport</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./bower&quot;</span>
-
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
+<span class="p">{</span><span class="nx">Screenplay</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./visual&quot;</span>
 <span class="p">{</span><span class="nx">Extending</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/extends&quot;</span>
 <span class="p">{</span><span class="nx">Composition</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/compose&quot;</span>
-<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/archetype&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This abstract base class service is an extension of the Screenplay
-family that provides some tools for further initialization and set
-up. These preparations will be nececessary no matter what sort of
-Screenplay functionality you are going to implement. Currently the
-purpose of preflight is drawing in the remoted and Bower packages.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.RToolkit = </span><span class="k">class</span> <span class="nx">RToolkit</span> <span class="k">extends</span> <span class="nx">BowerSupport</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
-that this class has to be considered abstract and therefore
-can not be treated as a complete class implementation. This
-mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Symbol declaration table, that states what keys, if those are
-vectors (arrays) should be exported and then merged with their
-counterparts in the destination, once the composition process
-takes place. See the <code>Archetype::composition</code> hook definition
-for more information. Keys are names, values can be anything.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@COMPOSITION_EXPORTS = </span><span class="nv">remotes: </span><span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A directive to mark the certain remote class or object to be
-included in the <code>Screenplay</code> context that is going to be emited
-and deployed on the client site. Basically, use this to bring
-in all the remote classes that you need to the remote call site.
-Refer to the remote compilation procedures for more information.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@transfer: </span><span class="nf">(subject) -&gt;</span>
-        <span class="nx">assert</span> <span class="nv">previous = </span><span class="nx">@remotes</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
-        <span class="nv">qualify = </span><span class="k">try</span> <span class="nx">subject</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">compile</span>
-        <span class="nv">noRemote = </span><span class="s">&quot;the subject is not remote&quot;</span>
-        <span class="nv">noPrevious = </span><span class="s">&quot;invalid previous remotes&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">previous</span><span class="p">),</span> <span class="nx">noPrevious</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">qualify</span><span class="p">),</span> <span class="nx">noRemote</span>
-        <span class="k">this</span><span class="p">.</span><span class="nv">remotes = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">subject</span>
-        <span class="k">this</span><span class="p">.</span><span class="nv">remotes = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">@remotes</span> <span class="o">or</span> <span class="p">[]</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This server side method is called on the context prior to the
-context being compiled and flushed down to the client site. The
-method is wired in an asynchronous way for greater functionality.
-This is the place where you would be importing the dependencies.
-Pay attention that most implementations side effect the context.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(symbol, context, request, next) -&gt;</span>
-        <span class="nv">d = </span><span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&quot;visual:logging&quot;</span><span class="p">)</span> <span class="o">is</span> <span class="kc">no</span>
-        <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="o">`</span><span class="nv">assert = </span><span class="nx">chai</span><span class="p">.</span><span class="nx">assert</span><span class="o">`</span>
-        <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="o">`</span><span class="nx">assert</span><span class="p">(</span><span class="nv">logger = </span><span class="nx">log</span><span class="p">)</span><span class="o">`</span>
-        <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="o">`</span><span class="nx">assert</span><span class="p">(</span><span class="nv">$logger = </span><span class="nx">log</span><span class="p">)</span><span class="o">`</span>
-        <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="k">try</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">enableAll</span><span class="p">()</span>
-        <span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">disableAll</span><span class="p">())</span> <span class="k">if</span> <span class="nx">d</span>
-        <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">mixin</span> <span class="nx">_</span><span class="p">.</span><span class="nx">string</span><span class="p">.</span><span class="nx">exports</span><span class="p">()</span>
-        <span class="nx">context</span><span class="p">.</span><span class="nx">inline</span> <span class="nf">-&gt;</span> <span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span> <span class="o">=&gt;</span>
-            <span class="k">this</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;document&quot;</span><span class="p">,</span> <span class="nb">document</span><span class="p">,</span> <span class="k">this</span>
-        <span class="nx">assert</span> <span class="nv">remotes = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">remotes</span> <span class="o">or</span> <span class="p">[]</span>
-        <span class="nx">assert</span> <span class="nv">uniques = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">remotes</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
-        <span class="nx">@inject</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">blob</span> <span class="k">for</span> <span class="nx">blob</span> <span class="k">in</span> <span class="nx">uniques</span>
-        <span class="k">return</span> <span class="nx">do</span> <span class="o">=&gt;</span> <span class="nx">next</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A complementary part of the preflight procedures that provides the
-ability to create and emit arbitrary linkage in the contexts that
-are going to be assembled within the current preflight hierarchy.
-The facilities of this toolkit should typically be used when you
-need to link to a static asset file, within any domain or path.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.LToolkit = </span><span class="k">class</span> <span class="nx">LToolkit</span> <span class="k">extends</span> <span class="nx">RToolkit</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
-that this class has to be considered abstract and therefore
-can not be treated as a complete class implementation. This
-mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Symbol declaration table, that states what keys, if those are
-vectors (arrays) should be exported and then merged with their
-counterparts in the destination, once the composition process
-takes place. See the <code>Archetype::composition</code> hook definition
-for more information. Keys are names, values can be anything.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@COMPOSITION_EXPORTS = </span><span class="nv">jscripts: </span><span class="mi">1</span><span class="p">,</span> <span class="nv">stsheets: </span><span class="mi">1</span><span class="p">,</span> <span class="nv">metatag: </span><span class="mi">1</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This server side method is called on the context prior to the
-context being compiled and flushed down to the client site. The
-method is wired in an asynchronous way for greater functionality.
-This is the place where you would be importing the dependencies.
-Pay attention that most implementations side effect the context.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prelude: </span><span class="nf">(symbol, context, request, next) -&gt;</span>
-        <span class="nx">assert</span> <span class="nv">jscripts = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">jscripts</span> <span class="o">or</span> <span class="p">[]</span>
-        <span class="nx">assert</span> <span class="nv">stsheets = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">stsheets</span> <span class="o">or</span> <span class="p">[]</span>
-        <span class="nx">assert</span> <span class="nv">metatags = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">metatags</span> <span class="o">or</span> <span class="p">[]</span>
-        <span class="nx">assert</span> <span class="nv">jscripts = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">jscripts</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
-        <span class="nx">assert</span> <span class="nv">stsheets = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">stsheets</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
-        <span class="nx">assert</span> <span class="nv">metatags = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">metatags</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">context</span><span class="p">.</span><span class="nx">sheets</span><span class="p">.</span><span class="nx">push</span> <span class="o">or</span> <span class="kc">null</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">context</span><span class="p">.</span><span class="nx">scripts</span><span class="p">.</span><span class="nx">push</span> <span class="o">or</span> <span class="kc">null</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">context</span><span class="p">.</span><span class="nx">metatag</span><span class="p">.</span><span class="nx">push</span> <span class="o">or</span> <span class="kc">null</span>
-        <span class="nx">context</span><span class="p">.</span><span class="nx">metatag</span><span class="p">.</span><span class="nx">push</span> <span class="nx">mettag</span> <span class="k">for</span> <span class="nx">mettag</span> <span class="k">in</span> <span class="nx">metatags</span>
-        <span class="nx">context</span><span class="p">.</span><span class="nx">scripts</span><span class="p">.</span><span class="nx">push</span> <span class="nx">script</span> <span class="k">for</span> <span class="nx">script</span> <span class="k">in</span> <span class="nx">jscripts</span>
-        <span class="nx">context</span><span class="p">.</span><span class="nx">sheets</span><span class="p">.</span><span class="nx">push</span> <span class="nx">sheet</span> <span class="k">for</span> <span class="nx">sheet</span> <span class="k">in</span> <span class="nx">stsheets</span>
-        <span class="k">return</span> <span class="nx">do</span> <span class="o">=&gt;</span> <span class="nx">next</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="kc">undefined</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a preflight directive that can be used to generate and
-emit meta tags for the client browser. The directive expects a
-aggregate definition (an object) whose key/value pairs will be
-diretly corellated as parameter name and value for a meta tag
-definition. Any number of pairs (parameters) may be supplied.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@metatag: </span><span class="nf">(aggregate) -&gt;</span>
-        <span class="nv">failed = </span><span class="s">&quot;param has to be the plain object&quot;</span>
-        <span class="nv">noPrevious = </span><span class="s">&quot;got invalid previous metatags&quot;</span>
-        <span class="nx">assert</span> <span class="nv">previous = </span><span class="nx">@metatags</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">a = accumulate = </span><span class="k">new</span> <span class="nb">Array</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">previous</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noPrevious</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span><span class="p">(</span><span class="nx">aggregate</span><span class="p">),</span> <span class="nx">failed</span>
-        <span class="nv">f = </span><span class="nf">(val, key) -&gt;</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">=\x22</span><span class="si">#{</span><span class="nx">val</span><span class="si">}</span><span class="s">\x22&quot;</span>
-        <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">aggregate</span><span class="p">,</span> <span class="nf">(v, k) -&gt;</span> <span class="nx">a</span><span class="p">.</span><span class="nx">push</span> <span class="nx">f</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">j = </span><span class="nx">accumulate</span><span class="p">.</span><span class="nx">join</span> <span class="s">&quot; &quot;</span>
-        <span class="vi">@metatags = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">j</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a preflight directive that can be used to link any
-arbitrary JavaScript file source. Is important do understand
-that this directive only compiles the appropriate statement
-to be transferred to the server and it is up to you to ensure
-the existence of that file and its ability to be downloaded.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@javascript: </span><span class="nf">(xoptions, xdirection) -&gt;</span>
-        <span class="nx">assert</span> <span class="nv">previous = </span><span class="nx">@jscripts</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
-        <span class="nv">options = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span>
-        <span class="nv">direction = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span>
-        <span class="nv">indirect = </span><span class="s">&quot;an inalid direction supplied&quot;</span>
-        <span class="nv">noPrevious = </span><span class="s">&quot;invalid previous jscripts&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">previous</span><span class="p">),</span> <span class="nx">noPrevious</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">direction</span><span class="p">),</span> <span class="nx">indirect</span>
-        <span class="vi">@jscripts = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">direction</span>
-        <span class="nx">assert</span> <span class="vi">@jscripts = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">@jscripts</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a preflight directive that can be used to link any
-arbitrary CSS style file source. Is important do understand
-that this directive only compiles the appropriate statement
-to be transferred to the server and it is up to you to ensure
-the existence of that file and its ability to be downloaded.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@stylesheet: </span><span class="nf">(xoptions, xdirection) -&gt;</span>
-        <span class="nx">assert</span> <span class="nv">previous = </span><span class="nx">@stsheets</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
-        <span class="nv">options = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span>
-        <span class="nv">direction = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span>
-        <span class="nv">indirect = </span><span class="s">&quot;an inalid direction supplied&quot;</span>
-        <span class="nv">noPrevious = </span><span class="s">&quot;invalid previous stsheets&quot;</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">previous</span><span class="p">),</span> <span class="nx">noPrevious</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">direction</span><span class="p">),</span> <span class="nx">indirect</span>
-        <span class="vi">@stsheets = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">direction</span>
-        <span class="nx">assert</span> <span class="vi">@stsheets = </span><span class="nx">_</span><span class="p">.</span><span class="nx">unique</span> <span class="nx">@stsheets</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This abstract base class service is an extension of the Screenplay
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/arche&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This abstract base class service is an extension of the Screenplay
 family that does some further environment initialization and set
 up. These preparations will be nececessary no matter what sort of
 Screenplay functionality you are going to implement. Currently the
-purpose of preflight is drawing in the remoted and Bower packages.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Preflight = </span><span class="k">class</span> <span class="nx">Preflight</span> <span class="k">extends</span> <span class="nx">LToolkit</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+purpose of preflight is drawing in the remotes and Bower packages.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Preflight = </span><span class="k">class</span> <span class="nx">Preflight</span> <span class="k">extends</span> <span class="nx">Screenplay</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
@@ -182,5 +71,4 @@ is going to be implemented. Most of these libraries required
 by the internal implementations of the various subcomponents.
 Refer to <code>RToolkit</code> class implementation for the information.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@transfer</span> <span class="nx">Composition</span>
     <span class="nx">@transfer</span> <span class="nx">Extending</span>
-    <span class="nx">@transfer</span> <span class="nx">Archetype</span>
-    <span class="nx">@transfer</span> <span class="nx">Marshal</span></div></div></div></div></body></html>
+    <span class="nx">@transfer</span> <span class="nx">Archetype</span></div></div></div></div></body></html>

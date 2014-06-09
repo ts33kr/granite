@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>nucleus/stubs</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/stubs"><meta name="groc-project-path" content="library/nucleus/stubs.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/stubs.coffee">library/nucleus/stubs.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;i&#108;&#x74;&#111;:&#116;&#x73;&#x33;&#51;&#107;&#x72;&#x40;&#103;&#109;&#x61;&#x69;&#x6c;&#x2e;c&#x6f;&#x6d;">&#116;&#x73;&#x33;&#51;&#107;&#x72;&#x40;&#103;&#109;&#x61;&#x69;&#x6c;&#x2e;c&#x6f;&#x6d;</a>
+<!DOCTYPE html><html lang="en"><head><title>nucleus/stubs</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="nucleus/stubs"><meta name="groc-project-path" content="library/nucleus/stubs.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/nucleus/stubs.coffee">library/nucleus/stubs.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;ai&#108;&#116;&#111;:&#x74;s&#51;&#x33;&#107;&#114;&#64;&#x67;&#x6d;a&#105;&#x6c;&#x2e;c&#x6f;&#109;">&#x74;s&#51;&#x33;&#107;&#114;&#64;&#x67;&#x6d;a&#105;&#x6c;&#x2e;c&#x6f;&#109;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -32,16 +32,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div
 <span class="nv">routing = </span><span class="nx">require</span> <span class="s">&quot;./routing&quot;</span>
 <span class="nv">service = </span><span class="nx">require</span> <span class="s">&quot;./service&quot;</span>
 
-<span class="p">{</span><span class="nx">Restful</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./restful&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An abstract base class with all of the HTTP methods, defined in
+<span class="p">{</span><span class="nx">RestfulService</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./restful&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>An abstract base class with all of the HTTP methods, defined in
 the HTTP specification and covered by the base implementation
 stubbed with default implementations. By default, the methods
 will throw the 405, method not allowed HTTP error status code.
 The methods have implementations, but marked as the unsupported.
-The ABC also provides stubbed implementation for the API hooks.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.Stubs = </span><span class="k">class</span> <span class="nx">Stubs</span> <span class="k">extends</span> <span class="nx">Restful</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+The ABC also provides stubbed implementation for the API hooks.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.RestfulStubs = </span><span class="k">class</span> <span class="nx">RestfulStubs</span> <span class="k">extends</span> <span class="nx">RestfulService</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called once the Connect middleware writes
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to sending the content over
+to the requester. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">pushing: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to sending the errors over
+to the requester. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">rejection: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called once the Connect middleware writes
 off the headers. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
@@ -49,27 +57,7 @@ Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></di
 implementation. Please refer to this prototype signature for
 information on the parameters it accepts. Beware, this hook
 is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">preprocess: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called after invoking the API method
-implementation. Please refer to this prototype signature for
-information on the parameters it accepts. Beware, this hook
-is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">postprocess: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to sending the errors over
-to the requester. Please refer to this prototype signature for
-information on the parameters it accepts. Beware, this hook
-is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prerejection: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called after the sending the errors over
-to the requester. Please refer to this prototype signature for
-information on the parameters it accepts. Beware, this hook
-is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">postrejection: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to sending the content over
-to the requester. Please refer to this prototype signature for
-information on the parameters it accepts. Beware, this hook
-is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">prepushing: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called after the sending the content over
-to the requester. Please refer to this prototype signature for
-information on the parameters it accepts. Beware, this hook
-is asynchronously wired in, so consult with <code>async</code> package.
-Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">postpushing: </span><span class="nf">(response, content, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method should generally be used to obtain HTTP methods that
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">processing: </span><span class="nf">(request, response, resource, domain, next) -&gt;</span> <span class="nx">next</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method should generally be used to obtain HTTP methods that
 are allowed on this resources. This is not the only possible way
 of implementing this method, because it usually can have a lot of
 different interpretations other than the one in the HTTP spec.
