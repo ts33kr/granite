@@ -72,6 +72,7 @@ assert module.exports.ApiService = class ApiService extends Barebones
     # routes, since they are much shorter than using a full blown
     # signature of the `define` method in this abstract base class.
     (do (m) => @[m] = -> @api m, arguments...) for m in @SUPPORTED
+    (assert (this[m.toLowerCase()] = this[m])) for m in @SUPPORTED
 
     # Process the already macted HTTP request according to the REST
     # specification. That is, see if the request method conforms to
