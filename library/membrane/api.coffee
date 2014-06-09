@@ -56,7 +56,14 @@ assert module.exports.ApiService = class ApiService extends Barebones
     # can not be treated as a complete class implementation. This
     # mainly is used to exclude or account for abstract classes.
     # Once inherited from, the inheritee is not abstract anymore.
-#    @abstract yes
+    @abstract yes
+
+    # Symbol declaration table, that states what keys, if those are
+    # vectors (arrays) should be exported and then merged with their
+    # counterparts in the destination, once the composition process
+    # takes place. See the `Archetype::composition` hook definition
+    # for more information. Keys are names, values can be anything.
+    @COMPOSITION_EXPORTS = definitions: yes
 
     # Process the already macted HTTP request according to the REST
     # specification. That is, see if the request method conforms to
