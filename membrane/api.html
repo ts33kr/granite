@@ -1,0 +1,240 @@
+<!DOCTYPE html><html lang="en"><head><title>membrane/api</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/api"><meta name="groc-project-path" content="library/membrane/api.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/api.coffee">library/membrane/api.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;i&#x6c;t&#x6f;:&#x74;&#115;&#51;&#x33;&#x6b;&#x72;&#x40;&#103;&#x6d;&#97;&#105;&#x6c;&#46;&#99;o&#x6d;">&#x74;&#115;&#51;&#x33;&#x6b;&#x72;&#x40;&#103;&#x6d;&#97;&#105;&#x6c;&#46;&#99;o&#x6d;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">crossroads = </span><span class="nx">require</span> <span class="s">&quot;crossroads&quot;</span>
+<span class="nv">uuid = </span><span class="nx">require</span> <span class="s">&quot;node-uuid&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">crypto = </span><span class="nx">require</span> <span class="s">&quot;crypto&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="nv">url = </span><span class="nx">require</span> <span class="s">&quot;url&quot;</span>
+
+<span class="p">{</span><span class="nx">EOL</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;os&quot;</span>
+<span class="p">{</span><span class="nx">format</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="p">{</span><span class="nx">STATUS_CODES</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
+<span class="p">{</span><span class="nx">remote</span><span class="p">,</span> <span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./remote&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract base class for creating services that expose
+their functionality as API. The general structure of API is a REST.
+Although it is not strictly limited by this ABC, and anything within
+the HTTP architecture is basically allowed and can be implemented.
+The ABC provides not only the tool set for API definition, but also
+an additional tool set for supplementing the APIs with documentation.</p></div></div><div class="code"><div class="wrapper"><span class="nx">assert</span> <span class="nv">module.exports.ApiService = </span><span class="k">class</span> <span class="nx">ApiService</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Symbol declaration table, that states what keys, if those are
+vectors (arrays) should be exported and then merged with their
+counterparts in the destination, once the composition process
+takes place. See the <code>Archetype::composition</code> hook definition
+for more information. Keys are names, values can be anything.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@COMPOSITION_EXPORTS = </span><span class="nv">definitions: </span><span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Walk over list of supported HTTP methods/verbs, defined in
+the <code>RestfulService</code> abstract base class member <code>SUPPORTED</code>
+and create a shorthand route definition for an every method.
+These shorthand definitions will greatly simplify making new
+routes, since they are much shorter than using a full blown
+signature of the <code>define</code> method in this abstract base class.</p></div></div><div class="code"><div class="wrapper">    <span class="p">(</span><span class="nx">do</span> <span class="nf">(m) =&gt;</span> <span class="nx">@</span><span class="p">[</span><span class="nx">m</span><span class="p">]</span> <span class="o">=</span> <span class="nf">-&gt;</span> <span class="nx">@api</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">...)</span> <span class="k">for</span> <span class="nx">m</span> <span class="k">in</span> <span class="nx">@SUPPORTED</span>
+    <span class="p">(</span><span class="nx">assert</span> <span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="nx">m</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()]</span> <span class="o">=</span> <span class="k">this</span><span class="p">[</span><span class="nx">m</span><span class="p">]))</span> <span class="k">for</span> <span class="nx">m</span> <span class="k">in</span> <span class="nx">@SUPPORTED</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Process the already macted HTTP request according to the REST
+specification. That is, see if the request method conforms to
+to the RFC, and if so, dispatch it onto corresponding method
+defined in the subclass of this abstract base class. Default
+implementation of each method will throw a not implemented.
+This implementation executes the processing sequence of the
+HTTP request with regards to the Crossroads of the service.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">process: </span><span class="nx">@spinoff</span> <span class="nf">(request, response, next) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">try</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="k">this</span><span class="p">.</span><span class="nx">__isolated</span><span class="p">,</span> <span class="s">&quot;spin-off engine fail&quot;</span>
+        <span class="nv">variables = </span><span class="p">[</span><span class="kc">undefined</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">]</span> <span class="c1"># no token</span>
+        <span class="nv">headers = </span><span class="nx">@downstream</span> <span class="nv">headers: </span><span class="nf">-&gt;</span> <span class="k">return</span> <span class="kc">null</span>
+        <span class="nv">partial = </span><span class="nx">_</span><span class="p">.</span><span class="nx">partial</span> <span class="nx">headers</span><span class="p">,</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;header&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">partial</span> <span class="nx">variables</span><span class="p">...</span>
+        <span class="nx">assert</span> <span class="nv">mw = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">middleware</span><span class="p">().</span><span class="nx">bind</span> <span class="k">this</span>
+        <span class="nv">signature = </span><span class="p">[</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">variables</span><span class="p">...]</span>
+        <span class="nv">message = </span><span class="s">&quot;Executing Crossroads routing in %s&quot;</span>
+        <span class="nv">intake = </span><span class="nf">(func) =&gt;</span> <span class="nx">@downstream</span> <span class="nv">processing: </span><span class="nx">func</span>
+        <span class="nv">go = </span><span class="nf">(fn) =&gt;</span> <span class="nv">usp = </span><span class="nx">intake</span> <span class="nx">fn</span><span class="p">;</span> <span class="nx">usp</span> <span class="nx">signature</span><span class="p">...</span>
+        <span class="nx">go</span> <span class="o">=&gt;</span> <span class="nx">mw</span><span class="p">(</span><span class="nx">signature</span><span class="p">)</span> <span class="nf">(error, results, misc) =&gt;</span>
+            <span class="nx">assert</span> <span class="nv">expanded = </span><span class="nx">_</span><span class="p">.</span><span class="nx">clone</span> <span class="nx">variables</span> <span class="o">or</span> <span class="p">[]</span>
+            <span class="nx">expanded</span><span class="p">.</span><span class="nx">push</span> <span class="nx">request</span><span class="p">.</span><span class="nx">session</span> <span class="o">or</span> <span class="kc">undefined</span>
+            <span class="nv">malfunction = </span><span class="s">&quot;no crossroads in an instance&quot;</span>
+            <span class="nv">path = </span><span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">pathname</span> <span class="o">or</span> <span class="mi">0</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">@crossroads</span><span class="p">),</span> <span class="nx">malfunction</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">path</span><span class="p">),</span> <span class="s">&quot;no request paths&quot;</span>
+            <span class="nx">assert</span> <span class="nv">copy = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">create</span> <span class="nb">String</span><span class="p">.</span><span class="nx">prototype</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nv">copy.toString = </span><span class="nf">-&gt;</span> <span class="nx">path</span><span class="p">)</span>
+            <span class="nx">assert</span> <span class="nv">copy.method = </span><span class="nx">request</span><span class="p">.</span><span class="nx">method</span> <span class="o">or</span> <span class="kc">null</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">green</span><span class="p">,</span> <span class="nx">identify</span> <span class="o">or</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">crossroads</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">copy</span><span class="p">,</span> <span class="p">[</span><span class="k">this</span><span class="p">]</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method determines whether the supplied HTTP request
+matches this service. This is determined by examining the
+domain/host and the path, in accordance with the patterns
+that were used for configuring the class of this service.
+It is async, so be sure to call the <code>decide</code> with boolean!
+This implementation checks whether an HTTP request matches
+at least one router in the Crossroads instance of service.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">matches: </span><span class="nf">(request, response, decide) -&gt;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">request</span><span class="p">),</span> <span class="s">&quot;got invalid request&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">decide</span><span class="p">),</span> <span class="s">&quot;incorrect callback&quot;</span>
+        <span class="nv">conditions = </span><span class="k">try</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">condition</span><span class="p">()</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nv">conditions = </span><span class="nb">Array</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span> <span class="nx">conditions</span>
+        <span class="nv">identify = </span><span class="k">try</span> <span class="nx">@constructor</span><span class="o">?</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="k">return</span> <span class="nx">decide</span> <span class="kc">no</span> <span class="k">if</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">DISABLE_SERVICE</span>
+        <span class="nv">p = </span><span class="nf">(i, cn) -&gt;</span> <span class="nx">i</span><span class="p">.</span><span class="nx">limitation</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">cn</span>
+        <span class="nv">fails = </span><span class="s">&quot;Service </span><span class="si">#{</span><span class="nx">identify</span><span class="si">}</span><span class="s"> fails some conditions&quot;</span>
+        <span class="nv">notify = </span><span class="s">&quot;Running %s service conditional sequences&quot;</span>
+        <span class="nv">message = </span><span class="s">&quot;Polling %s service for Crossroads match&quot;</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">notify</span><span class="p">.</span><span class="nx">toString</span><span class="p">(),</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">cyan</span><span class="p">,</span> <span class="nx">identify</span>
+        <span class="k">return</span> <span class="nx">async</span><span class="p">.</span><span class="nx">every</span> <span class="nx">conditions</span><span class="p">,</span> <span class="nx">p</span><span class="p">,</span> <span class="nf">(confirms) =&gt;</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">fails</span><span class="p">.</span><span class="nx">yellow</span> <span class="k">unless</span> <span class="nx">confirms</span>
+            <span class="k">return</span> <span class="nx">decide</span> <span class="kc">false</span> <span class="k">unless</span> <span class="nx">confirms</span> <span class="o">is</span> <span class="kc">yes</span>
+            <span class="nv">malfunction = </span><span class="s">&quot;no crossroads in an instance&quot;</span>
+            <span class="nv">path = </span><span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">pathname</span> <span class="o">or</span> <span class="mi">0</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">@crossroads</span><span class="p">),</span> <span class="nx">malfunction</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">path</span><span class="p">),</span> <span class="s">&quot;no request paths&quot;</span>
+            <span class="nx">assert</span> <span class="nv">copy = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">create</span> <span class="nb">String</span><span class="p">.</span><span class="nx">prototype</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nv">copy.toString = </span><span class="nf">-&gt;</span> <span class="nx">path</span><span class="p">)</span>
+            <span class="nx">assert</span> <span class="nv">copy.method = </span><span class="nx">request</span><span class="p">.</span><span class="nx">method</span> <span class="o">or</span> <span class="kc">null</span>
+            <span class="nv">match = </span><span class="nf">(route) -&gt;</span> <span class="k">return</span> <span class="nx">route</span><span class="p">.</span><span class="nx">match</span> <span class="nx">copy</span>
+            <span class="nx">decide</span> <span class="nx">_</span><span class="p">.</span><span class="nx">any</span><span class="p">(</span><span class="nx">@crossroads</span><span class="p">.</span><span class="nx">_routes</span><span class="p">,</span> <span class="nx">match</span><span class="p">)</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A hook that will be called prior to registering the service
+implementation. Please refer to this prototype signature for
+information on the parameters it accepts. Beware, this hook
+is asynchronously wired in, so consult with <code>async</code> package.
+Please be sure invoke the <code>next</code> arg to proceed, if relevant.
+This implementation sets up the internals of the API service
+that will allow to properly expose and execute the methods.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">register: </span><span class="nf">(kernel, router, next) -&gt;</span>
+        <span class="nv">noted = </span><span class="s">&quot;Setting up %s Crossroads routes in %s&quot;</span>
+        <span class="nv">invalidDefs = </span><span class="s">&quot;invalid type of the definitions&quot;</span>
+        <span class="nv">emptyDoc = </span><span class="s">&quot;the document sequence is not emptied&quot;</span>
+        <span class="nv">noCrossr = </span><span class="s">&quot;unable to load a Crossroads library&quot;</span>
+        <span class="nv">noInh = </span><span class="s">&quot;cannot be inherited from both toolkits&quot;</span>
+        <span class="nv">createRouteWrapper = </span><span class="nx">@createRouteWrapper</span><span class="p">.</span><span class="nx">bind</span> <span class="k">this</span>
+        <span class="k">try</span> <span class="nv">identify = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="p">(</span><span class="k">try</span> <span class="k">this</span><span class="p">.</span><span class="nx">objectOf</span> <span class="nx">Screenplay</span><span class="p">),</span> <span class="nx">noInh</span>
+        <span class="nx">assert</span> <span class="nv">crs = </span><span class="vi">@crossroads = </span><span class="nx">crossroads</span><span class="p">.</span><span class="nx">create</span><span class="p">()</span>
+        <span class="nv">defines = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">define</span><span class="p">()</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">defines</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">invalidDefs</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">doc</span><span class="p">()),</span> <span class="nx">emptyDoc</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">@crossroads</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noCrossr</span>
+        <span class="nx">assert</span> <span class="nv">amount = </span><span class="nx">defines</span><span class="p">.</span><span class="nx">length</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">bold</span>
+        <span class="k">try</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">noted</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">amount</span><span class="p">,</span> <span class="nx">identify</span>
+        <span class="nx">async</span><span class="p">.</span><span class="nx">each</span> <span class="nx">defines</span><span class="p">,</span> <span class="nx">createRouteWrapper</span><span class="p">,</span> <span class="nx">next</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Part of the internal implementation of the API engine. It
+is used to create the wrapping around the Crossroads route
+handler. This wrapping is very tightly inegrated with this
+abstract base class internals, as well as with the internal
+design of some of the parent classes, namely <code>RestfulService</code>.
+The wrapping provides important boilerplate to set up scope.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">createRouteWrapper: </span><span class="nf">(definition, next) -&gt;</span>
+        <span class="nv">register = </span><span class="s">&quot;Adding Crossroads route %s to %s&quot;</span>
+        <span class="nv">noCross = </span><span class="s">&quot;no Crossroads router in the service&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nv">crs = </span><span class="nx">@crossroads</span><span class="p">),</span> <span class="nx">noCross</span>
+        <span class="nv">identify = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nx">assert</span> <span class="nv">method = </span><span class="k">try</span> <span class="nx">definition</span><span class="p">.</span><span class="nx">method</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nx">assert</span> <span class="nv">implement = </span><span class="nx">definition</span><span class="p">.</span><span class="nx">implement</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nx">assert</span> <span class="nv">rules = rls = </span><span class="nx">definition</span><span class="p">.</span><span class="nx">rules</span> <span class="o">or</span> <span class="p">{}</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">mask = </span><span class="nx">definition</span><span class="p">.</span><span class="nx">mask</span>
+        <span class="nx">assert</span> <span class="nv">p = </span><span class="p">(</span><span class="nx">mask</span><span class="p">.</span><span class="nx">source</span> <span class="o">or</span> <span class="nx">mask</span><span class="p">).</span><span class="nx">underline</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">register</span><span class="p">.</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">p</span><span class="p">,</span> <span class="nx">identify</span>
+        <span class="nv">fr = </span><span class="nf">(q) =&gt;</span> <span class="nx">q</span><span class="p">.</span><span class="nx">method</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span> <span class="o">is</span> <span class="nx">method</span>
+        <span class="nv">rx = </span><span class="nf">(r) =&gt;</span> <span class="nv">r.rules = </span><span class="nx">rls</span><span class="p">;</span> <span class="nv">rls.request_ = </span><span class="nx">fr</span>
+        <span class="nv">fx = </span><span class="nf">(f) =&gt;</span> <span class="nx">rx</span> <span class="nx">crs</span><span class="p">.</span><span class="nx">addRoute</span> <span class="nx">mask</span><span class="p">,</span> <span class="nx">f</span><span class="p">;</span> <span class="nx">next</span><span class="p">()</span>
+        <span class="nx">fx</span> <span class="nf">(shadow, parameters...) -&gt;</span> <span class="c1"># the wrapper</span>
+            <span class="nx">assert</span> <span class="p">(</span><span class="nx">shadow</span><span class="p">.</span><span class="nx">__isolated</span> <span class="o">or</span> <span class="mi">0</span><span class="p">)</span> <span class="o">is</span> <span class="kc">yes</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">shadow</span><span class="p">.</span><span class="nx">__origin</span> <span class="o">or</span> <span class="mi">0</span>
+            <span class="nx">implement</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">shadow</span><span class="p">,</span> <span class="nx">parameters</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Class directive that sets the specified documentations in
+the documentation sequence that will be used &amp; emptied when
+a API method is defined below. That is, this method operates
+in a sequential mode. The documentation to is supplied to
+this method as an object argument with arbitrary key/value
+pairs, where keys is doc name and value is the doc itself.
+Multiple docs with the same key name may exist just fine.</p></div></div><div class="code"><div class="wrapper">    <span class="k">this</span><span class="p">.</span><span class="nb">document</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nv">docs = </span><span class="k">this</span><span class="p">.</span><span class="nv">doc = </span><span class="nf">(xsignature) -&gt;</span>
+        <span class="nv">noSignature = </span><span class="s">&quot;please, supply a plain object&quot;</span>
+        <span class="nv">noDocuments = </span><span class="s">&quot;cannot find the documents seq&quot;</span>
+        <span class="nv">internal = </span><span class="s">&quot;an anomaly found in doc sequence&quot;</span>
+        <span class="nv">malfuncs = </span><span class="s">&quot;derived from the incorrect source&quot;</span>
+        <span class="nv">message = </span><span class="s">&quot;Setting an API documentation in %s&quot;</span>
+        <span class="nx">@documents</span> <span class="o">?=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span> <span class="c1"># document sequence</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="k">this</span><span class="p">.</span><span class="nx">documents</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Array</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">previous</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">),</span> <span class="nx">internal</span>
+        <span class="k">return</span> <span class="nx">previous</span> <span class="k">unless</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="nv">signature = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span><span class="p">(</span><span class="nx">signature</span><span class="p">),</span> <span class="nx">noSignature</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">documents</span><span class="p">),</span> <span class="nx">noDocuments</span>
+        <span class="nx">assert</span> <span class="p">(</span><span class="k">try</span> <span class="nx">@derives</span><span class="p">(</span><span class="nx">ApiService</span><span class="p">)),</span> <span class="nx">malfuncs</span>
+        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">bold</span>
+        <span class="nv">fn = </span><span class="nf">(arbitraryVector) -&gt;</span> <span class="k">return</span> <span class="nx">signature</span>
+        <span class="nx">fn</span> <span class="vi">@documents = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">signature</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Class directive that sets the specified Crossroads rule in
+a Crossroads rules sequence that will be used * emptied when
+a API method is defined below. That is, this method operates
+in a sequential mode. The Crossroads rule gets supplied to
+this method as an object argument with arbitrary key/value
+pairs, where keys is rule name and value is a rule itself.
+Rules are attached to the route defined right after rules.</p></div></div><div class="code"><div class="wrapper">    <span class="k">this</span><span class="p">.</span><span class="nv">crossroadsRule = </span><span class="k">this</span><span class="p">.</span><span class="nv">rule = </span><span class="nf">(xsignature) -&gt;</span>
+        <span class="nv">noSignature = </span><span class="s">&quot;please, supply a plain object&quot;</span>
+        <span class="nv">noCrossRules = </span><span class="s">&quot;cannot find a cross-rules seq&quot;</span>
+        <span class="nv">internal = </span><span class="s">&quot;an anomaly found in doc sequence&quot;</span>
+        <span class="nv">malfuncs = </span><span class="s">&quot;derived from the incorrect source&quot;</span>
+        <span class="nv">message = </span><span class="s">&quot;Setting the Crossroads rule in %s&quot;</span>
+        <span class="nx">@crossRules</span> <span class="o">?=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span> <span class="c1"># cross-rules seqs</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="k">this</span><span class="p">.</span><span class="nx">crossRules</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">previous</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">),</span> <span class="nx">internal</span>
+        <span class="k">return</span> <span class="nx">previous</span> <span class="k">unless</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="nv">signature = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span><span class="p">(</span><span class="nx">signature</span><span class="p">),</span> <span class="nx">noSignature</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">crossRules</span><span class="p">),</span> <span class="nx">noCrossRules</span>
+        <span class="nx">assert</span> <span class="p">(</span><span class="k">try</span> <span class="nx">@derives</span><span class="p">(</span><span class="nx">ApiService</span><span class="p">)),</span> <span class="nx">malfuncs</span>
+        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">bold</span>
+        <span class="nv">fn = </span><span class="nf">(arbitraryVector) -&gt;</span> <span class="k">return</span> <span class="nx">signature</span>
+        <span class="nx">fn</span> <span class="vi">@crossRules = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">signature</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Define a new API and all of its attributes. Among those
+arguments there is an API implementation function and an
+URL mask for routing that API and an HTTP version to use
+for matching this API. Please consult with a <code>Crossroads</code>
+package for information on the mask, which can be string
+or a regular expression. Also, please see implementation.</p></div></div><div class="code"><div class="wrapper">    <span class="k">this</span><span class="p">.</span><span class="nv">define = </span><span class="k">this</span><span class="p">.</span><span class="nv">api = </span><span class="nf">(method, mask, implement) -&gt;</span>
+        <span class="nv">wrongMask = </span><span class="s">&quot;a mask has to be string or regex&quot;</span>
+        <span class="nv">noImplement = </span><span class="s">&quot;no implementation fn supplied&quot;</span>
+        <span class="nv">invalidMeth = </span><span class="s">&quot;an HTTP method is not a string&quot;</span>
+        <span class="nv">maskStr = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">mask</span> <span class="o">or</span> <span class="kc">null</span><span class="p">)</span> <span class="o">or</span> <span class="kc">false</span>
+        <span class="nv">maskReg = </span><span class="nx">_</span><span class="p">.</span><span class="nx">isRegExp</span><span class="p">(</span><span class="nx">mask</span> <span class="o">or</span> <span class="kc">null</span><span class="p">)</span> <span class="o">or</span> <span class="kc">false</span>
+        <span class="nx">assert</span> <span class="nv">previous = </span><span class="nx">@definitions</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nx">previous</span> <span class="k">unless</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">implement</span><span class="p">),</span> <span class="nx">noImplement</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">method</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">invalidMeth</span>
+        <span class="nx">assert</span> <span class="p">(</span><span class="nx">maskStr</span> <span class="o">or</span> <span class="nx">maskReg</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">wrongMask</span>
+        <span class="nv">documents = </span><span class="nx">_</span><span class="p">.</span><span class="nx">clone</span> <span class="k">this</span><span class="p">.</span><span class="nx">documents</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
+        <span class="nv">crossRules = </span><span class="nx">_</span><span class="p">.</span><span class="nx">reduce</span> <span class="nx">@crossRules</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">merge</span>
+        <span class="k">delete</span> <span class="nx">@documents</span> <span class="k">if</span> <span class="nx">@documents</span> <span class="c1"># clear doc</span>
+        <span class="k">delete</span> <span class="nx">@crossRules</span> <span class="k">if</span> <span class="nx">@crossRules</span> <span class="c1"># rm rule</span>
+        <span class="nx">documents</span><span class="p">.</span><span class="nx">push</span> <span class="nv">method: </span><span class="nx">method</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span>
+        <span class="nx">documents</span><span class="p">.</span><span class="nx">push</span> <span class="nv">mask: </span><span class="p">(</span><span class="nx">mask</span><span class="o">?</span><span class="p">.</span><span class="nx">source</span> <span class="o">or</span> <span class="nx">mask</span><span class="p">)</span>
+        <span class="nx">documents</span><span class="p">.</span><span class="nx">push</span> <span class="nv">uid: uid = </span><span class="nx">uuid</span><span class="p">.</span><span class="nx">v1</span><span class="p">()</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nv">fn = </span><span class="nf">(arbitraryVector) -&gt;</span> <span class="k">return</span> <span class="nx">implement</span>
+        <span class="k">return</span> <span class="nx">fn</span> <span class="vi">@definitions = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span>
+            <span class="nv">documents: </span><span class="nx">documents</span> <span class="c1"># documentation</span>
+            <span class="nv">implement: </span><span class="nx">implement</span> <span class="c1"># implements fn</span>
+            <span class="nv">rules: </span><span class="nx">crossRules</span> <span class="c1"># Crossroads rules</span>
+            <span class="nv">method: </span><span class="nx">method</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span> <span class="c1"># HTTP</span>
+            <span class="nv">mask: </span><span class="nx">mask</span> <span class="c1"># URL mask for routing</span>
+            <span class="nv">uid: </span><span class="nx">uid</span> <span class="c1"># unique ID (UUID) tag</span></div></div></div></div></body></html>
