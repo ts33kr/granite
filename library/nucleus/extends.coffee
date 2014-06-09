@@ -111,6 +111,8 @@ assert module.exports.Extending = cc -> class Extending extends Object
         enumerable: no, value: (identificator) ->
             shadowed = _.isObject this.watermark
             set = => this.$identify = identificator
+            nclass = "an invoke target is not class"
+            assert _.isObject(@constructor), nclass
             return set() if _.isString identificator
             return @$identify if _.isString @$identify
             return @name unless _.isEmpty this.name
