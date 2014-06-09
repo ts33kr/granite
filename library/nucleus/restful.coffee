@@ -88,8 +88,8 @@ module.exports.RestfulService = class RestfulService extends Service
         fn = (arbitraryVector) -> return implement
         assert inherited = try _.unique inherited
         return fn @conditions = inherited.concat
-            limitation: limitation
-            synopsis: synopsis
+            limitation: limitation # a function
+            synopsis: synopsis # an explanation
 
     # This method is almost an entire implementation of a middleware
     # system for services. When you call it from within the service
