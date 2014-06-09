@@ -56,7 +56,7 @@ assert module.exports.Extending = cc -> class Extending extends Object
     Object.defineProperty Object::, "derives",
         enumerable: no, value: (archetype, loose) ->
             notObject = "supplied acrhetype not object"
-            notClass = "the invokation target not class"
+            notClass = "the invocation target not class"
             assert _.isObject(archetype or 0), notObject
             assert _.isFunction arche = archetype # alias
             predicate = (x) -> x.similarWith arche, loose
@@ -72,7 +72,7 @@ assert module.exports.Extending = cc -> class Extending extends Object
     Object.defineProperty Object::, "objectOf",
         enumerable: no, value: (archetype, loose) ->
             notObject = "supplied acrhetype not object"
-            notInst = "the invokation target not instance"
+            notInst = "the invocation target not instance"
             assert _.isObject(archetype or 0), notObject
             assert _.isFunction arche = archetype # alias
             predicate = (x) -> x.similarWith arche, loose
