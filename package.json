@@ -49,6 +49,7 @@
         "dom-serializer": "0.0.0",
         "stack-trace": "0.0.x",
         "http-proxy": "0.10.x",
+        "crossroads": "0.12.x",
         "nodemailer": "0.5.x",
         "negotiator": "0.4.x",
         "lru-cache": "2.5.x",
