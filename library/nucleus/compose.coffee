@@ -75,8 +75,8 @@ assert module.exports.Composition = cc -> class Composition extends Object
             assert _.isArray a = accumulate = new Array
             subject = this unless _.isObject try subject
             classed = _.isObject subject.__super__ or null
-            assert idc = try subject.identify() or undefined
-            assert idc = try subject.toString() unless idc
+            fallback = try subject.toString() or undefined
+            assert idc = try subject.identify() or fallback
             assert classed, "object is not a class: #{idc}"
             scanner = (fn) -> fn a while subject?; return a
             return scanner _.identity (accumulate) -> try
