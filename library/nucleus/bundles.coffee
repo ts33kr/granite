@@ -69,6 +69,7 @@ module.exports.PRODUCTION = new scoping.Scope "production", ->
     @defaults.assets = dirs: [], opts: {}
     @defaults.beacon = interval: 60000
     @defaults.socket = "log level": 0
+    @defaults.api = includeStack: no
     @defaults.env.preserve = ["pub"]
     @defaults.visual.logging = no
 
@@ -105,6 +106,7 @@ module.exports.STAGING = new scoping.Scope "staging", ->
     @defaults.assets = dirs: [], opts: {}
     @defaults.beacon = interval: 60000
     @defaults.socket = "log level": 0
+    @defaults.api = includeStack: no
     @defaults.env.preserve = ["pub"]
     @defaults.visual.logging = no
 
@@ -141,6 +143,7 @@ module.exports.DEVELOPMENT = new scoping.Scope "development", ->
     @defaults.assets = dirs: [], opts: {}
     @defaults.beacon = interval: 60000
     @defaults.socket = "log level": 0
+    @defaults.api = includeStack: no
     @defaults.env.preserve = ["pub"]
     @defaults.visual.logging = yes
 
@@ -177,5 +180,6 @@ module.exports.TESTING = new scoping.Scope "testing", ->
     @defaults.assets = dirs: [], opts: {}
     @defaults.beacon = interval: 60000
     @defaults.socket = "log level": 0
+    @defaults.api = includeStack: yes
     @defaults.env.preserve = ["pub"]
     @defaults.visual.logging = yes

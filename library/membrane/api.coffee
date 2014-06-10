@@ -74,6 +74,35 @@ assert module.exports.ApiService = class ApiService extends Barebones
     (do (m) => @[m] = -> @api m, arguments...) for m in @SUPPORTED
     (assert (this[m.toLowerCase()] = this[m])) for m in @SUPPORTED
 
+    # The decorator that can be applied to the immediate function
+    # that implements an API declaration. When applied to such fun,
+    # when an API is executed, in case if there is any error in an
+    # implementation, instead of running the exception & rescuing
+    # mechanism, it will automatically respond with the requester
+    # with the specially formed JSON object, describing an error.
+    # This is useful for creating the resistent to failures APIs.
+    this.guard = this.protected = (implement) -> ->
+        misused = "no implementation func supplied"
+        unisolated = "no isolation engine detected"
+        message = "Invoking a protected API in an %s"
+        invaRequest = "fail to find isolated request"
+        identify = @constructor.identify().underline
+        assert _.isArguments try captured = arguments
+        assert _.isFunction(implement or 0), misused
+        assert @__origin and @__isolated, unisolated
+        assert _.isObject(this.request), invaRequest
+        assert _.isObject ndomain = require "domain"
+        assert _.isObject domain = ndomain.create()
+        assert _.isObject r = this.response or null
+        try logger.debug message.yellow, identify
+        incStack = try nconf.get "api:includeStack"
+        ev = (e, r) => this.emit "guad-error", e, r
+        st = (e) => (incStack and e.stack) or null
+        js = (e) => message: e.message, stack: st(e)
+        kills = (e) => r.send 500, js(e); ev(e, r)
+        domain.on "error", (error) -> kills error
+        domain.run => implement.apply @, captured
+
     # Process the already macted HTTP request according to the REST
     # specification. That is, see if the request method conforms to
     # to the RFC, and if so, dispatch it onto corresponding method
