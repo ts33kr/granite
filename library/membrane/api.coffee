@@ -81,7 +81,7 @@ assert module.exports.ApiService = class ApiService extends Barebones
     # mechanism, it will automatically respond with the requester
     # with the specially formed JSON object, describing an error.
     # This is useful for creating the resistent to failures APIs.
-    this.guard = this.protected = (implement) -> ->
+    this.guard = this.fail = this.g = (implement) -> ->
         misused = "no implementation func supplied"
         unisolated = "no isolation engine detected"
         message = "Invoking a protected API in an %s"
