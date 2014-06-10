@@ -100,6 +100,7 @@ assert module.exports.ApiService = class ApiService extends Barebones
         st = (e) => (incStack and e.stack) or null
         js = (e) => message: e.message, stack: st(e)
         kills = (e) => r.send 500, js(e); ev(e, r)
+        @response.on "finish", -> domain.dispose()
         domain.on "error", (error) -> kills error
         domain.run => implement.apply @, captured
 
