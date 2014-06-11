@@ -23,6 +23,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+assert = require "assert"
+
 {Archetype} = require "../nucleus/arche"
 {remote, cc} = require "../membrane/remote"
 {Formular} = require "./formular"
