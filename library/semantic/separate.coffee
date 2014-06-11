@@ -23,6 +23,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+_ = require "lodash"
+assert = require "assert"
+
 {Zombie} = require "../nucleus/zombie"
 {external} = require "../membrane/remote"
 {Preflight} = require "../membrane/preflight"
