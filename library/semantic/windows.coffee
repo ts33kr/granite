@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # auxiliary services upon it. Basically, if you have the service
 # that needs to be presented as the modal window and is used like
 # a zombie, then this class can be used to reduce the boilerplate.
-module.exports.ModalWindow = class ModalWindow extends Zombie
+assert module.exports.ModalWindow = class ModalWindow extends Zombie
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
