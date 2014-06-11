@@ -56,8 +56,8 @@ assert module.exports.Semantic = class Semantic extends Preflight
     # setup with help of Google Fonts API and a corresponding class
     # that implement the functionality, which is the `GoogleFonts`.
     @googlefont "Open Sans Condensed", "300italic", 300, 400, 700
+    @googlefont "Source Sans Pro", "300italic", 300, 400, 700
     @googlefont "Open Sans", "300italic", 300, 400, 700
-    @googlefont "Source Sans Pro", 300, 400, 700
 
     # This block here defines a set of assets, such as CSS styles
     # or JavaScript files that will be included on every context
