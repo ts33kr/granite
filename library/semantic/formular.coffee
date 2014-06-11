@@ -37,7 +37,7 @@ assert = require "assert"
 # working with the forms that are presented to take in and process
 # the user entered data, structured in a certain, prediciatable way.
 # Please refer to the implementation for information on how to use.
-module.exports.Formular = cc -> class Formular extends Archetype
+assert module.exports.Formular = cc -> class Formular extends Archetype
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
