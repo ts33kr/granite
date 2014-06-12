@@ -27,6 +27,7 @@ _ = require "lodash"
 assert = require "assert"
 
 {Zombie} = require "../nucleus/zombie"
+{Embedded} = require "../membrane/embed"
 {external} = require "../membrane/remote"
 {Preflight} = require "../membrane/preflight"
 {GoogleFonts} = require "../exposure/fonting"
@@ -39,7 +40,7 @@ assert = require "assert"
 # that scrapes the boilerplate routine of form submission and then
 # reacting to the response away and lets you focus on what matters
 # to your functionality, that is setting up the layout and fields.
-module.exports.ModalFormular = class ModalFormular extends Zombie
+module.exports.ModalFormular = class ModalFormular extends Embedded
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

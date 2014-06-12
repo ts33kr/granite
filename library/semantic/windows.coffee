@@ -27,6 +27,7 @@ _ = require "lodash"
 assert = require "assert"
 
 {Zombie} = require "../nucleus/zombie"
+{Embedded} = require "../membrane/embed"
 {external} = require "../membrane/remote"
 {Preflight} = require "../membrane/preflight"
 {Localized} = require "../exposure/localized"
@@ -37,7 +38,7 @@ assert = require "assert"
 # auxiliary services upon it. Basically, if you have the service
 # that needs to be presented as the modal window and is used like
 # a zombie, then this class can be used to reduce the boilerplate.
-assert module.exports.ModalWindow = class ModalWindow extends Zombie
+module.exports.ModalWindow = class ModalWindow extends Embedded
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -51,7 +52,6 @@ assert module.exports.ModalWindow = class ModalWindow extends Zombie
     # Please take a look at the `Composition` class implementation
     # for all sorts of information on the composition system itself.
     # Each of these will be dynamicall integrated in class hierarchy.
-    @implanting Preflight
     @implanting Localized
 
     # This method is invoked right after the window skeleton has
