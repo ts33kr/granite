@@ -443,6 +443,27 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/embed.coffee",
+            "projectPath": "library/membrane/embed.coffee",
+            "targetPath": "membrane/embed",
+            "pageTitle": "membrane/embed",
+            "title": "embed"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
             "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/events.coffee",
             "projectPath": "library/membrane/events.coffee",
             "targetPath": "membrane/events",

@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="en"><head><title>membrane/embed</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/embed"><meta name="groc-project-path" content="library/membrane/embed.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/embed.coffee">library/membrane/embed.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#x61;&#x69;&#108;t&#x6f;:&#x74;&#x73;&#x33;&#51;&#107;&#114;&#x40;&#x67;&#109;&#x61;&#x69;&#108;&#x2e;&#x63;&#x6f;&#x6d;">&#x74;&#x73;&#x33;&#51;&#107;&#114;&#x40;&#x67;&#109;&#x61;&#x69;&#108;&#x2e;&#x63;&#x6f;&#x6d;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">bower = </span><span class="nx">require</span> <span class="s">&quot;bower&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">crypto = </span><span class="nx">require</span> <span class="s">&quot;crypto&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">path = </span><span class="nx">require</span> <span class="s">&quot;path&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
+<span class="p">{</span><span class="nx">Screenplay</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./visual&quot;</span>
+<span class="p">{</span><span class="nx">Preflight</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./preflight&quot;</span>
+<span class="p">{</span><span class="nx">Zombie</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/zombie&quot;</span>
+<span class="p">{</span><span class="nx">Extending</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/extends&quot;</span>
+<span class="p">{</span><span class="nx">Composition</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/compose&quot;</span>
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/arche&quot;</span>
+
+<span class="p">{</span><span class="nx">remote</span><span class="p">,</span> <span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./remote&quot;</span>
+<span class="p">{</span><span class="nx">TransferToolkit</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./transfer&quot;</span>
+<span class="p">{</span><span class="nx">TransitToolkit</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./transit&quot;</span>
+<span class="p">{</span><span class="nx">EventsToolkit</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./events&quot;</span>
+<span class="p">{</span><span class="nx">LinksToolkit</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./linkage&quot;</span>
+<span class="p">{</span><span class="nx">BowerToolkit</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./bower&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This abstract base class service is a combination of <code>Screenplay</code>
+and <code>Zombie</code> for the further environment initialization and seting
+up. These preparations will be nececessary no matter what sort of
+<code>Screenplay</code> functionality you are going to implement. Currently the
+purpose of preflight is drawing in the remotes and Bower packages.
+It is intended for the embeddable services, such as auxilliaries.</p></div></div><div class="code"><div class="wrapper"><span class="nx">assert</span> <span class="nv">module.exports.Embedded = </span><span class="k">class</span> <span class="nx">Embedded</span> <span class="k">extends</span> <span class="nx">Zombie</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These declarations below are implantations of the abstracted
+components by the means of the dynamic recomposition system.
+Please take a look at the <code>Composition</code> class implementation
+for all sorts of information on the composition system itself.
+Each of these will be dynamicall integrated in class hierarchy.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@implanting</span> <span class="nx">Preflight</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a functional hook that is automatically wired into the
+composition system. It gets invoked once a composition system
+has completed implanting a foreign component into this class,
+which is on the receiving side. This implementation ensures
+that after the composition is done, the service is still be
+considered a <code>Zombie</code> service with all attributes pertained.</p></div></div><div class="code"><div class="wrapper">    <span class="k">this</span><span class="p">.</span><span class="nv">implanted = </span><span class="k">this</span><span class="p">.</span><span class="nv">ensureZombie = </span><span class="nf">(compound) -&gt;</span>
+        <span class="nv">i = </span><span class="s">&quot;no compound class supplied to the hook&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nv">comp = </span><span class="nx">compound</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">i</span>
+        <span class="nx">assert</span> <span class="nv">sident = </span><span class="k">try</span> <span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nx">assert</span> <span class="nv">fident = </span><span class="k">try</span> <span class="nx">comp</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nx">assert</span> <span class="nx">@derives</span><span class="p">(</span><span class="nx">Zombie</span><span class="p">),</span> <span class="s">&quot;not a zombie anymore&quot;</span>
+        <span class="nv">message = </span><span class="s">&quot;The %s damaged %s zombie, fixing it&quot;</span>
+        <span class="nv">warning = </span><span class="s">&quot;Checking %s for validitity after %s&quot;</span>
+        <span class="k">try</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">warning</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">sident</span><span class="p">,</span> <span class="nx">fident</span>
+        <span class="nv">process = </span><span class="k">try</span> <span class="k">this</span><span class="o">::</span><span class="nx">process</span> <span class="o">is</span> <span class="nx">Zombie</span><span class="o">::</span><span class="nx">process</span>
+        <span class="nv">matches = </span><span class="k">try</span> <span class="k">this</span><span class="o">::</span><span class="nx">matches</span> <span class="o">is</span> <span class="nx">Zombie</span><span class="o">::</span><span class="nx">matches</span>
+        <span class="nv">m = malformed = </span><span class="p">(</span><span class="o">not</span> <span class="nx">process</span><span class="p">)</span> <span class="o">or</span> <span class="p">(</span><span class="o">not</span> <span class="nx">matches</span><span class="p">)</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">red</span><span class="p">,</span> <span class="nx">fident</span><span class="p">,</span> <span class="nx">sident</span> <span class="k">if</span> <span class="nx">m</span>
+        <span class="k">return</span> <span class="k">unless</span> <span class="nx">malformed</span> <span class="c1"># nothing is damaged</span>
+        <span class="nx">assert</span> <span class="k">this</span><span class="o">::</span><span class="nv">process = </span><span class="nx">Zombie</span><span class="o">::</span><span class="nx">process</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nx">assert</span> <span class="k">this</span><span class="o">::</span><span class="nv">matches = </span><span class="nx">Zombie</span><span class="o">::</span><span class="nx">matches</span> <span class="o">or</span> <span class="mi">0</span></div></div></div></div></body></html>
