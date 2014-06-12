@@ -180,7 +180,7 @@ assert module.exports.Composition = cc -> class Composition extends Object
             assert tails = alternative.pop().rebased compound
             rebased = (acc, cls) -> cls.rebased acc; cls
             @rebased _.foldr alternative, rebased, tails
-            return this.refactoring compound or null
+            @refactoring compound; @implanted? compound
 
     # An important complementary part of the dynamic recomposition
     # system. The refactoring procedure is a recursive algorithm that
