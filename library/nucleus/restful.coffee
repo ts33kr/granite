@@ -74,9 +74,10 @@ module.exports.RestfulService = class RestfulService extends Service
     # accept or decline. Do this by calling `decide` with a boolean!
     # Especially useful for service with the same resource but with
     # different conditions, such as mobile only and desktop only.
-    @condition: (synopsis, limitation) ->
+    @condition: (xsynopsis, xlimitation) ->
         return try @conditions if arguments.length is 0
-        limitation = try _.find arguments, _.isFunction
+        synopsis = _.find(arguments, _.isString) or null
+        limitation = try _.find(arguments, _.isFunction)
         generic = "service condition: #{limitation.name}"
         try synopsis = generic unless _.isString synopsis
         noLimitation = "a limitation has to be function"
