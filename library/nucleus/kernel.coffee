@@ -124,9 +124,9 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         fn = (t) -> (o) -> (a...) -> lg o; gr(o) t, a
         explain = _.find(arguments, _.isString) or null
         routine = _.find(arguments, _.isFunction) or 0
-        assert _.isArray $configure = @$configure or []
-        return (-> series _.map $configure, fn @) if run
-        return (-> null) if not @$configure and bareCall
+        assert _.isArray cs = configures = @$configure or []
+        return ((nxt) -> series _.map(cs, fn @), nxt) if run
+        return ((c) -> c()) if not @$configure and bareCall
         invRoutine = "supplied invalid config routine"
         invExplain = "no explanation has been supplied"
         assert _.isFunction(routine or 0), invRoutine
@@ -150,16 +150,16 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         process.on "SIGTERM", => @shutdownKernel sigterm
         assert not _.isEmpty @setupScaffolding.call this
         assert not _.isEmpty @setupKernelBeacon.call this
-        this.constructor.configure().call this, undefined
-        return @kernelPreemption.call this, (reference) =>
-            assert not _.isEmpty @setupConnectPipeline()
-            assert not _.isEmpty @startupHttpsServer()
-            assert not _.isEmpty @startupHttpServer()
-            assert not _.isEmpty @setupSocketServers()
-            assert not _.isEmpty @setupModuleScanner()
-            assert identica = @constructor.identica()
-            logger.info manifest, identica.bold
-            logger.info message.red; return @
+        this.constructor.configure().call this, (results) =>
+            return @kernelPreemption.call this, (reference) =>
+                assert not _.isEmpty @setupConnectPipeline()
+                assert not _.isEmpty @startupHttpsServer()
+                assert not _.isEmpty @startupHttpServer()
+                assert not _.isEmpty @setupSocketServers()
+                assert not _.isEmpty @setupModuleScanner()
+                assert identica = @constructor.identica()
+                logger.info manifest, identica.bold
+                logger.info message.red; return @
 
     # The public constructor of the kernel instrances. Generally
     # you should neither use it directly, not override. It serves
