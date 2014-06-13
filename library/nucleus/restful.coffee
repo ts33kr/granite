@@ -86,7 +86,7 @@ module.exports.RestfulService = class RestfulService extends Service
         assert _.isFunction(limitation), noLimitation
         assert limitation.length >= 3, wrongSignature
         assert _.isArray inherited = @conditions or []
-        fn = (arbitraryVector) -> return implement
+        fn = (arbitraryVector) -> return limitation
         assert inherited = try _.unique inherited
         return fn @conditions = inherited.concat
             limitation: limitation # a function
