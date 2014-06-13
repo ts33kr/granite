@@ -79,7 +79,7 @@ module.exports.ApiInventory = class ApiInventory extends ApiService
     # Also, take a look at `ApiService` for advanced definitions.
     @rule uid: /^[\w-]{36}$/ # optional UUID v.1
     @GET "/api/inventory/:uid:", @guard (scoped) ->
-        assert identify = try @constructor.identify()
+        identify = try @constructor.identify().underline
         assert _.isObject Asc = ApiService # a shorthand
         malfReg = "the routing registry seems is broken"
         noKernRout = "failed to obtain the kernel router"
