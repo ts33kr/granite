@@ -96,7 +96,7 @@ Use http://ts33kr.github.io/granite for browsing.
   Everything is built around an exceptionally strong object model
   and makes uses of an automatic wiring that requires zero level
   configuration for creating and discovering new services. See
-  [exposure/publish.coffee](library/exposure/publish.coffee).
+  [exposure/publish.coffee](library/exposure/inventory.coffee).
 
   + A production grade load balancing and failover clustering
   provided right out of the box. Delivered by technology called
