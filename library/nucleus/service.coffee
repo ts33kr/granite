@@ -64,7 +64,7 @@ assert module.exports.Service = class Service extends Archetype
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = configures: yes
+    @COMPOSITION_EXPORTS: configures: yes
 
     # A hook that will be called each time when the kernel beacon
     # is being fired. Please refer to this prototype signature for

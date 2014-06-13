@@ -61,7 +61,7 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = bowerings: yes
+    @COMPOSITION_EXPORTS: bowerings: yes
 
     # A hook that will be called prior to registering the service
     # implementation. Please refer to this prototype signature for

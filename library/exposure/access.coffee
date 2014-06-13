@@ -71,7 +71,7 @@ module.exports.AccessGate = class AccessGate extends Barebones
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = resurrections: 1, hibernations: 1
+    @COMPOSITION_EXPORTS: resurrections: 1, hibernations: 1
 
     # Add the supplied implementation function to the internal stack
     # of functions that will be invoked every time the access system

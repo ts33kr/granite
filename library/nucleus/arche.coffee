@@ -60,7 +60,7 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = interceptors: yes
+    @COMPOSITION_EXPORTS: interceptors: yes
 
     # This is the composition hook that gets invoked once a compound
     # is being composed into other services and components. It merges

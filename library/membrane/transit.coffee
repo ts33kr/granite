@@ -65,7 +65,7 @@ module.exports.TransitToolkit = class TransitToolkit extends Barebones
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = renderers: yes, considerations: yes
+    @COMPOSITION_EXPORTS: renderers: yes, considerations: yes
 
     # Use this decorator to append a renderer function to sequence.
     # These are server side, instance methods that will be invoked

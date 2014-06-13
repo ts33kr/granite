@@ -59,14 +59,14 @@ module.exports.RestfulService = class RestfulService extends Service
     # limited by the HTTP specification by default. You can though
     # override it and provie support for more methods, up to you.
     # If you do, then be sure to provide the necessary stubbing.
-    @SUPPORTED = ["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"]
+    @SUPPORTED: ["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"]
 
     # Symbol declaration table, that states what keys, if those are
     # vectors (arrays) should be exported and then merged with their
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = conditions: 1, middlewares: 1
+    @COMPOSITION_EXPORTS: conditions: 1, middlewares: 1
 
     # Impose a conditional limitation on the service. The limiation
     # will be invoked when a router is determining whether a service

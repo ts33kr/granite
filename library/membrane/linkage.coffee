@@ -63,7 +63,7 @@ module.exports.LinksToolkit = class LinksToolkit extends Barebones
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = jscripts: 1, stsheets: 1, metatags: 1
+    @COMPOSITION_EXPORTS: jscripts: 1, stsheets: 1, metatags: 1
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The

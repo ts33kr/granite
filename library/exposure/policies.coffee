@@ -59,7 +59,7 @@ module.exports.Policies = class Policies extends AccessGate
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = policies: yes
+    @COMPOSITION_EXPORTS: policies: yes
 
     # Allow a specified privilege to be performed by the persons
     # with the specificied qualification. Both of these supplied

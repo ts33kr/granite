@@ -63,7 +63,7 @@ assert module.exports.ApiService = class ApiService extends Barebones
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = definitions: yes
+    @COMPOSITION_EXPORTS: definitions: yes
 
     # Walk over list of supported HTTP methods/verbs, defined in
     # the `RestfulService` abstract base class member `SUPPORTED`

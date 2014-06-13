@@ -61,7 +61,7 @@ module.exports.GoogleFonts = class GoogleFonts extends Preflight
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = googlefonts: yes
+    @COMPOSITION_EXPORTS: googlefonts: yes
 
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The

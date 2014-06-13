@@ -64,7 +64,7 @@ module.exports.TransferToolkit = class TransferToolkit extends Barebones
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS = remotes: yes
+    @COMPOSITION_EXPORTS: remotes: yes
 
     # A directive to mark the certain remote class or object to be
     # included in the `Screenplay` context that is going to be emited
