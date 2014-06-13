@@ -75,6 +75,7 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
         assert _.isObject(@redis), "no Redis client yet"
         message = "Redis session engine error at destroy"
         process = "Destroying a Redis stored session %s"
+        {GraniteKernel} = try require "../nucleus/kernel"
         assert kernel = @kernel or GraniteKernel.instance
         logger.debug process.grey, try sid.underline or 0
         assert _.all try hosting = [this, kernel] or null
@@ -104,6 +105,7 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
         process = "Writing in a Redis stored session %s"
         assert _.isObject(@redis), "no Redis client yet"
         assert not _.isEmpty(encoded or null), encFailed
+        {GraniteKernel} = try require "../nucleus/kernel"
         assert kernel = @kernel or GraniteKernel.instance
         logger.debug process.grey, try sid.underline or 0
         assert _.all try hosting = [this, kernel] or null
@@ -129,6 +131,7 @@ assert module.exports.RedisSession = class RedisSession extends Zombie
         df = "failed to decode JSON payload on the get"
         process = "Reading out a Redis stored session %s"
         assert _.isObject(@redis), "no Redis client yet"
+        {GraniteKernel} = try require "../nucleus/kernel"
         assert kernel = @kernel or GraniteKernel.instance
         logger.debug process.grey, try sid.underline or 0
         assert _.all try hosting = [this, kernel] or null
