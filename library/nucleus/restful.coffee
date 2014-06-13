@@ -111,11 +111,11 @@ module.exports.RestfulService = class RestfulService extends Service
         noImplement = "supply the middleware function"
         wrongSignature = "a wrong implement signature"
         try implement = _.find arguments, _.isFunction
-        assert _.isFunction(implement), noImplement
-        assert implement.length >= 3, wrongSignature
+        assert _.isFunction(implement or 0), noImplement
+        assert (implement?.length >= 3), wrongSignature
         assert _.isArray inherited = @middlewares or []
-        @middlewares = inherited.concat implement
-        @middlewares = _.unique @middlewares; @
+        @middlewares = try inherited.concat implement
+        @middlewares = _.unique @middlewares; this
 
     # An experimental spinoff engine that is based on the isolated
     # providers concept. Basically, an HTTP verb or the middleware
