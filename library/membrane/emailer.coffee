@@ -61,7 +61,7 @@ assert module.exports.EmailClient = class EmailClient extends Service
     # connection is supposed to be wired into a different email
     # provider or account. This variable is used to supply that.
     # It should be a function, returning a mailer config object.
-    @EMAIL_CONFIG = undefined
+    @EMAIL_CONFIG: undefined
 
     # These defintions are the presets available for configuring
     # the email envelope getting functions. Please set the special
@@ -71,8 +71,8 @@ assert module.exports.EmailClient = class EmailClient extends Service
     # generate a new connection on the container, if it does not
     # contain an opened connection yet. The default container is
     # the kernel preset using the `EMAIL_ENVELOPE_KERNEL` value.
-    @EMAIL_ENVELOPE_KERNEL = -> return @kernel
-    @EMAIL_ENVELOPE_SERVICE = -> @$email ?= {}
+    @EMAIL_ENVELOPE_KERNEL: -> return @kernel
+    @EMAIL_ENVELOPE_SERVICE: -> @$email ?= {}
 
     # A hook that will be called prior to unregistering the service
     # implementation. Please refer to this prototype signature for

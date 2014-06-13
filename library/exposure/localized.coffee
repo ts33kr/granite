@@ -61,7 +61,7 @@ module.exports.Localized = class Localized extends DuplexCore
     # all the embedded translation table files. These file are
     # used only by the services and components that are shipped
     # with the framework. The ones that actually constitute it.
-    @EMBEDDED_LOCALE = "#{__dirname}/../../locale"
+    @EMBEDDED_LOCALE: "#{__dirname}/../../locale"
 
     # An implementation of the standard, system hook in order for
     # providing a static boilerplate that is used to bring up the

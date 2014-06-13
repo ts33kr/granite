@@ -57,14 +57,14 @@ module.exports.AccessGate = class AccessGate extends Barebones
     # It also will be used to retrieve the authenticated entity off
     # the container. Definition may (and should) be overriden by
     # the implementing services, in case if rename is necessary.
-    @ACCESS_CONTAINER_SYMBOL = "account"
+    @ACCESS_CONTAINER_SYMBOL: "account"
 
     # This definition specifies the symbol (key) that will be used
     # for persisting the entity carrier object into the session obj.
     # It also will be used to retrieve the authenticated entity off
     # the session objs. Definition may (and should) be overriden by
     # the implementing services, in case if rename is necessary.
-    @ACCESS_SESSION_SYMBOL = "x-authenticate-entity"
+    @ACCESS_SESSION_SYMBOL: "x-authenticate-entity"
 
     # Symbol declaration table, that states what keys, if those are
     # vectors (arrays) should be exported and then merged with their

@@ -60,7 +60,7 @@ assert module.exports.RedisClient = class RedisClient extends Service
     # connection is supposed to be wired into a different Redis
     # server or database. This variable is used to supply that.
     # It should be a function, returning a Redis config object.
-    @REDIS_CONFIG = undefined
+    @REDIS_CONFIG: undefined
 
     # These defintions are the presets available for configuring
     # the Redis envelope getting functions. Please set the special
@@ -70,8 +70,8 @@ assert module.exports.RedisClient = class RedisClient extends Service
     # generate a new connection on the container, if it does not
     # contain an opened connection yet. The default container is
     # the kernel preset using the `REDIS_ENVELOPE_KERNEL` value.
-    @REDIS_ENVELOPE_KERNEL = -> return @kernel
-    @REDIS_ENVELOPE_SERVICE = -> @$redis ?= {}
+    @REDIS_ENVELOPE_KERNEL: -> return @kernel
+    @REDIS_ENVELOPE_SERVICE: -> @$redis ?= {}
 
     # A hook that will be called prior to unregistering the service
     # implementation. Please refer to this prototype signature for

@@ -60,7 +60,7 @@ assert module.exports.MongoClient = class MongoClient extends Service
     # connection is supposed to be wired into a different Mongo
     # server or database. This variable is used to supply that.
     # It should be a function, returning a Mongo config object.
-    @MONGO_CONFIG = undefined
+    @MONGO_CONFIG: undefined
 
     # These defintions are the presets available for configuring
     # the Mongo envelope getting functions. Please set the special
@@ -70,8 +70,8 @@ assert module.exports.MongoClient = class MongoClient extends Service
     # generate a new connection on the container, if it does not
     # contain an opened connection yet. The default container is
     # the kernel preset using the `MONGO_ENVELOPE_KERNEL` value.
-    @MONGO_ENVELOPE_KERNEL = -> return @kernel
-    @MONGO_ENVELOPE_SERVICE = -> @$mongo ?= {}
+    @MONGO_ENVELOPE_KERNEL: -> return @kernel
+    @MONGO_ENVELOPE_SERVICE: -> @$mongo ?= {}
 
     # A hook that will be called prior to unregistering the service
     # implementation. Please refer to this prototype signature for

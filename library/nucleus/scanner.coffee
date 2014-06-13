@@ -55,7 +55,7 @@ assert module.exports.ModuleScanner = class ModuleScanner extends Zombie
     # when it is discovered, scan for available services there and
     # continue monitoring the module to see when there are changes.
     # Default values will be processing JavaScript and CoffeeScript.
-    @MODULE_EXTENSIONS = [".js", ".coffee"]
+    @MODULE_EXTENSIONS: [".js", ".coffee"]
 
     # This method is being fired off once some directory changes.
     # When that happens, this mehod will see if all the approriate
