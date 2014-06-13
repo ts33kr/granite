@@ -84,9 +84,9 @@ module.exports.ApiInventory = class ApiInventory extends ApiService
         malfReg = "the routing registry seems is broken"
         noKernRout = "failed to obtain the kernel router"
         message = "Building entire API inventory in %s"
-        logger.debug message.toString().green, identify
         pub = (sv) => not sv.constructor.HIDE_INVENTORY
         predicate = (sv) => sv.objectOf(Asc) and pub(sv)
+        logger.debug message.toString().magenta, identify
         assert router = (try @kernel.router), noKernRout
         assert registry = (try router.registry), malfReg
         assert apis = _.filter(registry, predicate) or []
