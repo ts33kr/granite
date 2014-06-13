@@ -114,7 +114,7 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
     # the kernel boots up. With no arguments it returns the launcher.
     # This is a convenient way of running additions config routines,
     # when designing the derivative kernels with custom configuration.
-    @configure: (explain, routine) ->
+    @configure: (xexplain, xroutine) ->
         {series, apply} = async or require "async"
         assert _.isString config = "Configuring: %s"
         bareCall = (try arguments.length or 0) is 0
@@ -122,6 +122,8 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         gr = (o) -> try o.routine.apply.bind o.routine
         lg = (o) -> logger.info config, o.explain.bold
         fn = (t) -> (o) -> (a...) -> lg o; gr(o) t, a
+        explain = _.find(arguments, _.isString) or null
+        routine = _.find(arguments, _.isFunction) or 0
         assert _.isArray $configure = @$configure or []
         return (-> series _.map $configure, fn @) if run
         return (-> null) if not @$configure and bareCall
