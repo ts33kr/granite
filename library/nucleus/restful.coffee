@@ -98,7 +98,7 @@ module.exports.RestfulService = class RestfulService extends Service
     # When you invoke it without arguments, it assembled and returns
     # the executor that spins up all the middlewares. Please refer
     # to the `process` method implementation to get a usage example.
-    @middleware: (implement) ->
+    @middleware: (ximplement) ->
         seq = -> log(); async.series arguments...
         log = -> logger.debug message.yellow, idc
         idc = this.identify().toString().underline
