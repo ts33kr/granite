@@ -157,13 +157,13 @@ assert module.exports.Service = class Service extends Archetype
         firings = "Downstream spawning sequences in %s"
         identify = try @identify().toString().underline
         logger.debug message.grey, identify.toString()
+        exec = (fun) => fun kernel, service; service
         assert downstream = downstream.bind service
-        assert instance = downstream instance: =>
+        return exec instance = downstream instance: =>
             this.configure().call service, (results) =>
                 logger.debug firings.grey, identify
                 callback.call this, service, kernel
                 try service.emit "instance", kernel
-        instance kernel, service; return service
 
     # An embedded system for adding ad-hoc configuration routines.
     # Supply the reasoning and the routine and this method will add
