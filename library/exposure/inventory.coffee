@@ -37,6 +37,7 @@ https = require "https"
 http = require "http"
 util = require "util"
 
+{CachingToolkit} = require "./caching"
 {OnlySsl} = require "../membrane/securing"
 {GraniteKernel} = require "../nucleus/kernel"
 {Barebones} = require "../membrane/skeleton"
@@ -50,6 +51,13 @@ util = require "util"
 # to this service implementation source code for more information.
 module.exports.ApiInventory = class ApiInventory extends ApiService
 
+    # These declarations below are implantations of the abstracted
+    # components by the means of the dynamic recomposition system.
+    # Please take a look at the `Composition` class implementation
+    # for all sorts of information on the composition system itself.
+    # Each of these will be dynamicall integrated in class hierarchy.
+    @implanting CachingToolkit
+
     # Impose a conditional limitation on the service. The limiation
     # will be invoked when a router is determining whether a service
     # matches the condition or not. The limitation has to either do
@@ -57,8 +65,6 @@ module.exports.ApiInventory = class ApiInventory extends ApiService
     # Especially useful for service with the same resource but with
     # different conditions, such as mobile only and desktop only.
     @condition (r, s, decide) -> decide nconf.get "api:inventory"
-
-    @implanting require("./caching").CachingToolkit
 
     # This block defines a set of documentation directives. All of
     # the directives will be attached to the first API endpoint of
