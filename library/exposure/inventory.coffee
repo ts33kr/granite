@@ -70,6 +70,7 @@ module.exports.ApiInventory = class ApiInventory extends ApiService
     @docs synopsis: "Entire JSON inventory of all API services in the system"
     @docs version: GraniteKernel.FRAMEWORK.version, mime: "application/json"
     @docs markings: ["framework", "api", "inventory", "discovery", "tool"]
+    @docs params: ["uid", "Optional UUID to get specific API endpoint"]
 
     # Define an API endpoint in the current API service. Endpoint
     # is declared using the class directives with the name of one
