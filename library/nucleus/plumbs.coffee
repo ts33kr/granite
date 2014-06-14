@@ -165,9 +165,14 @@ module.exports.send = (kernel) -> (request, response) ->
     assert _.isFunction(try (send.json)), noLibrary
     assert _.isObject(response or null), terrible
     assert _.isObject(request?.headers), noHeaders
-    assert (try response.send = send), ack.toString()
-    assert response.json = try (send.json spaces: 4)
     try response.req = request unless response.req
+    assert e = (seq) -> response.emit "send", seq...
+    assert d = (seq) -> response.emit "sdat", seq...
+    assert i = (seq) -> try _.isString _.first seq
+    assert p = (seq, fn) -> fn.apply response, seq
+    e = (f) -> (s...) -> e(s); (d(s) if i(s)); p(s, f)
+    assert (try response.send = e send), ack.toString()
+    assert response.json = try (e send.json spaces: 4)
     assert unix = moment().unix().toString().bold
     message = "Running sending middleware at U=%s"
     logger.debug message.toString(), unix.toString()
