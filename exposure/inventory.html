@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="en"><head><title>exposure/inventory</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/inventory"><meta name="groc-project-path" content="library/exposure/inventory.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/inventory.coffee">library/exposure/inventory.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;&#105;&#108;&#x74;&#x6f;:t&#x73;&#51;&#x33;&#x6b;&#114;&#x40;&#103;&#x6d;&#97;&#105;&#x6c;&#46;&#x63;&#x6f;&#x6d;">t&#x73;&#51;&#x33;&#x6b;&#114;&#x40;&#103;&#x6d;&#97;&#105;&#x6c;&#46;&#x63;&#x6f;&#x6d;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">filesize = </span><span class="nx">require</span> <span class="s">&quot;filesize&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">request = </span><span class="nx">require</span> <span class="s">&quot;request&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">CachingToolkit</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./caching&quot;</span>
+<span class="p">{</span><span class="nx">OnlySsl</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/securing&quot;</span>
+<span class="p">{</span><span class="nx">GraniteKernel</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/kernel&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span>
+<span class="p">{</span><span class="nx">ApiService</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/api&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an API service shipped out-of-the-box with the framework.
+It is intended for serving the JSON inventory of the all available
+API services in the application. Services can be confidured to be
+hidden from the inventory. Also, the inventory service itself can
+be entirely disabled using the configuration system. Please refer
+to this service implementation source code for more information.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.ApiInventory = </span><span class="k">class</span> <span class="nx">ApiInventory</span> <span class="k">extends</span> <span class="nx">ApiService</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These declarations below are implantations of the abstracted
+components by the means of the dynamic recomposition system.
+Please take a look at the <code>Composition</code> class implementation
+for all sorts of information on the composition system itself.
+Each of these will be dynamicall integrated in class hierarchy.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@implanting</span> <span class="nx">CachingToolkit</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Impose a conditional limitation on the service. The limiation
+will be invoked when a router is determining whether a service
+matches the condition or not. The limitation has to either do
+accept or decline. Do this by calling <code>decide</code> with a boolean!
+Especially useful for service with the same resource but with
+different conditions, such as mobile only and desktop only.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@condition</span> <span class="nf">(r, s, decide) -&gt;</span> <span class="nx">decide</span> <span class="nx">nconf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;api:inventory&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block defines a set of documentation directives. All of
+the directives will be attached to the first API endpoint of
+this services that is defined right after the documentations
+block using of the HTTP verb directives. Please refer to the
+implementation of the <code>ApiService</code> for further informtion on
+the API endpoint definition and the accompanied documentation.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@docs</span> <span class="nv">follow: </span><span class="s">&quot;http://ts33kr.github.io/granite/exposure/inventory.html&quot;</span>
+    <span class="nx">@docs</span> <span class="nv">github: </span><span class="p">[</span><span class="s">&quot;ts33kr&quot;</span><span class="p">,</span> <span class="s">&quot;granite&quot;</span><span class="p">,</span> <span class="s">&quot;library/exposure/inventory.coffee&quot;</span><span class="p">]</span>
+    <span class="nx">@docs</span> <span class="nv">returns: </span><span class="s">&quot;A JSON array, where each item is an API endpoint object&quot;</span>
+    <span class="nx">@docs</span> <span class="nv">synopsis: </span><span class="s">&quot;Entire JSON inventory of all API services in the system&quot;</span>
+    <span class="nx">@docs</span> <span class="nv">version: </span><span class="nx">GraniteKernel</span><span class="p">.</span><span class="nx">FRAMEWORK</span><span class="p">.</span><span class="nx">version</span><span class="p">,</span> <span class="nv">mime: </span><span class="s">&quot;application/json&quot;</span>
+    <span class="nx">@docs</span> <span class="nv">markings: </span><span class="p">[</span><span class="s">&quot;framework&quot;</span><span class="p">,</span> <span class="s">&quot;api&quot;</span><span class="p">,</span> <span class="s">&quot;inventory&quot;</span><span class="p">,</span> <span class="s">&quot;discovery&quot;</span><span class="p">,</span> <span class="s">&quot;tool&quot;</span><span class="p">]</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block defines a set of parameter descriptions and a set
+of rules that may accompany these parameters. The definitions
+are somewhat similar the API service <code>docs</code> definitions, with
+the exception that everything defined here is related to argv
+(a parameter) that gets supplied to an API endpoint defined
+right after this block. Consult <code>ApiService</code> and Crossroads.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@argv</span> <span class="nv">uid: </span><span class="s">&quot;Optional UUID to query the specific API endpoint&quot;</span>
+    <span class="nx">@rule</span> <span class="nv">uid: </span><span class="sr">/^[\w-]{36}$/</span> <span class="c1"># an optional UUID v.1 identifier</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A decorator strategy for wrapping the API endpoint function
+with an LRU (least-recently-used) type of cache that normally
+uses the <code>request.url</code> as its key. This given cache strategy
+is highly dependent on the usage of the <code>response.send</code> func
+in order for the cache to work. Please see <code>plumbs</code> module
+for more info on that. Also, depends on the spin off engine.
+Please see the <code>lru-cache</code> package for more relevant info.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@cache: </span><span class="nx">@memoryCache</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="c1"># milliseconds</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Define an API endpoint in the current API service. Endpoint
+is declared using the class directives with the name of one
+of the valid HTTP verbs. The directive can be upper &amp; lower
+cased with no difference. Please see <code>RestfulService</code> class
+for more information on verbs, especially <code>SUPPORTED</code> const.
+Also, take a look at <code>ApiService</code> for advanced definitions.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@GET</span> <span class="s">&quot;/api/inventory/:uid:&quot;</span><span class="p">,</span> <span class="nx">@guard</span> <span class="nx">@cache</span> <span class="nf">(scoped) -&gt;</span>
+        <span class="nv">identify = </span><span class="k">try</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">Asc = </span><span class="nx">ApiService</span> <span class="c1"># a shorthand</span>
+        <span class="nv">malfReg = </span><span class="s">&quot;the routing registry seems is broken&quot;</span>
+        <span class="nv">noKernRout = </span><span class="s">&quot;failed to obtain the kernel router&quot;</span>
+        <span class="nv">message = </span><span class="s">&quot;Building entire API inventory in %s&quot;</span>
+        <span class="nv">pub = </span><span class="nf">(sv) =&gt;</span> <span class="o">not</span> <span class="nx">sv</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">HIDE_INVENTORY</span>
+        <span class="nv">predicate = </span><span class="nf">(sv) =&gt;</span> <span class="nx">sv</span><span class="p">.</span><span class="nx">objectOf</span><span class="p">(</span><span class="nx">Asc</span><span class="p">)</span> <span class="o">and</span> <span class="nx">pub</span><span class="p">(</span><span class="nx">sv</span><span class="p">)</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">magenta</span><span class="p">,</span> <span class="nx">identify</span>
+        <span class="nx">assert</span> <span class="nv">router = </span><span class="p">(</span><span class="k">try</span> <span class="nx">@kernel</span><span class="p">.</span><span class="nx">router</span><span class="p">),</span> <span class="nx">noKernRout</span>
+        <span class="nx">assert</span> <span class="nv">registry = </span><span class="p">(</span><span class="k">try</span> <span class="nx">router</span><span class="p">.</span><span class="nx">registry</span><span class="p">),</span> <span class="nx">malfReg</span>
+        <span class="nx">assert</span> <span class="nv">apis = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">registry</span><span class="p">,</span> <span class="nx">predicate</span><span class="p">)</span> <span class="o">or</span> <span class="p">[]</span>
+        <span class="nx">assert</span> <span class="nv">defs = </span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">api</span><span class="p">()</span> <span class="k">for</span> <span class="nx">a</span> <span class="k">in</span> <span class="nx">apis</span><span class="p">)</span>
+        <span class="nx">assert</span> <span class="nv">defs = </span><span class="nx">_</span><span class="p">.</span><span class="nx">flatten</span> <span class="nx">_</span><span class="p">.</span><span class="nx">cloneDeep</span><span class="p">(</span><span class="nx">defs</span> <span class="o">or</span> <span class="p">[])</span>
+        <span class="k">delete</span> <span class="nx">def</span><span class="p">.</span><span class="nx">rules</span> <span class="k">for</span> <span class="nx">def</span> <span class="k">in</span> <span class="nx">defs</span> <span class="k">when</span> <span class="nx">def</span><span class="p">.</span><span class="nx">rules</span>
+        <span class="nv">fetcher = </span><span class="nf">(v) -&gt;</span> <span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">and</span> <span class="nx">v</span><span class="p">)</span> <span class="o">or</span> <span class="nx">_</span><span class="p">.</span><span class="nx">head</span> <span class="nx">v</span>
+        <span class="nv">m = </span><span class="nf">(a, v) -&gt;</span> <span class="p">(</span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">j</span> <span class="k">for</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="k">of</span> <span class="nx">v</span><span class="p">;</span> <span class="nx">a</span>
+        <span class="nx">assert</span> <span class="nv">reduce = </span><span class="nf">(ds) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">reduce</span> <span class="nx">ds</span><span class="p">,</span> <span class="nx">m</span><span class="p">,</span> <span class="nb">Object</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">flattn = </span><span class="nf">(ds) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">mapValues</span> <span class="nx">ds</span><span class="p">,</span> <span class="nx">fetcher</span>
+        <span class="nv">d.documents = </span><span class="nx">reduce</span> <span class="nx">d</span><span class="p">.</span><span class="nx">documents</span> <span class="k">for</span> <span class="nx">d</span> <span class="k">in</span> <span class="nx">defs</span>
+        <span class="nv">d.documents = </span><span class="nx">flattn</span> <span class="nx">d</span><span class="p">.</span><span class="nx">documents</span> <span class="k">for</span> <span class="nx">d</span> <span class="k">in</span> <span class="nx">defs</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">send</span> <span class="nx">defs</span> <span class="k">unless</span> <span class="nx">scoped</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">send</span> <span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">defs</span><span class="p">,</span> <span class="nv">uid: </span><span class="nx">scoped</span></div></div></div></div></body></html>

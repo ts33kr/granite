@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="en"><head><title>exposure/caching</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/caching"><meta name="groc-project-path" content="library/exposure/caching.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/caching.coffee">library/exposure/caching.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;a&#x69;&#x6c;t&#x6f;:&#116;&#115;&#51;&#51;&#107;r&#x40;&#x67;&#x6d;&#x61;&#105;l.&#99;&#111;&#109;">&#116;&#115;&#51;&#51;&#107;r&#x40;&#x67;&#x6d;&#x61;&#105;l.&#99;&#111;&#109;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">bower = </span><span class="nx">require</span> <span class="s">&quot;bower&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">crypto = </span><span class="nx">require</span> <span class="s">&quot;crypto&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">path = </span><span class="nx">require</span> <span class="s">&quot;path&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">Extending</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/extends&quot;</span>
+<span class="p">{</span><span class="nx">Composition</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/compose&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span>
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/arche&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This toolkit contains a set of routines that help to define the
+caching strategies. All of them are simple and definitely not for
+the heavy or production usage, but rather for most simple cases.
+Generally, you would only apply these strategies when implementing
+an API endpoint, within the <code>ApiService</code> abstract base class tool.
+Please refer to each strategy for more relevant information on it.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.CachingToolkit = </span><span class="k">class</span> <span class="nx">CachingToolkit</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A decorator strategy for wrapping the API endpoint function
+with an LRU (least-recently-used) type of cache that normally
+uses the <code>request.path</code> as its key. This given cache strategy
+is highly dependent on the usage of the <code>response.send</code> func
+in order for the cache to work. Please see <code>plumbs</code> module
+for more info on that. Also, depends on the spin off engine.
+Please see the <code>lru-cache</code> package for more relevant info.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@memoryCache: </span><span class="nf">(size, time, keys) -&gt;</span> <span class="nf">(implement) -&gt;</span>
+        <span class="nv">noSize = </span><span class="s">&quot;no maximum size of cache supplied&quot;</span>
+        <span class="nv">noTime = </span><span class="s">&quot;no TTL timeout for cache var given&quot;</span>
+        <span class="nv">noImpl = </span><span class="s">&quot;no implementation endpoint supplied&quot;</span>
+        <span class="nv">noSpin = </span><span class="s">&quot;not spin-off engine valuess detected&quot;</span>
+        <span class="nv">invKey = </span><span class="s">&quot;the generated cache key is not valid&quot;</span>
+        <span class="nv">noReq = </span><span class="s">&quot;no request in the spinned-off object&quot;</span>
+        <span class="nv">noRes = </span><span class="s">&quot;no response in the spinned-off object&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nv">lru = </span><span class="nx">require</span> <span class="s">&quot;lru-cache&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">size</span> <span class="o">or</span> <span class="kc">undefined</span><span class="p">),</span> <span class="nx">noSize</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">time</span> <span class="o">or</span> <span class="kc">undefined</span><span class="p">),</span> <span class="nx">noTime</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">implement</span> <span class="o">or</span> <span class="kc">no</span><span class="p">),</span> <span class="nx">noImpl</span>
+        <span class="nx">assert</span> <span class="nv">options = </span><span class="k">try</span> <span class="nv">max: </span><span class="nx">size</span><span class="p">,</span> <span class="nv">maxAge: </span><span class="nx">time</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">caching = </span><span class="k">try</span> <span class="nx">lru</span> <span class="nx">options</span>
+        <span class="nx">assert</span> <span class="nv">keys = </span><span class="p">(</span><span class="nf">-&gt;</span> <span class="nx">@request</span><span class="p">.</span><span class="nx">path</span><span class="p">)</span> <span class="k">unless</span> <span class="nx">keys</span>
+        <span class="nx">assert</span> <span class="nv">i = </span><span class="nf">-&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">_</span><span class="p">.</span><span class="nx">first</span> <span class="nx">arguments</span>
+        <span class="nv">hits = </span><span class="s">&quot;Hit memory cache of %s at %s&quot;</span><span class="p">.</span><span class="nx">green</span>
+        <span class="nv">miss = </span><span class="s">&quot;Missed memory cache of %s at %s&quot;</span><span class="p">.</span><span class="nx">red</span>
+        <span class="k">return</span> <span class="nf">(captured...) -&gt;</span> <span class="c1"># decorative wrapper</span>
+            <span class="nx">assert</span> <span class="nx">@__isolated</span> <span class="o">and</span> <span class="nx">@__origin</span><span class="p">,</span> <span class="nx">noSpin</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">@request</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noReq</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">@response</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noRes</span>
+            <span class="nx">assert</span> <span class="nv">key = </span><span class="nx">keys</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">)</span> <span class="o">or</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">invKey</span>
+            <span class="nv">ident = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+            <span class="nv">set = </span><span class="nf">(dx) -&gt;</span> <span class="nx">caching</span><span class="p">.</span><span class="nx">set</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">dx</span> <span class="k">if</span> <span class="nx">i</span><span class="p">(</span><span class="nx">dx</span><span class="p">)</span>
+            <span class="nv">c = cached = </span><span class="nx">caching</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="o">or</span> <span class="kc">undefined</span>
+            <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">hits</span><span class="p">,</span> <span class="nx">key</span><span class="p">.</span><span class="nx">bold</span><span class="p">,</span> <span class="nx">ident</span> <span class="k">if</span> <span class="nx">c</span><span class="o">?</span>
+            <span class="k">return</span> <span class="nx">@response</span><span class="p">.</span><span class="nx">send</span> <span class="nx">cached</span> <span class="k">if</span> <span class="nx">cached</span><span class="o">?</span>
+            <span class="k">try</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">miss</span><span class="p">,</span> <span class="nx">key</span><span class="p">.</span><span class="nx">bold</span><span class="p">,</span> <span class="nx">ident</span>
+            <span class="nx">@response</span><span class="p">.</span><span class="nx">once</span> <span class="s">&quot;sdat&quot;</span><span class="p">,</span> <span class="nf">(dx) =&gt;</span> <span class="nx">set</span> <span class="nx">dx</span>
+            <span class="nx">implement</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">captured</span> <span class="c1"># call</span></div></div></div></div></body></html>
