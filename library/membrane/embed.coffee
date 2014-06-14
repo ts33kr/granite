@@ -89,11 +89,11 @@ assert module.exports.Embedded = class Embedded extends Zombie
         assert @derives(Zombie), "not a zombie anymore"
         message = "The %s damaged %s zombie, fixing it"
         warning = "Checking %s for validitity after %s"
-        try logger.debug warning.grey, sident, fident
+        try logger.silly warning.grey, sident, fident
         process = try this::process is Zombie::process
         matches = try this::matches is Zombie::matches
         m = malformed = (not process) or (not matches)
-        logger.debug message.red, fident, sident if m
+        logger.silly message.red, fident, sident if m
         return unless malformed # nothing is damaged
         assert this::process = Zombie::process or 0
         assert this::matches = Zombie::matches or 0

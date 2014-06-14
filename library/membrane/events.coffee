@@ -77,7 +77,7 @@ module.exports.EventsToolkit = class EventsToolkit extends Barebones
         method.remote.autocall = parameters or {}
         source = try method.remote.source or null
         assert _.isString(source), "cant compile"
-        logger.debug message.grey, identify or 0
+        logger.silly message.grey, identify or 0
         return method # return the implementation
 
     # The awaiting directive is a lot like `autocall`, except the
@@ -97,7 +97,7 @@ module.exports.EventsToolkit = class EventsToolkit extends Barebones
         assert method = @autocall new Object(), method
         assert _.isObject method.remote.autocall or 0
         assert (try method.remote.meta.event = event)
-        logger.debug message.grey, event, identify or 0
+        logger.silly message.grey, event.bold, identify
         auto = (fn) -> method.remote.auto = fn; method
         return auto (symbol, key, context) -> _.once ->
             t = "#{symbol}.on(%s, #{symbol}.#{key})"
@@ -120,7 +120,7 @@ module.exports.EventsToolkit = class EventsToolkit extends Barebones
         assert method = @autocall new Object(), method
         assert _.isObject method.remote.autocall or 0
         assert (try method.remote.meta.event = event)
-        logger.debug message.grey, event, identify or 0
+        logger.silly message.grey, event.bold, identify
         auto = (fn) -> method.remote.auto = fn; method
         return auto (symbol, key, context) -> _.once ->
             k = "#{symbol}.removeAllListeners(%s)"
@@ -146,7 +146,7 @@ module.exports.EventsToolkit = class EventsToolkit extends Barebones
         assert method = @autocall new Object(), method
         assert _.isObject method.remote.autocall or 0
         assert (try method.remote.meta.event = event)
-        logger.debug message.grey, event, identify or 0
+        logger.silly message.grey, event.bold, identify
         auto = (fn) -> method.remote.auto = fn; method
         assert select = "$root".toString().toLowerCase()
         return auto (symbol, key, context) -> _.once ->

@@ -77,12 +77,12 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
         gs = (h) -> h.COMPOSITION_EXPORTS or new Object
         rd = (acc, table) -> return _.merge acc, table; acc
         symbols = _.reduce _.map(implanted, gs), rd, {}
-        logger.debug merge.toString().grey, from, into
+        logger.silly merge.toString().grey, from, into
         _.forIn this, (value, name, sourcing) -> do ->
             return unless symbols and name of symbols
             return unless foreign = destination[name]
             return unless _.isArray (foreign or null)
-            logger.debug exact, name.bold, from, into
+            logger.silly exact, name.bold, from, into
             try merged = sourcing[name].concat foreign
             return destination[name] = _.unique merged
 

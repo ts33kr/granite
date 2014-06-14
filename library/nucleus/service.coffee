@@ -307,7 +307,7 @@ assert module.exports.Service = class Service extends Archetype
         assert _.isRegExp(pattern) and source or 0, notReg
         assert @resources = (@resources or []).concat pattern
         assert @resources = _.unique this.resources or []
-        logger.debug associate, inspected, identify
+        logger.silly associate, inspected, identify
         return this # return itself for chaining...
 
     # This is a very basic method that adds the specified regular
@@ -327,5 +327,5 @@ assert module.exports.Service = class Service extends Archetype
         assert _.isRegExp(pattern) and source or 0, notReg
         assert @domains = (@domains or []).concat pattern
         assert @domains = _.unique this.domains or []
-        logger.debug associate, inspected, identify
+        logger.silly associate, inspected, identify
         return this # return itself for chaining...

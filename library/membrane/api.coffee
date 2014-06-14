@@ -241,7 +241,7 @@ assert module.exports.ApiService = class ApiService extends Barebones
         assert _.isArray(this.documents), noDocuments
         assert (try @derives(ApiService)), malfuncs
         assert identify = this.identify().underline
-        logger.debug message.yellow, identify.bold
+        logger.silly message.yellow, identify.bold
         fn = (arbitraryVector) -> return signature
         fn @documents = previous.concat signature
 
@@ -267,7 +267,7 @@ assert module.exports.ApiService = class ApiService extends Barebones
         assert _.isArray(this.crossRules), noCrossRules
         assert (try @derives(ApiService)), malfuncs
         assert identify = this.identify().underline
-        logger.debug message.yellow, identify.bold
+        logger.silly message.yellow, identify.bold
         fn = (arbitraryVector) -> return signature
         fn @crossRules = previous.concat signature
 
@@ -293,7 +293,7 @@ assert module.exports.ApiService = class ApiService extends Barebones
         assert _.isArray(this.paramStore), noParamStore
         assert (try @derives(ApiService)), malfuncs
         assert identify = this.identify().underline
-        logger.debug message.yellow, identify.bold
+        logger.silly message.yellow, identify.bold
         fn = (arbitraryVector) -> return signature
         fn @paramStore = previous.concat signature
 
