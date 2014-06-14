@@ -179,7 +179,9 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         this.interceptExceptions.call this, initializer
         @once "completed", => logger.info comp.rainbow
         return asciify branding..., (error, banner) =>
-            util.puts banner.toString().blue unless error
+            visible = ["info", "debug", "warn", "silly"]
+            show = try nconf.get("log:level") in visible
+            util.puts banner.blue if (not error) and show
             identify = "Running version %s, codename: %s"
             using = "Using %s class as the kernel type"
             logger.info identify.underline, types...
@@ -430,8 +432,9 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         threshold = plumbs.threshold this
         @connect.use @threshold = threshold
         @connect.use @query = connect.query()
+        @connect.use @jsonParser = connect.json()
         @connect.use @compress = connect.compress()
-        @connect.use @bodyParser = connect.bodyParser()
+        @connect.use @urlencoded = connect.urlencoded()
         @connect.use @cookieParser = connect.cookieParser()
         @connect.use @parameters = plumbs.parameters this
         @connect.use @extSession = plumbs.extSession this
