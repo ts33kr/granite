@@ -184,6 +184,7 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
             util.puts banner.blue if (not error) and show
             identify = "Running version %s, codename: %s"
             using = "Using %s class as the kernel type"
+            types = _.map types, (type) -> type.bold
             logger.info identify.underline, types...
             logger.info using, @constructor.name.bold
             @domain.run => initializer?.apply this
