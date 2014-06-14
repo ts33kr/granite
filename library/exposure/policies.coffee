@@ -126,5 +126,6 @@ module.exports.Policies = class Policies extends AccessGate
         add q for q in entity?.qualify?() or Array()
         aliased = envelope and envelope is container
         _.extend envelope, container unless aliased
-        logger.debug message, qualifiers.join ", "
+        squalifiers = try _.map qualifiers, "bold"
+        logger.debug message, squalifiers.join ", "
         assert not _.isEmpty qualifiers; qualifiers
