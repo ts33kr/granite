@@ -173,8 +173,10 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         assert @application = @constructor.APPLICATION
         assert branding = [@framework.name, "smisome1"]
         types = [@framework.version, @framework.codename]
+        comp = "Framework kernel boot sequence is completed!"
         GraniteKernel.instance = this # one kernel allowed
         this.interceptExceptions.call this, initializer
+        @once "completed", => logger.info comp.rainbow
         return asciify branding..., (error, banner) =>
             util.puts banner.toString().blue unless error
             identify = "Running version %s, codename: %s"
@@ -335,11 +337,14 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
     # for instantiating, configuring and launching up the servers.
     # See the method implementation for info on the exact semantic.
     startupHttpsServer: ->
+        completed = 0 # initial kernel state
+        @once "completed", => completed = yes
         assert server = nconf.get "server" or {}
         assert hostname = nconf.get "server:host" or 0
         assert _.isNumber(server.https), "no HTTPS port"
         assert _.isObject options = @resolveSslDetails()
         running = "Running HTTPS server at %s".magenta
+        rearly = "HTTPS request %s came early, killing".red
         arrived = "Incoming #{"HTTPS".bold} connection at %s"
         location = "#{hostname}:#{server.https}".toString()
         logger.info running.underline, location.underline
@@ -347,10 +352,12 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         assert _.isObject @domain; @domain.add @secure
         do => @secure.listen server.https, hostname
         return @secure.on "connection", (socket) ->
-            key = socket.server?._connectionKey
-            key = try key.toString().underline
-            logger.debug arrived.green, key
-            return socket.setNoDelay yes
+            key = try socket?.server?._connectionKey
+            key = si = try key?.toString().underline
+            logger.debug rearly, si unless completed
+            return socket.destroy() unless completed
+            logger.debug arrived.green, si.underline
+            return socket.setNoDelay yes # setsock
 
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
@@ -358,10 +365,13 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
     # for instantiating, configuring and launching up the servers.
     # See the method implementation for info on the exact semantic.
     startupHttpServer: ->
+        completed = 0 # initial kernel state
+        @once "completed", => completed = yes
         assert server = nconf.get "server" or {}
         assert hostname = nconf.get "server:host" or 0
         assert _.isNumber(server.http), "no HTTP port"
         running = "Running HTTP server at %s".magenta
+        rearly = "HTTP request %s came early, killing".red
         arrived = "Incoming #{"HTTP".bold} connection at %s"
         location = "#{hostname}:#{server.http}".toString()
         logger.info running.underline, location.underline
@@ -369,10 +379,12 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         assert _.isObject @domain; @domain.add @server
         do => @server.listen server.http, hostname
         return @server.on "connection", (socket) ->
-            key = socket.server?._connectionKey
-            key = try key.toString().underline
-            logger.debug arrived.green, key
-            return socket.setNoDelay yes
+            key = try socket?.server?._connectionKey
+            key = si = try key?.toString().underline
+            logger.debug rearly, si unless completed
+            return socket.destroy() unless completed
+            logger.debug arrived.green, si.underline
+            return socket.setNoDelay yes # setsock
 
     # Setup and attach Socket.IO handlers to each of the servers.
     # That is HTTP and HTTPS servers that are running and listening
