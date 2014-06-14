@@ -103,7 +103,7 @@ module.exports.ApiInventory = class ApiInventory extends ApiService
     # cased with no difference. Please see `RestfulService` class
     # for more information on verbs, especially `SUPPORTED` const.
     # Also, take a look at `ApiService` for advanced definitions.
-    @GET "/api/inventory/:uid:", @g @cache (scoped) ->
+    @GET "/api/inventory/:uid:", @guard @cache (scoped) ->
         identify = try @constructor.identify().underline
         assert _.isObject Asc = ApiService # a shorthand
         malfReg = "the routing registry seems is broken"
