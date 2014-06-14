@@ -59,7 +59,8 @@ plumbs = require "./plumbs"
 # provides methods and routines necessary to bootstrap the framework
 # and the end user application constructed within the framework. It
 # is both an abstract base class as well as a ready to use bootstrap.
-# Please refer to the documentation of the methods for more info.
+# Please refer to the documentation of the methods for more info. It
+# also is the main entrypoint to pretty much the entire application.
 module.exports.GraniteKernel = class GraniteKernel extends Archetype
 
     # This static property should contain the loaded NPM package
