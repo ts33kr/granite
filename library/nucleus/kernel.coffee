@@ -278,6 +278,7 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         makeFailed = "failed to make module scanner"
         message = "Allocate %s service as dir monitor"
         @scanner = scanner.ModuleScanner.obtain this
+        @scanner.on "drain", => this.emit "completed"
         assert _.isObject(scanner or null), makeFailed
         identify = @scanner.constructor.identify().bold
         logger.info message.yellow, identify.toString()

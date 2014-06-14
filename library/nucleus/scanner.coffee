@@ -153,7 +153,8 @@ assert module.exports.ModuleScanner = class ModuleScanner extends Zombie
         collides = "use either register or unregister op"
         created = "Create seuquence operation queue at %s"
         try logger.debug created.yellow, identify.toString()
-        sequential = (fn) => this.queue = async.queue fn, 1
+        patch = (q) => q.drain = (=> this.emit "drain", q); q
+        sequential = (fn) => patch @queue = async.queue fn, 1
         throttle = (fn) -> _.debounce fn, 50 # 50 millisecs
         return sequential throttle (operation, callback) =>
             acknowledge = -> return callback.apply this
