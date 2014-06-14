@@ -95,7 +95,7 @@ module.exports.ApiInventory = class ApiInventory extends ApiService
     # in order for the cache to work. Please see `plumbs` module
     # for more info on that. Also, depends on the spin off engine.
     # Please see the `lru-cache` package for more relevant info.
-    @cache: @memoryCache 25, 1000 * 60 * 60 # milliseconds
+    @cache: @memoryCache 25, 1000 * 60 * 60 # TTL, milliseconds
 
     # Define an API endpoint in the current API service. Endpoint
     # is declared using the class directives with the name of one
