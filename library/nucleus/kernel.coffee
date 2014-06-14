@@ -297,22 +297,6 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         monitor directory for directory in subjects
         monitor library; monitor configs; this
 
-    # The utilitary method that is being called by either the kernel
-    # or scope implementation to establish the desirable facade for
-    # logging. The options from the config may be used to configure
-    # various options of the logger, such as output format, etc.
-    setupLoggingFacade: ->
-        assert _.isObject @logging = logger
-        assert format = "DD/MM/YYYY @ HH:mm:ss"
-        stamp = -> return moment().format format
-        options = timestamp: stamp, colorize: yes
-        options.level = nconf.get "log:level" or 0
-        noLevel = "No logging level is specified"
-        throw new Error noLevel unless options.level
-        assert console = logger.transports.Console
-        try do -> logger.remove console catch error
-        logger.add console, options; return this
-
     # This routine takes care of resolving all the necessary details
     # for successfully creating and running an HTTPS (SSL) server.
     # The details are typically at least the key and the certficiate.
@@ -477,6 +461,22 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         @serveStaticDirectory d, opts for d in dirs
         @serveStaticDirectory established, Object()
         @serveStaticDirectory pub(); return this
+
+    # The utilitary method that is being called by either the kernel
+    # or scope implementation to establish the desirable facade for
+    # logging. The options from the config may be used to configure
+    # various options of the logger, such as output format, etc.
+    setupLoggingFacade: ->
+        assert _.isObject @logging = logger
+        assert format = "DD/MM/YYYY @ HH:mm:ss"
+        stamp = -> return moment().format format
+        options = timestamp: stamp, colorize: yes
+        options.level = nconf.get "log:level" or 0
+        noLevel = "No logging level is specified"
+        throw new Error noLevel unless options.level
+        assert console = logger.transports.Console
+        try do -> logger.remove console catch error
+        logger.add console, options; return this
 
     # Create and wire in an appropriate Connext middleware that will
     # serve the specified directory as the directory with a static
