@@ -70,7 +70,15 @@ module.exports.ApiInventory = class ApiInventory extends ApiService
     @docs synopsis: "Entire JSON inventory of all API services in the system"
     @docs version: GraniteKernel.FRAMEWORK.version, mime: "application/json"
     @docs markings: ["framework", "api", "inventory", "discovery", "tool"]
-    @docs params: ["uid", "Optional UUID to get specific API endpoint"]
+
+    # This block defines a set of parameter descriptions and a set
+    # of rules that may accompany these parameters. The definitions
+    # are somewhat similar the API service `docs` definitions, with
+    # the exception that everything defined here is related to argv
+    # (a parameter) that gets supplied to an API endpoint defined
+    # right after this block. Consult `ApiService` and Crossroads.
+    @argv uid: "Optional UUID to query the specific API endpoint"
+    @rule uid: /^[\w-]{36}$/ # an optional UUID v.1 identifier
 
     # Define an API endpoint in the current API service. Endpoint
     # is declared using the class directives with the name of one
@@ -78,7 +86,6 @@ module.exports.ApiInventory = class ApiInventory extends ApiService
     # cased with no difference. Please see `RestfulService` class
     # for more information on verbs, especially `SUPPORTED` const.
     # Also, take a look at `ApiService` for advanced definitions.
-    @rule uid: /^[\w-]{36}$/ # optional UUID v.1
     @GET "/api/inventory/:uid:", @guard (scoped) ->
         identify = try @constructor.identify().underline
         assert _.isObject Asc = ApiService # a shorthand

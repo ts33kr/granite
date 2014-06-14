@@ -188,7 +188,7 @@ assert module.exports.ApiService = class ApiService extends Barebones
         assert crs = @crossroads = crossroads.create()
         defines = @constructor.define() or new Array()
         assert _.isArray(defines or null), invalidDefs
-        assert _.isEmpty(@constructor.doc()), emptyDoc
+        assert _.isEmpty(@constructor.docs()), emptyDoc
         assert _.isObject(@crossroads or 0), noCrossr
         assert amount = defines.length.toString().bold
         try logger.debug noted.yellow, amount, identify
@@ -222,11 +222,11 @@ assert module.exports.ApiService = class ApiService extends Barebones
     # Class directive that sets the specified documentations in
     # the documentation sequence that will be used & emptied when
     # a API method is defined below. That is, this method operates
-    # in a sequential mode. The documentation to is supplied to
+    # in a sequential mode. The documentation data is supplied to
     # this method as an object argument with arbitrary key/value
-    # pairs, where keys is doc name and value is the doc itself.
+    # pairs, where keys are doc name and value is the doc itself.
     # Multiple docs with the same key name may exist just fine.
-    this.document = this.docs = this.doc = (xsignature) ->
+    this.defineDocument = this.docs = (xsignature) ->
         noSignature = "please, supply a plain object"
         noDocuments = "cannot find the documents seq"
         internal = "an anomaly found in doc sequence"
@@ -246,16 +246,16 @@ assert module.exports.ApiService = class ApiService extends Barebones
         fn @documents = previous.concat signature
 
     # Class directive that sets the specified Crossroads rule in
-    # a Crossroads rules sequence that will be used * emptied when
+    # a Crossroads rules sequence that will be used & emptied when
     # a API method is defined below. That is, this method operates
     # in a sequential mode. The Crossroads rule gets supplied to
     # this method as an object argument with arbitrary key/value
-    # pairs, where keys is rule name and value is a rule itself.
+    # pairs, where keys are rule name and value is a rule itself.
     # Rules are attached to the route defined right after rules.
     this.crossroadsRule = this.rule = (xsignature) ->
         noSignature = "please, supply a plain object"
         noCrossRules = "cannot find a cross-rules seq"
-        internal = "an anomaly found in doc sequence"
+        internal = "an anomaly found in rule sequence"
         malfuncs = "derived from the incorrect source"
         message = "Setting the Crossroads rule in %s"
         @crossRules ?= new Array() # cross-rules seqs
@@ -270,6 +270,32 @@ assert module.exports.ApiService = class ApiService extends Barebones
         logger.debug message.yellow, identify.bold
         fn = (arbitraryVector) -> return signature
         fn @crossRules = previous.concat signature
+
+    # Class directive that sets the specified parameter summary in
+    # the parameters/arg sequence that will be used & emptied when
+    # a API method is defined below. That is, this method operates
+    # in a sequential mode. The parameter summary gets supplied to
+    # this method as an object argument with arbitrary key/value
+    # pairs, where keys are arg names and values are the synopsis.
+    # Params are attached to the route defined right after docs.
+    this.defineParameter = this.argv = (xsignature) ->
+        noSignature = "please, supply a plain object"
+        noParamStore = "cannot find a param-store seq"
+        internal = "an anomaly found in argv sequence"
+        malfuncs = "derived from the incorrect source"
+        message = "Setting the parameter value in %s"
+        @paramStore ?= new Array() # cross-rules seqs
+        assert previous = this.paramStore or Array()
+        assert _.all(previous, _.isObject), internal
+        return previous unless arguments.length > 0
+        signature = _.find arguments, _.isPlainObject
+        assert _.isPlainObject(signature), noSignature
+        assert _.isArray(this.paramStore), noParamStore
+        assert (try @derives(ApiService)), malfuncs
+        assert identify = this.identify().underline
+        logger.debug message.yellow, identify.bold
+        fn = (arbitraryVector) -> return signature
+        fn @paramStore = previous.concat signature
 
     # Define a new API and all of its attributes. Among those
     # arguments there is an API implementation function and an
@@ -290,8 +316,10 @@ assert module.exports.ApiService = class ApiService extends Barebones
         assert (maskStr or maskReg or 0), wrongMask
         documents = _.clone this.documents or Array()
         crossRules = _.reduce @crossRules, _.merge
+        paramStore = _.reduce @paramStore, _.merge
         delete @documents if @documents # clear doc
         delete @crossRules if @crossRules # rm rule
+        delete @paramStore if @paramStore # rm argv
         documents.push method: method.toUpperCase()
         documents.push mask: (mask?.source or mask)
         documents.push uid: uid = uuid.v1() or null
@@ -299,6 +327,7 @@ assert module.exports.ApiService = class ApiService extends Barebones
         return fn @definitions = previous.concat
             documents: documents # documentation
             implement: implement # implements fn
+            params: paramStore # parameters/argv
             rules: crossRules # Crossroads rules
             method: method.toUpperCase() # HTTP
             mask: mask # URL mask for routing
