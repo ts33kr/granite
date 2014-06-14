@@ -58,6 +58,8 @@ module.exports.ApiInventory = class ApiInventory extends ApiService
     # different conditions, such as mobile only and desktop only.
     @condition (r, s, decide) -> decide nconf.get "api:inventory"
 
+    @implanting require("./caching").CachingToolkit
+
     # This block defines a set of documentation directives. All of
     # the directives will be attached to the first API endpoint of
     # this services that is defined right after the documentations
@@ -80,13 +82,22 @@ module.exports.ApiInventory = class ApiInventory extends ApiService
     @argv uid: "Optional UUID to query the specific API endpoint"
     @rule uid: /^[\w-]{36}$/ # an optional UUID v.1 identifier
 
+    # A decorator strategy for wrapping the API endpoint function
+    # with an LRU (least-recently-used) type of cache that normally
+    # uses the `request.url` as its key. This given cache strategy
+    # is highly dependent on the usage of the `response.send` func
+    # in order for the cache to work. Please see `plumbs` module
+    # for more info on that. Also, depends on the spin off engine.
+    # Please see the `lru-cache` package for more relevant info.
+    @cache: @memoryCache 120, 1000 * 60 * 60 # milliseconds
+
     # Define an API endpoint in the current API service. Endpoint
     # is declared using the class directives with the name of one
     # of the valid HTTP verbs. The directive can be upper & lower
     # cased with no difference. Please see `RestfulService` class
     # for more information on verbs, especially `SUPPORTED` const.
     # Also, take a look at `ApiService` for advanced definitions.
-    @GET "/api/inventory/:uid:", @guard (scoped) ->
+    @GET "/api/inventory/:uid:", @g @cache (scoped) ->
         identify = try @constructor.identify().underline
         assert _.isObject Asc = ApiService # a shorthand
         malfReg = "the routing registry seems is broken"

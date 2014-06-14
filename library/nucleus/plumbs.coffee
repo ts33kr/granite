@@ -36,6 +36,7 @@ nconf = require "nconf"
 https = require "https"
 http = require "http"
 util = require "util"
+url = require "url"
 
 {Negotiator} = require "negotiator"
 {RedisSession} = require "../exposure/session"
@@ -220,8 +221,10 @@ module.exports.parameters = (kernel) -> (request, response) ->
     assert try query = request.query or new Object()
     assert try body = request.body or new Object()
     assert _.isObject request.params = new Object()
+    assert _.isObject parsed = url.parse request.url
     try _.extend request.params, query # query params
     try _.extend request.params, body # body params
+    assert try request.path = parsed.pathname # path
     assert try request.date = new Date # timstamped
     assert try request.kernel = kernel # kernelized
     assert try request.uuid = uuid.v1() # UUID tag
