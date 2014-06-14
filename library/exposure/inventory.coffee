@@ -76,6 +76,7 @@ module.exports.ApiInventory = class ApiInventory extends ApiService
     @docs github: ["ts33kr", "granite", "library/exposure/inventory.coffee"]
     @docs returns: "A JSON array, where each item is an API endpoint object"
     @docs synopsis: "Entire JSON inventory of all API services in the system"
+    @docs sidenote: "The responses are cached using request URL as the keys"
     @docs version: GraniteKernel.FRAMEWORK.version, mime: "application/json"
     @docs markings: ["framework", "api", "inventory", "discovery", "tool"]
 
