@@ -91,24 +91,6 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
     # that does that. The method can either invoke it or omit it.
     kernelPreemption: (continuation) -> continuation.apply this
 
-    # Either get or set an identica token. This token is application
-    # identification string of a free form, but usually formed by a
-    # app name plus a verion after the at sign. If no arguments are
-    # supplied, the method will get identica, otherwise - attempt to
-    # set one. If there is no identica - it asks the configuration.
-    @identica: (identica) ->
-        assert cns = "identica:compiled".toString()
-        automatic = => f(@$identica or nconf.get cns)
-        functional = _.isFunction identica or null
-        i = (fn) => return fn.apply this, arguments
-        f = (x) => if _.isFunction x then i(x) else x
-        return automatic() if arguments.length is 0
-        return @$identica = identica if functional
-        noIdentica = "the identica is not a string"
-        assert _.isString(identica), noIdentica
-        assert @$identica = identica.toString()
-        return @emit? "identica", arguments...
-
     # An embedded system for adding ad-hoc configuration routines.
     # Supply the reasoning and the routine and this method will add
     # that routine to the configuration stack, to be launched once
@@ -448,6 +430,29 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         @connect.use @send = plumbs.send this
         @connect.use @middleware; return this
 
+    # This method sets up the necessary internal toolkits, such as
+    # the determined scope and the router, which is then are wired
+    # in with the located and instantiated services. Please refer
+    # to the implementation on how and what is being done exactly.
+    # Also, it looks up and initialized the requested env scope.
+    setupScaffolding: ->
+        tag = try nconf.get "NODE_ENV" or undefined
+        mode = try nconf.get "forever" or undefined
+        missing = "no valid NODE_ENV variable found"
+        mode = mode.toUpperCase().underline if mode
+        bare = "Running without Forever supervision"
+        supd = "Running using %s mode within Forever"
+        assert not _.isEmpty(tag), missing.toString()
+        assert @tag = @env = @environment = tag or null
+        assert @scope = try scoping.Scope.lookup tag
+        assert this.scope.incorporate this, undefined
+        logger.warn bare.toString().red unless mode
+        logger.warn supd.toString().red, mode if mode
+        assert @router = new routing.ServiceRouter @
+        assert @middleware = @router.middleware
+        @middleware = @middleware.bind @router
+        assert _.isFunction @middleware; this
+
     # Setup a set of appropriate Connect middlewares that will take
     # care of serving static directory content for all configured
     # assets directory, using the options drawed from configuration.
@@ -465,6 +470,24 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         @serveStaticDirectory d, opts for d in dirs
         @serveStaticDirectory established, Object()
         @serveStaticDirectory pub(); return this
+
+    # Either get or set an identica token. This token is application
+    # identification string of a free form, but usually formed by a
+    # app name plus a verion after the at sign. If no arguments are
+    # supplied, the method will get identica, otherwise - attempt to
+    # set one. If there is no identica - it asks the configuration.
+    @identica: (identica) ->
+        assert cns = "identica:compiled".toString()
+        automatic = => f(@$identica or nconf.get cns)
+        functional = _.isFunction identica or null
+        i = (fn) => return fn.apply this, arguments
+        f = (x) => if _.isFunction x then i(x) else x
+        return automatic() if arguments.length is 0
+        return @$identica = identica if functional
+        noIdentica = "the identica is not a string"
+        assert _.isString(identica), noIdentica
+        assert @$identica = identica.toString()
+        return @emit? "identica", arguments...
 
     # The utilitary method that is being called by either the kernel
     # or scope implementation to establish the desirable facade for
@@ -496,26 +519,3 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         middleware = connect.static directory, options
         logger.info serving.cyan, solved.underline
         try @connect.use middleware; return this
-
-    # This method sets up the necessary internal toolkits, such as
-    # the determined scope and the router, which is then are wired
-    # in with the located and instantiated services. Please refer
-    # to the implementation on how and what is being done exactly.
-    # Also, it looks up and initialized the requested env scope.
-    setupScaffolding: ->
-        tag = try nconf.get "NODE_ENV" or undefined
-        mode = try nconf.get "forever" or undefined
-        missing = "no valid NODE_ENV variable found"
-        mode = mode.toUpperCase().underline if mode
-        bare = "Running without Forever supervision"
-        supd = "Running using %s mode within Forever"
-        assert not _.isEmpty(tag), missing.toString()
-        assert @tag = @env = @environment = tag or null
-        assert @scope = try scoping.Scope.lookup tag
-        assert this.scope.incorporate this, undefined
-        logger.warn bare.toString().red unless mode
-        logger.warn supd.toString().red, mode if mode
-        assert @router = new routing.ServiceRouter @
-        assert @middleware = @router.middleware
-        @middleware = @middleware.bind @router
-        assert _.isFunction @middleware; this
