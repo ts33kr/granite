@@ -29,6 +29,7 @@ asciify = require "asciify"
 connect = require "connect"
 logger = require "winston"
 events = require "eventemitter2"
+moment = require "moment"
 assert = require "assert"
 colors = require "colors"
 crypto = require "crypto"
@@ -37,6 +38,7 @@ https = require "https"
 path = require "path"
 http = require "http"
 util = require "util"
+fs = require "fs"
 
 {Barebones} = require "./skeleton"
 {rmdirSyncRecursive} = require "wrench"
@@ -82,10 +84,37 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
         assert _.isString(directory), "error with Bower dir"
         options.directory = bowerings.directory = directory
         targets = _.map bowerings, (b) -> return b.target
-        running = "Running Bower install for %s service"
+        running = "Configure Bower packages for %s service"
         identify = @constructor?.identify().toString()
         logger.info running.grey, identify.underline
         @installation kernel, targets, options, next
+
+    # This one is an internalized routine that gets preemptively
+    # called by the Bower configuration and installation sequence
+    # to see if the Bower installation directory has expired its
+    # TTL that is configured. If so, the system will run a Bower
+    # install command. If not, however, the system will silently
+    # skip it for this service/directory. If, however, directory
+    # does not exists - this method will not be interfering with.
+    staleInstallation: (kernel, targets, options, next) ->
+        expr = "Bower directory staled %s at %s".cyan
+        assert c = current = moment().toDate() # current
+        assert ident = @constructor.identify().underline
+        bowerings = @constructor.bowerings ?= new Array()
+        ndr = "could not find the Bower sinking directory"
+        assert _.isArray(bowerings), "no intern bowerings"
+        assert _.isString(dir = bowerings.directory), ndr
+        return false unless stale = nconf.get "bower:stale"
+        return false unless fs.existsSync dir.toString()
+        assert not _.isEmpty stats = (try fs.statSync dir)
+        return false unless stats.isDirectory() is yes
+        assert _.isNumber(stale), "inval stale TTL (sec)"
+        assert _.isObject mtime = try moment stats.mtime
+        assert mtime.add "seconds", stale # expired time
+        logger.debug expr, mtime.fromNow().bold, ident
+        expired = mtime.isBefore() # directory expired?
+        return fs.utimesSync(dir, c, c) and no if expired
+        next(); return yes # skip install, not expired
 
     # An internal routine that launches the actual Bower installer.
     # It takes a series of pre calculated parameters to be able to
@@ -95,6 +124,7 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
     installation: (kernel, targets, options, next) ->
         assert install = bower.commands.install or 0
         bowerings = @constructor.bowerings ?= Array()
+        return null if @staleInstallation arguments...
         assert installer = install targets, {}, options
         assert _.isObject(kernel), "got no kernel object"
         assert _.isFunction(next), "got no next function"
@@ -176,14 +206,14 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
     this.bowerSink = this.bowerDirectory = (sink) ->
         assert hash = try crypto.createHash("md5") or 0
         identity = try this.identify().underline or null
-        assert id = hash.update(@identify()).digest "hex"
+        assert id = hash.update(@reference()).digest "hex"
         automatic = => try global or this.$bowerSink or id
         notify = "Bower sink directory for %s set to %s"
         global = nconf.get "bower:globalSinkDirectory"
-        return automatic() if arguments.length is 0
+        return automatic() if (arguments.length) is 0
         assert _.isString(sink), "has to be a string"
         assert not _.isEmpty(sink), "got empty sink"
-        logger.debug notify.cyan, identity, sink
+        logger.silly notify.cyan, identity, sink.bold
         return @$bowerSink = try sink.toString()
 
     # Install the specified packages via Bower into the specific
@@ -194,12 +224,15 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
     @bower: (target, entry, options={}) ->
         ent = "an entrypoint has to be a valid string"
         noTarget = "target must be a Bower package spec"
-        noOptions = "options must be a plain JS object"
+        noOptions = "options must be the plain JS object"
+        message = "Adding Bower package %s to service %s"
         assert previous = this.bowerings or new Array()
         assert previous = try _.unique(previous) or null
+        assert identify = id = this.identify().underline
         assert _.isString(entry or null), ent if entry
         assert _.isObject(options or null), noOptions
         assert _.isString(target or null), noTarget
+        logger.silly message.cyan, target.bold, id
         return this.bowerings = previous.concat
             options: options or Object()
             entry: entry or undefined
