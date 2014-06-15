@@ -204,16 +204,15 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
     # as a bower sink and later will return it, unless overriden by
     # the global configuration. See the implementation for the info.
     this.bowerSink = this.bowerDirectory = (sink) ->
-        assert hash = try crypto.createHash("md5") or 0
-        identity = try this.identify().underline or null
-        assert id = hash.update(@reference()).digest "hex"
+        assert identify = try @identify().underline
+        global = nconf.get "bower:globalSinkDirectory"
+        assert id = @disposition().reference # an MD5 hex
         automatic = => try global or this.$bowerSink or id
         notify = "Bower sink directory for %s set to %s"
-        global = nconf.get "bower:globalSinkDirectory"
         return automatic() if (arguments.length) is 0
         assert _.isString(sink), "has to be a string"
         assert not _.isEmpty(sink), "got empty sink"
-        logger.silly notify.cyan, identity, sink.bold
+        logger.silly notify.cyan, identify, sink.bold
         return @$bowerSink = try sink.toString()
 
     # Install the specified packages via Bower into the specific
