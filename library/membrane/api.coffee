@@ -41,6 +41,7 @@ url = require "url"
 {format} = require "util"
 {STATUS_CODES} = require "http"
 {Barebones} = require "./skeleton"
+{EndpointToolkit} = require "./endpoint"
 {remote, external} = require "./remote"
 
 # This is an abstract base class for creating services that expose
@@ -57,6 +58,13 @@ assert module.exports.ApiService = class ApiService extends Barebones
     # mainly is used to exclude or account for abstract classes.
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
+
+    # These declarations below are implantations of the abstracted
+    # components by the means of the dynamic recomposition system.
+    # Please take a look at the `Composition` class implementation
+    # for all sorts of information on the composition system itself.
+    # Each of these will be dynamicall integrated in class hierarchy.
+    @implanting EndpointToolkit
 
     # Symbol declaration table, that states what keys, if those are
     # vectors (arrays) should be exported and then merged with their
@@ -218,84 +226,6 @@ assert module.exports.ApiService = class ApiService extends Barebones
             assert (shadow.__isolated or 0) is yes
             assert _.isObject shadow.__origin or 0
             implement.apply shadow, parameters
-
-    # Class directive that sets the specified documentations in
-    # the documentation sequence that will be used & emptied when
-    # a API method is defined below. That is, this method operates
-    # in a sequential mode. The documentation data is supplied to
-    # this method as an object argument with arbitrary key/value
-    # pairs, where keys are doc name and value is the doc itself.
-    # Multiple docs with the same key name may exist just fine.
-    this.defineDocument = this.docs = (xsignature) ->
-        noSignature = "please, supply a plain object"
-        noDocuments = "cannot find the documents seq"
-        internal = "an anomaly found in doc sequence"
-        malfuncs = "derived from the incorrect source"
-        message = "Setting an API documentation in %s"
-        @documents ?= new Array() # document sequence
-        assert previous = this.documents or new Array
-        assert _.all(previous, _.isObject), internal
-        return previous unless arguments.length > 0
-        signature = _.find arguments, _.isPlainObject
-        assert _.isPlainObject(signature), noSignature
-        assert _.isArray(this.documents), noDocuments
-        assert (try @derives(ApiService)), malfuncs
-        assert identify = this.identify().underline
-        logger.silly message.yellow, identify.bold
-        fn = (arbitraryVector) -> return signature
-        fn @documents = previous.concat signature
-
-    # Class directive that sets the specified Crossroads rule in
-    # a Crossroads rules sequence that will be used & emptied when
-    # a API method is defined below. That is, this method operates
-    # in a sequential mode. The Crossroads rule gets supplied to
-    # this method as an object argument with arbitrary key/value
-    # pairs, where keys are rule name and value is a rule itself.
-    # Rules are attached to the route defined right after rules.
-    this.crossroadsRule = this.rule = (xsignature) ->
-        noSignature = "please, supply a plain object"
-        noCrossRules = "cannot find a cross-rules seq"
-        internal = "an anomaly found in rule sequence"
-        malfuncs = "derived from the incorrect source"
-        message = "Setting the Crossroads rule in %s"
-        @crossRules ?= new Array() # cross-rules seqs
-        assert previous = this.crossRules or Array()
-        assert _.all(previous, _.isObject), internal
-        return previous unless arguments.length > 0
-        signature = _.find arguments, _.isPlainObject
-        assert _.isPlainObject(signature), noSignature
-        assert _.isArray(this.crossRules), noCrossRules
-        assert (try @derives(ApiService)), malfuncs
-        assert identify = this.identify().underline
-        logger.silly message.yellow, identify.bold
-        fn = (arbitraryVector) -> return signature
-        fn @crossRules = previous.concat signature
-
-    # Class directive that sets the specified parameter summary in
-    # the parameters/arg sequence that will be used & emptied when
-    # a API method is defined below. That is, this method operates
-    # in a sequential mode. The parameter summary gets supplied to
-    # this method as an object argument with arbitrary key/value
-    # pairs, where keys are arg names and values are the synopsis.
-    # Params are attached to the route defined right after docs.
-    this.defineParameter = this.argv = (xsignature) ->
-        noSignature = "please, supply a plain object"
-        noParamStore = "cannot find a param-store seq"
-        internal = "an anomaly found in argv sequence"
-        malfuncs = "derived from the incorrect source"
-        message = "Setting the parameter value in %s"
-        @paramStore ?= new Array() # cross-rules seqs
-        assert previous = this.paramStore or Array()
-        assert _.all(previous, _.isObject), internal
-        return previous unless arguments.length > 0
-        signature = _.find arguments, _.isPlainObject
-        assert _.isPlainObject(signature), noSignature
-        assert _.isArray(this.paramStore), noParamStore
-        assert (try @derives(ApiService)), malfuncs
-        assert identify = this.identify().underline
-        logger.silly message.yellow, identify.bold
-        fn = (arbitraryVector) -> return signature
-        fn @paramStore = previous.concat signature
 
     # Define a new API and all of its attributes. Among those
     # arguments there is an API implementation function and an
