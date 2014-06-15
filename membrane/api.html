@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>membrane/api</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/api"><meta name="groc-project-path" content="library/membrane/api.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/api.coffee">library/membrane/api.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="m&#x61;&#x69;&#x6c;&#116;&#x6f;:&#116;&#x73;&#51;&#x33;&#x6b;&#114;&#x40;&#103;&#x6d;&#x61;&#x69;&#108;.&#99;&#x6f;&#x6d;">&#116;&#x73;&#51;&#x33;&#x6b;&#114;&#x40;&#103;&#x6d;&#x61;&#x69;&#108;.&#99;&#x6f;&#x6d;</a>
+<!DOCTYPE html><html lang="en"><head><title>membrane/api</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/api"><meta name="groc-project-path" content="library/membrane/api.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/api.coffee">library/membrane/api.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;&#x69;&#108;&#x74;o:&#116;&#x73;&#51;&#51;&#x6b;&#x72;&#64;&#x67;&#x6d;&#97;&#105;&#x6c;.&#99;&#x6f;&#x6d;">&#116;&#x73;&#51;&#51;&#x6b;&#x72;&#64;&#x67;&#x6d;&#97;&#105;&#x6c;.&#99;&#x6f;&#x6d;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div
 <span class="p">{</span><span class="nx">format</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 <span class="p">{</span><span class="nx">STATUS_CODES</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;http&quot;</span>
 <span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
+<span class="p">{</span><span class="nx">EndpointToolkit</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./endpoint&quot;</span>
 <span class="p">{</span><span class="nx">remote</span><span class="p">,</span> <span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./remote&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract base class for creating services that expose
 their functionality as API. The general structure of API is a REST.
 Although it is not strictly limited by this ABC, and anything within
@@ -48,7 +49,11 @@ an additional tool set for supplementing the APIs with documentation.</p></div><
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
-Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Symbol declaration table, that states what keys, if those are
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These declarations below are implantations of the abstracted
+components by the means of the dynamic recomposition system.
+Please take a look at the <code>Composition</code> class implementation
+for all sorts of information on the composition system itself.
+Each of these will be dynamicall integrated in class hierarchy.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@implanting</span> <span class="nx">EndpointToolkit</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Symbol declaration table, that states what keys, if those are
 vectors (arrays) should be exported and then merged with their
 counterparts in the destination, once the composition process
 takes place. See the <code>Archetype::composition</code> hook definition
@@ -188,76 +193,7 @@ The wrapping provides important boilerplate to set up scope.</p></div></div><div
         <span class="nx">fx</span> <span class="nf">(shadow, parameters...) -&gt;</span> <span class="c1"># the wrapper</span>
             <span class="nx">assert</span> <span class="p">(</span><span class="nx">shadow</span><span class="p">.</span><span class="nx">__isolated</span> <span class="o">or</span> <span class="mi">0</span><span class="p">)</span> <span class="o">is</span> <span class="kc">yes</span>
             <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nx">shadow</span><span class="p">.</span><span class="nx">__origin</span> <span class="o">or</span> <span class="mi">0</span>
-            <span class="nx">implement</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">shadow</span><span class="p">,</span> <span class="nx">parameters</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Class directive that sets the specified documentations in
-the documentation sequence that will be used &amp; emptied when
-a API method is defined below. That is, this method operates
-in a sequential mode. The documentation data is supplied to
-this method as an object argument with arbitrary key/value
-pairs, where keys are doc name and value is the doc itself.
-Multiple docs with the same key name may exist just fine.</p></div></div><div class="code"><div class="wrapper">    <span class="k">this</span><span class="p">.</span><span class="nv">defineDocument = </span><span class="k">this</span><span class="p">.</span><span class="nv">docs = </span><span class="nf">(xsignature) -&gt;</span>
-        <span class="nv">noSignature = </span><span class="s">&quot;please, supply a plain object&quot;</span>
-        <span class="nv">noDocuments = </span><span class="s">&quot;cannot find the documents seq&quot;</span>
-        <span class="nv">internal = </span><span class="s">&quot;an anomaly found in doc sequence&quot;</span>
-        <span class="nv">malfuncs = </span><span class="s">&quot;derived from the incorrect source&quot;</span>
-        <span class="nv">message = </span><span class="s">&quot;Setting an API documentation in %s&quot;</span>
-        <span class="nx">@documents</span> <span class="o">?=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span> <span class="c1"># document sequence</span>
-        <span class="nx">assert</span> <span class="nv">previous = </span><span class="k">this</span><span class="p">.</span><span class="nx">documents</span> <span class="o">or</span> <span class="k">new</span> <span class="nb">Array</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">previous</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">),</span> <span class="nx">internal</span>
-        <span class="k">return</span> <span class="nx">previous</span> <span class="k">unless</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
-        <span class="nv">signature = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span><span class="p">(</span><span class="nx">signature</span><span class="p">),</span> <span class="nx">noSignature</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">documents</span><span class="p">),</span> <span class="nx">noDocuments</span>
-        <span class="nx">assert</span> <span class="p">(</span><span class="k">try</span> <span class="nx">@derives</span><span class="p">(</span><span class="nx">ApiService</span><span class="p">)),</span> <span class="nx">malfuncs</span>
-        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
-        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">bold</span>
-        <span class="nv">fn = </span><span class="nf">(arbitraryVector) -&gt;</span> <span class="k">return</span> <span class="nx">signature</span>
-        <span class="nx">fn</span> <span class="vi">@documents = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">signature</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Class directive that sets the specified Crossroads rule in
-a Crossroads rules sequence that will be used &amp; emptied when
-a API method is defined below. That is, this method operates
-in a sequential mode. The Crossroads rule gets supplied to
-this method as an object argument with arbitrary key/value
-pairs, where keys are rule name and value is a rule itself.
-Rules are attached to the route defined right after rules.</p></div></div><div class="code"><div class="wrapper">    <span class="k">this</span><span class="p">.</span><span class="nv">crossroadsRule = </span><span class="k">this</span><span class="p">.</span><span class="nv">rule = </span><span class="nf">(xsignature) -&gt;</span>
-        <span class="nv">noSignature = </span><span class="s">&quot;please, supply a plain object&quot;</span>
-        <span class="nv">noCrossRules = </span><span class="s">&quot;cannot find a cross-rules seq&quot;</span>
-        <span class="nv">internal = </span><span class="s">&quot;an anomaly found in rule sequence&quot;</span>
-        <span class="nv">malfuncs = </span><span class="s">&quot;derived from the incorrect source&quot;</span>
-        <span class="nv">message = </span><span class="s">&quot;Setting the Crossroads rule in %s&quot;</span>
-        <span class="nx">@crossRules</span> <span class="o">?=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span> <span class="c1"># cross-rules seqs</span>
-        <span class="nx">assert</span> <span class="nv">previous = </span><span class="k">this</span><span class="p">.</span><span class="nx">crossRules</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">previous</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">),</span> <span class="nx">internal</span>
-        <span class="k">return</span> <span class="nx">previous</span> <span class="k">unless</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
-        <span class="nv">signature = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span><span class="p">(</span><span class="nx">signature</span><span class="p">),</span> <span class="nx">noSignature</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">crossRules</span><span class="p">),</span> <span class="nx">noCrossRules</span>
-        <span class="nx">assert</span> <span class="p">(</span><span class="k">try</span> <span class="nx">@derives</span><span class="p">(</span><span class="nx">ApiService</span><span class="p">)),</span> <span class="nx">malfuncs</span>
-        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
-        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">bold</span>
-        <span class="nv">fn = </span><span class="nf">(arbitraryVector) -&gt;</span> <span class="k">return</span> <span class="nx">signature</span>
-        <span class="nx">fn</span> <span class="vi">@crossRules = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">signature</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Class directive that sets the specified parameter summary in
-the parameters/arg sequence that will be used &amp; emptied when
-a API method is defined below. That is, this method operates
-in a sequential mode. The parameter summary gets supplied to
-this method as an object argument with arbitrary key/value
-pairs, where keys are arg names and values are the synopsis.
-Params are attached to the route defined right after docs.</p></div></div><div class="code"><div class="wrapper">    <span class="k">this</span><span class="p">.</span><span class="nv">defineParameter = </span><span class="k">this</span><span class="p">.</span><span class="nv">argv = </span><span class="nf">(xsignature) -&gt;</span>
-        <span class="nv">noSignature = </span><span class="s">&quot;please, supply a plain object&quot;</span>
-        <span class="nv">noParamStore = </span><span class="s">&quot;cannot find a param-store seq&quot;</span>
-        <span class="nv">internal = </span><span class="s">&quot;an anomaly found in argv sequence&quot;</span>
-        <span class="nv">malfuncs = </span><span class="s">&quot;derived from the incorrect source&quot;</span>
-        <span class="nv">message = </span><span class="s">&quot;Setting the parameter value in %s&quot;</span>
-        <span class="nx">@paramStore</span> <span class="o">?=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">()</span> <span class="c1"># cross-rules seqs</span>
-        <span class="nx">assert</span> <span class="nv">previous = </span><span class="k">this</span><span class="p">.</span><span class="nx">paramStore</span> <span class="o">or</span> <span class="nb">Array</span><span class="p">()</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">previous</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">),</span> <span class="nx">internal</span>
-        <span class="k">return</span> <span class="nx">previous</span> <span class="k">unless</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
-        <span class="nv">signature = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span> <span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span><span class="p">(</span><span class="nx">signature</span><span class="p">),</span> <span class="nx">noSignature</span>
-        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">paramStore</span><span class="p">),</span> <span class="nx">noParamStore</span>
-        <span class="nx">assert</span> <span class="p">(</span><span class="k">try</span> <span class="nx">@derives</span><span class="p">(</span><span class="nx">ApiService</span><span class="p">)),</span> <span class="nx">malfuncs</span>
-        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
-        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">message</span><span class="p">.</span><span class="nx">yellow</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">bold</span>
-        <span class="nv">fn = </span><span class="nf">(arbitraryVector) -&gt;</span> <span class="k">return</span> <span class="nx">signature</span>
-        <span class="nx">fn</span> <span class="vi">@paramStore = </span><span class="nx">previous</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">signature</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Define a new API and all of its attributes. Among those
+            <span class="nx">implement</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">shadow</span><span class="p">,</span> <span class="nx">parameters</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Define a new API and all of its attributes. Among those
 arguments there is an API implementation function and an
 URL mask for routing that API and an HTTP version to use
 for matching this API. Please consult with a <code>Crossroads</code>
