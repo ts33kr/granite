@@ -242,8 +242,8 @@ assert module.exports.Service = class Service extends Archetype
         xresource = _.find(resources, presource) or null # side
         message = "Begin service processing sequence in %s"
         logger.debug message.toString().yellow, identify
-        assert gdomain isnt null, "missing the domain"
-        assert gresource isnt null, "missing resource"
+        assert request.domains = gdomain, "missing domain"
+        assert request.resources = gresource, "no resource"
         @emit "process", gdomain, gresource, arguments...
         return domain: gdomain, resource: gresource
 

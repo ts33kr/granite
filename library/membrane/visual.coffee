@@ -96,6 +96,9 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
         noServiceId = "cannot find unique ID of a service"
         assert identify = i = this.constructor.identify()
         logger.debug message.cyan, i.toString().underline
+        assert _.isArray(r = request.resources), "resource"
+        assert _.isArray(s = request.domains), "no domains"
+        assert context.request = resources: r, domains: s
         assert context.service = identify, misidentified
         assert context.params = request.params, noParams
         assert context.uuid = request: request.uuid, nri
