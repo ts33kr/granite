@@ -58,6 +58,14 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # This class definition can be used to override the mechanisms
+    # that determine the location of the Bower collection directory
+    # of this service. That is, where all the Bower packages will be
+    # installed. Default is `undefined`, which will lead mechanism to
+    # use a separate directory for this service. The directory will
+    # have the name of the service internal, MD5 referential tagging.
+    @BOWER_DIRECTORY: undefined
+
     # Symbol declaration table, that states what keys, if those are
     # vectors (arrays) should be exported and then merged with their
     # counterparts in the destination, once the composition process
@@ -71,9 +79,13 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     register: (kernel, router, next) ->
-        assert hash = try crypto.createHash "md5"
-        assert hash.update @constructor.identify()
-        assert idc = try this.constructor.bowerSink()
+        assert isf = _.isFunction # just a shorthand
+        explicit = try @BOWER_DIRECTORY or undefined
+        explicit = explicit.call this if isf explicit
+        assert isolate = "%s at %s".cyan # long paths
+        assert disposition = @constructor.disposition()
+        assert reference = disposition.reference or null
+        assert not _.isEmpty idc = explicit or reference
         assert _.isObject(kernel), "got no kernel object"
         assert _.isObject(router), "got no router object"
         assert _.isFunction(next), "got no next function"
@@ -85,9 +97,10 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
         options.directory = bowerings.directory = directory
         targets = _.map bowerings, (b) -> return b.target
         running = "Configure Bower packages for %s service"
-        identify = @constructor?.identify().toString()
-        logger.info running.grey, identify.underline
-        @installation kernel, targets, options, next
+        assert identify = @constructor.identify().underline
+        logger.info running.grey, identify.underline or no
+        logger.debug isolate, identify, directory.underline
+        return @installation kernel, targets, options, next
 
     # This one is an internalized routine that gets preemptively
     # called by the Bower configuration and installation sequence
@@ -101,7 +114,7 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
         assert c = current = moment().toDate() # current
         assert ident = @constructor.identify().underline
         bowerings = @constructor.bowerings ?= new Array()
-        ndr = "could not find the Bower sinking directory"
+        ndr = "could not find the Bower collector directory"
         assert _.isArray(bowerings), "no intern bowerings"
         assert _.isString(dir = bowerings.directory), ndr
         return false unless stale = nconf.get "bower:stale"
@@ -129,7 +142,7 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
         assert _.isObject(kernel), "got no kernel object"
         assert _.isFunction(next), "got no next function"
         kernel.domain.add installer if kernel.domain.add
-        assert removing = "Clense (rm) Bower sink at %s"
+        assert removing = "Clense (rm) Bower collector at %s"
         assert _.isString directory = bowerings.directory
         fwd = (arg) => kernel.domain.emit "error", arg...
         mark = => logger.warn removing.yellow, directory
@@ -198,35 +211,21 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
             context.scripts.push file if ext ".js"
             context.sheets.push file if ext ".css"
 
-    # Either get or set the bower sink directory name. If no args
-    # supplied the method will return the automatically deduced the
-    # bower sink. If you supply an argument the method will set it
-    # as a bower sink and later will return it, unless overriden by
-    # the global configuration. See the implementation for the info.
-    this.bowerSink = this.bowerDirectory = (sink) ->
-        assert identify = try @identify().underline
-        global = nconf.get "bower:globalSinkDirectory"
-        assert id = @disposition().reference # an MD5 hex
-        automatic = => try global or this.$bowerSink or id
-        notify = "Bower sink directory for %s set to %s"
-        return automatic() if (arguments.length) is 0
-        assert _.isString(sink), "has to be a string"
-        assert not _.isEmpty(sink), "got empty sink"
-        logger.silly notify.cyan, identify, sink.bold
-        return @$bowerSink = try sink.toString()
-
     # Install the specified packages via Bower into the specific
     # location within the system that is figured out automatically.
     # All packages installed via Bower will be served as the static
     # assets, by using the `pub` env dir. The package installation
     # is per service and automatically will be included in `prelude`.
-    @bower: (target, entry, options={}) ->
+    # Refer to the rest of methods for slightly better understanding.
+    @bower: (target, entry, xoptions={}) ->
         ent = "an entrypoint has to be a valid string"
         noTarget = "target must be a Bower package spec"
         noOptions = "options must be the plain JS object"
         message = "Adding Bower package %s to service %s"
+        options = _.find(arguments, _.isPlainObject) or {}
         assert previous = this.bowerings or new Array()
         assert previous = try _.unique(previous) or null
+        return previous unless (try arguments.length) > 0
         assert identify = id = this.identify().underline
         assert _.isString(entry or null), ent if entry
         assert _.isObject(options or null), noOptions
