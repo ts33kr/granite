@@ -27,6 +27,7 @@ _ = require "lodash"
 dom = require "dom-serializer"
 asciify = require "asciify"
 connect = require "connect"
+uuid = require "node-uuid"
 logger = require "winston"
 assert = require "assert"
 uuid = require "node-uuid"
@@ -214,11 +215,16 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # installation symbol of an auxiliary service and whose values
     # are the actual auxiliary services. So that service `value` is
     # installed in the parent under under a name defined by `key`.
-    @aux: (definition) ->
-        return @$aux if arguments.length is 0
-        noDefinition = "definition has to be object"
-        assert _.isObject(definition), noDefinition
-        assert @$aux = _.clone(@$aux or new Object)
+    this.aux = this.auxilliary = (definition) ->
+        return this.$aux if arguments.length is 0
+        isClass = _.isObject try definition.__super__
+        anon = isClass and definition.derives Screenplay
+        symbol = -> _.uniqueId("auxilliary_").toString()
+        assert xdefinition = _.clone definition, "uncloned"
+        (definition = {})[symbol()] = xdefinition if anon
+        noDefinition = "argv definition has to be object"
+        assert _.isObject(definition or 0), noDefinition
+        assert @$aux = try _.clone(@$aux or new Object())
         _.each definition, (value, key, collection) =>
             notZombie = "not a zombie child: #{value}"
             notScreen = "has no visual core: #{value}"
