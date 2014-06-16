@@ -111,15 +111,19 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
     # contains correct session requsities and restores the session!
     # The session can normally be used as you would use req session.
     authorization: (context) => (socket, accept) ->
+        assert message = "Authorizing %s at %s"
         assert _.isObject handshake = socket.request
         assert _.isFunction session = @kernel.session
         assert _.isFunction cookies = @kernel.cookieParser
+        assert idc = try @constructor.identify().underline
         assert handshake.originalUrl = handshake.url or "/"
+        assert _.isString id = try socket.id.toString().bold
         assert Response = class RDummy extends EventEmitter2
         Response::setHeader = (name, value) -> undefined
         Response::end = (data, encoding) -> undefined
         cookies handshake, response = new Response, =>
             session handshake, response, (parameter) =>
+                logger.debug message.yellow, id, idc
                 session = handshake.session or null
                 ns = new Error "no session detected"
                 return accept ns, no unless session
