@@ -105,4 +105,4 @@ assert module.exports.Navigate = class Navigate extends Preflight
             return unless value?.meta?.endpoint or 0
             assert endpoint = try value.meta.endpoint
             logger.debug "mount endpoint #{endpoint}"
-            crossroads.addRoute "#{endpoint}", value
+            crossroads.addRoute endpoint, value
