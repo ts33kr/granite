@@ -158,10 +158,10 @@ module.exports.Localized = class Localized extends DuplexCore
         assert session = @session, "no session detected"
         negotiator = new require("negotiator") @request
         neg = negotiator.language(_.keys(cache) or [])
+        delete @session.language unless @session.langlock
         selector = language or @session.language or neg
         selector = selector or "en" # hardcoded default
         assert not _.isEmpty(sel = selector), "lang fail"
-        delete @session.language unless @session.langlock
         @session.language ?= sel if neg and sel isnt "en"
         assert messages = cache[selector] or new Object
         amount = _.keys(messages).length # of messages
