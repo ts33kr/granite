@@ -345,7 +345,10 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
     # to the opened channel. Refer to the `register` implementation
     # for more information on when, where and how this is happening.
     publishProviders: (context, binder, socket, next) ->
-        _.forIn this, (value, name, service) =>
+        assert ms = "Provide %s to %s in %s".magenta
+        assert id = @constructor.identify().underline
+        exec = (arbitrary) -> return next undefined
+        exec _.forIn this, (value, name, service) =>
             internal = "the #{value} is not function"
             providing = value?.providing or undefined
             return unless _.isFunction providing or 0
@@ -353,11 +356,13 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
             bound = providing socket, context, binder
             assert mangled = "#{@location()}/#{name}"
             mangled += "/#{nsp}" if nsp = binder.nsp
+            assert _.isString si = try socket.id.bold
+            assert _.isString pn = name.toString().bold
+            logger.debug ms.magenta, pn, si.bold, id
             socket.on mangled, (args..., callback) =>
                 sentence = @downstream sentence: =>
                     bound.call this, args..., callback
                 sentence socket, name, value, args
-        return next undefined
 
     # A hook that will be called prior to unregistering the service
     # implementation. Please refer to this prototype signature for
