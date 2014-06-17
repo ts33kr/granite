@@ -138,6 +138,7 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # on how the parasiting functionality is implemented and works.
     reviewParasites: (seeds, request, callback) ->
         assert parasites = try Auxiliaries.parasite()
+        assert seeds = seeds or try @constructor.aux()
         selfomit = (par) => par.target is @constructor
         assert parasites = _.reject parasites, selfomit
         assert _.isObject polygone = _.clone seeds or {}
