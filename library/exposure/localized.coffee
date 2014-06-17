@@ -156,9 +156,9 @@ module.exports.Localized = class Localized extends DuplexCore
         @constructor.compiledTranslations ?= compiler()
         assert cache = @constructor.compiledTranslations
         assert session = @session, "no session detected"
+        delete @session.language unless @session.langlock
         negotiator = new require("negotiator") @request
         neg = negotiator.language(_.keys(cache) or [])
-        delete @session.language unless @session.langlock
         selector = language or @session.language or neg
         selector = selector or "en" # hardcoded default
         assert not _.isEmpty(sel = selector), "lang fail"
