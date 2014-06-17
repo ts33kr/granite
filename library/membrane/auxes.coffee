@@ -40,6 +40,7 @@ util = require "util"
 url = require "url"
 
 {Zombie} = require "../nucleus/zombie"
+{Service} = require "../nucleus/service"
 {Preflight} = require "./preflight"
 {Screenplay} = require "./visual"
 
@@ -48,6 +49,7 @@ url = require "url"
 # of the parent services, restricted to the context of their own.
 # This compound handles the wiring of these services within the
 # intestines of the parent service that includes this component.
+# Also provides dynamic auxes functionality known as parasites.
 module.exports.Auxiliaries = class Auxiliaries extends Preflight
 
     # This is a marker that indicates to some internal subsystems
@@ -74,14 +76,22 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # value is a function that evaluates inclusions conditions every
     # time when any auxilliary-powered services is being executed.
     @parasite: (signature) ->
+        assert uid = try _.uniqueId "parasite_"
         vector = Auxiliaries.$parasites ?= Array()
         return vector unless arguments.length >= 1
         identity = try this?.identify?().toString?()
         abused = "an argument has to be a key/value"
         incorrect = "got incorrect decision function"
+        assert arguments.length < 2, "usage mistake"
+        a = try _.first(arguments).derives(Service)
+        (fishing = {})[uid] = _.head arguments if a
+        signature = fishing if (fishing or 0) and a
         assert _.isObject(signature or null), abused
         assert token = try _.first _.keys(signature)
         assert decides = _.first _.values(signature)
+        fv = (sequence) -> _.first _.values sequence
+        ic = (h, r, yn) -> yn h.objectOf fv signature
+        decides = ic if (try decides.derives Service)
         assert _.isFunction(decides or 0), incorrect
         notZombie = "not a zombie child: #{identity}"
         notScreen = "has no visual core: #{identity}"
@@ -90,6 +100,7 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
         return vector.push # append parasite
             token: token.toString()
             target: this or null
+            uid: uid.toString()
             decides: decides
 
     # This is an internal routine that performs the task of compiling
@@ -174,21 +185,25 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # This is the place where you would be importing the dependencies.
     # Pay attention that most implementations side effect the context.
     prelude: (symbol, context, request, next) ->
+        assert message = "Infusing %s into %s as %s"
         assert auxiliaries = @constructor.aux() or {}
+        assert idc = @constructor.identify().underline
         @reviewParasites auxiliaries, request, (poly) =>
             assert auxiliaries = poly # replace the vector
             context.externals.push _.keys(auxiliaries)...
             context.auxiliaries = _.keys(poly) or new Array
+            exec = (routines) -> async.series routines, next
             mapper = (closure) -> _.map auxiliaries, closure
-            routines = mapper (value, key) => (callback) =>
+            return exec mapper (value, key) => (callback) =>
                 assert _.isObject singleton = value.obtain()
                 assert _.isObject ecc = context.caching ?= {}
                 assert _.isString qualified = "#{symbol}.#{key}"
+                stock = nsp: qualified, caching: context.caching
+                assert idv = value.identify().toString().underline
+                logger.debug message.blue, idv, idc, qualified.bold
                 assembler = singleton.assembleContext.bind singleton
-                stock = Object nsp: qualified, caching: context.caching
                 assembler qualified, request, no, stock, (assembled) =>
                     @mergeContexts key, context, assembled, callback
-            return async.series routines, next
 
     # A complementary part of the auxiliaries substem implementation.
     # This routine is invoked once a compiled context is obtained of
@@ -197,7 +212,8 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # implementation for more information on the internals of process.
     mergeContexts: (key, context, assembled, callback) ->
         notify = "Merging the context of %s into service %s"
-        m = "scripts=%s, changes=%s, sources=%s, invoked=%s"
+        s = "scripts=%s, changes=%s, sources=%s, invoked=%s"
+        m = "Appended #{s}" # the human-readable statistics
         scripts = context.scripts.push assembled.scripts...
         changes = context.changes.push assembled.changes...
         sources = context.sources.push assembled.sources...

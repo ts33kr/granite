@@ -338,8 +338,8 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
         logger.debug message.grey, identify.underline
         @assembleContext args..., (context, compiled) ->
             assert source = try compiled.toString()
-            length = Buffer.byteLength source, "utf8"
-            logger.debug sizing.grey, "#{length}".bold
+            length = Buffer.byteLength(source, "utf8")
+            logger.debug sizing.yellow, "#{length}".bold
             assert _.isString response.charset = "utf-8"
             response.setHeader "Content-Length", length
             response.setHeader "Content-Type", "text/html"
