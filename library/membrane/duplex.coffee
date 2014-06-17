@@ -169,9 +169,12 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         malformed = "got an invalid provider"
         assert bound = this.covering.bind this
         method = _.find arguments, _.isFunction
+        assert identify = @identify().underline
         assert _.isFunction(method), malformed
-        applicator = _.partial bound, method
+        applicator = try _.partial bound, method
+        message = "Add new provider at %s service"
         parameters = undefined unless supplied
+        logger.silly message.yellow, identify
         method.provider = parameters or {}
         method.isolation = -> return this
         method.providing = applicator
