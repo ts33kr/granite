@@ -162,7 +162,9 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
             blob = JSON.stringify value.remote.meta
             tabled = value.remote.tabled or undefined
             metadata = value.remote.metadata or "meta"
+            assert closure = context.closure or Object()
             assert _.isObject defs = value.remote?.bonding
+            assert defs = try _.extend _.clone(defs), closure
             idefs = @inlineHierarchy defs, symbol, value, key
             assert _.isString src = tabled idefs if tabled
             set = "#{symbol}.#{key} = (#{src}).call()\r\n"
