@@ -118,8 +118,9 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
         s = (h) -> m(h) request: request, context: context
         assert identify = @constructor.identify().underline
         assert $parent = Screenplay::contextRendering or null
+        rendv = (ax, n) -> if _.isArray rs = ax.renderers then rs else []
         endsq = (rs, n) -> (as) -> conct as, (e, ss) -> n 0, rs.concat ss
-        scans = (ax, n) -> n (f.bind s ax.obtain() for f in ax.renderers)
+        scans = (ax, n) -> n (f.bind s ax.obtain() for f in rendv ax, n)
         reviu = (ax, n) -> ax.obtain().reviewParasites 0, request, n
         conct = (as, n) -> async.concat _.values(as) or [], fetch, n
         fetch = (ax, n) -> scans ax, (rs) -> reviu ax, endsq(rs, n)
