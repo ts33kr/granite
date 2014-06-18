@@ -117,19 +117,22 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
         m = (h) -> (ob) -> _.extend Object.create(h), ob
         s = (h) -> m(h) request: request, context: context
         assert identify = @constructor.identify().underline
-        assert $parent = Screenplay::contextRendering or 0
-        scans = (ax) -> return ax.renderers or new Array()
-        fetch = (ax) -> f.bind s ax.obtain() for f in scans ax
+        assert $parent = Screenplay::contextRendering or null
+        endsq = (rs, n) -> (as) -> conct as, (e, ss) -> n 0, rs.concat ss
+        scans = (ax, n) -> n (f.bind s ax.obtain() for f in ax.renderers)
+        reviu = (ax, n) -> ax.obtain().reviewParasites 0, request, n
+        conct = (as, n) -> async.concat _.values(as) or [], fetch, n
+        fetch = (ax, n) -> scans ax, (rs) -> reviu ax, endsq(rs, n)
         $parent.call @, request, context, (compiled, $, doc) =>
-            @reviewParasites auxiliaries, request, (poly) =>
-                assert auxiliaries = poly # replace the vector
-                renderers = (fetch vx for k, vx of auxiliaries)
-                renderers = _.unique _.flatten renderers or []
-                mapped = (apply fn, $, doc for fn in renderers)
-                logger.debug i, "#{mapped.length}".bold, identify
-                return series mapped or [], (error, results) ->
-                    assert.ifError error, "got rendering error"
-                    return callback dom(doc.children), $, doc
+            this.reviewParasites auxiliaries, request, (poly) =>
+                async.map _.values(poly), fetch, (e, renderers) =>
+                    assert.ifError e, "error when getting renderers"
+                    renderers = _.unique _.flatten renderers or []
+                    mapped = (apply fn, $, doc for fn in renderers)
+                    logger.debug i, "#{mapped.length}".bold, identify
+                    return series mapped or [], (error, results) ->
+                        assert.ifError error, "got rendering error"
+                        return callback dom(doc.children), $, doc
 
     # A part of the internal implementation of the auxilliaries. It
     # takes care of revewing and connecting the parasiting peers, by
@@ -138,7 +141,7 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # on how the parasiting functionality is implemented and works.
     reviewParasites: (seeds, request, callback) ->
         assert parasites = try Auxiliaries.parasite()
-        assert seeds = seeds or try @constructor.aux()
+        assert seeds = seeds or @constructor.aux() or []
         selfomit = (par) => par.target is @constructor
         assert parasites = _.reject parasites, selfomit
         assert _.isObject polygone = _.clone seeds or {}
