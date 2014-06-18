@@ -191,9 +191,11 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
     # a method that is going to be cached and used for each request
     # once the initial Bower package installation is done. Please do
     # refer to the `prelude` implementation in this class for the info.
-    # Please, refer to the method implementation for understanding.
+    # Please, refer to the method implementation for an understanding.
     cachier: (sorter, finder, paths) -> (context) ->
-        assert sorted = try _.sortBy paths, sorter
+        nsorter = -> fback sorter(arguments...), +999
+        fback = (vx, fx) -> if vx > 0 then vx else fx
+        assert sorted = try _.sortBy paths, nsorter
         assert files = try _.flatten _.values sorted
         locate = (fx) -> _.findKey paths, resides(fx)
         resides = (f) -> (x) -> f is x or try f in x
