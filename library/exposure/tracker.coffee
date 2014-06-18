@@ -37,31 +37,36 @@ http = require "http"
 util = require "util"
 
 {external} = require "../membrane/remote"
+{Auxiliaries} = require "../membrane/auxes"
 {Localized} = require "../exposure/localized"
 {Barebones} = require "../membrane/skeleton"
 {Preflight} = require "../membrane/preflight"
 {DuplexCore} = require "../membrane/duplex"
+{Embedded} = require "../membrane/embed"
 
-# This abstract compound provides the enhanced duplex facilities.
-# The functionality it implements aids in visual recoginitions of
-# the duplexed service life cycle, by issuing a visual popup style
-# notifications when most notable events occure on the service. It
-# reports connections events in additions to the exceptional ones.
-assert module.exports.TrackDuplex = class TrackDuplex extends DuplexCore
-
-    # This is a marker that indicates to some internal subsystems
-    # that this class has to be considered abstract and therefore
-    # can not be treated as a complete class implementation. This
-    # mainly is used to exclude or account for abstract classes.
-    # Once inherited from, the inheritee is not abstract anymore.
-    @abstract yes
+# This compound is a parasite that hosts itself to all standalone
+# services and monitors the duplex connection of the root service.
+# When the state of the connection changes, that is - dropped or
+# renewed, this service issues a visual notification of the event.
+# Notifications are implemented as nice little pop-ups that carry
+# the connection event information, text and color coded, usually.
+module.exports.DuplexTracker = class DuplexTracker extends Embedded
 
     # These declarations below are implantations of the abstracted
     # components by the means of the dynamic recomposition system.
     # Please take a look at the `Composition` class implementation
     # for all sorts of information on the composition system itself.
     # Each of these will be dynamicall integrated in class hierarchy.
+    @implanting Auxiliaries
+    @implanting DuplexCore
     @implanting Localized
+
+    # This block contains declarations that control the auxilliary
+    # services inclusion and the parasite services specifications.
+    # For more information on a both subjects, please refer to the
+    # implementation of the `Auxiliaries` components. Specifically
+    # look at the class methods `aux` and `parasite` source codes.
+    @parasite $watchdog: @PSTANDALONE
 
     # This block here defines a set of translation files that are
     # used by the service. Please keep in mind, that translations
@@ -78,14 +83,16 @@ assert module.exports.TrackDuplex = class TrackDuplex extends DuplexCore
     @bower "toastr#2.0.x"
 
     # This method awaits for the `socketing` signal that is emited
-    # by the `DuplexCore` implementation once it successfuly creates a
+    # by the `DuplexCore` implementation once it successfuly creates
     # socket object. When that happens, this code sucks up to the
     # socket events that indicate successful and fail conditions.
-    # When either one is happens, it emits the `toastr` notice.
+    # When either one is happens, it emits the `toastr` notice. A
+    # most recent method implementation uses `$root` as a subject.
     attachWatchdog: @awaiting "socketing", (socket, location) ->
         assert l = @t "server connection has been lost"
         assert s = @t "exception occured on the server"
         assert c = @t "established connection to server"
+        assert $root is $host, "parasite on wrong service"
         pos = positionClass: "toast-top-left" # location
         bhv = tapToDismiss: 0, closable: 0 # set behavior
         ntm = timeOut: 0, extendedTimeOut: 0 # timeouts
