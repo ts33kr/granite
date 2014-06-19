@@ -237,6 +237,9 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         enc = encrypted or proto is "https" and yes
         context.scripts.push "/socket.io/socket.io.js"
         context.duplex = urlOfMaster enc, @location()
+        identify = @constructor.identify().underline
+        message = "Injecting Socket.IO into %s context"
+        logger.debug message.yellow, identify or null
         assert _.isArray context.providers ?= Array()
         _.forIn this, (value, name, service) =>
             providing = value?.providing or null
