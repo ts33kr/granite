@@ -44,6 +44,8 @@ util = require "util"
 # and make it possible to use it on the remote call site. The system
 # is a derivative approach from the mixin. It allows to dynamically
 # recombinate the inheritance tree to include any number of compounds.
+# It allows you enable classes with some functionality by implanting
+# the component (another abstract class) that carries/implements it.
 assert module.exports.Composition = cc -> class Composition extends Object
 
     # This method exists as a complementary part of the composition
@@ -162,9 +164,10 @@ assert module.exports.Composition = cc -> class Composition extends Object
     # between the foreign and common peers in the inheritance chain. Do
     # refer to the implementation for the understanding of what happens.
     Object.defineProperty Object::, "implanting",
-        writable: yes, value: (compound, shader=cloner) ->
+        writable: yes, value: (compound, compounds...) ->
             assert foreign = try compound.hierarchy()
             assert identify = try compound.identify()
+            shader = cloner unless _.isFunction shader
             cmp = (orig) -> (cs) -> cs.similarWith orig
             common = (value) -> _.any foreign, cmp value
             culrpit = (pvo) -> not _.any commons, cmp pvo
@@ -173,14 +176,15 @@ assert module.exports.Composition = cc -> class Composition extends Object
             assert compound.abstract?() is yes, notAbstract
             commons = _.filter(@hierarchy(), common) or []
             assert not _.isEmpty(commons), orphans.toString()
-            differentiated = _.take @hierarchy(), culrpit
+            differentiated = _.take this.hierarchy(), culrpit
             alternative = _.map differentiated or [], shader
             compound.composition? this, @hierarchy(), foreign
             return @rebased compound if _.isEmpty alternative
             assert tails = alternative.pop().rebased compound
-            rebased = (acc, cls) -> cls.rebased acc; cls
-            @rebased _.foldr alternative, rebased, tails
-            @refactoring compound; @implanted? compound
+            rebased = (acc, cls) -> cls.rebased acc; return cls
+            this.rebased _.foldr alternative, rebased, tails
+            this.refactoring compound; @implanted? compound
+            @implanting compounds... if compounds.length
 
     # An important complementary part of the dynamic recomposition
     # system. The refactoring procedure is a recursive algorithm that

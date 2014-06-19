@@ -57,9 +57,7 @@ module.exports.DuplexTracker = class DuplexTracker extends Embedded
     # Please take a look at the `Composition` class implementation
     # for all sorts of information on the composition system itself.
     # Each of these will be dynamicall integrated in class hierarchy.
-    @implanting Auxiliaries
-    @implanting DuplexCore
-    @implanting Localized
+    @implanting Auxiliaries, DuplexCore, Localized
 
     # This block contains declarations that control the auxilliary
     # services inclusion and the parasite services specifications.
