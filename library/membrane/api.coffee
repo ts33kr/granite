@@ -126,6 +126,7 @@ assert module.exports.ApiService = class ApiService extends Barebones
         headers = @downstream headers: -> return null
         partial = _.partial headers, request, response
         response.on "header", -> partial variables...
+        assert _.isObject request.service = try weak @
         assert mw = @constructor.middleware().bind this
         signature = [request, response, variables...]
         message = "Executing Crossroads routing in %s"

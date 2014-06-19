@@ -59,14 +59,19 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # A shorthand for convenient definitions within class body.
+    # It is used below for definition shorthands for parasites
+    # specification fucnctions. The definition exists solely for
+    # that purpose, and due to the way it is defined, it will be
+    # available only within this class definition body (here).
+    ctor = (value) -> value.constructor or throw new Error
+
     # These are the shorthand definitions to use when defining new
     # parasites. These exist only for convenience. Consider using
     # these definitions when you need a typical parasites, such as
     # the one that parsites on all standalone (non zombie) services
     # or the one that parasites on all services, including zombies.
-    @PEXPERIMENT: (h, r, d) -> d h.kernel.env is "development"
-    @PSTANDALONE: (h, r, d) -> d not try h.objectOf Zombie
-    @PEVERYWHERE: (h, r, decide) -> return decide true
+    @ONLY_ROOT_SERVICE: (h, r, d) -> d ctor(r.service) is ctor(h)
 
     # Register current service that invokes the method as parasite.
     # This means that the service will be automatically included to

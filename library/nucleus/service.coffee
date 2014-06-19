@@ -31,6 +31,7 @@ colors = require "colors"
 async = require "async"
 nconf = require "nconf"
 http = require "http"
+weak = require "weak"
 util = require "util"
 url = require "url"
 
@@ -242,6 +243,7 @@ assert module.exports.Service = class Service extends Archetype
         xresource = _.find(resources, presource) or null # side
         message = "Begin service processing sequence in %s"
         logger.debug message.toString().yellow, identify
+        assert _.isObject request.service = try weak this
         assert request.domains = gdomain, "missing domain"
         assert request.resources = gresource, "no resource"
         @emit "process", gdomain, gresource, arguments...
