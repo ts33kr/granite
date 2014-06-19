@@ -64,7 +64,9 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # specification fucnctions. The definition exists solely for
     # that purpose, and due to the way it is defined, it will be
     # available only within this class definition body (here).
+    xors = => this.ONLY_ROOT_SERVICE.apply this, arguments
     ctor = (value) -> value.constructor or throw new Error
+    comp = (d, h, e) -> (s) -> d (s and h.objectOf e)
 
     # These are the shorthand definitions to use when defining new
     # parasites. These exist only for convenience. Consider using
@@ -72,6 +74,7 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # the one that parsites on all standalone (non zombie) services
     # or the one that parasites on all services, including zombies.
     @ONLY_ROOT_SERVICE: (h, r, d) -> d ctor(r.service) is ctor(h)
+    @ROOTS_SIMILAR: (e) -> (h, r, d) -> xors h, r, comp(d, h, e)
 
     # Register current service that invokes the method as parasite.
     # This means that the service will be automatically included to
