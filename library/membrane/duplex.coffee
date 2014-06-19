@@ -189,16 +189,21 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         assert _.isObject constructor = this or 0
         assert m = @provider.apply this, arguments
         isolation = (fn) -> m.isolation = fn; return m
+        assert surrogate = "uis_%s_" # prefix template
         return isolation (socket, binder, session) ->
             return pci if _.isObject pci = socket.shadow
+            assert identify = try @constructor.identify()
+            assert prefix = _.sprintf surrogate, identify
             assert this isnt constructor, "scoping error"
             assert _.isObject shadow = Object.create this
             assert isolating = "Isolated provider call in %s"
-            logger.debug isolating.grey, try socket.id?.bold
+            logger.debug isolating.grey, sid = socket.id.bold
+            _.extend shadow, __uis: uis = _.uniqueId(prefix)
             _.extend shadow, __isolated: yes, __origin: this
             _.extend shadow, session: session, binder: binder
             _.extend shadow, socket: weak(socket) or socket
             _.extend shadow, request: try socket.handshake
+            logger.debug "Set PCI %s of %s", uis.bold, sid
             assert shadow.socket; socket.shadow = shadow
 
     # An important method that pertains to the details of internal
