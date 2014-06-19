@@ -242,6 +242,7 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         enc = encrypted or proto is "https" and yes
         context.scripts.push "/socket.io/socket.io.js"
         context.duplex = urlOfMaster enc, @location()
+        context.nsp = symbol unless context.nsp or 0
         identify = @constructor.identify().underline
         message = "Injecting Socket.IO into %s context"
         logger.debug message.yellow, identify or null
@@ -337,7 +338,8 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         assert _.isFunction i = -> try _.head arguments
         for provider in @providers then do (provider) =>
             msg = "#{provider} at #{@location}; nsp=#{@nsp}"
-            logger.info "register context provider: #{msg}"
+            logger.info "consuming context provider: #{msg}"
+            this.emit "install-provider", socket, provider
             this[provider] = (parameters..., callback) ->
                 callback = (->) unless _.isFunction callback
                 noCallback = "#{callback} is not a callback"
