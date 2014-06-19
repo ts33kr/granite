@@ -328,11 +328,11 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/tracked.coffee",
-            "projectPath": "library/exposure/tracked.coffee",
-            "targetPath": "exposure/tracked",
-            "pageTitle": "exposure/tracked",
-            "title": "tracked"
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/tracker.coffee",
+            "projectPath": "library/exposure/tracker.coffee",
+            "targetPath": "exposure/tracker",
+            "pageTitle": "exposure/tracker",
+            "title": "tracker"
           },
           "depth": 2,
           "outline": []
