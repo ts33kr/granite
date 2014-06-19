@@ -32,7 +32,7 @@ assert = require "assert"
 # This is an abstract compound that is intended for the services to
 # be composed in. It customizes a hosting service to include all the
 # prerequisites necessary to properly make usage of the Semantic UI
-# frontend framework that atre shipped within the primary framework.
+# frontend framework that are shipped within the primary framework.
 # This frontend scaffolding is used to style the provided components.
 assert module.exports.Semantic = class Semantic extends Preflight
 
