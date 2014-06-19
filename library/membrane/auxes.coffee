@@ -73,7 +73,7 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # these definitions when you need a typical parasites, such as
     # the one that parsites on all standalone (non zombie) services
     # or the one that parasites on all services, including zombies.
-    @ONLY_ROOT_SERVICE: (h, r, d) -> d ctor(r.service) is ctor(h)
+    @ANY_ROOT_SERVICE: (h, r, d) -> d ctor(r.service) is ctor(h)
     @ROOTS_SIMILAR: (e) -> (h, r, d) -> xors h, r, comp(d, h, e)
 
     # Register current service that invokes the method as parasite.
