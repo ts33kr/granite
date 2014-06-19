@@ -64,6 +64,28 @@ module.exports.ModalFormular = class ModalFormular extends Embedded
     # the parent classes, without having to replace implementation code.
     @considering TFormular: BoxFormular
 
+    # This method is invoked once the `configure-window` events goes
+    # through the service. This event is fired once the modal window
+    # is ready and can be configured. This implementation creates a
+    # form inside of the content slot and performs a set of routines
+    # to establish reasonable defaults that can be later overriden.
+    configureHostingWindow: @awaiting "configure-window", ->
+        unload = (seq) -> seq.removeClass "loading"
+        disabler = -> selector().addClass "disabled"
+        enabler = -> selector().removeClass "disabled"
+        selector = => @window.find ".positive.button"
+        closer = => return @window.find ".close.icon"
+        clean = => try @formular.prestine(); disabler()
+        @formular = new TFormular @content, "the-formular"
+        @window.attr id: @windowUid = uuid.v1().toString()
+        @window.addClass "modal-formular semantic-flavour"
+        @header.text @t "Please enter the following data"
+        @configureFormular? disabler, enabler, @formular
+        @actions.find(".positive").addClass "disabled"
+        @emit "configure-formular", disabler, enabler
+        @on "disconnect", -> try unload $ ".loading"
+        @on "negative", => closer().click(); clean()
+
     # This method is invoked once the `positive` event goes off in
     # the service. This event is fired once the positive action is
     # actived. That usually means a user pressing the okay button.
@@ -109,25 +131,3 @@ module.exports.ModalFormular = class ModalFormular extends Embedded
             return proceed() unless sibling.length > 0
             return proceed() unless input.length > 0
             return input.focus() # set to next input
-
-    # This method is invoked once the `configure-window` events goes
-    # through the service. This event is fired once the modal window
-    # is ready and can be configured. This implementation creates a
-    # form inside of the content slot and performs a set of routines
-    # to establish reasonable defaults that can be later overriden.
-    configureHostingWindow: @awaiting "configure-window", ->
-        unload = (seq) -> seq.removeClass "loading"
-        disabler = -> selector().addClass "disabled"
-        enabler = -> selector().removeClass "disabled"
-        selector = => @window.find ".positive.button"
-        closer = => return @window.find ".close.icon"
-        clean = => try @formular.prestine(); disabler()
-        @formular = new TFormular @content, "the-formular"
-        @window.attr id: @windowUid = uuid.v1().toString()
-        @window.addClass "modal-formular semantic-flavour"
-        @header.text @t "Please enter the following data"
-        @configureFormular? disabler, enabler, @formular
-        @actions.find(".positive").addClass "disabled"
-        @emit "configure-formular", disabler, enabler
-        @on "disconnect", -> try unload $ ".loading"
-        @on "negative", => closer().click(); clean()
