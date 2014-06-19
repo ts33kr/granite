@@ -52,6 +52,13 @@ util = require "util"
 # the connection event information, text and color coded, usually.
 module.exports.DuplexTracker = class DuplexTracker extends Embedded
 
+    # This block here defines a set of Bower dependencies that are
+    # required by the client site part of the code that constitutes
+    # this service or compound. Dependencies can be restricted to a
+    # certain version and also they can have customized entrypoint.
+    # Refer to `BowerSupport` class implementation for information.
+    @bower "toastr#2.0.x"
+
     # These declarations below are implantations of the abstracted
     # components by the means of the dynamic recomposition system.
     # Please take a look at the `Composition` class implementation
@@ -72,13 +79,6 @@ module.exports.DuplexTracker = class DuplexTracker extends Embedded
     # then loads each translation file and combines all messages
     # into one translation table that is used throughout service.
     @translation "tracked.yaml", @EMBEDDED_LOCALE
-
-    # This block here defines a set of Bower dependencies that are
-    # required by the client site part of the code that constitutes
-    # this service or compound. Dependencies can be restricted to a
-    # certain version and also they can have customized entrypoint.
-    # Refer to `BowerSupport` class implementation for information.
-    @bower "toastr#2.0.x"
 
     # This method awaits for the `socketing` signal that is emited
     # by the `DuplexCore` implementation once it successfuly creates
