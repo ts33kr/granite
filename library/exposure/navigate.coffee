@@ -91,9 +91,10 @@ assert module.exports.Navigate = class Navigate extends Preflight
     navigation: @autocall z: +103, ->
         router = "no crossroads router is detected"
         attaching = "no hasher library has been found"
+        assert m = "Install hashing navigation at %s"
         assert _.isObject(hasher or null), attaching
         assert _.isObject(crossroads or null), router
-        logger.info "setting up the hashing navigation"
+        logger.info m.magenta, @service.magenta.underline
         parser = (landed, old) -> crossroads.parse landed
         begin = _.find @, (x) -> x?.meta?.options?.default
         hasher.setHash begin.meta.endpoint if begin?.meta
