@@ -122,28 +122,30 @@ module.exports.Localized = class Localized extends DuplexCore
     setupTranslationTools: @awaiting "booted", (log, ack) ->
         unexpected = "received malformed translation"
         unrecognized = "unrecognized language received"
-        noted = "loaded %s translation messages for %s"
-        sel = "using %s as the language selector for %s"
+        noted = "Loaded %s translation messages for %s"
+        sel = "Using %s as the language selector for %s"
         return if _.isFunction @t # do not double call
-        assert loggingRoutine = try log or logger.info
+        assert _.isFunction logging = log or logger.info
         assert _.isFunction sprintf = _.sprintf # format
         pt = (o, v, key) -> delete o[key]; o[lc key] = v
         lc = (src) => return src.toString().toLowerCase()
         rx = (src) => @translationMessages?[lc src] or src
         try _.transform this.translationMessages or 0, pt
-        loggingRoutine "installing the translation tookit"
+        uservice = @service?.underline?.blue or undefined
+        message = "Install i18 & translation tookit for %s"
+        logging message.magenta, (try uservice.magenta)
         this.t = (s, a...) => sprintf "#{rx(s)}", a...
         this.th = (s, a...) => _.humanize this.t s, a...
         this.tt = (s, a...) => _.titleize this.t s, a...
         @obtainTranslation 0, (language, translation) =>
             assert _.isString(language), unrecognized
             assert _.isObject(translation), unexpected
-            assert @translationMessages = translation
-            assert @translationLanguage = language
-            length = _.keys(translation).length
-            loggingRoutine noted, length, @service
-            loggingRoutine sel, language, @service
-            ack language, translation if ack
+            length = _.keys(translation).length.toString()
+            assert this.translationMessages = translation
+            assert this.translationLanguage = language
+            logging noted, length.bold.blue, uservice
+            logging sel, language.bold.blue, uservice
+            return ack language, translation if ack
 
     # An out-of-the-box isolated provider that exposes translation
     # messages, provided by the service in the language requested.
