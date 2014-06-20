@@ -65,6 +65,12 @@ assert module.exports.Semantic = class Semantic extends Preflight
     # in. Remember that these links are as they will appear on the
     # client browser, unless some else, overriding options are set.
     @javascript "javascript/semantic.min.js"
+
+    # This block here defines a set of assets, such as CSS styles
+    # or JavaScript files that will be included on every context
+    # emited by the service that composes this abstract base class
+    # in. Remember that these links are as they will appear on the
+    # client browser, unless some else, overriding options are set.
     @stylesheet "css/semantic.min.css"
     @stylesheet "css/semantic.uix.css"
 
