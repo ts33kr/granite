@@ -149,7 +149,9 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
         assert _.isObject(context), "got malformed context"
         aexcess = ["scripts", "sources", "sheets", "styles"]
         bexcess = ["caching", "changes", "invokes", "metatag"]
-        assert not _.isEmpty excess = aexcess.concat bexcess
+        assert bexcess.push "root", "refCache" # references
+        context.excess = e = excess = aexcess.concat bexcess
+        context.snapshot = _.difference context.snapshot, e
         prepared = JSON.stringify _.omit(context, excess)
         installer = "#{symbol} = #{prepared}".toString()
         runtime = "(#{coffee}).apply(this)".toString()
@@ -159,23 +161,39 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
             return unless _.isObject value?.remote
             return unless src = value.remote.source
             return if (value is @constructor) is yes
-            blob = JSON.stringify value.remote.meta
-            tabled = value.remote.tabled or undefined
-            metadata = value.remote.metadata or "meta"
-            assert closure = context.closure or Object()
-            assert _.isObject defs = value.remote?.bonding
-            assert defs = try _.extend _.clone(defs), closure
-            idefs = @inlineHierarchy defs, symbol, value, key
-            assert _.isString src = tabled idefs if tabled
-            set = "#{symbol}.#{key} = (#{src}).call()\r\n"
-            set += "#{symbol}.#{key}.#{metadata} = #{blob}"
-            assert context.sources.push "\r\n#{set}\r\n"
+            inline = @inlineRemoteSym.bind this
+            inline context, symbol, value, key
         context.sources.unshift applicator
         context.changes.unshift installer
         context.sources.unshift runtime
 
     # Part of the internal implementation. For every remote symbol
-    # that gets emited by the visua core, this routine performs the
+    # that gets emited by the visual core, this routine performs the
+    # actual code emission for that symbol. And not only the code of
+    # the symbol itself, but also the symbol installation code too.
+    # This also includes an attempt for certain kinds of caching and
+    # other sort of internal optimizations. Please see source code.
+    inlineRemoteSym: (context, symbol, value, key) ->
+        blob = JSON.stringify value.remote.meta
+        tabled = value.remote.tabled or undefined
+        metadata = value.remote.metadata or "meta"
+        assert context.root, "no root context setup"
+        assert closure = context.closure or Object()
+        assert refCache = context.root.refCache ?= {}
+        assert _.isObject defs = value.remote?.bonding
+        assert not _.isEmpty src = value.remote?.source
+        assert defs = try _.extend _.clone(defs), closure
+        idefs = @inlineHierarchy defs, symbol, value, key
+        assert _.isString src = tabled(idefs) if tabled
+        assert _.isString qualified = "#{symbol}.#{key}"
+        assert not _.isEmpty src = refCache[src] or src
+        try set = "#{qualified} = (#{src}).call()\r\n"
+        try set += "#{qualified}.#{metadata} = #{blob}"
+        assert refCache[src] = qualified # sym to cache
+        return context.sources.push "\r\n#{set}\r\n"
+
+    # Part of the internal implementation. For every remote symbol
+    # that gets emited by the visual core, this routine performs the
     # hierarchy inlining. That is, find all (overriden) definitions
     # of a symbol (method) and emits it into the context in special
     # way, so that if a method has an overriden parent, this parent
@@ -334,6 +352,7 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
     GET: (request, response, resource, domain, session) ->
         assert identify = try @constructor.identify()
         assert predefined = toplevel: yes, isRoot: yes
+        assert predefined.root = predefined # self-ref
         assert symbol = "$root".toString().toLowerCase()
         assert args = [symbol, request, yes, predefined]
         message = "Compile visual context of %s service"
@@ -342,6 +361,7 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
         @assembleContext args..., (context, compiled) ->
             assert source = try compiled.toString()
             length = Buffer.byteLength(source, "utf8")
+            delete context.refCache if context.refCache
             logger.debug sizing.yellow, "#{length}".bold
             assert _.isString response.charset = "utf-8"
             response.setHeader "Content-Length", length

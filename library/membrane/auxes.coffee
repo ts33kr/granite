@@ -213,6 +213,7 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
                 assert _.isString qualified = "#{symbol}.#{key}"
                 stock = nsp: qualified, caching: context.caching
                 stock.closure = $host: symbol # set host reference
+                assert stock.root = context.root, "cant find root"
                 assert idv = value.identify().toString().underline
                 logger.debug message.blue, idv, idc, qualified.bold
                 assembler = singleton.assembleContext.bind singleton
