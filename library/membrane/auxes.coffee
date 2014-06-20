@@ -64,7 +64,7 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # specification fucnctions. The definition exists solely for
     # that purpose, and due to the way it is defined, it will be
     # available only within this class definition body (here).
-    xors = => this.ONLY_ROOT_SERVICE.apply this, arguments
+    xors = => this.ANY_ROOT_SERVICE.apply this, arguments
     ctor = (value) -> value.constructor or throw new Error
     comp = (d, h, e) -> (s) -> d (s and h.objectOf e)
 
