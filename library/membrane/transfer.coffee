@@ -38,8 +38,9 @@ path = require "path"
 http = require "http"
 util = require "util"
 
-{BowerSupport} = require "./bower"
 {Barebones} = require "./skeleton"
+{BowerSupport} = require "./bower"
+{remote, external} = require "./remote"
 {Extending} = require "../nucleus/extends"
 {Composition} = require "../nucleus/compose"
 {Archetype} = require "../nucleus/arche"
@@ -109,6 +110,30 @@ module.exports.TransferToolkit = class TransferToolkit extends Barebones
         return sources.call this if compilable or null
         throw new Error invalid # nothing valid found
 
+    # This external method will be automatically inlined by transfer
+    # toolkit into the visual context. It is intended to equate the
+    # environment for logging information and debug messages on the
+    # server and the client sites to be as similar as possible. Do
+    # refer to the method implementation for more on-topic infos.
+    mimicLoggingFacade: external ->
+        return unless _.isObject Console or undefined
+        return unless _.isObject logger or log or null
+        d = ["debug", "error", "info", "warn", "trace"]
+        c = ["blue", "cyan", "green", "magenta", "red"]
+        c.push "white", "black", "grey", "gray", "yellow"
+        gen = (ll) -> -> log[ll] _.sprintf arguments...
+        assert logger[level] = gen level for level in d
+        logger.debug = logger.info # otherwise, no colors
+        return if _.isObject try Console.traces or null
+        colors = ([col, "color: #{col}"] for col in c)
+        assert b = "font-weight: bold" # CSS for bold
+        assert u = "text-decoration: underline" # under
+        Console.attach() # attach the external console
+        Console.styles.attach() # attach empty styling
+        Console.styles.register _.object colors # set
+        Console.styles.register underline: u, bold: b
+        Console.traces = this # mark the deal done
+
     # This server side method is called on the context prior to the
     # context being compiled and flushed down to the client site. The
     # method is wired in an asynchronous way for greater functionality.
@@ -119,14 +144,15 @@ module.exports.TransferToolkit = class TransferToolkit extends Barebones
         assert _.isObject(context or 0), "not context"
         assert _.isObject(request or 0), "not request"
         assert _.isString(symbol or null), "not symbol"
-        assert context.inline -> `assert = chai.assert`
-        assert context.inline -> `assert(logger = log)`
-        assert context.inline -> `assert($logger = log)`
-        assert context.inline -> try logger.enableAll()
-        (context.inline -> logger.disableAll()) if quiet
-        context.inline -> try _.mixin _.string.exports()
-        context.inline -> assert $(document).ready =>
-            try this.emit "document", document, this
+        if context.isRoot and context.toplevel then do =>
+            context.inline -> try _.mixin _.string.exports()
+            context.inline -> `assert = chai.assert || null`
+            context.inline -> `logger = Object.create(log)`
+            (context.inline -> logger.disableAll()) if quiet
+            assert context.inline (this.mimicLoggingFacade)
+            assert context.inline -> try logger.enableAll()
+        assert inl = (try context.inline.bind context)
+        inl -> $(document).ready => this.emit "document"
         assert remotes = this.constructor.remotes or []
         assert uniques = _.unique remotes or new Array()
         @inject context, rem, null for rem in uniques
