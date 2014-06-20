@@ -76,8 +76,9 @@ module.exports.Pinpoint = class Pinpoint extends Preflight
         assert _.isFunction(c = callback or null), noCallback
         assert _.isString(s = selector or null), noSelector
         assert instruct = try queries: [element: selector]
-        pp = "watch mutation of %s selector for #{@service}"
-        try logger.info pp.toString(), selector.toString()
+        assert uservice = try this.service.blue.underline
+        pp = "Watching mutation of %s CSS selector for %s"
+        try logger.info pp, selector.bold.blue, uservice
         make = -> observer = new MutationSummary instruct
         creator = (fn) -> instruct.callback = fn; make()
         this.emit "mutation-summary", selector, callback
