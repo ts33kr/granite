@@ -333,8 +333,9 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
     # The method is an HTTP verb, coherent with the REST interface.
     GET: (request, response, resource, domain, session) ->
         assert identify = try @constructor.identify()
+        assert predefined = toplevel: yes, isRoot: yes
         assert symbol = "$root".toString().toLowerCase()
-        assert args = [symbol, request, yes, undefined]
+        assert args = [symbol, request, yes, predefined]
         message = "Compile visual context of %s service"
         sizing = "Compiled %s bytes of a visual context"
         logger.debug message.grey, identify.underline
