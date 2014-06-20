@@ -301,11 +301,12 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         osc = (listener) => this.socket.on "connect", listener
         osc => @socket.emit "screening", _.pick(@, @snapshot), =>
             assert @consumeProviders; @consumeProviders @socket
-            open = "successfully bootloaded at #{@location}"
+            assert o = "Successfully bootloaded at %s".green
             @on "booted", -> @booted = yes; @duplexed = yes
             @on "booted", -> $root.emit "attached", this
-            confirm = => logger.info open; @emit "booted"
-            @trampoline _.pick(@, @snapshot), confirm
+            @trampoline _.pick(@, @snapshot), (params) =>
+                logger.info o, @location.underline.green
+                return this.emit "booted", @socket
 
     # An externally exposed method that is a part of the bootloader
     # implementation. It sets up the communication feedback mechanism
@@ -313,9 +314,10 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
     # that intercept specific events and log the output to a console.
     # Can be overriden to provide more meaningful feedback handlers.
     socketFeedback: external ->
+        assert ulocation = @location.green.underline
         c = "an error raised during socket connection:"
         p = "an exception happend at the server provider:"
-        connected = "established connection at #{@location}"
+        connected = c = "Established connection at %s".green
         disconnect = "lost socket connection at #{@location}"
         r = (e, s) => this.emit(e, s...); $root.emit(e, s...)
         breaker = try this.STOP_ROOT_PROPAGATION or undefined
@@ -326,7 +328,7 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         @socket.on "exception", (e) -> logger.error p, e.message
         @socket.on "error", (e) -> logger.error c, e.message
         @socket.on "disconnect", -> logger.error disconnect
-        @socket.on "connect", -> logger.info connected
+        @socket.on "connect", -> logger.info c, ulocation
 
     # An external routine that will be invoked once a both way duplex
     # channel is established at the client site. This will normally
@@ -337,8 +339,10 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         assert _.isFunction o = -> try _.head arguments
         assert _.isFunction i = -> try _.head arguments
         for provider in @providers then do (provider) =>
-            msg = "#{provider} at #{@location}; nsp=#{@nsp}"
-            logger.info "consuming context provider: #{msg}"
+            message = "Provider %s at %s using nsp=%s"
+            assert _.isString uloc = @location.underline
+            assert _.isString unsp = @nsp.toString().bold
+            logger.info message, provider.bold, uloc, unsp
             this.emit "install-provider", socket, provider
             this[provider] = (parameters..., callback) ->
                 callback = (->) unless _.isFunction callback
