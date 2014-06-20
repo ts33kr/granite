@@ -122,13 +122,15 @@ assert module.exports.Bilateral = class Bilateral extends DuplexCore
         assert _.isString(@service), "invalid service data"
         assert _.isString(@location), "location misconfied"
         assert _.isString(@nsp), "bilateral nsp malfunction"
-        try uplinking = "Uplink %s at #{@location}, nsp=%s"
+        assert uplinking = "Uplink %s at %s using nsp=%s"
         _.forIn this, (value, reference, context) => do =>
             return unless reference of (this.uplinks or {})
             assert mangled = try "#{@location}/#{reference}"
             mangled += "/#{nsp}" if _.isString nsp = this.nsp
+            assert try xref = ref = reference.toString().bold
+            assert try xloc = @location.toString().underline
+            logger.info uplinking, xref, xloc, (try nsp.bold)
             assert value; return this.socket.on mangled, =>
-                try logger.info uplinking, reference, nsp or 0
                 value.call this, i(arguments)..., (params...) =>
                     id = @socket.sacks = (@socket.sacks ?= 0) + 1
                     ack = type: "ack", name: mangled, ack: "data"
