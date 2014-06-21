@@ -53,7 +53,7 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
     # that when you need a client-site template in the service,
     # this is all done automatically and there if no need for it.
     # Please see the `TemplateToolkit` class for more information.
-    {renderable, div} = teacup
+    {div, renderable} = teacup
 
     # This prototype definition is a template-function driven by
     # the `Teacup` templating engine. When widget instantiated,
