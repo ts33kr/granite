@@ -92,11 +92,11 @@ module.exports.ModalFormular = class ModalFormular extends Embedded
     # The implementation downloads the data from the form and then
     # submits it to the backend and reacts to the response it got.
     confirmedFormularSubmission: @awaiting "positive", ->
-        try this.formular.container.addClass "loading"
+        assert this.formular.element.addClass "loading"
         assert _.isObject data = @formular.download yes
         w = @th "Please check the information you entered"
         this.dataSubmission data, (success, values) =>
-            this.formular.container.removeClass "loading"
+            this.formular.element.removeClass "loading"
             assert values and _.isObject values or null
             lo = (k) => (value) => value[k] = @t value[k]
             pp = (k) => _.each _.filter(values, k), lo(k)
