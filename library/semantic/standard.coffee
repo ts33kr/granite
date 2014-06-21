@@ -35,6 +35,7 @@ assert = require "assert"
 # shipped controls (field and inputs) cobered in the Semantic manual.
 # Plese refer to the implementation for the usage information. Also,
 # see the methods to get the idea of what is available and what not.
+# Reference the `Formular` abstraction for the internal information.
 module.exports.BoxFormular = cc -> class BoxFormular extends Formular
 
     # Group the two previously created fields (passed by either as
