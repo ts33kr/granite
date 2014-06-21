@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="en"><head><title>semantic/abstract</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="semantic/abstract"><meta name="groc-project-path" content="library/semantic/abstract.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/semantic/abstract.coffee">library/semantic/abstract.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;&#x69;&#x6c;&#x74;o:&#116;&#115;&#x33;&#51;k&#114;&#x40;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#111;m">&#116;&#115;&#x33;&#51;k&#114;&#x40;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#111;m</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">teacup = </span><span class="nx">require</span> <span class="s">&quot;teacup&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/arche&quot;</span>
+<span class="p">{</span><span class="nx">remote</span><span class="p">,</span> <span class="nx">cc</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span>
+<span class="p">{</span><span class="nx">GoogleFonts</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../exposure/fonting&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an abstract base class for all the front-end widgets. It
+is important to understand that widgets are not services. They do
+not carry any sort of server or data related functionality at all.
+All the widgets are only functional UIX components. They are meant
+to be used for expressing visual abstractions and compounds that
+are exposing some sort of functionality or some of internal API.</p></div></div><div class="code"><div class="wrapper"><span class="nx">assert</span> <span class="nv">module.exports.Widget = </span><span class="nx">cc</span> <span class="nf">-&gt;</span> <span class="k">class</span> <span class="nx">Widget</span> <span class="k">extends</span> <span class="nx">Archetype</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Bring the tags definitions of the <code>Teacup</code> template engine
+to the current class scope on the client and server sites.
+Remember, that the <code>teacup</code> symbol is constantly available
+on both sites, respecitvely. Also, take into consideration
+that when you need a client-site template in the service,
+this is all done automatically and there if no need for it.
+Please see the <code>TemplateToolkit</code> class for more information.</p></div></div><div class="code"><div class="wrapper">    <span class="p">{</span><span class="nx">renderable</span><span class="p">,</span> <span class="nx">div</span><span class="p">}</span> <span class="o">=</span> <span class="nx">teacup</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This prototype definition is a template-function driven by
+the <code>Teacup</code> templating engine. When widget instantiated,
+this defintion is used to render the root DOM element of
+the widget and store it in the widget instance under the
+instance variable with the same name of <code>element</code>. Please
+refer to the <code>TemplateToolkit</code> class for an information.
+Also, please refer to the <code>Teacup</code> manual for reference.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">element: </span><span class="nf">-&gt;</span> <span class="nx">div</span> <span class="s">&quot;.generic-widget-element&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>A generic widget constructor that takes care of most of the
+boilerplating of creating the element within the container,
+marking it with the proper identifications and preparing an
+internal APIs and shorthands for convenient access to some
+of the most basic functionality related to a visual widget.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">constructor: </span><span class="nf">(container, reference, payload) -&gt;</span>
+        <span class="nv">msg = </span><span class="s">&quot;Constructing widget %s with reference %s&quot;</span>
+        <span class="nv">ptf = </span><span class="s">&quot;no valid template-function for an element&quot;</span>
+        <span class="nv">noContainer = </span><span class="s">&quot;no valid container object supplied&quot;</span>
+        <span class="nv">noReference = </span><span class="s">&quot;no valid reference string supplied&quot;</span>
+        <span class="nv">noPayload = </span><span class="s">&quot;something wrong with payload function&quot;</span>
+        <span class="k">try</span> <span class="nv">payload = </span><span class="p">(</span><span class="nf">-&gt;</span> <span class="k">return</span> <span class="kc">undefined</span><span class="p">)</span> <span class="k">unless</span> <span class="nx">payload</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">container</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">noContainer</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">reference</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">noReference</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">payload</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">noPayload</span>
+        <span class="nx">assert</span> <span class="vi">@show = </span><span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">element</span><span class="p">.</span><span class="nx">show</span><span class="p">()</span> <span class="c1"># shortcut</span>
+        <span class="nx">assert</span> <span class="vi">@hide = </span><span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">element</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span> <span class="c1"># shortcut</span>
+        <span class="nx">assert</span> <span class="vi">@container = </span><span class="nx">container</span> <span class="c1"># store container</span>
+        <span class="nx">assert</span> <span class="vi">@reference = </span><span class="nx">reference</span> <span class="c1"># store reference</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">@constructor</span><span class="o">::</span><span class="nx">element</span><span class="p">),</span> <span class="nx">ptf</span>
+        <span class="vi">@element = </span><span class="nx">$</span> <span class="nx">renderable</span><span class="p">(</span><span class="nx">@constructor</span><span class="o">::</span><span class="nx">element</span><span class="p">)</span> <span class="nx">@</span>
+        <span class="nx">assert</span> <span class="nx">@element</span><span class="p">.</span><span class="nx">addClass</span> <span class="s">&quot;gf-semantic-widget&quot;</span>
+        <span class="nx">assert</span> <span class="nx">@element</span><span class="p">.</span><span class="nx">appendTo</span> <span class="k">this</span><span class="p">.</span><span class="nx">container</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nx">payload</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">@element</span><span class="p">,</span> <span class="nx">@reference</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">try</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">identify</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nv">ref = </span><span class="nx">reference</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">bold</span> <span class="o">or</span> <span class="kc">no</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">msg</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">bold</span><span class="p">,</span> <span class="nx">ref</span><span class="p">.</span><span class="nx">bold</span></div></div></div></div></body></html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="en"><head><title>membrane/template</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="membrane/template"><meta name="groc-project-path" content="library/membrane/template.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/membrane/template.coffee">library/membrane/template.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;&#105;&#108;&#116;&#111;:&#x74;&#115;&#51;&#51;&#107;&#x72;&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#46;co&#x6d;">&#x74;&#115;&#51;&#51;&#107;&#x72;&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#46;co&#x6d;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
+<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
+<span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
+<span class="nv">uuid = </span><span class="nx">require</span> <span class="s">&quot;node-uuid&quot;</span>
+<span class="nv">events = </span><span class="nx">require</span> <span class="s">&quot;eventemitter2&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+<span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
+<span class="nv">crypto = </span><span class="nx">require</span> <span class="s">&quot;crypto&quot;</span>
+<span class="nv">teacup = </span><span class="nx">require</span> <span class="s">&quot;teacup&quot;</span>
+<span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
+<span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
+<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
+<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+
+<span class="p">{</span><span class="nx">EOL</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;os&quot;</span>
+<span class="p">{</span><span class="nx">format</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;util&quot;</span>
+<span class="p">{</span><span class="nx">STATUS_CODES</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;http&quot;</span>
+<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./skeleton&quot;</span>
+<span class="p">{</span><span class="nx">remote</span><span class="p">,</span> <span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./remote&quot;</span>
+<span class="p">{</span><span class="nx">coffee</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./runtime&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an internal abstract base class that is not intended for
+being used directly. The class is being used by the implementation
+of framework sysrems to segregate the implementation of the visual
+core from the convenience API targeted to be used by a developers.
+Please refer to the <code>Screenplay</code> class for actual implementation.
+This can also contain non-developer internals of the visual core.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.TemplateToolkit = </span><span class="k">class</span> <span class="nx">TemplateToolkit</span> <span class="k">extends</span> <span class="nx">Barebones</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Use this static method to mark up the remote/external methods
+that are really <code>Teacup</code> templates. This method takes care of
+all the internal needs of such templates and transfers those
+to the client site, saving their ability to become properly
+rendered. Some additional options supported. See the coding.
+Beware, this is essentially the same as defining external fn.</p></div></div><div class="code"><div class="wrapper">    <span class="vi">@template: </span><span class="nf">(xoptions, ximplement) -&gt;</span>
+        <span class="nx">assert</span> <span class="nv">identify = </span><span class="k">this</span><span class="p">.</span><span class="nx">identify</span><span class="p">().</span><span class="nx">underline</span>
+        <span class="nv">invalidOptions = </span><span class="s">&quot;found no options supplied&quot;</span>
+        <span class="nv">invalidImplement = </span><span class="s">&quot;found no template function&quot;</span>
+        <span class="nv">message = </span><span class="s">&quot;Defining the new Teacup template at %s&quot;</span>
+        <span class="nv">options = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span><span class="p">)</span> <span class="o">or</span> <span class="p">{}</span>
+        <span class="nv">implement = </span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">)</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isPlainObject</span><span class="p">(</span><span class="nx">options</span><span class="p">),</span> <span class="nx">invalidOptions</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">implement</span><span class="p">),</span> <span class="nx">invalidImplement</span>
+        <span class="nx">assert</span> <span class="nv">method = </span><span class="nx">@autocall</span> <span class="k">new</span> <span class="nb">Object</span><span class="p">,</span> <span class="nx">implement</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">bonds = </span><span class="nx">method</span><span class="p">.</span><span class="nx">remote</span><span class="p">.</span><span class="nx">bonding</span>
+        <span class="nx">bonds</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;teacup.</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">&quot;</span> <span class="k">for</span> <span class="nx">key</span> <span class="k">of</span> <span class="nx">teacup</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">silly</span> <span class="nx">message</span><span class="p">.</span><span class="nx">grey</span><span class="p">,</span> <span class="nx">identify</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nv">auto = </span><span class="nf">(fn) -&gt;</span> <span class="nv">method.remote.auto = </span><span class="nx">fn</span><span class="p">;</span> <span class="nx">method</span>
+        <span class="k">return</span> <span class="nx">auto</span> <span class="nf">(symbol, key, context) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">once</span> <span class="nf">-&gt;</span>
+            <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">q = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">symbol</span><span class="si">}</span><span class="s">.</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">&quot;</span>
+            <span class="nv">s = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">q</span><span class="si">}</span><span class="s">$teacup.apply(</span><span class="si">#{</span><span class="nx">symbol</span><span class="si">}</span><span class="s">, arguments)&quot;</span>
+            <span class="nv">t = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">q</span><span class="si">}</span><span class="s">$teacup = teacup.renderable(</span><span class="si">#{</span><span class="nx">q</span><span class="si">}</span><span class="s">)&quot;</span>
+            <span class="nv">f = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">q</span><span class="si">}</span><span class="s"> = function() { return $(</span><span class="si">#{</span><span class="nx">s</span><span class="si">}</span><span class="s">); }&quot;</span>
+            <span class="k">return</span> <span class="nx">format</span><span class="p">(</span><span class="s">&quot;%s; %s&quot;</span><span class="p">,</span> <span class="nx">t</span><span class="p">,</span> <span class="nx">f</span><span class="p">).</span><span class="nx">toString</span><span class="p">()</span></div></div></div></div></body></html>

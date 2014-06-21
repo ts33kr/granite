@@ -716,6 +716,27 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/template.coffee",
+            "projectPath": "library/membrane/template.coffee",
+            "targetPath": "membrane/template",
+            "pageTitle": "membrane/template",
+            "title": "template"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
             "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/transfer.coffee",
             "projectPath": "library/membrane/transfer.coffee",
             "targetPath": "membrane/transfer",
@@ -1144,6 +1165,27 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
       "depth": 1,
       "children": [
         {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/semantic/abstract.coffee",
+            "projectPath": "library/semantic/abstract.coffee",
+            "targetPath": "semantic/abstract",
+            "pageTitle": "semantic/abstract",
+            "title": "abstract"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
           "type": "file",
           "data": {
             "language": {
