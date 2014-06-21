@@ -24,6 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 _ = require "lodash"
+teacup = require "teacup"
 assert = require "assert"
 
 {Archetype} = require "../nucleus/arche"
@@ -45,6 +46,24 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # Bring the tags definitions of the `Teacup` template engine
+    # to the current class scope on the client and server sites.
+    # Remember, that the `teacup` symbol is constantly available
+    # on both sites, respecitvely. Also, take into consideration
+    # that when you need a client-site template in the service,
+    # this is all done automatically and there if no need for it.
+    # Please see the `TemplateToolkit` class for more information.
+    {renderable, div} = teacup
+
+    # This prototype definition is a template-function driven by
+    # the `Teacup` templating engine. When widget instantiated,
+    # this defintion is used to render the root DOM element of
+    # the widget and store it in the widget instance under the
+    # instance variable with the same name of `element`. Please
+    # refer to the `TemplateToolkit` class for an information.
+    # Also, please refer to the `Teacup` manual for reference.
+    element: -> div ".generic-widget-element"
+
     # A generic widget constructor that takes care of most of the
     # boilerplating of creating the element within the container,
     # marking it with the proper identifications and preparing an
@@ -52,6 +71,7 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
     # of the most basic functionality related to a visual widget.
     constructor: (container, reference, payload) ->
         msg = "Constructing widget %s with reference %s"
+        ptf = "no valid template-function for an element"
         noContainer = "no valid container object supplied"
         noReference = "no valid reference string supplied"
         noPayload = "something wrong with payload function"
@@ -63,8 +83,9 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
         assert @hide = => this.element.hide() # shortcut
         assert @container = container # store container
         assert @reference = reference # store reference
-        assert @element = $ "<div>", class: reference
-        assert @element.addClass "a-semantic-widget"
+        assert _.isFunction(@constructor::element), ptf
+        @element = $ renderable(@constructor::element) @
+        assert @element.addClass "gf-semantic-widget"
         assert @element.appendTo this.container or 0
         payload.call this, @element, @reference or 0
         assert identify = try @constructor.identify()

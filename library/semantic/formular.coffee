@@ -24,6 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 _ = require "lodash"
+teacup = require "teacup"
 assert = require "assert"
 
 {Widget} = require "./abstract"
@@ -46,6 +47,24 @@ assert module.exports.Formular = cc -> class Formular extends Widget
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # Bring the tags definitions of the `Teacup` template engine
+    # to the current class scope on the client and server sites.
+    # Remember, that the `teacup` symbol is constantly available
+    # on both sites, respecitvely. Also, take into consideration
+    # that when you need a client-site template in the service,
+    # this is all done automatically and there if no need for it.
+    # Please see the `TemplateToolkit` class for more information.
+    {div} = teacup
+
+    # This prototype definition is a template-function driven by
+    # the `Teacup` templating engine. When widget instantiated,
+    # this defintion is used to render the root DOM element of
+    # the widget and store it in the widget instance under the
+    # instance variable with the same name of `element`. Please
+    # refer to the `TemplateToolkit` class for an information.
+    # Also, please refer to the `Teacup` manual for reference.
+    element: -> div ".ui.form.segment.formular-widget"
+
     # This is a polymorphic, simple yet powerfull validation tool
     # that is intended to be used primarily on the server site for
     # the purpose of validating data that came in from a formular.
@@ -66,24 +85,6 @@ assert module.exports.Formular = cc -> class Formular extends Widget
         regexp = _.isRegExp(check) and not expression()
         failed = (method or regexp or select) or false
         return object.warning = message if failed
-
-    # This is the initialization method that creates a form within
-    # the specified hosting element (or selector) and then runs the
-    # payload function (if supplied) that should fill the form with
-    # the fields. If missing - that can be done later directly via
-    # instance methods of the formular which correspond to fields.
-#    constructor: (hosting, reference, payload) ->
-#        assert this.hide = => return @container.hide()
-#        try hosting = $(hosting) if _.isString hosting
-#        assert hosting.length > 0, "got invalid hosting"
-#        assert _.isString(reference), "invalid reference"
-#        scoped = => (payload or ->).apply this, arguments
-#        @warnings = $ "<div>", class: "ui warning message"
-#        @errors = $ "<div>", class: "ui error message err"
-#        @container = $ "<div>", class: "ui form segment"
-#        @container.append @errors, @warnings # invisible
-#        @container.appendTo(hosting); scoped @container
-#        @hosting = hosting; @reference = reference; @
 
     # This method is part of the formular core protocol. It should
     # be invoked once a formular is required to reset its state and
