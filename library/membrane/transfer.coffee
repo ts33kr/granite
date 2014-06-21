@@ -32,6 +32,7 @@ events = require "eventemitter2"
 assert = require "assert"
 colors = require "colors"
 crypto = require "crypto"
+teacup = require "teacup"
 nconf = require "nconf"
 https = require "https"
 path = require "path"
@@ -89,26 +90,31 @@ module.exports.TransferToolkit = class TransferToolkit extends Barebones
         assert @remotes = _.unique @remotes or []
         return subject # return a subject object
 
-    # Use this method in the `prelude` scope to bring dependencies into
-    # the scope. This method supports JavaScript scripts as a link or
-    # JavaScript sources passed in as the remote objects. Please refer
-    # to the implementation and the class for more information on it.
-    # An internal implementations in the framework might be using it.
-    inject: (context, subject, symbol) ->
-        invalidCache = "an invalid context caching"
-        invalid = "not the remote and not a JS link"
-        assert caching = ccg = context?.caching ?= {}
-        assert _.isObject(caching or 0), invalidCache
+    # This server side method is called on the context prior to the
+    # context being compiled and flushed down to the client site. The
+    # method is wired in an asynchronous way for greater functionality.
+    # This is the place where you would be importing the dependencies.
+    # Pay attention that most implementations side effect the context.
+    prelude: (symbol, context, request, next) ->
+        quiet = nconf.get("visual:logging") is false
         assert _.isObject(context or 0), "not context"
-        assert not _.isEmpty(subject), "empty subject"
-        scripts = -> try context.scripts.push subject
-        sources = -> try context.sources.push compile()
-        compile = -> subject.remote.compile ccg, symbol
-        assert _.isObject(context), "got invalid context"
-        compilable = _.isFunction subject.remote?.compile
-        return scripts.call this if _.isString subject
-        return sources.call this if compilable or null
-        throw new Error invalid # nothing valid found
+        assert _.isObject(request or 0), "not request"
+        assert _.isString(symbol or null), "not symbol"
+        if context.isRoot and context.toplevel then do =>
+            context.inline -> try _.mixin _.string.exports()
+            context.inline -> `assert = chai.assert || null`
+            context.inline -> `logger = Object.create(log)`
+            (context.inline -> logger.disableAll()) if quiet
+            assert context.inline (this.mimicLoggingFacade)
+            assert context.inline -> try logger.enableAll()
+            @inject context, "javascript/console.min.js"
+            @inject context, "javascript/teacup.min.js"
+        assert inl = (try context.inline.bind context)
+        inl -> $(document).ready => this.emit "document"
+        assert remotes = this.constructor.remotes or []
+        assert uniques = _.unique remotes or new Array()
+        @inject context, rem, null for rem in uniques
+        return do => next.call this, undefined
 
     # This external method will be automatically inlined by transfer
     # toolkit into the visual context. It is intended to equate the
@@ -134,26 +140,23 @@ module.exports.TransferToolkit = class TransferToolkit extends Barebones
         Console.styles.register underline: u, bold: b
         Console.traces = this # mark the deal done
 
-    # This server side method is called on the context prior to the
-    # context being compiled and flushed down to the client site. The
-    # method is wired in an asynchronous way for greater functionality.
-    # This is the place where you would be importing the dependencies.
-    # Pay attention that most implementations side effect the context.
-    prelude: (symbol, context, request, next) ->
-        quiet = nconf.get("visual:logging") is false
+    # Use this method in the `prelude` scope to bring dependencies into
+    # the scope. This method supports JavaScript scripts as a link or
+    # JavaScript sources passed in as the remote objects. Please refer
+    # to the implementation and the class for more information on it.
+    # An internal implementations in the framework might be using it.
+    inject: (context, subject, symbol) ->
+        invalidCache = "an invalid context caching"
+        invalid = "not the remote and not a JS link"
+        assert caching = ccg = context?.caching ?= {}
+        assert _.isObject(caching or 0), invalidCache
         assert _.isObject(context or 0), "not context"
-        assert _.isObject(request or 0), "not request"
-        assert _.isString(symbol or null), "not symbol"
-        if context.isRoot and context.toplevel then do =>
-            context.inline -> try _.mixin _.string.exports()
-            context.inline -> `assert = chai.assert || null`
-            context.inline -> `logger = Object.create(log)`
-            (context.inline -> logger.disableAll()) if quiet
-            assert context.inline (this.mimicLoggingFacade)
-            assert context.inline -> try logger.enableAll()
-        assert inl = (try context.inline.bind context)
-        inl -> $(document).ready => this.emit "document"
-        assert remotes = this.constructor.remotes or []
-        assert uniques = _.unique remotes or new Array()
-        @inject context, rem, null for rem in uniques
-        return do => next.call this, undefined
+        assert not _.isEmpty(subject), "empty subject"
+        scripts = -> try context.scripts.push subject
+        sources = -> try context.sources.push compile()
+        compile = -> subject.remote.compile ccg, symbol
+        assert _.isObject(context), "got invalid context"
+        compilable = _.isFunction subject.remote?.compile
+        return scripts.call this if _.isString subject
+        return sources.call this if compilable or null
+        throw new Error invalid # nothing valid found
