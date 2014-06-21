@@ -26,18 +26,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 _ = require "lodash"
 assert = require "assert"
 
-{Zombie} = require "../nucleus/zombie"
+{Widget} = require "./abstract"
 {Archetype} = require "../nucleus/arche"
 {remote, cc} = require "../membrane/remote"
-{Preflight} = require "../membrane/preflight"
 {GoogleFonts} = require "../exposure/fonting"
 
-# This is a zombie like service that is designed to offer help with
-# one of the most tedious and routine task of creating, managing and
-# working with the forms that are presented to take in and process
-# the user entered data, structured in a certain, prediciatable way.
-# Please refer to the implementation for information on how to use.
-assert module.exports.Formular = cc -> class Formular extends Archetype
+# This is a user interface widget abstraction that provides protocol
+# that is used to work with the forms and input controls in general.
+# Exposes most common functionality of manipulating the input form,
+# such as downloading and uploading of data and the data validation.
+# Some of the provided methods can also be used on the server site.
+# Also, refer to the final implementations of abstraction for info.
+assert module.exports.Formular = cc -> class Formular extends Widget
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -51,6 +51,7 @@ assert module.exports.Formular = cc -> class Formular extends Archetype
     # the purpose of validating data that came in from a formular.
     # It is adapted to the formular protocol, attuned to specific
     # data protocol that is used inside of it. Reference a coding.
+    # It is ambivalent and can be used on client and server sites.
     @validator: (data) -> (id, check, message) ->
         assert _.isArray(data), "got invalid data object"
         assert _.isString(id), "got invalid identification"
@@ -59,36 +60,37 @@ assert module.exports.Formular = cc -> class Formular extends Archetype
         assert _.isPlainObject(object), "no #{id} object"
         conditions = -> (object.checked or false) is yes
         functional = -> check.call object, object.value
-        expression = -> check.test object.value or ""
+        expression = -> check.test object.value or ("")
         select = _.isBoolean(check) and not conditions()
         method = _.isFunction(check) and not functional()
         regexp = _.isRegExp(check) and not expression()
-        failure = (method or regexp or select) or false
-        return object.warning = message if failure
+        failed = (method or regexp or select) or false
+        return object.warning = message if failed
 
     # This is the initialization method that creates a form within
     # the specified hosting element (or selector) and then runs the
     # payload function (if supplied) that should fill the form with
     # the fields. If missing - that can be done later directly via
     # instance methods of the formular which correspond to fields.
-    constructor: (hosting, reference, payload) ->
-        assert this.hide = => return @container.hide()
-        try hosting = $(hosting) if _.isString hosting
-        assert hosting.length > 0, "got invalid hosting"
-        assert _.isString(reference), "invalid reference"
-        scoped = => (payload or ->).apply this, arguments
-        @warnings = $ "<div>", class: "ui warning message"
-        @errors = $ "<div>", class: "ui error message err"
-        @container = $ "<div>", class: "ui form segment"
-        @container.append @errors, @warnings # invisible
-        @container.appendTo(hosting); scoped @container
-        @hosting = hosting; @reference = reference; @
+#    constructor: (hosting, reference, payload) ->
+#        assert this.hide = => return @container.hide()
+#        try hosting = $(hosting) if _.isString hosting
+#        assert hosting.length > 0, "got invalid hosting"
+#        assert _.isString(reference), "invalid reference"
+#        scoped = => (payload or ->).apply this, arguments
+#        @warnings = $ "<div>", class: "ui warning message"
+#        @errors = $ "<div>", class: "ui error message err"
+#        @container = $ "<div>", class: "ui form segment"
+#        @container.append @errors, @warnings # invisible
+#        @container.appendTo(hosting); scoped @container
+#        @hosting = hosting; @reference = reference; @
 
     # This method is part of the formular core protocol. It should
     # be invoked once a formular is required to reset its state and
     # all the values, that is making a formular prestine. The method
     # is implemented within the terms of the upload and the download
     # pieces of the protocol, as well as within the internal chnages.
+    # Please refer to the implementation for important mechanics.
     prestine: (cleaners = new Array()) ->
         cleaners.push (handle) -> handle.error = null
         cleaners.push (handle) -> handle.value = null
@@ -96,10 +98,10 @@ assert module.exports.Formular = cc -> class Formular extends Archetype
         cleaners.push (handle) -> handle.checked = null
         @errors.empty() if _.isObject @errors or null
         @warnings.empty() if _.isObject @warnings or 0
-        try this.container.removeClass "warning error"
+        @element.removeClass "warning error" # clean up
         transform = (x) -> _.each cleaners, (f) -> f(x)
         assert _.isArray downloaded = try this.download()
-        assert fields = @container.find(".field") or []
+        assert fields = @element.find(".field") or Array()
         _.each downloaded, transform; @upload downloaded
         sieve = (seq) -> _.filter seq, (value) -> value
         sieve _.map fields, (value, index, iteratee) =>
@@ -113,14 +115,17 @@ assert module.exports.Formular = cc -> class Formular extends Archetype
     # of the fields have warning metadata attached to it. If so, a
     # warning is added to the list of messages and the field marked
     # with an error tag, which makes its validity visually distinct.
+    # Please refer to the implementation for important mechanics.
     messages: (heading, force) ->
-        assert @container.removeClass "warning error"
-        @errors.detach(); @warnings.prependTo @container
+        assert this.element.removeClass "warning error"
+        @warnings.remove() if _.isObject @warnings or null
+        @warnings = $ "<div>", class: "ui warning message"
+        @warnings.prependTo @element # add warn platings
         @warnings.empty(); list = $ "<ul>", class: "list"
         h = $("<div>", class: "header").appendTo @warnings
         h.text heading.toString(); list.appendTo @warnings
-        return this.container.addClass "warning" if force
-        assert fields = @container.find(".field") or []
+        return this.element.addClass "warning" if force
+        assert fields = @element.find(".field") or []
         sieve = (seq) -> _.filter seq, (value) -> value
         sieve _.map fields, (value, index, iteratee) =>
             assert _.isObject value = $(value) or null
@@ -129,15 +134,16 @@ assert module.exports.Formular = cc -> class Formular extends Archetype
             return if not warning? or _.isEmpty warning
             value.addClass "error"; notice = $ "<li>"
             notice.appendTo(list).text "#{warning}"
-            @container.addClass "warning"; value
+            @element.addClass "warning"; value
 
     # This is a part of the formular protocol. This method allows
     # you to upload all the fields from a vector of objects, each
     # of whom describes each field in the formular; its value and
     # errors or warnings that it may have attached to it. This is
     # like deserializing the outputed form data from transferable.
+    # Please refer to the implementation for important mechanics.
     upload: (sequence) ->
-        assert fields = @container.find(".field") or []
+        assert fields = @element.find(".field") or []
         compare = (id) -> (hand) -> hand.identity is id
         sieve = (seq) -> _.filter seq, (value) -> value
         sieve _.map fields, (value, index, iteratee) ->
@@ -158,8 +164,9 @@ assert module.exports.Formular = cc -> class Formular extends Archetype
     # of whom describes each field in the formular; its value and
     # errors or warnings that it may have attached to it. This is
     # like serializing the inputted form data into a transferable.
+    # Please refer to the implementation for important mechanics.
     download: (reset) ->
-        assert fields = @container.find(".field") or []
+        assert fields = @element.find(".field") or []
         sieve = (seq) -> _.filter seq, (value) -> value
         sieve _.map fields, (value, index, iteratee) ->
             assert _.isObject value = $(value) or null

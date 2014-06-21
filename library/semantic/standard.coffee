@@ -47,8 +47,8 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
         selectorTwo = fieldTwo and _.isString fieldTwo
         fieldOne = ".field.#{fieldOne}" if selectorOne
         fieldTwo = ".field.#{fieldTwo}" if selectorTwo
-        fieldOne = @container.find fieldOne if selectorOne
-        fieldTwo = @container.find fieldTwo if selectorTwo
+        fieldOne = @element.find fieldOne if selectorOne
+        fieldTwo = @element.find fieldTwo if selectorTwo
         assert fieldOne.length > 0, "invalid object A given"
         assert fieldTwo.length > 0, "invalid object B given"
         assert union = try $ "<div>", class: "two fields"
@@ -64,7 +64,7 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input = $ "<input>", type: "password"
         assert _.isObject input.attr name: identity.toString()
-        field = $("<div>", class: "field").appendTo @container
+        field = $("<div>", class: "field").appendTo @element
         wrap = $ "<div>", class: "icon input ui left labeled"
         input.on "input", -> do -> field.removeClass "error"
         assert corner = $ "<div>", class: "ui corner label"
@@ -85,7 +85,7 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
         assert _.isObject input = $ "<input>", type: "text"
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input.attr name: identity.toString()
-        field = $("<div>", class: "field").appendTo @container
+        field = $("<div>", class: "field").appendTo @element
         wrap = $ "<div>", class: "icon input ui left labeled"
         input.on "input", -> do -> field.removeClass "error"
         assert corner = $ "<div>", class: "ui corner label"
@@ -107,7 +107,7 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input = $ "<input>", type: "checkbox"
         assert _.isObject input.attr name: identity.toString()
-        field = $("<div>", class: "field").appendTo @container
+        field = $("<div>", class: "field").appendTo @element
         wrap = $ "<div>", class: what; field.addClass "inline"
         input.on "input", -> do -> field.removeClass "error"
         try $(field).data "identity", identity.toString()
@@ -126,7 +126,7 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input = $ "<input>", type: "checkbox"
         assert _.isObject input.attr name: identity.toString()
-        field = $("<div>", class: "field").appendTo @container
+        field = $("<div>", class: "field").appendTo @element
         wrap = $ "<div>", class: what; field.addClass "inline"
         input.on "input", -> do -> field.removeClass "error"
         try $(field).data "identity", identity.toString()
@@ -145,7 +145,7 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input = $ "<input>", type: "checkbox"
         assert _.isObject input.attr name: identity.toString()
-        field = $("<div>", class: "field").appendTo @container
+        field = $("<div>", class: "field").appendTo @element
         wrap = $ "<div>", class: what; field.addClass "inline"
         input.on "input", -> do -> field.removeClass "error"
         try $(field).data "identity", identity.toString()
@@ -163,7 +163,7 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
         assert _.isObject input = $ "<input>", type: "text"
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input.attr name: identity.toString()
-        field = $("<div>", class: "field").appendTo @container
+        field = $("<div>", class: "field").appendTo @element
         wrap = $ "<div>", class: "icon input ui left labeled"
         input.on "input", -> do -> field.removeClass "error"
         assert icon = $ "<i>", class: "icon #{icon}" if icon
