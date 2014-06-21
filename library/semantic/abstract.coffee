@@ -85,7 +85,7 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
         assert @reference = reference # store reference
         assert _.isFunction(@constructor::element), ptf
         @element = $ renderable(@constructor::element) @
-        assert @element.addClass "gf-semantic-widget"
+        assert @element.addClass "semantic-ui-widget"
         assert @element.appendTo this.container or 0
         payload.call this, @element, @reference or 0
         assert identify = try @constructor.identify()
