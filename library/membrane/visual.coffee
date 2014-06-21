@@ -49,6 +49,7 @@ compose = require "../nucleus/compose"
 {Barebones} = require "./skeleton"
 {remote, external} = require "./remote"
 {TransferToolkit} = require "./transfer"
+{TemplateToolkit} = require "./template"
 {TransitToolkit} = require "./transit"
 {EventsToolkit} = require "./events"
 {LinksToolkit} = require "./linkage"
@@ -76,6 +77,7 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
     # for all sorts of information on the composition system itself.
     # Each of these will be dynamicall integrated in class hierarchy.
     @implanting TransferToolkit
+    @implanting TemplateToolkit
     @implanting TransitToolkit
     @implanting EventsToolkit
     @implanting LinksToolkit
