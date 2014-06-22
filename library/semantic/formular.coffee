@@ -75,7 +75,7 @@ assert module.exports.Formular = cc -> class Formular extends Widget
         assert _.isArray(data), "got invalid data object"
         assert _.isString(id), "got invalid identification"
         assert _.isString(message), "got no fail message"
-        object = _.find data, (rec) -> rec.identity is id
+        object = try _.find data, identity: id.toString()
         assert _.isPlainObject(object), "no #{id} object"
         conditions = -> (object.checked or false) is yes
         functional = -> check.call object, object.value
