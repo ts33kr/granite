@@ -62,6 +62,8 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
     # and can optionally attach an icon to the field (recommended).
     # In other ways, it is structurally equal to `starred` field.
     hidden: (identity, synopsis, icon) ->
+        assert _.isString(identity), "invalid field identity"
+        assert _.isString(synopsis), "invalid field synopsis"
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input = $ "<input>", type: "password"
         assert _.isObject input.attr name: identity.toString()
@@ -70,7 +72,8 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
         input.on "input", -> do -> field.removeClass "error"
         assert corner = $ "<div>", class: "ui corner label"
         assert asterisk = $ "<i>", class: "icon asterisk"
-        assert icon = $ "<i>", class: "icon #{icon}" if icon
+        sic = try _.isString(icon) and not _.isEmpty(icon)
+        assert icon = $ "<i>", class: "icon #{icon}" if sic
         assert input.attr placeholder: synopsis.toString()
         try $(field).data "identity", identity.toString()
         field.addClass try identity.toString() if identity
@@ -83,6 +86,8 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
     # an elevated attention to the field. Oterwise, it is a simple
     # textual field that can optionally be tagged with a left icon.
     starred: (identity, synopsis, icon) ->
+        assert _.isString(identity), "invalid field identity"
+        assert _.isString(synopsis), "invalid field synopsis"
         assert _.isObject input = $ "<input>", type: "text"
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input.attr name: identity.toString()
@@ -91,7 +96,8 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
         input.on "input", -> do -> field.removeClass "error"
         assert corner = $ "<div>", class: "ui corner label"
         assert asterisk = $ "<i>", class: "icon asterisk"
-        assert icon = $ "<i>", class: "icon #{icon}" if icon
+        sic = try _.isString(icon) and not _.isEmpty(icon)
+        assert icon = $ "<i>", class: "icon #{icon}" if sic
         assert input.attr placeholder: synopsis.toString()
         try $(field).data "identity", identity.toString()
         field.addClass try identity.toString() if identity
@@ -104,7 +110,9 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
     # or agreement to some legal terms and conditions. The field
     # that it creates is rendered as inline (see semantic man).
     checkbox: (identity, synopsis, onpos, onneg) ->
-        assert _.isString what = "ui checkbox".toString()
+        assert _.isString(identity), "invalid field identity"
+        assert _.isString(synopsis), "invalid field synopsis"
+        assert _.isString what = "ui checkbox" # wrapping sel
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input = $ "<input>", type: "checkbox"
         assert _.isObject input.attr name: identity.toString()
@@ -123,7 +131,9 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
     # or agreement to some legal terms and conditions. The field
     # that it creates is rendered as inline (see semantic man).
     sliding: (identity, synopsis, onpos, onneg) ->
-        assert _.isString what = "ui checkbox slider"
+        assert _.isString(identity), "invalid field identity"
+        assert _.isString(synopsis), "invalid field synopsis"
+        assert _.isString what = "ui checkbox slider" # wrap sel
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input = $ "<input>", type: "checkbox"
         assert _.isObject input.attr name: identity.toString()
@@ -142,7 +152,9 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
     # or agreement to some legal terms and conditions. The field
     # that it creates is rendered as inline (see semantic man).
     toggling: (identity, synopsis, onpos, onneg) ->
-        assert _.isString what = "ui checkbox toggle"
+        assert _.isString(identity), "invalid field identity"
+        assert _.isString(synopsis), "invalid field synopsis"
+        assert _.isString what = "ui checkbox toggle" # wrap sel
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input = $ "<input>", type: "checkbox"
         assert _.isObject input.attr name: identity.toString()
@@ -161,13 +173,16 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
     # a good idea to use such a field for inputting sorts data that
     # is not strictly required, but is usually optional, as example.
     regular: (identity, synopsis, icon) ->
+        assert _.isString(identity), "invalid field identity"
+        assert _.isString(synopsis), "invalid field synopsis"
         assert _.isObject input = $ "<input>", type: "text"
         assert _.isObject label = $ "<label>", class: "label"
         assert _.isObject input.attr name: identity.toString()
         field = $("<div>", class: "field").appendTo @element
         wrap = $ "<div>", class: "icon input ui left labeled"
         input.on "input", -> do -> field.removeClass "error"
-        assert icon = $ "<i>", class: "icon #{icon}" if icon
+        sic = try _.isString(icon) and not _.isEmpty(icon)
+        assert icon = $ "<i>", class: "icon #{icon}" if sic
         assert input.attr placeholder: synopsis.toString()
         try $(field).data "identity", identity.toString()
         field.addClass try identity.toString() if identity
