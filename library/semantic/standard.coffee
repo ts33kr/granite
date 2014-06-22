@@ -43,18 +43,23 @@ module.exports.BoxFormular = cc -> class BoxFormular extends Formular
     # that is going to equally share the space between two fields.
     # This method is going to internally insert the grouper right
     # before the first field and them move both fields to grouper.
-    groupTwoFields: (fieldOne, fieldTwo) ->
+    group: (fieldOne, fieldTwo, fieldAdd) ->
         selectorOne = fieldOne and _.isString fieldOne
         selectorTwo = fieldTwo and _.isString fieldTwo
+        selectorAdd = fieldAdd and _.isString fieldAdd
         fieldOne = ".field.#{fieldOne}" if selectorOne
         fieldTwo = ".field.#{fieldTwo}" if selectorTwo
+        fieldAdd = ".field.#{fieldAdd}" if selectorAdd
         fieldOne = @element.find fieldOne if selectorOne
         fieldTwo = @element.find fieldTwo if selectorTwo
-        assert fieldOne.length > 0, "invalid object A given"
-        assert fieldTwo.length > 0, "invalid object B given"
-        assert union = try $ "<div>", class: "two fields"
+        fieldAdd = @element.find fieldAdd if selectorAdd
+        assert fieldOne.length > 0, "invalid obj A given"
+        assert fieldTwo.length > 0, "invalid obj B given"
+        assert q = try if fieldAdd then "three" else "two"
+        assert union = try $ "<div>", class: "#{q} fields"
         union.insertBefore fieldOne # place before A field
         fieldOne.appendTo union; fieldTwo.appendTo union
+        fieldAdd.appendTo union if (try fieldAdd.length)
 
     # Create a field that is typically would be used to enter the
     # password or similar information that should not be displayed
