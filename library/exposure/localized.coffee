@@ -70,7 +70,7 @@ module.exports.Localized = class Localized extends DuplexCore
     # This allows you to override type definitions that may be used in
     # a parent classes, without having to replace implementation code.
     # Allows to inject arbitrary lexical-local values to external fns.
-    @considering i18n: external inline: yes, -> @t
+    @considering i18n: external inline: yes, -> this.t
 
     # An implementation of the standard, system hook in order for
     # providing a static boilerplate that is used to bring up the
