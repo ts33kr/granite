@@ -303,7 +303,7 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
             assert @consumeProviders; @consumeProviders @socket
             assert o = "Successfully bootloaded at %s".green
             @on "booted", -> @booted = yes; @duplexed = yes
-            @on "booted", -> $root.emit "attached", this
+            @on "booted", -> @broadcast "attached", this
             @trampoline _.pick(@, @snapshot), (params) =>
                 logger.info o, @location.underline.green
                 return this.emit "booted", @socket
