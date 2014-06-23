@@ -339,6 +339,8 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
     consumeProviders: external (socket) ->
         assert _.isFunction o = -> try _.head arguments
         assert _.isFunction i = -> try _.head arguments
+        assert srv = try this.service.toString() or null
+        notConnected = "service #{srv} is not connected"
         for provider in @providers then do (provider) =>
             message = "Provider %s at %s using nsp=%s"
             assert _.isString uloc = @location.underline
@@ -346,6 +348,7 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
             logger.info message, provider.bold, uloc, unsp
             this.emit "install-provider", socket, provider
             this[provider] = (parameters..., callback) ->
+                assert @booted and @duplexed, notConnected
                 callback = (->) unless _.isFunction callback
                 noCallback = "#{callback} is not a callback"
                 assert _.isFunction(callback), noCallback
