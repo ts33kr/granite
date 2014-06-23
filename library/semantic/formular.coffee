@@ -77,9 +77,9 @@ assert module.exports.Formular = cc -> class Formular extends Widget
         assert _.isString(message), "got no fail message"
         object = try _.find data, identity: id.toString()
         assert _.isPlainObject(object), "no #{id} object"
-        conditions = -> (object.checked or false) is yes
-        functional = -> check.call object, object.value
-        expression = -> check.test object.value or ("")
+        conditions = -> (try object.checked or no) is yes
+        functional = -> try check.call object, object.value
+        expression = -> check.test object.value or String()
         sequential = -> (object.value or null) in check
         select = _.isBoolean(check) and not conditions()
         method = _.isFunction(check) and not functional()
