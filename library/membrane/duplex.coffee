@@ -319,7 +319,7 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         p = "an exception happend at the server provider:"
         connected = c = "Established connection at %s".green
         disconnect = "lost socket connection at #{@location}"
-        r = (e, s) => this.emit(e, s...); $root.emit(e, s...)
+        r = (e, s) => this.emit(e, s...); @broadcast(e, s...)
         breaker = try this.STOP_ROOT_PROPAGATION or undefined
         forward = (evt) => @socket.on evt, => r evt, arguments
         forward "disconnect" # lost socket connection to server
