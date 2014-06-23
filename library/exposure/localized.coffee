@@ -63,6 +63,15 @@ module.exports.Localized = class Localized extends DuplexCore
     # with the framework. The ones that actually constitute it.
     @EMBEDDED_LOCALE: "#{__dirname}/../../locale"
 
+    # Define a set of considerations used by this service. An every
+    # consideration is one key/value pair. Where the key corresponds
+    # to the type name (also known as token) and the value is holding
+    # either an implementation function or a remotable type (an alias).
+    # This allows you to override type definitions that may be used in
+    # a parent classes, without having to replace implementation code.
+    # Allows to inject arbitrary lexical-local values to external fns.
+    @considering i18n: external inline: yes, -> @t
+
     # An implementation of the standard, system hook in order for
     # providing a static boilerplate that is used to bring up the
     # localization toolkit prior to the internal machinery coming

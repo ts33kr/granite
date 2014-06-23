@@ -87,9 +87,9 @@ module.exports.DuplexTracker = class DuplexTracker extends Embedded
     # When either one is happens, it emits the `toastr` notice. A
     # most recent method implementation uses `$root` as a subject.
     attachWatchdog: @awaiting "socketing", (socket, location) ->
-        assert l = @t "server connection has been lost"
-        assert s = @t "exception occured on the server"
-        assert c = @t "established connection to server"
+        assert l = i18n "server connection has been lost"
+        assert s = i18n "exception occured on the server"
+        assert c = i18n "established connection to server"
         assert $root is $host, "parasite on wrong service"
         pos = positionClass: "toast-top-left" # location
         bhv = tapToDismiss: 0, closable: 0 # set behavior
