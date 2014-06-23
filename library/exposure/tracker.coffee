@@ -71,7 +71,7 @@ module.exports.DuplexTracker = class DuplexTracker extends Embedded
     # For more information on a both subjects, please refer to the
     # implementation of the `Auxiliaries` components. Specifically
     # look at the class methods `aux` and `parasite` source codes.
-    @parasite $watchdog: @ROOT_CONFORMS_TO DuplexCore
+    @parasite $watchdog: @ROOTS_WITH_CLASS DuplexCore
 
     # This block here defines a set of translation files that are
     # used by the service. Please keep in mind, that translations
