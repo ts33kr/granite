@@ -154,6 +154,8 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
         assert bexcess.push "root", "refCache" # references
         context.excess = e = excess = aexcess.concat bexcess
         context.snapshot = _.difference context.snapshot, e
+        ctor = "function #{this.constructor.identify()}(){}"
+        restoreRtt = "#{symbol}.constructor = #{ctor};\r\n"
         prepared = JSON.stringify _.omit(context, excess)
         installer = "#{symbol} = #{prepared}".toString()
         runtime = "(#{coffee}).apply(this)".toString()
@@ -166,6 +168,7 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
             inline = @inlineRemoteSym.bind this
             inline context, symbol, value, key
         context.sources.unshift applicator
+        context.changes.unshift restoreRtt
         context.changes.unshift installer
         context.sources.unshift runtime
 
