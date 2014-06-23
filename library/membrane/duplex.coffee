@@ -300,13 +300,15 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         @socket.on "orphan", -> @io.disconnect(); @io.connect()
         osc = (listener) => this.socket.on "connect", listener
         osc => @socket.emit "screening", _.pick(@, @snapshot), =>
+            this.bootloading = yes # mark the bootloading process
             assert @consumeProviders; @consumeProviders @socket
             assert o = "Successfully bootloaded at %s".green
-            @on "booted", -> @booted = 1; @initialized = 1
-            @on "booted", -> @broadcast "attached", this
+            @once "booted", -> @booted = 1; @initialized = 1
+            @once "booted", -> @broadcast "attached", this
             @trampoline _.pick(@, @snapshot), (params) =>
                 logger.info o, @location.underline.green
-                return this.emit "booted", @socket
+                delete this.bootloading # kinda finished
+                return this.emit "booted", this.socket
 
     # An externally exposed method that is a part of the bootloader
     # implementation. It sets up the communication feedback mechanism
@@ -319,7 +321,8 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         p = "an exception happend at the server provider:"
         connected = c = "Established connection at %s".green
         disconnect = "lost socket connection at #{@location}"
-        @on "disconnect", -> @booted = false # connection lost
+        @once "disconnect", -> @booted = false # connect lost
+        @seemsBroke = -> @outOfOrder() and not @bootloading
         @outOfOrder = -> return @initialized and not @booted
         @setInOrder = -> return try @initialized and @booted
         breaker = try this.STOP_ROOT_PROPAGATION or undefined
@@ -348,9 +351,9 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
             assert _.isString uloc = @location.underline
             assert _.isString unsp = @nsp.toString().bold
             logger.info message, provider.bold, uloc, unsp
-            this.emit "install-provider", socket, provider
+            this.emit "install-provider", provider, socket
             this[provider] = (parameters..., callback) ->
-                assert not this.outOfOrder(), noConnection
+                assert not this.seemsBroke(), noConnection
                 callback = (->) unless _.isFunction callback
                 noCallback = "#{callback} is not a callback"
                 assert _.isFunction(callback), noCallback
