@@ -315,13 +315,12 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
             context.snapshot = try _.keys(context)
             assert this.deployContext context, symbol
             assert this.inlineAutocalls context, symbol
-            context.inline -> assert try @root = $root
-            context.inline -> this.emit "installed", @
+            context.inline -> (@root = $root or undefined)
+            context.inline -> (@root.ecosystem ?= []).push this
+            context.inline -> (@broadcast = $root.emit.bind $root)
+            context.inline -> this.externals.push "ecosystem"
             context.inline -> this.externals.push "root"
-            context.inline -> this.externals.push "eco"
-            context.inline -> (@root.eco ?= []).push @
-            context.inline -> assert @broadcast = ->
-                this.root.emit.apply $root, arguments
+            context.inline -> this.emit "installed", @
             assert context = @compressContext context
             return receive context, false unless asm
             @contextRendering request, context, (c) ->
