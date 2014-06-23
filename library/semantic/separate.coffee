@@ -62,6 +62,7 @@ module.exports.ModalFormular = class ModalFormular extends Embedded
     # either an implementation function or a remotable type (an alias).
     # This allows you to override type definitions that may be used in
     # the parent classes, without having to replace implementation code.
+    # Allows to inject arbitrary lexical-local values to external fns.
     @considering TFormular: BoxFormular
 
     # This method is invoked once the `configure-window` events goes
