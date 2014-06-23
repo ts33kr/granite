@@ -302,7 +302,7 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         osc => @socket.emit "screening", _.pick(@, @snapshot), =>
             assert @consumeProviders; @consumeProviders @socket
             assert o = "Successfully bootloaded at %s".green
-            @on "booted", -> @booted = yes; @duplexed = yes
+            @on "booted", -> @booted = 1; @initialized = 1
             @on "booted", -> @broadcast "attached", this
             @trampoline _.pick(@, @snapshot), (params) =>
                 logger.info o, @location.underline.green
@@ -319,9 +319,11 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         p = "an exception happend at the server provider:"
         connected = c = "Established connection at %s".green
         disconnect = "lost socket connection at #{@location}"
-        r = (e, s) => this.emit(e, s...); @broadcast(e, s...)
+        @on "disconnect", -> @booted = false # connection lost
+        @outOfOrder = -> return @initialized and not @booted
+        @setInOrder = -> return try @initialized and @booted
         breaker = try this.STOP_ROOT_PROPAGATION or undefined
-        this.on "disconnect", -> @booted = no; @duplexed = no
+        r = (e, s) => this.emit(e, s...); @broadcast(e, s...)
         forward = (evt) => @socket.on evt, => r evt, arguments
         forward "disconnect" # lost socket connection to server
         forward "connect" # a successfull connection happended
@@ -340,7 +342,7 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         assert _.isFunction o = -> try _.head arguments
         assert _.isFunction i = -> try _.head arguments
         assert srv = try this.service.toString() or null
-        notConnected = "service #{srv} is not connected"
+        noConnection = "service #{srv} has lost connection"
         for provider in @providers then do (provider) =>
             message = "Provider %s at %s using nsp=%s"
             assert _.isString uloc = @location.underline
@@ -348,7 +350,7 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
             logger.info message, provider.bold, uloc, unsp
             this.emit "install-provider", socket, provider
             this[provider] = (parameters..., callback) ->
-                assert @booted and @duplexed, notConnected
+                assert not this.outOfOrder(), noConnection
                 callback = (->) unless _.isFunction callback
                 noCallback = "#{callback} is not a callback"
                 assert _.isFunction(callback), noCallback
