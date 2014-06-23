@@ -189,7 +189,7 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
         assert _.isString src = tabled(idefs) if tabled
         assert _.isString qualified = "#{symbol}.#{key}"
         assert not _.isEmpty src = refCache[src] or src
-        try set = "#{qualified} = (#{src}).call()\r\n"
+        set = "#{qualified} = (#{src}).call(#{symbol})\r\n"
         try set += "#{qualified}.#{metadata} = #{blob}"
         assert refCache[src] = qualified # sym to cache
         return context.sources.push "\r\n#{set}\r\n"

@@ -42,6 +42,7 @@ util = require "util"
 # citizens for later transportation on the other environment.
 # Typically this would be the browser JS engine environment.
 # Call it with an empty function argument wrapping target.
+# See the source code for more information on how to use.
 module.exports.remote = module.exports.cc = (wrapper) ->
     noWrapper = "wrapper must be a function"
     invalidArgs = "wrapper cannot have arguments"
@@ -64,17 +65,24 @@ module.exports.remote = module.exports.cc = (wrapper) ->
 # arguments functional closure over the compiled routines that is
 # only necessary for properly capturing classes. Please refer to
 # the `remote` method for info, since it is relevant here as well.
-module.exports.external = module.exports.ec = (compiled) ->
+# Please see the source code for more information on how to use.
+module.exports.external = module.exports.ec = ->
     notFunction = "a compiled is not a function"
     wrongCompiled = "using external with classes"
+    compiled = try _.find arguments, _.isFunction
+    options = try _.find arguments, _.isPlainObject
+    options = new Object unless _.isObject options
     assert.ok _.isFunction(compiled), notFunction
     assert not compiled.__super__?, wrongCompiled
     pn = (df) -> ("#{glb} = #{v};" for glb, v of df)
     pv = (df) -> ("var #{k} = #{v};" for k, v of df)
-    fm = (src, arg) -> _.sprintf(src, arg, compiled)
+    fm = (src, arg) -> _.sprintf(src, arg, sources())
     ds = (long, short) -> pn(long).concat(pv(short))
     tabled = (f) -> (s) -> fm wrap, ds(f,s).join ";"
+    sources = -> return (try compiled.toString())
+    inline = (try options.inline) # call fn inline
     wrap = "function() { \n\t%s; \n\treturn %s; }"
+    wrap = "(#{sources()}).call(this)" if inline
     assert compiled.remote = Object.create {}
     assert compiled.remote.compiled = compiled
     assert compiled.remote.compile = compiler
@@ -91,6 +99,7 @@ module.exports.external = module.exports.ec = (compiled) ->
 # foreign environments under the specified or inherited symbol.
 # Please refer to the implementation for greater understanding!
 # The method knows how to recursively compile class hierarchies.
+# Generally, you should never be using this utility directly.
 compiler = module.exports.compiler = (caching, symbol) ->
     noSymbol = "a symbol must be non empty"
     @symbol = symbol unless _.isEmpty symbol
