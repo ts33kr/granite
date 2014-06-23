@@ -30,7 +30,7 @@ integration that allows for entirely transparent data, event and code passing.
 The overall architecture of Granite makes it perfect for engineers.
 Granite makes hard emphasis on the decomposed objective architecture
 in order to provide enterprise level design and make the factor of
-the reusable code sky high. It also embeds in or provides support for
+the reusable code sky high. It also embeds or provides support for
 the community standard sort of toolkits, such as NPM and Bower package managers.
 
 ##Highlights
