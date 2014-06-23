@@ -80,10 +80,12 @@ assert module.exports.Formular = cc -> class Formular extends Widget
         conditions = -> (object.checked or false) is yes
         functional = -> check.call object, object.value
         expression = -> check.test object.value or ("")
+        sequential = -> (object.value or null) in check
         select = _.isBoolean(check) and not conditions()
         method = _.isFunction(check) and not functional()
         regexp = _.isRegExp(check) and not expression()
-        failed = (method or regexp or select) or false
+        vector = _.isArray(check) and not sequential()
+        failed = method or regexp or select or vector
         return object.warning = message if failed
 
     # This method is part of the formular core protocol. It should
