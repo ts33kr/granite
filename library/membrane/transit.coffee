@@ -114,7 +114,7 @@ module.exports.TransitToolkit = class TransitToolkit extends Barebones
         assert value = _.first _.values(signature or 0)
         assert _.isFunction(value) or value.remote?, fx
         assert sourceCodes = -> try value.remote.source
-        remotes.push value if (try value.remote.compile)
+        remotes.push value if (try value.remote.symbol)
         raw = (try value.remote.symbol) or sourceCodes()
         logger.debug message.grey, token.bold, identify
         @considerations = previous.concat [[token, raw]]
