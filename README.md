@@ -45,122 +45,24 @@ also strongly encourage you to browse over the project source codes
 and discover more pieces there, ones that haven't been documented yet.
 Use http://ts33kr.github.io/granite for browsing.
 
-  + Highly advanced code emission platform that is taking care of
-  doing all the processing necessary to transfer the relevant code
-  to the client site. The entire method hierarchies are transferred,
-  so that you can always access all the possibly overridden methods
-  in the base classes. On top of that, there is a special mechanism
-  implemented that allows you to override type implementations that
-  are used in the parent classes, without having to override any of
-  the base classes coding (as long as types have similar interfaces).
-  And last, but not least - all of the code that is emitted into the
-  client site is being taken apart and re-translated, using either
-  obfuscation or the code beautification toolkit, depending on config.
-
-  + A unique extension to the object system, written using pure
-  CoffeeScript that allows for completely transparent and dynamic
-  multiple inheritance, modelled similar to the mixin concept. It
-  allows you to build modular pieces of functionality that can be
-  reused in any class. The system is unobtrusive and makes use of
-  declarative style to keep the syntax clean, when you have a lot
-  of different building blocks mixed into your class. Please see
-  [nucleus/compose.coffee](library/nucleus/compose.coffee) for
-  the composition system implementation coding.
-
-  + Natively keeping client-side and server-side code within the
-  same class, naturally co-existing and interacting between two
-  remote scopes. Allows for a massively superior way of building
-  abstractions that abstract away the whole patterns and protocols
-  that hide or carry away the interactions between the client and
-  the server. It completely frees your of routine and allows to
-  focus only on what matters, not on the code required for code.
-  See [membrane/visual.coffee](library/membrane/visual.coffee)
-  and the related for an implementation boilerplate.
-
-  + A bi-directional and real time communication channel that is
-  entirely transparent to a developer - it looks just like a usual
-  method invocation, with all the guts: parameters, callbacks and
-  so on. All of the client/server transportation complexities are
-  hidden under the hood, without the need of every touching them.
-  The channel uses latest, state-of-the-art technologies, such as
-  [Socket.IO](http://socket.io) to implement it. Please refer to
-  [membrane/duplex.coffee](library/membrane/duplex.coffee) and
-  [membrane/bilateral.coffee](library/membrane/bilateral.coffee)
-  for the reference coding and info.
-
-  + A strong layer for implementing conventional application APIs.
-  The REST architecture is shipped out of the box, with possibility
-  of deep customization to fit in any architecture on top of HTTP.
-  Has a built in support for advanced features, like the embedded
-  declarative documentation and testing subsystems wired into it.
-  Everything is built around an exceptionally strong object model
-  and makes uses of an automatic wiring that requires zero level
-  configuration for creating and discovering new services. See
-  [exposure/inventory.coffee](library/exposure/inventory.coffee).
-
-  + A production grade load balancing and failover clustering
-  provided right out of the box. Delivered by technology called
-  [Seaport](https://github.com/substack/seaport) it provides a
-  lot of advanced functionality, such as the node auto-discovery
-  and no need for initial configuration. It allows to dynamically
-  create star-like topologies in a matter of seconds, supporting
-  any order of bringing nodes up (master and slaves). The shipped
-  balancing algorithm is a simple, session-sticky round robin. See
-  [nucleus/scaled.coffee](library/nucleus/scaled.coffee) file for
-  the scalable kernel implementation.
-
-  + Due to the strong objective design principles, it is extremely
-  easy to write components (classes) that contain the client side
-  coding as well as the server side coding. A frontend package manager
-  [Bower](http://bower.io) is built right into the framework in order
-  to provide the flexible ability to embed the frontend dependencies
-  directly into your components. The dependencies are intelligently
-  resolved and automatically satisfied during the node bootloaing;
-  in a configurable manner. For the implementation coding see
-  [membrane/bower.coffee](library/membrane/bower.coffee).
-
-  + An out of the box configuration system allows you to consume
-  configuration data (files) right away, without setting up any
-  sort of boilerplate. The system is based on a well known package
-  called [NConf](https://github.com/flatiron/nconf). Refer to the
-  [nucleus/scoping.coffee](library/nucleus/scoping.coffee) to get
-  some idea about the implementation. On top of this, there are a
-  set of tools shipped out of the box that make good use of this,
-  such as [MongoDB](http://mongodb.org) and [Redis](http://redis.io)
-  clients (components) that can be mixed into your service and
-  used right away, without having to think about configuration.
-
-  + Extremely viable kernel built into the framework. An application
-  (node) is automatically reloaded in case of an unexpected crash or
-  error and has extensive configuration capabilities as to reacting
-  to the unexpected conditions. The technology is based on something
-  called [forever](https://github.com/nodejitsu/forever). On top of
-  this, the framework has a built in memory monitor that watches an
-  application to not exceed the configured limit and reloads an app
-  if it does so. See [exposure/memory.coffee](library/exposure/memory.coffee)
-  for the monitor implementation coding and information.
-
-  + Convenient and practical message translation (internationalization)
-  platform. It is built on top of the client/server communication tools
-  built into the framework, therefore requires virtually no configs at
-  all; it just works out of the box. The system uses YAML file format
-  to keep its translation tables. This allows for the tables to be very
-  human-oriented and therefore are extremely easy and fun to work with.
-  Please see [exposure/localized.coffee](library/exposure/localized.coffee)
-  source code to familiarize yourself with the platform implementation.
-  Also take a look at [locale/tracked.yaml](locale/tracked.yaml) for
-  the real world example of translation tables for the specific service.
-
-  + Centralized mechanism for application level events publishing and
-  book keeping. Basically, allows you to publish an application event
-  that will be automatically propagated to all application nodes, via
-  Redis pub/sub mechanism, and then the event and all its metadata will
-  be stored in a capped collection in MongoDB. This toolkit gives you
-  an ability to keep an effective application log and stream events
-  from a tailable MongoDB cursor, receiving the real time information.
-  Please see [exposure/central.coffee](library/exposure/central.coffee)
-  source code for the centralized messaging system implementation and
-  all the available there relevant documentation.
+  + *Highly advanced code emission, translation, transitioning and optimization toolkit*
+  + *Strong OOP model with a unique, dynamic and controlled multiple inheritance approach*
+  + *Natively keeping client-side and server-side code within same class, as normal methods*
+  + *Bi-directional, real-time communication channel; entirely transparent, as method calls*
+  + *Strong layer for implementing conventional application APIs with HTTP and REST, and more*
+  + *Load balancing, with the sticky sessions, provided out-of-the box and immediatelly there*
+  + *Real clustering across machines and networks; masters/slaves can come and go in any order*
+  + *Scalability technologies, such as clustering and load balancing require no configuration*
+  + *Solid architecture for deining services with client & server complements and interactions*
+  + *Embedded support for automatic usage of Bower packages on an isolated, per-service basis*
+  + *Unified configuration system, with scopes, shipped out-of-the box and used internally too*
+  + *Support Mongo as mix-in service component, with zero-to-indefinite configuration approach*
+  + *Support Redis as mix-in service component, with zero-to-indefinite configuration approach*
+  + *Configurable error recovery, including an automatic rebooting of a failed node, et cetera*
+  + *Built-in memory node with a configurable limit, that reboots node if memory gets exceeded*
+  + *Localization and translation toolkit shipped out-of-the box, using YAML to store messages*
+  + *The 18n toolkit is equally available on server and client; can use many tables per service*
+  + *Centralized across entire application (all nodes) event bus; persisting history to Mongo*
 
 ##Disclaimer
 Before considering using Granite framework, you should be well aware
