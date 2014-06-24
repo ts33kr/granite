@@ -45,9 +45,9 @@ also strongly encourage you to browse over the project source codes
 and discover more pieces there, ones that haven't been documented yet.
 Use http://ts33kr.github.io/granite for browsing.
 
-  + *Entire code base is written in CoffeeScript with strong OOP, 100% code/doc coverage*
-  + *Highly advanced code emission, translation, transitioning and optimization platform*
-  + *Strong OOP model with a unique, dynamic and controlled multiple inheritance approach*
+  + *Entire code base is written in CoffeeScript with strong OOP; 100% coverage with docs*
+  + *Highly advanced JS code emission, translation, transitioning and optimization platform*
+  + *Strong OOP model with the unique, dynamic and controlled multiple inheritance approach*
   + *Natively keeping client-side and server-side code within same class, as normal methods*
   + *Bi-directional, real-time communication channel; entirely transparent, as method calls*
   + *Strong layer for implementing conventional application APIs with HTTP and REST, and more*
