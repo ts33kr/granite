@@ -24,6 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
 _ = require "lodash"
+async = require "async"
 teacup = require "teacup"
 assert = require "assert"
 
@@ -76,7 +77,7 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
         noContainer = "no valid container object supplied"
         noReference = "no valid reference string supplied"
         noPayload = "something wrong with payload function"
-        try @payload = (-> return undefined) unless @payload
+        @payload = (->) if _.isEmpty @payload or undefined
         assert _.isObject(@container or null), noContainer
         assert _.isString(@reference or null), noReference
         assert _.isFunction(@payload or null), noPayload
@@ -86,7 +87,8 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
         @element = $ renderable(@constructor::element) @
         @element.addClass "semantic-widget", @reference
         @element.appendTo (try @container or undefined)
-        @payload.call this, @element, @reference or 0
-        assert identify = try @constructor.identify()
-        assert ref = try @reference.toString().bold
-        logger.debug msg, identify.bold, ref.bold
+        assert identify = @constructor.identify().bold
+        this.constructor.configure().call this, (r) =>
+            @payload.call this, @element, @reference
+            assert ref = @reference.toString().bold
+            logger.debug msg, identify, ref.bold
