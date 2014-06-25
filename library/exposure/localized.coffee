@@ -79,21 +79,23 @@ module.exports.Localized = class Localized extends DuplexCore
     # certain services that are booted well before all the wiring.
     # A bit of black magic is used here, for a later refactoring.
     prelude: (symbol, context, request, next) ->
-        assert send = context.transit.bind context
         assert inline = context.inline.bind context
+        assert sender = context.transit.bind context
         assert shadow = Object.create this # isolated
+        assert shader = __isolated: true, __origin: @
         try _.extend shadow, session: request.session
         try _.extend shadow, request: request or null
-        _.extend shadow, __isolated: yes, __origin: @
+        try _.extend shadow, shader # shade the context
         translation = @obtainTranslation # get provider
-        setup = @setupTranslationTools # get installer
+        setup = @setupTranslationTools # get installing
         execute = (a...) => translation.apply shadow, a
         spoof = (l, c) -> c @_tmpLanguage, @_tmpMessages
+        assert _.isFunction try trx = sender or undefined
         return execute undefined, (language, messages) =>
             do -> assert context._tmpLanguage = language
             do -> assert context._tmpMessages = messages
-            send spoof, (f) -> this.obtainTranslation = f
-            send setup, (f) -> @setupTranslationTools = f
+            trx spoof, (f) -> this.obtainTranslation = f
+            trx setup, (f) -> @setupTranslationTools = f
             (inline -> @setupTranslationTools()); next()
 
     # A routine intended for server side execution inside of the
