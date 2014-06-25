@@ -126,6 +126,7 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
         msg = "Intercepting an %s event at the %s"
         evt = "missing the interceptor event specifier"
         imp = "missing the interceptor implementation"
+        super if _.isFunction this.constructor.__super__
         assert runner = try this.constructor.configure()
         assert ids = @constructor.identify().underline
         currents = this.constructor.interceptors or []
@@ -148,15 +149,20 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
     # the object events. The wrapper exists to provide an easy and
     # declarative way of doing that, as opposed to the functional.
     # The signature follows the standard event emitter convention.
-    @intercept: (event, implement) ->
+    @intercept: (xevent, ximplement) ->
+        assert identify = @identify().underline
         trap = try this.prototype.on or undefined
         misused = "please supply an event handler"
         invalid = "got no event emitting prototype"
+        msg = "Intercept %s event for method in %s"
+        event = _.find(arguments, _.isString) or 0
+        implement = _.find(arguments, _.isFunction)
         assert _.isFunction(trap or null), invalid
         assert _.isString(event), "malformed event"
         assert _.isFunction(implement), "#{misused}"
         previous = this.interceptors or new Array()
         previous = _.unique previous or new Array()
+        logger.silly msg.grey, event.bold, identify
         inmerge = (x) -> _.unique previous.concat x
         execute = (fnc) => fnc.call this; implement
         execute -> return @interceptors = inmerge
