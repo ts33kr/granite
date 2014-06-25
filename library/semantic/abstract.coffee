@@ -69,25 +69,24 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
     # marking it with the proper identifications and preparing an
     # internal APIs and shorthands for convenient access to some
     # of the most basic functionality related to a visual widget.
-    constructor: (container, reference, payload) ->
+    # The reference has to be a bare (without a dot) HTML class.
+    constructor: (@container, @reference, payload) ->
         msg = "Constructing widget %s with reference %s"
         ptf = "no valid template-function for an element"
         noContainer = "no valid container object supplied"
         noReference = "no valid reference string supplied"
         noPayload = "something wrong with payload function"
         try payload = (-> return undefined) unless payload
-        assert _.isObject(container or null), noContainer
-        assert _.isString(reference or null), noReference
+        assert _.isObject(@container or null), noContainer
+        assert _.isString(@reference or null), noReference
         assert _.isFunction(payload or null), noPayload
         assert @show = => this.element.show() # shortcut
         assert @hide = => this.element.hide() # shortcut
-        assert @container = container # store container
-        assert @reference = reference # store reference
         assert _.isFunction(@constructor::element), ptf
         @element = $ renderable(@constructor::element) @
-        assert @element.addClass "semantic-ui-widget"
-        assert @element.appendTo this.container or 0
-        payload.call this, @element, @reference or 0
+        @element.addClass "semantic-widget", @reference
+        @element.appendTo (try @container or undefined)
         assert identify = try @constructor.identify()
-        assert ref = reference.toString().bold or no
+        assert ref = @reference.toString().bold or 0
+        payload.call this, @element, @reference or 0
         logger.debug msg, identify.bold, ref.bold
