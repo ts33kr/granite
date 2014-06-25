@@ -124,8 +124,10 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
     # up for every archetyped class and therefore instance of class.
     constructor: (parameters...) ->
         msg = "Intercepting an %s event at the %s"
+        abs = "trying to instantiate an abstract class"
         evt = "missing the interceptor event specifier"
         imp = "missing the interceptor implementation"
+        throw new Error abs if @constructor.abstract()
         super if _.isFunction this.constructor.__super__
         assert runner = try this.constructor.configure()
         assert ids = @constructor.identify().underline
