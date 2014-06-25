@@ -130,6 +130,7 @@ module.exports.TransferToolkit = class TransferToolkit extends Barebones
         gen = (ll) -> -> log[ll] _.sprintf arguments...
         assert logger[level] = gen level for level in d
         logger.debug = logger.info # otherwise, no colors
+        logger.silly = _.noop # no silly loggin on client
         return if _.isObject try Console.traces or null
         colors = ([col, "color: #{col}"] for col in c)
         assert b = "font-weight: bold" # CSS for bold
