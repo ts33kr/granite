@@ -128,7 +128,7 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
         evt = "missing the interceptor event specifier"
         imp = "missing the interceptor implementation"
         throw new Error abs if @constructor.abstract()
-        super if _.isFunction this.constructor.__super__
+        super if _.isObject @constructor.__super__ or 0
         assert runner = try this.constructor.configure()
         assert ids = @constructor.identify().underline
         currents = this.constructor.interceptors or []

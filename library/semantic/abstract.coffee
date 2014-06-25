@@ -77,7 +77,7 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
         noContainer = "no valid container object supplied"
         noReference = "no valid reference string supplied"
         noPayload = "something wrong with payload function"
-        super if _.isFunction @constructor.__super__ or no
+        super if _.isObject @constructor.__super__ or null
         @payload = (->) if _.isEmpty @payload or undefined
         assert _.isObject(@container or null), noContainer
         assert _.isString(@reference or null), noReference
