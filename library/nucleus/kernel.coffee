@@ -91,32 +91,6 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
     # that does that. The method can either invoke it or omit it.
     kernelPreemption: (continuation) -> continuation.apply this
 
-    # An embedded system for adding ad-hoc configuration routines.
-    # Supply the reasoning and the routine and this method will add
-    # that routine to the configuration stack, to be launched once
-    # the kernel boots up. With no arguments it returns the launcher.
-    # This is a convenient way of running additions config routines,
-    # when designing the derivative kernels with custom configuration.
-    @configure: (xexplain, xroutine) ->
-        {series, apply} = async or require "async"
-        assert _.isString config = "Configuring: %s"
-        bareCall = (try arguments.length or 0) is 0
-        run = bareCall and _.isArray @$configure or 0
-        gr = (o) -> try o.routine.apply.bind o.routine
-        lg = (o) -> logger.info config, o.explain.bold
-        fn = (t) -> (o) -> (a...) -> lg o; gr(o) t, a
-        explain = _.find(arguments, _.isString) or null
-        routine = _.find(arguments, _.isFunction) or 0
-        assert _.isArray cs = configures = @$configure or []
-        return ((nxt) -> series _.map(cs, fn @), nxt) if run
-        return ((c) -> c()) if not @$configure and bareCall
-        invRoutine = "supplied invalid config routine"
-        invExplain = "no explanation has been supplied"
-        assert _.isFunction(routine or 0), invRoutine
-        assert _.isString(explain or 0), invExplain
-        return (@$configure ?= []).push new Object
-            explain: explain, routine: routine
-
     # The complementary part of the kernel launching protocol. It is
     # invoked by the bootstrapping routine to do the actual kernel
     # launch. If you are going to override the bootstrap procedures

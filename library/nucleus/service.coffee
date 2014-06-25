@@ -166,34 +166,6 @@ assert module.exports.Service = class Service extends Archetype
                 callback.call this, service, kernel
                 try service.emit "instance", kernel
 
-    # An embedded system for adding ad-hoc configuration routines.
-    # Supply the reasoning and the routine and this method will add
-    # that routine to the configuration stack, to be launched once
-    # the service spawned. With no arguments it returns the launcher.
-    # This is a convenient way of running additions config routines.
-    # The implementation is borrowed from the `GraniteKernel` class.
-    @configure: (xexplain, xroutine) ->
-        {series, apply} = async or require "async"
-        assert _.isString config = "Configuring: %s"
-        bareCall = (try arguments.length or 0) is 0
-        run = bareCall and _.isArray @configures or 0
-        gr = (o) -> try o.routine.apply.bind o.routine
-        lg = (o) -> logger.info config, o.explain.bold
-        fn = (t) -> (o) -> (a...) -> lg o; gr(o) t, a
-        explain = _.find(arguments, _.isString) or null
-        routine = _.find(arguments, _.isFunction) or 0
-        assert id = this.identify().toString().underline
-        explain = "instance of #{id} service" unless explain
-        assert _.isArray cs = configures = @configures or []
-        return ((nxt) -> series _.map(cs, fn @), nxt) if run
-        return ((c) -> c()) if not @configures and bareCall
-        invRoutine = "supplied invalid config routine"
-        invExplain = "no explanation has been supplied"
-        assert _.isFunction(routine or 0), invRoutine
-        assert _.isString(explain or 0), invExplain
-        return (@configures ?= []).push new Object
-            explain: explain, routine: routine
-
     # This method is used to obtain all the available dosposition
     # data of this services. Disposition data is basically the data
     # related to HTTP locations (supposedly) of the service using

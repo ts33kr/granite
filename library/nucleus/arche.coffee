@@ -29,6 +29,7 @@ connect = require "connect"
 logger = require "winston"
 assert = require "assert"
 colors = require "colors"
+async = require "async"
 nconf = require "nconf"
 https = require "https"
 http = require "http"
@@ -46,6 +47,7 @@ compose = require "./compose"
 # root object to inherit - use this one, not Object and not EventEmitter.
 # This abstraction also aids help for the dynamic class composition system
 # that needs a common point of match in the class hierarchies of the peers.
+# Also, this class implements useful for developers tools and shortcuts.
 module.exports.Archetype = cc -> class Archetype extends EventEmitter2
 
     # This is a marker that indicates to some internal subsystems
@@ -60,7 +62,36 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS: interceptors: yes
+    @COMPOSITION_EXPORTS: interceptors: 1, configures: 1
+
+    # An embedded system for adding ad-hoc configuration routines.
+    # Supply the reasoning and the routine and this method will add
+    # that routine to the configuration stack, to be launched once
+    # the class spawned. With no arguments it returns the launcher.
+    # This is a convenient way of running additions config routines.
+    # The implementation should be called within class constructor.
+    @configure: (xexplain, xroutine) ->
+        {series, apply} = async or require "async"
+        assert _.isString config = "Configuring: %s"
+        bareCall = (try arguments.length or 0) is 0
+        run = bareCall and _.isArray @configures or 0
+        gr = (o) -> try o.routine.apply.bind o.routine
+        lg = (o) -> logger.info config, o.explain.bold
+        fn = (t) -> (o) -> (a...) -> lg o; gr(o) t, a
+        explain = _.find(arguments, _.isString) or null
+        routine = _.find(arguments, _.isFunction) or no
+        assert id = @identify().toString().underline.bold
+        explain = "instance of #{id} class" unless explain
+        assert _.isArray cs = configures = @configures or []
+        return ((nxt) -> series _.map(cs, fn @), nxt) if run
+        return ((c) -> c()) if not @configures and bareCall
+        invRoutine = "supplied invalid class conf routine"
+        invExplain = "no explanation has been supplied"
+        assert _.isFunction(routine or 0), invRoutine
+        assert _.isString(explain or 0), invExplain
+        execute = (arbitraryVal) -> return xroutine
+        execute @configures = cs.concat new Object
+            explain: explain, routine: routine
 
     # This is the composition hook that gets invoked once a compound
     # is being composed into other services and components. It merges
@@ -95,6 +126,7 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
         msg = "Intercepting an %s event at the %s"
         evt = "missing the interceptor event specifier"
         imp = "missing the interceptor implementation"
+        assert runner = try this.constructor.configure()
         assert ids = @constructor.identify().underline
         currents = this.constructor.interceptors or []
         assert currents = [] unless _.isArray currents
