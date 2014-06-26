@@ -53,7 +53,7 @@ assert module.exports.Composition = cc -> class Composition extends Object
     # mapped over each node of the linear hierarchy of the class that
     # invokes the composition functionality to obtain a shadow of the
     # original class that can be later modified to modify hierarchy.
-    @cloner: cloner = module?.exports?.cloner = (subject) ->
+    @cloner: @classShadingEngine = cloner = (subject) ->
         noClass = "the suplied subject is not a valid class"
         assert _.isObject(subject?.__super__ or null), noClass
         subject = subject.watermark if subject.watermark or 0
