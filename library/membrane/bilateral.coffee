@@ -75,8 +75,9 @@ assert module.exports.Bilateral = class Bilateral extends DuplexCore
         identify = try @constructor.identify().underline
         message = "Executing the bilateral linkage in %s"
         logger.debug message.yellow, identify.toString()
+        assert _.isObject pseq = @constructor.prototype
         execution = (arg) => next.call this, undefined
-        execution _.forIn this, (value, name, service) =>
+        execution _.forIn pseq, (value, name, service) =>
             setter = "#{symbol}.#{name}.%s = (%s)"
             directives = value?.uplink?.directives
             return unless _.isPlainObject directives

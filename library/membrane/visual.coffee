@@ -161,7 +161,8 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
         runtime = "(#{coffee}).apply(this)".toString()
         emp = -> _.extend @, EventEmitter2.prototype
         applicator = try "(#{emp}).apply(#{symbol})"
-        assert _.forIn this, (value, key, object) =>
+        assert pseq = @constructor.prototype or {}
+        assert _.forIn pseq, (value, key, object) =>
             return unless _.isObject value?.remote
             return unless src = value.remote.source
             return if (value is @constructor) is yes
