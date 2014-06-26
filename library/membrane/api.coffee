@@ -33,6 +33,7 @@ crypto = require "crypto"
 nconf = require "nconf"
 async = require "async"
 https = require "https"
+weak = require "weak"
 http = require "http"
 util = require "util"
 url = require "url"
@@ -126,7 +127,7 @@ assert module.exports.ApiService = class ApiService extends Barebones
         headers = @downstream headers: -> return null
         partial = _.partial headers, request, response
         response.on "header", -> partial variables...
-        assert _.isObject request.service = try weak @
+        assert _.isObject request.service = weak this
         assert mw = @constructor.middleware().bind this
         signature = [request, response, variables...]
         message = "Executing Crossroads routing in %s"
