@@ -93,6 +93,32 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
         execute @configures = cs.concat new Object
             explain: explain, routine: routine
 
+    # The utility decorator that when applied to a method definition
+    # will mark the method to be automatically invoked once object
+    # is constructed (instantiated). It is simpler than `configure`
+    # mechanism in a lot of ways. This method entirely synchronous.
+    # The invocation mechanism is wired in the `Archetype` ctor. So
+    # be sure to super-call it, if you want this mechanism to work.
+    @autorun: (xoptions, xroutine) ->
+        assert _.isArguments args = arguments or no
+        routine = _.find(args, _.isFunction) or null
+        options = _.find(args, _.isPlainObject) or {}
+        noOptions = "no valid options object supplied"
+        noRoutine = "no valid implementation function"
+        autorunns = "Autorun method marked in %s class"
+        assert identify = try this.identify().underline
+        assert pred = (x) -> _.isPlainObject x.$autorun
+        scanner = (o) => try _.filter(@prototype, pred)
+        ensurer = (vect) -> _.filter vect, _.isFunction
+        fbinder = (vect, o) -> (f.bind o for f in vect)
+        lineSeq = (o) -> fbinder ensurer(scanner(o)), o
+        frunner = -> bound() for bound in lineSeq(this)
+        return frunner unless (try arguments.length) > 0
+        assert _.isPlainObject(options or 0), noOptions
+        assert _.isFunction(routine or null), noRoutine
+        logger.silly autorunns.grey, identify.underline
+        routine.$autorun = options or Object(); routine
+
     # This is the composition hook that gets invoked once a compound
     # is being composed into other services and components. It merges
     # vectors from the compound that is being composed right into the
@@ -129,7 +155,7 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
         imp = "missing the interceptor implementation"
         throw new Error abs if @constructor.abstract()
         super if _.isObject @constructor.__super__ or 0
-        assert runner = try this.constructor.configure()
+        assert runnr = @constructor.autorun().call this
         assert ids = @constructor.identify().underline
         currents = this.constructor.interceptors or []
         assert currents = [] unless _.isArray currents
