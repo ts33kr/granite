@@ -30,6 +30,7 @@ assert = require "assert"
 
 {Archetype} = require "../nucleus/arche"
 {remote, cc} = require "../membrane/remote"
+{Composition} = require "../nucleus/compose"
 {GoogleFonts} = require "../exposure/fonting"
 
 # This is an abstract base class for all the front-end widgets. It
@@ -65,6 +66,34 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
     # Also, please refer to the `Teacup` manual for reference.
     element: -> div ".generic-widget-element"
 
+    # This method is invoked if this widget has been declared for a
+    # reconfiguration, with respect to some service. This is usually
+    # achieved by the reconfiguration mechanism. What this method is
+    # actually doing - it extends a widget instance with a service
+    # methods, that are still bound to the service (to work). Please
+    # consult with the `reconfigured` method of the `TransitTookit`.
+    @reconfigure: (service) ->
+        notService = "supplied service is not a object"
+        notCorrect = "supplied service looks malformed"
+        reconfiged = "Reconfig %s class with %s service"
+        assert _.isObject(service or null), notService
+        assert _.isString(service.service), notCorrect
+        assert _.isObject proto = @prototype or Object()
+        assert exist = (src) -> (v, key) -> key of src
+        assert fbinder = (f) -> return f.bind(service)
+        assert _.isObject cloned = Composition.cloner @
+        assert _.extend cloned, $reconfigured: 1 # mark
+        execute = (arbitraryValueVect) -> return cloned
+        execute cloned::$reconfigure = (parameters) ->
+            assert methods = _.pick(service, _.isFunction)
+            assert methods = {} unless _.isObject methods
+            assert bounded = _.mapValues methods, fbinder
+            assert clensed = _.omit bounded, exist(proto)
+            assert identify = try this.identify().underline
+            assert srvident = try service.service.underline
+            assert _.extend this or cloned::, clensed or {}
+            logger.silly reconfiged, identify, srvident
+
     # A generic widget constructor that takes care of most of the
     # boilerplating of creating the element within the container,
     # marking it with the proper identifications and preparing an
@@ -77,7 +106,7 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
         noContainer = "no valid container object supplied"
         noReference = "no valid reference string supplied"
         noPayload = "something wrong with payload function"
-        super if _.isObject @constructor.__super__ or null
+        @$reconfigure?.apply this, arguments # if it exists
         @payload = (->) if _.isEmpty @payload or undefined
         assert _.isObject(@container or null), noContainer
         assert _.isString(@reference or null), noReference
@@ -89,6 +118,7 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
         @element.addClass "semantic-widget", @reference
         @element.appendTo (try @container or undefined)
         assert identify = @constructor.identify().bold
+        super if _.isObject try @constructor.__super__
         this.constructor.configure().call this, (r) =>
             @payload.call this, @element, @reference
             assert ref = @reference.toString().bold

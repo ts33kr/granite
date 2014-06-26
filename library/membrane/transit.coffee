@@ -65,7 +65,7 @@ module.exports.TransitToolkit = class TransitToolkit extends Barebones
     # counterparts in the destination, once the composition process
     # takes place. See the `Archetype::composition` hook definition
     # for more information. Keys are names, values can be anything.
-    @COMPOSITION_EXPORTS: renderers: yes, considerations: yes
+    @COMPOSITION_EXPORTS: considerations: yes, renderers: yes
 
     # Use this decorator to append a renderer function to sequence.
     # These are server side, instance methods that will be invoked
@@ -118,6 +118,34 @@ module.exports.TransitToolkit = class TransitToolkit extends Barebones
         raw = (try value.remote.symbol) or sourceCodes()
         logger.debug message.grey, token.bold, identify
         @considerations = previous.concat [[token, raw]]
+
+    # This is a deviation of the `considering` toolkit defined in the
+    # current class. This method uses exactly the same storage stack
+    # as the considerations. However, it is different in what method
+    # actually emits to the stack. This method, unlike the original
+    # emits a modified statement instead of bare remote symbol ref.
+    # This statement invokes the specific reconfiguration routine.
+    # Please see the `Widget` class implementation for an exmaple.
+    @reconfigured: (signature) ->
+        message = "Set reconfiguration of %s in %s"
+        assert remotes = this.remotes or new Array()
+        assert previous = @considerations or new Array()
+        return _.object previous unless arguments.length
+        identify = this.identify().toString().underline
+        incorrect = "argument should be key/value pair"
+        singleArg = "one definition possible at a time"
+        fx = "value should be a reconfigurable remotes"
+        assert _.isObject(signature or null), incorrect
+        assert _.keys(signature).length is 1, singleArg
+        assert token = _.first _.keys(signature or null)
+        assert value = _.first _.values(signature or 0)
+        assert not _.isEmpty(value?.remote?.symbol), fx
+        assert sym = try value.remote.symbol.toString()
+        remotes.push value if _.isObject(value.remote)
+        mk = -> "#{sym}.reconfigure.bind(#{sym})(this)"
+        assert _.isArray generated = try [[token, mk()]]
+        logger.debug message.grey, token.bold, identify
+        @considerations = previous.concat generated
 
     # This is a highly specialized method that is defined solely for
     # the purpose of creating the medium to advanced components that
