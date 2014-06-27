@@ -39,6 +39,13 @@ assert = require "assert"
 # is actually implementing something useful, not just a stub one.
 assert module.exports.Behavior = class Behavior extends Embedded
 
+    # This is a marker that indicates to some internal subsystems
+    # that this class has to be considered abstract and therefore
+    # can not be treated as a complete class implementation. This
+    # mainly is used to exclude or account for abstract classes.
+    # Once inherited from, the inheritee is not abstract anymore.
+    @abstract yes
+
     # These declarations below are implantations of the abstracted
     # components by the means of the dynamic recomposition system.
     # Please take a look at the `Composition` class implementation
@@ -46,9 +53,28 @@ assert module.exports.Behavior = class Behavior extends Embedded
     # Each of these will be dynamicall integrated in class hierarchy.
     @implanting Auxiliaries, Bilateral, Localized, Pinpoint
 
-    # This is a marker that indicates to some internal subsystems
-    # that this class has to be considered abstract and therefore
-    # can not be treated as a complete class implementation. This
-    # mainly is used to exclude or account for abstract classes.
-    # Once inherited from, the inheritee is not abstract anymore.
-    @abstract yes
+    # This method is part of an internal integrity assurance toolkit.
+    # Once the behavior-enabled service emits a signal that indicate
+    # service has been successfuly booted, this implementation takes
+    # on performing a series of tests to ensure that current service
+    # has been propertly installed, bootloaded and then initialized.
+    powerOnSelfTest: @onetimer "booted", ->
+        noEco = "ecosystem hosted by the root missing"
+        noArch = "tools provided by archetype missing"
+        noRoots = "the root service cannot be located"
+        notSys = "service is not present in ecosystem"
+        noService = "service identification is missing"
+        noIdentic = "missing constructor identity tags"
+        namesIncons = "inconsistent service identities"
+        notInitialize = "improperly booted or initilize"
+        m = "Power-on self-testing OK at the %s".magenta
+        identity = @constructor?.identify?().toString()
+        assert _.isFunction(this.tap or false), noArch
+        assert _.isObject(@root or undefined), noRoots
+        assert _.isObject(@root.ecosystem or 0), noEco
+        assert _.isString(@service or null), noService
+        assert _.isString(identity or null), noIdentic
+        assert @initialized and @booted, notInitialize
+        assert this in (@root.ecosystem or []), notSys
+        assert (try identity is @service), namesIncons
+        logger.debug m, identity.underline.magenta
