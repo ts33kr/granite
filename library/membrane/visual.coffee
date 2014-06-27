@@ -156,10 +156,10 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
         context.snapshot = _.difference context.snapshot, e
         ctor = "function #{this.constructor.identify()}(){}"
         restoreRtt = "#{symbol}.constructor = #{ctor};\r\n"
+        emp = -> _.extend @__proto__ = {}, EventEmitter2::
         prepared = JSON.stringify _.omit(context, excess)
         installer = "#{symbol} = #{prepared}".toString()
         runtime = "(#{coffee}).apply(this)".toString()
-        emp = -> _.extend @, EventEmitter2.prototype
         applicator = try "(#{emp}).apply(#{symbol})"
         assert pseq = @constructor.prototype or {}
         assert _.forIn pseq, (value, key, object) =>
@@ -316,10 +316,11 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
             context.snapshot = try _.keys(context)
             assert this.deployContext context, symbol
             assert this.inlineAutocalls context, symbol
-            context.inline -> _.extend this, Archetype::
             context.inline -> (@root = $root or undefined)
             context.inline -> (@root.ecosystem ?= []).push this
             context.inline -> (@broadcast = $root.emit.bind $root)
+            context.inline -> @constructor.prototype = @__proto__
+            context.inline -> _.extend @__proto__, Archetype::
             context.inline -> this.externals.push "ecosystem"
             context.inline -> this.externals.push "root"
             context.inline -> this.emit "installed", @
