@@ -76,8 +76,8 @@ module.exports.Dialogue = cc -> class Dialogue extends Widget
         $(@positive).click (e) -> stop e unless @isInOrder()
         $(@negative).click (e) => @emit "negative"; stop e
         $(@positive).click (e) => @emit "positive"; stop e
-        this.negative.prepend $("<span>").text s @t "dismiss"
-        this.positive.prepend $("<span>").text s @t "confirm"
+        this.negative.prepend $("<span>").html s @t "dismiss"
+        this.positive.prepend $("<span>").html s @t "confirm"
         this.positive.append $ "<i>", class: "checkmark icon"
         assert this.title = => @headers.text _.head arguments
         assert this.positive.addClass "right labeled icon"
