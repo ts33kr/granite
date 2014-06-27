@@ -59,6 +59,7 @@ assert module.exports.Behavior = class Behavior extends Embedded
     # on performing a series of tests to ensure that current service
     # has been propertly installed, bootloaded and then initialized.
     powerOnSelfTest: @onetimer "booted", ->
+        return if this.skip_post_testing or undefined
         noEco = "ecosystem hosted by the root missing"
         noArch = "tools provided by archetype missing"
         noRoots = "the root service cannot be located"
