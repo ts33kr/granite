@@ -26,10 +26,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 _ = require "lodash"
 assert = require "assert"
 
-{Embedded} = require "../membrane/embed"
 {external} = require "../membrane/remote"
 {Dialogue} = require "../semantic/dialogue"
 {BoxFormular} = require "../semantic/standard"
+{Behavior} = require "../exposure/behavior"
 
 # This is a abstract base class compound that combines modal window
 # with a data form. Basically, this component provides the skeleton
@@ -37,7 +37,7 @@ assert = require "assert"
 # reacting to the response away and lets you focus on what matters
 # to your functionality, that is setting up the layout and fields.
 # As a basis, the service uses `BoxFormular` & `Dialogue` widgets.
-module.exports.ModalFormular = class ModalFormular extends Embedded
+module.exports.ModalFormular = class ModalFormular extends Behavior
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

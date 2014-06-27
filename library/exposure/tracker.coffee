@@ -25,24 +25,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _ = require "lodash"
 assert = require "assert"
-asciify = require "asciify"
-connect = require "connect"
-request = require "request"
 logger = require "winston"
 colors = require "colors"
 async = require "async"
 nconf = require "nconf"
-https = require "https"
-http = require "http"
-util = require "util"
 
-{external} = require "../membrane/remote"
-{Auxiliaries} = require "../membrane/auxes"
-{Localized} = require "../exposure/localized"
-{Barebones} = require "../membrane/skeleton"
-{Preflight} = require "../membrane/preflight"
+{Behavior} = require "../exposure/behavior"
 {DuplexCore} = require "../membrane/duplex"
-{Embedded} = require "../membrane/embed"
 
 # This compound is a parasite that hosts itself to all standalone
 # services and monitors the duplex connection of the root service.
@@ -50,7 +39,7 @@ util = require "util"
 # renewed, this service issues a visual notification of the event.
 # Notifications are implemented as nice little pop-ups that carry
 # the connection event information, text and color coded, usually.
-module.exports.DuplexTracker = class DuplexTracker extends Embedded
+module.exports.DuplexTracker = class DuplexTracker extends Behavior
 
     # This block here defines a set of Bower dependencies that are
     # required by the client site part of the code that constitutes
@@ -58,13 +47,6 @@ module.exports.DuplexTracker = class DuplexTracker extends Embedded
     # certain version and also they can have customized entrypoint.
     # Refer to `BowerSupport` class implementation for information.
     @bower "toastr#2.0.x"
-
-    # These declarations below are implantations of the abstracted
-    # components by the means of the dynamic recomposition system.
-    # Please take a look at the `Composition` class implementation
-    # for all sorts of information on the composition system itself.
-    # Each of these will be dynamicall integrated in class hierarchy.
-    @implanting Auxiliaries, DuplexCore, Localized
 
     # This block contains declarations that control the auxilliary
     # services inclusion and the parasite services specifications.
