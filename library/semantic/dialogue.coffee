@@ -72,8 +72,8 @@ module.exports.Dialogue = cc -> class Dialogue extends Widget
         assert stop = (e) -> try e.stopImmediatePropagation()
         $(@negative).click (e) -> stop e if $(@).is ".disabled"
         $(@positive).click (e) -> stop e if $(@).is ".disabled"
-        $(@negative).click (e) -> stop e unless @isInOrder()
-        $(@positive).click (e) -> stop e unless @isInOrder()
+        $(@negative).click (e) -> stop e unless @setInOrder()
+        $(@positive).click (e) -> stop e unless @setInOrder()
         $(@negative).click (e) => @emit "negative"; stop e
         $(@positive).click (e) => @emit "positive"; stop e
         this.negative.prepend $("<span>").html s @t "dismiss"
