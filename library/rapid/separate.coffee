@@ -88,7 +88,7 @@ module.exports.ModalFormular = class ModalFormular extends Embedded
     # data, invokes the specially designated server provider with
     # this data, and then makes sense of the response provided by.
     # Please refer to the implementation for better understanding.
-    formularSubmission: @awaiting "positive", ->
+    confirmedSubmission: @awaiting "positive", ->
         assert this.formular.element.addClass "loading"
         assert _.isObject data = @formular.download yes
         w = @th "Please check the information you entered"
