@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _ = require "lodash"
 async = require "async"
+uuid = require "node-uuid"
 teacup = require "teacup"
 assert = require "assert"
 
@@ -71,7 +72,7 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
     # achieved by the reconfiguration mechanism. What this method is
     # actually doing - it extends a widget instance with a service
     # methods, that are still bound to the service (to work). Please
-    # consult with the `reconfigured` method of the `TransitTookit`.
+    # consult with the `reconfigure` method of the `TransitTookit`.
     @reconfigure: (service) ->
         notService = "supplied service is not a object"
         notCorrect = "supplied service looks malformed"
@@ -82,6 +83,7 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
         assert exist = (src) -> (v, key) -> key of src
         assert fbinder = (f) -> return f.bind(service)
         assert _.isObject cloned = Composition.cloner @
+        cloned.rebased this # god forbidden black magic
         assert _.extend cloned, $reconfigured: 1 # mark
         execute = (arbitraryValueVect) -> return cloned
         execute cloned::$reconfigure = (parameters) ->
@@ -93,6 +95,33 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
             assert srvident = try service.service.underline
             assert _.extend this or cloned::, clensed or {}
             logger.silly reconfiged, identify, srvident
+
+    # The autorun method that generates the barebones toolkit for
+    # the current widget. This toolkit contains most widely used
+    # routines and shorthands to manipulate the element of widget
+    # or its contents. In case if widget constructor is overriden
+    # and autorun is not automatically called, be sure to invoke
+    # this method manually, as it sets up important scaffolding.
+    generateToolkit: (element) ->
+        missing = "the root element of widget not located"
+        incomps = "the root element of widget seem broken"
+        message = "Generating HTML toolkit in a %s widget"
+        assert cident = @constructor.identify().underline
+        assert _.isObject(@element or undefined), missing
+        assert (try @element?.length or no) >= 0, incomps
+        logger.silly message.toString(), cident.underline
+        @element.addClass "semantic-widget", @reference
+        Object.defineProperty this, "$", get: => @element
+        Object.defineProperty this, "id", value: uuid.v1()
+        assert @element.attr id: @id.toString() # UUID v1
+        assert @classes = => return @element.attr "class"
+        assert @siblings = => return $(".#{@reference}")
+        assert @show = => this.element.show arguments...
+        assert @hide = => this.element.hide arguments...
+        assert @find = => this.element.find arguments...
+        assert @attr = => this.element.attr arguments...
+        assert @html = => this.element.html arguments...
+        assert @text = => this.element.text arguments...
 
     # A generic widget constructor that takes care of most of the
     # boilerplating of creating the element within the container,
@@ -111,12 +140,10 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
         assert _.isObject(@container or null), noContainer
         assert _.isString(@reference or null), noReference
         assert _.isFunction(@payload or null), noPayload
-        assert @show = => this.element.show() # shortcut
-        assert @hide = => this.element.hide() # shortcut
         assert _.isFunction(@constructor::element), ptf
         @element = $ renderable(@constructor::element) @
-        @element.addClass "semantic-widget", @reference
         @element.appendTo (try @container or undefined)
+        @generateToolkit(this.element) # makeup toolkit
         assert identify = @constructor.identify().bold
         super if _.isObject try @constructor.__super__
         this.constructor.configure().call this, (r) =>

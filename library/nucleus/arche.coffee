@@ -64,6 +64,14 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
     # for more information. Keys are names, values can be anything.
     @COMPOSITION_EXPORTS: interceptors: 1, configures: 1
 
+    # Utility method to render assistance when working with multiple
+    # widgets and services and lots of events too. Basically, method
+    # listens for the specified event occuring on the specified obj,
+    # and once that happens, it forward the event, withh all of its
+    # attributes and stuff right to a current object instances that
+    # invoked this utility method. See implementation for the rest.
+    tap: (xo, e1, e2) -> xo.on e1, => @emit e2 or e1, arguments...
+
     # An embedded system for adding ad-hoc configuration routines.
     # Supply the reasoning and the routine and this method will add
     # that routine to the configuration stack, to be launched once
@@ -108,7 +116,9 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
         autorunns = "Autorun method marked in %s class"
         assert identify = try this.identify().underline
         assert pred = (x) -> _.isPlainObject x.$autorun
-        scanner = (o) => try _.filter(@prototype, pred)
+        assert ord = (seq) -> _.sortBy seq, axisGetter
+        axisGetter = (fn) -> try fn.$autorun.axis or 0
+        scanner = (o) => ord _.filter(@prototype, pred)
         ensurer = (vect) -> _.filter vect, _.isFunction
         fbinder = (vect, o) -> (f.bind o for f in vect)
         lineSeq = (o) -> fbinder ensurer(scanner(o)), o

@@ -26,20 +26,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 _ = require "lodash"
 assert = require "assert"
 
-{Zombie} = require "../nucleus/zombie"
 {Embedded} = require "../membrane/embed"
 {external} = require "../membrane/remote"
-{Preflight} = require "../membrane/preflight"
-{GoogleFonts} = require "../exposure/fonting"
-
-{ModalWindow} = require "./windows"
-{BoxFormular} = require "./standard"
+{Dialogue} = require "../semantic/dialogue"
+{BoxFormular} = require "../semantic/standard"
 
 # This is a abstract base class compound that combines modal window
 # with a data form. Basically, this component provides the skeleton
 # that scrapes the boilerplate routine of form submission and then
 # reacting to the response away and lets you focus on what matters
 # to your functionality, that is setting up the layout and fields.
+# As a basis, the service uses `BoxFormular` & `Dialogue` widgets.
 module.exports.ModalFormular = class ModalFormular extends Embedded
 
     # This is a marker that indicates to some internal subsystems
@@ -49,13 +46,6 @@ module.exports.ModalFormular = class ModalFormular extends Embedded
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
-    # These declarations below are implantations of the abstracted
-    # components by the means of the dynamic recomposition system.
-    # Please take a look at the `Composition` class implementation
-    # for all sorts of information on the composition system itself.
-    # Each of these will be dynamicall integrated in class hierarchy.
-    @implanting ModalWindow
-
     # Define a set of considerations used by this service. An every
     # consideration is one key/value pair. Where the key corresponds
     # to the type name (also known as token) and the value is holding
@@ -64,34 +54,27 @@ module.exports.ModalFormular = class ModalFormular extends Embedded
     # the parent classes, without having to replace implementation code.
     # Allows to inject arbitrary lexical-local values to external fns.
     @considering TFormular: BoxFormular
+    @reconfigure TDialogue: Dialogue
 
-    # This method is invoked once the `configure-window` events goes
-    # through the service. This event is fired once the modal window
-    # is ready and can be configured. This implementation creates a
-    # form inside of the content slot and performs a set of routines
-    # to establish reasonable defaults that can be later overriden.
-    configureHostingWindow: @awaiting "configure-window", ->
-        unload = (seq) -> seq.removeClass "loading"
+    configureScaffolding: @awaiting "booted", ->
         disabler = -> selector().addClass "disabled"
         enabler = -> selector().removeClass "disabled"
-        selector = => @window.find ".positive.button"
-        closer = => return @window.find ".close.icon"
-        clean = => try @formular.prestine(); disabler()
-        @formular = new TFormular @content, "the-formular"
-        @window.attr id: @windowUid = uuid.v1().toString()
-        @window.addClass "modal-formular semantic-flavour"
-        @header.text @t "Please enter the following data"
-        @configureFormular? disabler, enabler, @formular
-        @actions.find(".positive").addClass "disabled"
+        unload = (xe) -> try xe.removeClass "loading"
+        selector = => @dialogue.$.find ".positive.button"
+        closer = => return @dialogue.$.find ".close.icon"
+        clean = => this.formular.prestine(); disabler()
+        @dialogue = new TDialogue $("body"), "mfs-dialogue"
+        assert _.isObject @contents = this.dialogue.content
+        assert _.isObject @actions = this.dialogue.actions
+        @formular = new TFormular @contents, "mfs-formular"
+        @dialogue.title @t "Please enter the following data"
+        @configureFormular? disabler, enabler, this.formular
+        @tap @dialogue, "positive"; @tap @dialogue, "negative"
+        this.actions.find(".positive").addClass("disabled")
         @emit "configure-formular", disabler, enabler
         @on "disconnect", -> try unload $ ".loading"
         @on "negative", => closer().click(); clean()
 
-    # This method is invoked once the `positive` event goes off in
-    # the service. This event is fired once the positive action is
-    # actived. That usually means a user pressing the okay button.
-    # The implementation downloads the data from the form and then
-    # submits it to the backend and reacts to the response it got.
     confirmedFormularSubmission: @awaiting "positive", ->
         assert this.formular.element.addClass "loading"
         assert _.isObject data = @formular.download yes
@@ -112,17 +95,21 @@ module.exports.ModalFormular = class ModalFormular extends Embedded
             this.content.append icon, @paragraph
 
     # This method is invoked once the `configure-formular` event is
-    # fired on the service. This event means that the window and the
+    # fired on the service. This event means that a dialogue and the
     # formular are ready to be configured. This method sets a handy
     # sort of behavior, when `enter` key is pressed, it either sets
     # the focus to the next field or submits the form if it was last.
+    # Please refer directly to the implementation for more guidance.
     configureKeyboardBehavior: @awaiting "configure-formular", ->
         pos = => return $ ".positive.button", this.window
         disabled = (element) => $(element).is ".disabled"
         proceed = => pb.click() unless disabled pb = pos()
         next = => return performFieldResolution arguments...
         textInputs = "input[type=text],input[type=password]"
-        assert not _.isEmpty idc = @windowUid.toString()
+
+        console.log @dialogue, @dialogue.id, @dialogue.$
+
+        assert not _.isEmpty idc = @dialogue.id.toString()
         jwerty.key "enter", next, textInputs, "##{idc}"
         return performFieldResolution = (event, key) ->
             assert _.isObject target = try event.target
