@@ -58,7 +58,7 @@ assert module.exports.Behavior = class Behavior extends Embedded
     # service has been successfuly booted, this implementation takes
     # on performing a series of tests to ensure that current service
     # has been propertly installed, bootloaded and then initialized.
-    powerOnSelfTest: @onetimer "booted", ->
+    powerOnSelfTest: @awaiting "installed", ->
         return if this.skip_post_testing or undefined
         noEco = "ecosystem hosted by the root missing"
         noArch = "tools provided by archetype missing"
@@ -67,7 +67,6 @@ assert module.exports.Behavior = class Behavior extends Embedded
         noService = "service identification is missing"
         noIdentic = "missing constructor identity tags"
         namesIncons = "inconsistent service identities"
-        notInitialize = "improperly booted or initilize"
         m = "Power-on self-testing OK at the %s".magenta
         identity = @constructor?.identify?().toString()
         assert _.isFunction(this.tap or false), noArch
@@ -75,7 +74,6 @@ assert module.exports.Behavior = class Behavior extends Embedded
         assert _.isObject(@root.ecosystem or 0), noEco
         assert _.isString(@service or null), noService
         assert _.isString(identity or null), noIdentic
-        assert @initialized and @booted, notInitialize
         assert this in (@root.ecosystem or []), notSys
         assert (try identity is @service), namesIncons
         logger.debug m, identity.underline.magenta
