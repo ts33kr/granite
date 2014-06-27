@@ -1,7 +1,7 @@
 {
     "name": "granite",
-    "version": "0.12.9",
-    "codename": "homegrown",
+    "version": "0.13.1",
+    "codename": "shimmer",
     "main": "index.coffee",
 
     "license": "Simplified BSD-3",
