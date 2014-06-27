@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>exposure/tracker</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/tracker"><meta name="groc-project-path" content="library/exposure/tracker.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/tracker.coffee">library/exposure/tracker.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#x61;&#105;&#108;&#116;&#111;:&#x74;&#115;&#x33;&#51;&#107;&#114;&#x40;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#99;&#x6f;&#109;">&#x74;&#115;&#x33;&#51;&#107;&#114;&#x40;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#99;&#x6f;&#109;</a>
+<!DOCTYPE html><html lang="en"><head><title>exposure/tracker</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/tracker"><meta name="groc-project-path" content="library/exposure/tracker.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/tracker.coffee">library/exposure/tracker.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;&#x69;l&#x74;&#111;:&#x74;&#x73;&#51;&#x33;&#x6b;r&#x40;&#103;m&#97;&#105;&#108;&#x2e;&#99;&#111;m">&#x74;&#x73;&#51;&#x33;&#x6b;r&#x40;&#103;m&#97;&#105;&#108;&#x2e;&#99;&#111;m</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -23,41 +23,26 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
 <span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
-<span class="nv">asciify = </span><span class="nx">require</span> <span class="s">&quot;asciify&quot;</span>
-<span class="nv">connect = </span><span class="nx">require</span> <span class="s">&quot;connect&quot;</span>
-<span class="nv">request = </span><span class="nx">require</span> <span class="s">&quot;request&quot;</span>
 <span class="nv">logger = </span><span class="nx">require</span> <span class="s">&quot;winston&quot;</span>
 <span class="nv">colors = </span><span class="nx">require</span> <span class="s">&quot;colors&quot;</span>
 <span class="nv">async = </span><span class="nx">require</span> <span class="s">&quot;async&quot;</span>
 <span class="nv">nconf = </span><span class="nx">require</span> <span class="s">&quot;nconf&quot;</span>
-<span class="nv">https = </span><span class="nx">require</span> <span class="s">&quot;https&quot;</span>
-<span class="nv">http = </span><span class="nx">require</span> <span class="s">&quot;http&quot;</span>
-<span class="nv">util = </span><span class="nx">require</span> <span class="s">&quot;util&quot;</span>
 
-<span class="p">{</span><span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span>
-<span class="p">{</span><span class="nx">Auxiliaries</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/auxes&quot;</span>
-<span class="p">{</span><span class="nx">Localized</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../exposure/localized&quot;</span>
-<span class="p">{</span><span class="nx">Barebones</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/skeleton&quot;</span>
-<span class="p">{</span><span class="nx">Preflight</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/preflight&quot;</span>
-<span class="p">{</span><span class="nx">DuplexCore</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/duplex&quot;</span>
-<span class="p">{</span><span class="nx">Embedded</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/embed&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This compound is a parasite that hosts itself to all standalone
+<span class="p">{</span><span class="nx">Behavior</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../exposure/behavior&quot;</span>
+<span class="p">{</span><span class="nx">DuplexCore</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/duplex&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This compound is a parasite that hosts itself to all standalone
 services and monitors the duplex connection of the root service.
 When the state of the connection changes, that is - dropped or
 renewed, this service issues a visual notification of the event.
 Notifications are implemented as nice little pop-ups that carry
-the connection event information, text and color coded, usually.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.DuplexTracker = </span><span class="k">class</span> <span class="nx">DuplexTracker</span> <span class="k">extends</span> <span class="nx">Embedded</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block here defines a set of Bower dependencies that are
+the connection event information, text and color coded, usually.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.DuplexTracker = </span><span class="k">class</span> <span class="nx">DuplexTracker</span> <span class="k">extends</span> <span class="nx">Behavior</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block here defines a set of Bower dependencies that are
 required by the client site part of the code that constitutes
 this service or compound. Dependencies can be restricted to a
 certain version and also they can have customized entrypoint.
-Refer to <code>BowerSupport</code> class implementation for information.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@bower</span> <span class="s">&quot;toastr</span><span class="err">#</span><span class="s">2.0.x&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These declarations below are implantations of the abstracted
-components by the means of the dynamic recomposition system.
-Please take a look at the <code>Composition</code> class implementation
-for all sorts of information on the composition system itself.
-Each of these will be dynamicall integrated in class hierarchy.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@implanting</span> <span class="nx">Auxiliaries</span><span class="p">,</span> <span class="nx">DuplexCore</span><span class="p">,</span> <span class="nx">Localized</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block contains declarations that control the auxilliary
+Refer to <code>BowerSupport</code> class implementation for information.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@bower</span> <span class="s">&quot;toastr</span><span class="err">#</span><span class="s">2.0.x&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block contains declarations that control the auxilliary
 services inclusion and the parasite services specifications.
 For more information on a both subjects, please refer to the
 implementation of the <code>Auxiliaries</code> components. Specifically
-look at the class methods <code>aux</code> and <code>parasite</code> source codes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@parasite</span> <span class="nv">$watchdog: </span><span class="nx">@ROOTS_SIMILAR</span> <span class="nx">DuplexCore</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block here defines a set of translation files that are
+look at the class methods <code>aux</code> and <code>parasite</code> source codes.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@parasite</span> <span class="nv">$watchdog: </span><span class="nx">@ROOTS_WITH_CLASS</span> <span class="nx">DuplexCore</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This block here defines a set of translation files that are
 used by the service. Please keep in mind, that translations
 are inherited from all of the base classes, and the tookit
 then loads each translation file and combines all messages
@@ -67,9 +52,9 @@ socket object. When that happens, this code sucks up to the
 socket events that indicate successful and fail conditions.
 When either one is happens, it emits the <code>toastr</code> notice. A
 most recent method implementation uses <code>$root</code> as a subject.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">attachWatchdog: </span><span class="nx">@awaiting</span> <span class="s">&quot;socketing&quot;</span><span class="p">,</span> <span class="nf">(socket, location) -&gt;</span>
-        <span class="nx">assert</span> <span class="nv">l = </span><span class="nx">@t</span> <span class="s">&quot;server connection has been lost&quot;</span>
-        <span class="nx">assert</span> <span class="nv">s = </span><span class="nx">@t</span> <span class="s">&quot;exception occured on the server&quot;</span>
-        <span class="nx">assert</span> <span class="nv">c = </span><span class="nx">@t</span> <span class="s">&quot;established connection to server&quot;</span>
+        <span class="nx">assert</span> <span class="nv">l = </span><span class="nx">i18n</span> <span class="s">&quot;server connection has been lost&quot;</span>
+        <span class="nx">assert</span> <span class="nv">s = </span><span class="nx">i18n</span> <span class="s">&quot;exception occured on the server&quot;</span>
+        <span class="nx">assert</span> <span class="nv">c = </span><span class="nx">i18n</span> <span class="s">&quot;established connection to server&quot;</span>
         <span class="nx">assert</span> <span class="nx">$root</span> <span class="o">is</span> <span class="nx">$host</span><span class="p">,</span> <span class="s">&quot;parasite on wrong service&quot;</span>
         <span class="nv">pos = positionClass: </span><span class="s">&quot;toast-top-left&quot;</span> <span class="c1"># location</span>
         <span class="nv">bhv = tapToDismiss: </span><span class="mi">0</span><span class="p">,</span> <span class="nv">closable: </span><span class="mi">0</span> <span class="c1"># set behavior</span>

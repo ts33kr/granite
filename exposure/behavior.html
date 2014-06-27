@@ -1,0 +1,65 @@
+<!DOCTYPE html><html lang="en"><head><title>exposure/behavior</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="exposure/behavior"><meta name="groc-project-path" content="library/exposure/behavior.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/exposure/behavior.coffee">library/exposure/behavior.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;&#105;&#108;&#116;&#x6f;:&#x74;&#115;&#x33;&#x33;&#x6b;r&#x40;&#x67;&#x6d;&#97;i&#x6c;&#x2e;&#99;&#x6f;&#x6d;">&#x74;&#115;&#x33;&#x33;&#x6b;r&#x40;&#x67;&#x6d;&#97;i&#x6c;&#x2e;&#99;&#x6f;&#x6d;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+
+<span class="p">{</span><span class="nx">Pinpoint</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../exposure/pinpoint&quot;</span>
+<span class="p">{</span><span class="nx">Localized</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../exposure/localized&quot;</span>
+<span class="p">{</span><span class="nx">Bilateral</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/bilateral&quot;</span>
+<span class="p">{</span><span class="nx">Auxiliaries</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/auxes&quot;</span>
+<span class="p">{</span><span class="nx">Embedded</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/embed&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This abstract compound is designed to be the starting point in a
+clearly disambigued tree of inheritance for the application and
+the framework services. This particular abstraction is marking
+an auxiliary (embedded) service. It also implants a set of usual
+suspects, that generally should be included in any service that
+is actually implementing something useful, not just a stub one.</p></div></div><div class="code"><div class="wrapper"><span class="nx">assert</span> <span class="nv">module.exports.Behavior = </span><span class="k">class</span> <span class="nx">Behavior</span> <span class="k">extends</span> <span class="nx">Embedded</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>These declarations below are implantations of the abstracted
+components by the means of the dynamic recomposition system.
+Please take a look at the <code>Composition</code> class implementation
+for all sorts of information on the composition system itself.
+Each of these will be dynamicall integrated in class hierarchy.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@implanting</span> <span class="nx">Auxiliaries</span><span class="p">,</span> <span class="nx">Bilateral</span><span class="p">,</span> <span class="nx">Localized</span><span class="p">,</span> <span class="nx">Pinpoint</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method is part of an internal integrity assurance toolkit.
+Once the behavior-enabled service emits a signal that indicate
+service has been successfuly booted, this implementation takes
+on performing a series of tests to ensure that current service
+has been propertly installed, bootloaded and then initialized.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">powerOnSelfTest: </span><span class="nx">@awaiting</span> <span class="s">&quot;installed&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+        <span class="k">return</span> <span class="k">if</span> <span class="k">this</span><span class="p">.</span><span class="nx">skip_post_testing</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nv">noEco = </span><span class="s">&quot;ecosystem hosted by the root missing&quot;</span>
+        <span class="nv">noArch = </span><span class="s">&quot;tools provided by archetype missing&quot;</span>
+        <span class="nv">noRoots = </span><span class="s">&quot;the root service cannot be located&quot;</span>
+        <span class="nv">notSys = </span><span class="s">&quot;service is not present in ecosystem&quot;</span>
+        <span class="nv">noService = </span><span class="s">&quot;service identification is missing&quot;</span>
+        <span class="nv">noIdentic = </span><span class="s">&quot;missing constructor identity tags&quot;</span>
+        <span class="nv">namesIncons = </span><span class="s">&quot;inconsistent service identities&quot;</span>
+        <span class="nv">m = </span><span class="s">&quot;Power-on self-testing OK at the %s&quot;</span><span class="p">.</span><span class="nx">magenta</span>
+        <span class="nv">identity = </span><span class="nx">@constructor</span><span class="o">?</span><span class="p">.</span><span class="nx">identify</span><span class="o">?</span><span class="p">().</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">tap</span> <span class="o">or</span> <span class="kc">false</span><span class="p">),</span> <span class="nx">noArch</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">@root</span> <span class="o">or</span> <span class="kc">undefined</span><span class="p">),</span> <span class="nx">noRoots</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">@root</span><span class="p">.</span><span class="nx">ecosystem</span> <span class="o">or</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">noEco</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">@service</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">noService</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">identity</span> <span class="o">or</span> <span class="kc">null</span><span class="p">),</span> <span class="nx">noIdentic</span>
+        <span class="nx">assert</span> <span class="k">this</span> <span class="k">in</span> <span class="p">(</span><span class="nx">@root</span><span class="p">.</span><span class="nx">ecosystem</span> <span class="o">or</span> <span class="p">[]),</span> <span class="nx">notSys</span>
+        <span class="nx">assert</span> <span class="p">(</span><span class="k">try</span> <span class="nx">identity</span> <span class="o">is</span> <span class="nx">@service</span><span class="p">),</span> <span class="nx">namesIncons</span>
+        <span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">identity</span><span class="p">.</span><span class="nx">underline</span><span class="p">.</span><span class="nx">magenta</span></div></div></div></div></body></html>

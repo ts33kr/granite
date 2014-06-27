@@ -118,6 +118,27 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/behavior.coffee",
+            "projectPath": "library/exposure/behavior.coffee",
+            "targetPath": "exposure/behavior",
+            "pageTitle": "exposure/behavior",
+            "title": "behavior"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
             "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/caching.coffee",
             "projectPath": "library/exposure/caching.coffee",
             "targetPath": "exposure/caching",
@@ -1159,6 +1180,37 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
     }, {
       "type": "folder",
       "data": {
+        "path": "rapid",
+        "title": "rapid"
+      },
+      "depth": 1,
+      "children": [
+        {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/rapid/separate.coffee",
+            "projectPath": "library/rapid/separate.coffee",
+            "targetPath": "rapid/separate",
+            "pageTitle": "rapid/separate",
+            "title": "separate"
+          },
+          "depth": 2,
+          "outline": []
+        }
+      ]
+    }, {
+      "type": "folder",
+      "data": {
         "path": "semantic",
         "title": "semantic"
       },
@@ -1182,6 +1234,27 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "targetPath": "semantic/abstract",
             "pageTitle": "semantic/abstract",
             "title": "abstract"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/semantic/dialogue.coffee",
+            "projectPath": "library/semantic/dialogue.coffee",
+            "targetPath": "semantic/dialogue",
+            "pageTitle": "semantic/dialogue",
+            "title": "dialogue"
           },
           "depth": 2,
           "outline": []
@@ -1240,53 +1313,11 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/semantic/separate.coffee",
-            "projectPath": "library/semantic/separate.coffee",
-            "targetPath": "semantic/separate",
-            "pageTitle": "semantic/separate",
-            "title": "separate"
-          },
-          "depth": 2,
-          "outline": []
-        }, {
-          "type": "file",
-          "data": {
-            "language": {
-              "nameMatchers": [".coffee", "Cakefile"],
-              "pygmentsLexer": "coffee-script",
-              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
-              "strictMultiLineEnd": false,
-              "singleLineComment": ["#"],
-              "ignorePrefix": "}",
-              "foldPrefix": "^",
-              "name": "CoffeeScript"
-            },
             "sourcePath": "/Users/ts33kr/Projects/granite/library/semantic/standard.coffee",
             "projectPath": "library/semantic/standard.coffee",
             "targetPath": "semantic/standard",
             "pageTitle": "semantic/standard",
             "title": "standard"
-          },
-          "depth": 2,
-          "outline": []
-        }, {
-          "type": "file",
-          "data": {
-            "language": {
-              "nameMatchers": [".coffee", "Cakefile"],
-              "pygmentsLexer": "coffee-script",
-              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
-              "strictMultiLineEnd": false,
-              "singleLineComment": ["#"],
-              "ignorePrefix": "}",
-              "foldPrefix": "^",
-              "name": "CoffeeScript"
-            },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/semantic/windows.coffee",
-            "projectPath": "library/semantic/windows.coffee",
-            "targetPath": "semantic/windows",
-            "pageTitle": "semantic/windows",
-            "title": "windows"
           },
           "depth": 2,
           "outline": []

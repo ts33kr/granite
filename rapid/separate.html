@@ -1,0 +1,115 @@
+<!DOCTYPE html><html lang="en"><head><title>rapid/separate</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="rapid/separate"><meta name="groc-project-path" content="library/rapid/separate.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/rapid/separate.coffee">library/rapid/separate.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;&#105;&#x6c;&#x74;&#x6f;:&#116;&#x73;&#51;&#x33;&#x6b;&#x72;&#64;&#x67;&#109;&#x61;&#105;&#108;&#46;&#99;&#111;m">&#116;&#x73;&#51;&#x33;&#x6b;&#x72;&#64;&#x67;&#109;&#x61;&#105;&#108;&#46;&#99;&#111;m</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+
+<span class="p">{</span><span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span>
+<span class="p">{</span><span class="nx">Dialogue</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../semantic/dialogue&quot;</span>
+<span class="p">{</span><span class="nx">BoxFormular</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../semantic/standard&quot;</span>
+<span class="p">{</span><span class="nx">Behavior</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../exposure/behavior&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a abstract base class compound that combines modal window
+with a data form. Basically, this component provides the skeleton
+that scrapes the boilerplate routine of form submission and then
+reacting to the response away and lets you focus on what matters
+to your functionality, that is setting up the layout and fields.
+As a basis, the service uses <code>BoxFormular</code> &amp; <code>Dialogue</code> widgets.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.ModalFormular = </span><span class="k">class</span> <span class="nx">ModalFormular</span> <span class="k">extends</span> <span class="nx">Behavior</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+that this class has to be considered abstract and therefore
+can not be treated as a complete class implementation. This
+mainly is used to exclude or account for abstract classes.
+Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Define a set of considerations used by this service. An every
+consideration is one key/value pair. Where the key corresponds
+to the type name (also known as token) and the value is holding
+either an implementation function or a remotable type (an alias).
+This allows you to override type definitions that may be used in
+the parent classes, without having to replace implementation code.
+Allows to inject arbitrary lexical-local values to external fns.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@considering</span> <span class="nv">TFormular: </span><span class="nx">BoxFormular</span>
+    <span class="nx">@reconfigure</span> <span class="nv">TDialogue: </span><span class="nx">Dialogue</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Once the service has been successfully booted, this method is
+going to set up all the necessary scaffolding for the service.
+It means setting up all the required UIX widgets, binding it
+all together and coupling with the service, adding a desigred
+overall behavior. See method implementation for more details.
+Pay attention, this method is only triggeted at a first boot.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">configureScaffolding: </span><span class="nx">@onetimer</span> <span class="s">&quot;booted&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+        <span class="nv">disabler = </span><span class="nf">-&gt;</span> <span class="nx">selector</span><span class="p">().</span><span class="nx">addClass</span> <span class="s">&quot;disabled&quot;</span>
+        <span class="nv">enabler = </span><span class="nf">-&gt;</span> <span class="nx">selector</span><span class="p">().</span><span class="nx">removeClass</span> <span class="s">&quot;disabled&quot;</span>
+        <span class="nv">selector = </span><span class="o">=&gt;</span> <span class="nx">@dialogue</span><span class="p">.</span><span class="nx">$</span><span class="p">.</span><span class="nx">find</span> <span class="s">&quot;.positive.button&quot;</span>
+        <span class="nv">unload = </span><span class="nf">(visual) -&gt;</span> <span class="nx">visual</span><span class="p">.</span><span class="nx">removeClass</span> <span class="s">&quot;loading&quot;</span>
+        <span class="nv">closer = </span><span class="o">=&gt;</span> <span class="k">return</span> <span class="nx">@dialogue</span><span class="p">.</span><span class="nx">$</span><span class="p">.</span><span class="nx">find</span> <span class="s">&quot;.close.icon&quot;</span>
+        <span class="nv">clean = </span><span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">formular</span><span class="p">.</span><span class="nx">prestine</span><span class="p">();</span> <span class="nx">disabler</span><span class="p">()</span>
+        <span class="vi">@dialogue = </span><span class="k">new</span> <span class="nx">TDialogue</span> <span class="nx">$</span><span class="p">(</span><span class="s">&quot;body&quot;</span><span class="p">),</span> <span class="s">&quot;mfs-dialogue&quot;</span>
+        <span class="nx">@dialogue</span><span class="p">.</span><span class="nx">title</span> <span class="nx">@t</span> <span class="s">&quot;Please enter the following data&quot;</span>
+        <span class="nx">@tap</span> <span class="k">this</span><span class="p">.</span><span class="nx">dialogue</span><span class="p">,</span> <span class="s">&quot;positive&quot;</span> <span class="c1"># tap positive event</span>
+        <span class="nx">@tap</span> <span class="k">this</span><span class="p">.</span><span class="nx">dialogue</span><span class="p">,</span> <span class="s">&quot;negative&quot;</span> <span class="c1"># tap negative event</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="vi">@content = </span><span class="k">this</span><span class="p">.</span><span class="nx">dialogue</span><span class="p">.</span><span class="nx">content</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="vi">@actions = </span><span class="k">this</span><span class="p">.</span><span class="nx">dialogue</span><span class="p">.</span><span class="nx">actions</span>
+        <span class="vi">@formular = </span><span class="k">new</span> <span class="nx">TFormular</span> <span class="nx">@content</span><span class="p">,</span> <span class="s">&quot;mfs-formular&quot;</span>
+        <span class="nx">@configureFormular</span><span class="o">?</span> <span class="nx">disabler</span><span class="p">,</span> <span class="nx">enabler</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">formular</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">actions</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&quot;.positive&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s">&quot;disabled&quot;</span><span class="p">)</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s">&quot;configure-formular&quot;</span><span class="p">,</span> <span class="nx">disabler</span><span class="p">,</span> <span class="nx">enabler</span><span class="p">)</span>
+        <span class="nx">@</span><span class="kc">on</span> <span class="s">&quot;disconnect&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">unload</span> <span class="nx">$</span><span class="p">(</span><span class="s">&quot;.loading&quot;</span><span class="p">,</span> <span class="nx">@content</span><span class="p">)</span>
+        <span class="nx">@</span><span class="kc">on</span> <span class="s">&quot;negative&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">closer</span><span class="p">().</span><span class="nx">click</span><span class="p">();</span> <span class="nx">clean</span><span class="p">()</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is the actual engine of the separate formular service.
+Method gets invoked each time the user submits a form data.
+It takes care of all the internal mechanics: download form
+data, invokes the specially designated server provider with
+this data, and then makes sense of the response provided by.
+Please refer to the implementation for better understanding.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">confirmedSubmission: </span><span class="nx">@awaiting</span> <span class="s">&quot;positive&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+        <span class="nx">assert</span> <span class="k">this</span><span class="p">.</span><span class="nx">formular</span><span class="p">.</span><span class="nx">element</span><span class="p">.</span><span class="nx">addClass</span> <span class="s">&quot;loading&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">data = </span><span class="nx">@formular</span><span class="p">.</span><span class="nx">download</span> <span class="kc">yes</span>
+        <span class="nv">w = </span><span class="nx">@th</span> <span class="s">&quot;Please check the information you entered&quot;</span>
+        <span class="nv">s = </span><span class="nx">@th</span> <span class="s">&quot;You have sucessfully submitted your data&quot;</span>
+        <span class="nv">invalid = </span><span class="s">&quot;got invalid response from the provider&quot;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">dataSubmission</span> <span class="nx">data</span><span class="p">,</span> <span class="nf">(success, values) =&gt;</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">formular</span><span class="p">.</span><span class="nx">element</span><span class="p">.</span><span class="nx">removeClass</span> <span class="s">&quot;loading&quot;</span>
+            <span class="nx">assert</span> <span class="nx">values</span> <span class="o">and</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">values</span><span class="p">),</span> <span class="nx">invalid</span>
+            <span class="nv">lo = </span><span class="nf">(k) =&gt;</span> <span class="nf">(value) =&gt;</span> <span class="nx">value</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@t</span> <span class="nx">value</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span>
+            <span class="nv">pp = </span><span class="nf">(k) =&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">values</span><span class="p">,</span> <span class="nx">k</span><span class="p">),</span> <span class="nx">lo</span><span class="p">(</span><span class="nx">k</span><span class="p">)</span>
+            <span class="nx">pp</span> <span class="s">&quot;warning&quot;</span><span class="p">;</span> <span class="nx">pp</span> <span class="s">&quot;error&quot;</span> <span class="c1"># localize server msg</span>
+            <span class="nx">@formular</span><span class="p">.</span><span class="nx">upload</span> <span class="nx">values</span><span class="p">;</span> <span class="nx">@formular</span><span class="p">.</span><span class="nx">messages</span> <span class="nx">w</span>
+            <span class="k">return</span> <span class="kc">undefined</span> <span class="k">unless</span> <span class="p">(</span><span class="nx">success</span> <span class="o">and</span> <span class="nx">values</span><span class="p">)</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">emit</span> <span class="s">&quot;acknowledged&quot;</span><span class="p">,</span> <span class="nx">success</span><span class="p">,</span> <span class="nx">values</span> <span class="c1"># ok</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">once</span> <span class="s">&quot;acknowledged&quot;</span><span class="p">,</span> <span class="nf">(success, values) =&gt;</span>
+                <span class="nv">iconical = </span><span class="s">&quot;icon checkmark green massive ok&quot;</span>
+                <span class="vi">@paragraph = </span><span class="nx">$</span> <span class="s">&quot;&lt;p&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;right aligned&quot;</span>
+                <span class="nx">@paragraph</span><span class="p">.</span><span class="nx">text</span> <span class="nx">s</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="c1"># success note</span>
+                <span class="nx">assert</span> <span class="nv">icon = </span><span class="nx">$</span> <span class="s">&quot;&lt;i&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">iconical</span><span class="si">}</span><span class="s">&quot;</span>
+                <span class="k">try</span> <span class="k">this</span><span class="p">.</span><span class="nx">actions</span><span class="p">.</span><span class="nx">empty</span><span class="p">();</span> <span class="k">this</span><span class="p">.</span><span class="nx">formular</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">content</span><span class="p">.</span><span class="nx">append</span> <span class="nx">icon</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">paragraph</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This method is invoked once the <code>configure-formular</code> event is
+fired on the service. This event means that a dialogue and the
+formular are ready to be configured. This method sets a handy
+sort of behavior, when <code>enter</code> key is pressed, it either sets
+the focus to the next field or submits the form if it was last.
+Please refer directly to the implementation for more guidance.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">configureKeyboard: </span><span class="nx">@awaiting</span> <span class="s">&quot;configure-formular&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span>
+        <span class="nv">pos = </span><span class="o">=&gt;</span> <span class="k">return</span> <span class="nx">$</span> <span class="s">&quot;.positive.button&quot;</span><span class="p">,</span> <span class="nx">@dialogue</span><span class="p">.</span><span class="nx">$</span>
+        <span class="nv">disabled = </span><span class="nf">(element) =&gt;</span> <span class="nx">$</span><span class="p">(</span><span class="nx">element</span><span class="p">).</span><span class="o">is</span> <span class="s">&quot;.disabled&quot;</span>
+        <span class="nv">proceed = </span><span class="o">=&gt;</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">click</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">disabled</span> <span class="nv">pb = </span><span class="nx">pos</span><span class="p">()</span>
+        <span class="nv">next = </span><span class="o">=&gt;</span> <span class="k">return</span> <span class="nx">performFieldResolution</span> <span class="nx">arguments</span><span class="p">...</span>
+        <span class="nv">textInputs = </span><span class="s">&quot;input[type=text],input[type=password]&quot;</span>
+        <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nv">idc = </span><span class="nx">@dialogue</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="nx">jwerty</span><span class="p">.</span><span class="nx">key</span> <span class="s">&quot;enter&quot;</span><span class="p">,</span> <span class="nx">next</span><span class="p">,</span> <span class="nx">textInputs</span><span class="p">,</span> <span class="s">&quot;</span><span class="err">#</span><span class="si">#{</span><span class="nx">idc</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="k">return</span> <span class="nv">performFieldResolution = </span><span class="nf">(event, key) -&gt;</span>
+            <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">target = </span><span class="k">try</span> <span class="nx">event</span><span class="p">.</span><span class="nx">target</span>
+            <span class="nv">sibling = </span><span class="nx">$</span><span class="p">(</span><span class="nx">target</span><span class="p">).</span><span class="nx">parents</span><span class="p">(</span><span class="s">&quot;.field&quot;</span><span class="p">).</span><span class="nx">next</span><span class="p">()</span>
+            <span class="nx">assert</span> <span class="nv">input = </span><span class="nx">sibling</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">textInputs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nx">proceed</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">sibling</span><span class="p">.</span><span class="o">is</span> <span class="s">&quot;.field&quot;</span>
+            <span class="k">return</span> <span class="nx">proceed</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">sibling</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="nx">proceed</span><span class="p">()</span> <span class="k">unless</span> <span class="nx">input</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="nx">input</span><span class="p">.</span><span class="nx">focus</span><span class="p">()</span> <span class="c1"># set to next input</span></div></div></div></div></body></html>
