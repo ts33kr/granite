@@ -316,6 +316,7 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
             context.snapshot = try _.keys(context)
             assert this.deployContext context, symbol
             assert this.inlineAutocalls context, symbol
+            context.inline -> _.extend this, Archetype::
             context.inline -> (@root = $root or undefined)
             context.inline -> (@root.ecosystem ?= []).push this
             context.inline -> (@broadcast = $root.emit.bind $root)
