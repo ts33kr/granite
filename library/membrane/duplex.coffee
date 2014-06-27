@@ -303,10 +303,10 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
             this.bootloading = yes # mark the bootloading process
             assert @consumeProviders; @consumeProviders @socket
             assert o = "Successfully bootloaded at %s".green
-            @once "booted", -> @booted = 1; @initialized = 1
             @once "booted", -> @broadcast "attached", this
             @trampoline _.pick(@, @snapshot), (params) =>
                 logger.info o, @location.underline.green
+                assert @booted = yes; @initialized = yes
                 delete this.bootloading # kinda finished
                 return this.emit "booted", this.socket
 
