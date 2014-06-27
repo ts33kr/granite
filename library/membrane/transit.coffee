@@ -126,7 +126,7 @@ module.exports.TransitToolkit = class TransitToolkit extends Barebones
     # emits a modified statement instead of bare remote symbol ref.
     # This statement invokes the specific reconfiguration routine.
     # Please see the `Widget` class implementation for an exmaple.
-    @reconfigured: (signature) ->
+    @reconfigure: (signature) ->
         message = "Set reconfiguration of %s in %s"
         assert remotes = this.remotes or new Array()
         assert previous = @considerations or new Array()
