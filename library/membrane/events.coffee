@@ -103,6 +103,29 @@ module.exports.EventsToolkit = class EventsToolkit extends Barebones
             t = "#{symbol}.on(%s, #{symbol}.#{key})"
             return format t, JSON.stringify event
 
+    # The awaiting directive is a lot like `awaiting`, except the
+    # implementation will be called onky once, exactly at when the
+    # specified signal is emited on the current context (service)
+    # object. Effectively, it is the same as creating the autocall
+    # that explicitly binds an event using `once` with the context.
+    @onetimer: (xevent, xmethod) ->
+        assert identify = this.identify().underline
+        invalidMethod = "found an invalid function"
+        invalidEvent = "found invalid event supplied"
+        message = "Onetimer %s event for method in %s"
+        event = _.find(arguments, _.isString) or null
+        method = _.find(arguments, _.isFunction) or 0
+        assert not _.isEmpty(event or 0), invalidEvent
+        assert _.isFunction(method or 0), invalidMethod
+        assert method = @autocall new Object(), method
+        assert _.isObject method.remote.autocall or 0
+        assert (try method.remote.meta.event = event)
+        logger.silly message.grey, event.bold, identify
+        auto = (fn) -> method.remote.auto = fn; method
+        return auto (symbol, key, context) -> _.once ->
+            t = "#{symbol}.once(%s, #{symbol}.#{key})"
+            return format t, JSON.stringify event
+
     # The exclusive directive is a lot like `awaiting`, except it
     # removes all the event listeners that could have been binded
     # to the event. And only once that has been done, it binds the
