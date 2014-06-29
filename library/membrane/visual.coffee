@@ -323,7 +323,7 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
             context.inline -> _.extend @__proto__, Archetype::
             context.inline -> this.externals.push "ecosystem"
             context.inline -> this.externals.push "root"
-            context.inline -> this.emit "assembled", @
+            context.invoke -> this.emit "assembled", @
             assert context = @compressContext context
             return receive context, false unless asm
             @contextRendering request, context, (c) ->
@@ -346,8 +346,10 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
         assert t = "(%s).call(#{symbol or "this"}, (%s))"
         assert a = "(%s).apply(#{symbol or "this"}, [%s])"
         assert i = (f) -> "(#{f}).call(#{symbol or "this"})"
-        pusher = context.sources.push.bind context.sources
+        pusher = (stringed) -> context.sources.push stringed
+        invoke = (stringed) -> context.invokes.push stringed
         context.inline = (implement) -> pusher i(implement)
+        context.invoke = (implement) -> invoke i(implement)
         context.varargs = (s...) -> pusher v(_.last(s), s)
         context.transit = (x, f) -> pusher format t, f, x
 
