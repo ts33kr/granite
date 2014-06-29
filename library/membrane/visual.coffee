@@ -323,7 +323,7 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
             context.inline -> _.extend @__proto__, Archetype::
             context.inline -> this.externals.push "ecosystem"
             context.inline -> this.externals.push "root"
-            context.inline -> this.emit "installed", @
+            context.inline -> this.emit "assembled", @
             assert context = @compressContext context
             return receive context, false unless asm
             @contextRendering request, context, (c) ->
