@@ -37,7 +37,7 @@ assert = require "assert"
 # reacting to the response away and lets you focus on what matters
 # to your functionality, that is setting up the layout and fields.
 # As a basis, the service uses `BoxFormular` & `Dialogue` widgets.
-module.exports.ModalFormular = class ModalFormular extends Behavior
+assert module.exports.SimpleEntry = class SimpleEntry extends Behavior
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
