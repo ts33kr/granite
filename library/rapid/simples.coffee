@@ -48,7 +48,7 @@ assert module.exports.SimpleEntry = class SimpleEntry extends Behavior
 
     # Define a set of considerations used by this service. An every
     # consideration is one key/value pair. Where the key corresponds
-    # to the type name (also known as token) and the value is holding
+    # to the type name (also known as token) and the  value is holding
     # either an implementation function or a remotable type (an alias).
     # This allows you to override type definitions that may be used in
     # the parent classes, without having to replace implementation code.
