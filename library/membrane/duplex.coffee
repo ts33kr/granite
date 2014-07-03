@@ -197,7 +197,7 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
             assert this isnt constructor, "scoping error"
             assert _.isObject shadow = Object.create this
             assert isolating = "Isolated provider call in %s"
-            logger.debug isolating.grey, sid = socket.id.bold
+            logger.debug isolating.yellow, sid = socket.id.bold
             _.extend shadow, __uis: uis = _.uniqueId(prefix)
             _.extend shadow, __isolated: yes, __origin: this
             _.extend shadow, session: session, binder: binder
