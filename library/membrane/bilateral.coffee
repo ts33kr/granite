@@ -82,7 +82,7 @@ assert module.exports.Bilateral = class Bilateral extends DuplexCore
             assert qualified = "#{symbol}.#{name}" # full
             assert setter = try "#{qualified}.%s = (%s)"
             directives = value?.uplink?.directives or 0
-            return no unless _.isPlainObject directives
+            return -1 unless _.isPlainObject directives
             assert json = try JSON.stringify directives
             template = format setter, "directives", json
             context.invokes.push "\r\n#{template}\r\n"
@@ -149,12 +149,13 @@ assert module.exports.Bilateral = class Bilateral extends DuplexCore
     bilateral: @autocall z: +102, ->
         assert _.isFunction o = -> try _.head arguments
         assert _.isFunction i = -> try _.head arguments
+        assert _.isPlainObject @uplinks ?= new Object()
         assert _.isString(@service), "invalid service data"
         assert _.isString(@location), "location misconfied"
         assert _.isString(@nsp), "bilateral nsp malfunction"
         assert uplinking = "Uplink %s at %s using nsp=%s"
         _.forIn this, (value, reference, context) => do =>
-            return unless reference of (this.uplinks or {})
+            return -1 unless _.has @uplinks or {}, reference
             assert mangled = try "#{@location}/#{reference}"
             mangled += "/#{nsp}" if _.isString nsp = this.nsp
             assert try xref = ref = reference.toString().bold
