@@ -400,7 +400,7 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         assert ssecure = kernel.secureSocket, "no HTTPS socket"
         assert f = "Disconnecting %s socket handle".toString()
         l = (socket) -> try logger.warn f.blue, socket.id.bold
-        p = (c) -> l(c); c.emit "shutdown", -> c.disconnect()
+        p = (c) -> l(c); c.emit "shutdown"; try c.disconnect()
         assert contexts = _.map [sserver, ssecure], resolve
         _.each contexts, (context, vector, addition) =>
             try context.removeAllListeners "connection"
