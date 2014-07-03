@@ -228,6 +228,7 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
             pulse = "Kernel beacon pulse at a %s UNIX"
             assert services = @router.registry or Array()
             logger.debug pulse.magenta, "#{unix}".bold
+            srv.emit "beacon", this for srv in services
             prepared = _.map(services, eua) or Array()
             async.series prepared, (err, res) -> null
 
