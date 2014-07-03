@@ -141,6 +141,14 @@ assert module.exports.Service = class Service extends Archetype
     # It is also taking care of assigning a service identification.
     constructor: (@kernel) -> super; @uuid = uuid.v4()
 
+    # This is the proxy method that uses the global kernel instance
+    # to use for finding the instance of the current service class.
+    # This instance is supposed to be properly registered with the
+    # router in order to be found. The actual lookup implementation
+    # is located in the `accquire` method of `GraniteKernel` class.
+    # Please refer to the original implementation for the guidance.
+    @accquire: -> global.G_KERNEL.accquire this, yes
+
     # An important method whose responsibility is to create a new
     # instance of the service, which is later will be registered in
     # the router. This is invoked by the watcher when it discovers
