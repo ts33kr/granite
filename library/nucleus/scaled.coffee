@@ -43,6 +43,7 @@ util = require "util"
 fs = require "fs"
 
 {format} = require "util"
+{ServerResponse} = require "http"
 {GraniteKernel} = require "./kernel"
 {HttpProxy} = require "http-proxy"
 
@@ -192,16 +193,16 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
     # perform its operation correctly in a distributed environment.
     makeUpgraders: (queue, kind, select) -> (xrequest, xsocket) =>
         assert request = _.find arguments, "connection"
-        assert response = _.find arguments, "localAddress"
-        response.writeHead = http.ServerResponse::writeHead
+        response = (try _.find arguments, "localAddress")
+        response?.writeHead = (ServerResponse::writeHead)
         encrypted = request.connection.encrypted or false
         assert u = try "#{request.url}".underline.yellow
         assert x = (encrypted and "HTTPS" or "HTTP").bold
         msg = "the frontend has no instances to talk to"
         assert _.isArray(queue), "got invalid proxy queue"
         reason = r = "no instances found behind a frontend"
-        try response.writeHead 504, r if _.isEmpty queue
-        return response.end(msg) and no if _.isEmpty queue
+        try response?.writeHead 504, r if _.isEmpty queue
+        return response?.end(msg) and no if _.isEmpty queue
         assert proxy = try select.apply this, arguments
         a = "#{proxy.target.host}:#{proxy.target.port}"
         assert a = "#{a.toLowerCase().underline.yellow}"
