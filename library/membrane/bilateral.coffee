@@ -94,7 +94,7 @@ assert module.exports.Bilateral = class Bilateral extends DuplexCore
     # not the real service instances (as there is only one instance).
     # These objects are shadows created by creating a new object out
     # of the service instance, using the later one as the prototype.
-    @bilateralSites: (predicate) ->
+    @remoteSites: (predicate) ->
         noPredFunc = "missing the predicating function"
         notAccquired = "cant accquire service instance"
         resolve = (handler) => handler.of i?.location()
