@@ -32,6 +32,7 @@ colors = require "colors"
 nconf = require "nconf"
 https = require "https"
 http = require "http"
+weak = require "weak"
 util = require "util"
 
 tools = require "../nucleus/toolkit"
@@ -86,6 +87,33 @@ assert module.exports.Bilateral = class Bilateral extends DuplexCore
             context.invokes.push "\r\n#{template}\r\n"
             uplinks = context.uplinks ?= new Object()
             uplinks[name] = directives; return this
+
+    # Obtain an array of service pseudo instances that are currently
+    # active. That means the instances that have a connected sockets
+    # attached to it. It is important to understand that objects are
+    # not the real service instances (as there is only one instance).
+    # These objects are shadows created by creating a new object out
+    # of the service instance, using the later one as the prototype.
+    @bilateralSites: (predicate) ->
+        noPredFunc = "missing the predicating function"
+        notAccquired = "cant accquire service instance"
+        resolve = (handler) => handler.of i?.location()
+        predicate ?= (isolation) -> return yes # always
+        assert _.isFunction(predicate or 0), noPredFunc
+        assert instance = i = @accquire(), notAccquired
+        assert kernel = instance.kernel, "got no kernel"
+        assert sserver = kernel.serverSocket, "no HTTP socket"
+        assert ssecure = kernel.secureSocket, "no HTTPS socket"
+        assert contexts = _.map [sserver, ssecure], resolve
+        _.flatten _.map contexts, (context, vector) =>
+            intern = "missing a client listing registry"
+            assert _.isObject(context.connected), intern
+            assert clients = _.values context.connected
+            assert clients = _.filter clients, "connected"
+            assert clients = _.unique clients # went once
+            ipcs = _.map clients, (xc) -> weak xc.shadow
+            assert _.all ipcs, (xc) -> try xc.__isolated
+            return _.toArray _.filter ipcs, predicate
 
     # Declarate the supplied implementation function as the uplink.
     # An uplink is an external (remote) function published on socket
