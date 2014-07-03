@@ -288,9 +288,11 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
         nh = "no Seaport host found in the configuration"
         np = "no Seaport port found in the configuration"
         nt = "no Seaport opts found in the configuration"
+        brokenLib = "the Seaport library seems to be broken"
         assert _.isString(host = nconf.get "hub:host"), nh
         assert _.isNumber(port = nconf.get "hub:port"), np
         assert _.isObject(opts = nconf.get "hub:opts"), nt
+        assert _.isFunction(seaport?.connect), brokenLib
         this.seaport = seaport.connect host, port, opts
         assert _.isObject(@seaport), "seaport failed"
         assert @seaport.register?, "a broken seaport"
@@ -304,12 +306,16 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
     # an actual application. This method gets passes continuation
     # that does that. The method can either invoke it or omit it.
     kernelPreemption: (continuation) ->
+        assert identify = try @constructor.identify()
         assert _.isObject(@options), "got no options"
         either = @options.master or @options.instance
         assert either, "no master and no instance mode"
+        nmast = "incorrect master configuration object"
+        message = "Kernel preemption at %s being invoked"
+        logger.silly message.red, (try identify.bold)
         return continuation() unless @options.master
         logger.warn "The kernel is booting as master"
-        assert nconf.get("master"), "no master config"
+        assert _.isObject(nconf.get "master"), nmast
         assert not _.isEmpty @createSeaportServer()
         assert not _.isEmpty @startupHttpsMaster()
         assert not _.isEmpty @startupHttpMaster()
