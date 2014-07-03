@@ -327,13 +327,18 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
     # the scope is being dispersed and some events are being emited.
     # This implementaton cleans up some of the scalability resources.
     shutdownKernel: (reason, eol=yes) ->
-        try util.puts require("os").EOL if eol
+        terminator = (proxy) -> try proxy.close()
+        util.puts require("os").EOL if (eol or false)
         this.emit "killed-scaled-kernel", arguments...
         message = "Graceful shutdown of Scaled kernel"
-        try @spserver.close() if @spserver.close?
-        try @serverProxy.close() if @serverProxy?
-        try @secureProxy.close() if @secureProxy?
-        terminator = (proxy) -> try proxy.close()
+        log = (message) -> logger.silly message.yellow
+        log "Closing the Seaport servers" if @spserver
+        log "Closing the server (HTTP) proxy instance"
+        log "Closing the secure (HTTPS) proxy instance"
+        log "Terminating remote proxies in the queues"
+        try @spserver.close() if (@spserver) # Seaport
+        try @serverProxy.close() if this.serverProxy?
+        try @secureProxy.close() if this.secureProxy?
         _.each @queueOfHttps or Array(), terminator
         _.each @queueOfHttp or Array(), terminator
         logger.warn message.red; super reason, no
