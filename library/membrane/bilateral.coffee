@@ -79,9 +79,10 @@ assert module.exports.Bilateral = class Bilateral extends DuplexCore
         assert _.isObject pseq = @constructor.prototype
         execution = (arg) => next.call this, undefined
         execution _.forIn pseq, (value, name, service) =>
-            setter = "#{symbol}.#{name}.%s = (%s)"
-            directives = value?.uplink?.directives
-            return unless _.isPlainObject directives
+            assert qualified = "#{symbol}.#{name}" # full
+            assert setter = try "#{qualified}.%s = (%s)"
+            directives = value?.uplink?.directives or 0
+            return no unless _.isPlainObject directives
             assert json = try JSON.stringify directives
             template = format setter, "directives", json
             context.invokes.push "\r\n#{template}\r\n"
