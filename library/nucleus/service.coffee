@@ -147,7 +147,7 @@ assert module.exports.Service = class Service extends Archetype
     # router in order to be found. The actual lookup implementation
     # is located in the `accquire` method of `GraniteKernel` class.
     # Please refer to the original implementation for the guidance.
-    @accquire: -> global.G_KERNEL.accquire this, yes
+    @accquire: -> global.GRANITE_KERNEL.accquire this, yes
 
     # An important method whose responsibility is to create a new
     # instance of the service, which is later will be registered in

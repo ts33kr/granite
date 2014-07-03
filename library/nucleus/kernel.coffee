@@ -132,7 +132,7 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         types = [@framework.version, @framework.codename]
         comp = "Framework kernel boot sequence is completed!"
         GraniteKernel.instance = this # only kernel allowed
-        assert global.G_KERNEL = this # the global instance
+        assert global.GRANITE_KERNEL = this # global kernel
         this.interceptExceptions.call this, initializer
         @once "completed", => logger.info comp.rainbow
         return asciify branding..., (error, banner) =>
