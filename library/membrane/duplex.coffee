@@ -423,8 +423,8 @@ assert module.exports.DuplexCore = class DuplexCore extends Preflight
         assert pure, "service location is not pure enough"
         assert sserver = kernel.serverSocket, "no HTTP socket"
         assert ssecure = kernel.secureSocket, "no HTTPS socket"
-        contexts = _.map [sserver, ssecure], resolve
-        makeScreener = (context) => (socket) =>
+        assert contexts = _.map [sserver, ssecure], resolve
+        assert makeScreener = (context) => (socket) =>
             owners = socket.owned ?= new Array()
             owners.push this unless this in owners
             socket.on "screening", (binder, ack) =>
