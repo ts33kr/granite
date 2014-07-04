@@ -117,10 +117,11 @@ assert module.exports.RedisClient = class RedisClient extends Service
         noRedis = "Something has gone wrong, no Redis client"
         warning = "Latest Redis envelope was not a kernel".grey
         assert spawner = redisio.createClient.bind redisio
+        assert dupper = d = -> spawner port, host, options
         logger.info message.underline.magenta, host, port
-        logger.debug warning unless envelope is kernel
-        envelope.redis = spawner port, host, options
-        assert _.isObject(envelope.redis), noRedis
+        logger.debug warning unless (envelope is kernel)
+        assert _.isObject(envelope.redis = d()), noRedis
+        assert envelope.redis.duplicateConnection = d
         kernel.emit "redis-ready", envelope.redis, @
         @emit "redis-ready", envelope.redis, kernel
         next.call this, undefined; return this

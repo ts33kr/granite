@@ -76,10 +76,7 @@ module.exports.GrandCentral = class GrandCentral extends Barebones
         pattern = "grand-central:%s:%s" # the channel
         assert channel = _.sprintf pattern, idc, event
         assert ident = @constructor.identify().underline
-        assert _.isNumber port = try @redis.port or null
-        assert _.isString host = try @redis.host or null
-        assert _.isObject opts = try @redis.options or 0
-        client = redisio.createClient port, host, opts
+        assert client = this.redis.duplicateConnection()
         client.subscribe channel # set subscription mode
         client.on "unsubscribe", -> try client.end()
         client.on "message", (transported, message) ->
