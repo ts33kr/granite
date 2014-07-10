@@ -134,6 +134,7 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         GraniteKernel.instance = this # only kernel allowed
         assert global.GRANITE_KERNEL = this # global kernel
         this.interceptExceptions.call this, initializer
+        @once "completed", => @emit "bootloaded", this
         @once "completed", => logger.info comp.rainbow
         return asciify branding..., (error, banner) =>
             visible = ["info", "debug", "warn", "silly"]
