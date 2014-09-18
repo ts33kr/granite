@@ -39,7 +39,7 @@ url = require "url"
 _ = require "lodash"
 nodemailer = require "nodemailer"
 {Service} = require "../nucleus/service"
-{Barebones} = require "./skeleton"
+{Barebones} = require "../membrane/skeleton"
 
 # This is an ABC service intended to be used only as a compund. It
 # provides the facilities to send emails from the services that mix

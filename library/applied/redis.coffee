@@ -36,16 +36,16 @@ util = require "util"
 url = require "url"
 
 _ = require "lodash"
-mongodb = require "mongodb"
-{Barebones} = require "./skeleton"
+redisio = require "redis"
 {Service} = require "../nucleus/service"
+{Barebones} = require "../membrane/skeleton"
 
 # This is an ABC service intended to be used only as a compund. It
-# provides the ready to use Mongo client to any service that composits
+# provides the ready to use Redis client to any service that composits
 # this service in. The initialization is performed only once. If the
-# configuration environment does not contain the necessary information
-# then this service will not attempt to setup a Mongo client at all.
-assert module.exports.MongoClient = class MongoClient extends Service
+# configuration environment does not contains the necessary information
+# then this service will not attempt to setup a Redis client at all.
+assert module.exports.RedisClient = class RedisClient extends Service
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -54,46 +54,45 @@ assert module.exports.MongoClient = class MongoClient extends Service
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
-    # Allows to configure custom connection options for Mongo DB.
+    # Allows to configure custom connection options for Redis DB.
     # This is making sense if you want to have a service-isolated
-    # Mongo connection, using `MONGO_ENVELOPE_SERVICE` and this
-    # connection is supposed to be wired into a different Mongo
+    # Redis connection, using `REDIS_ENVELOPE_SERVICE` and this
+    # connection is supposed to be wired into a different Redis
     # server or database. This variable is used to supply that.
-    # It should be a function, returning a Mongo config object.
-    @MONGO_CONFIG: undefined
+    # It should be a function, returning a Redis config object.
+    @REDIS_CONFIG: undefined
 
     # These defintions are the presets available for configuring
-    # the Mongo envelope getting functions. Please set the special
-    # class value `MONGO_ENVELOPE` to either one of these values or
-    # to a custom function that will generate/retrieve the Mongo
+    # the Redis envelope getting functions. Please set the special
+    # class value `REDIS_ENVELOPE` to either one of these values or
+    # to a custom function that will generate/retrieve the Redis
     # envelope, when necessary. Depending on this, the system will
     # generate a new connection on the container, if it does not
     # contain an opened connection yet. The default container is
-    # the kernel preset using the `MONGO_ENVELOPE_KERNEL` value.
-    @MONGO_ENVELOPE_KERNEL: -> return @kernel
-    @MONGO_ENVELOPE_SERVICE: -> @$mongo ?= {}
+    # the kernel preset using the `REDIS_ENVELOPE_KERNEL` value.
+    @REDIS_ENVELOPE_KERNEL: -> return @kernel
+    @REDIS_ENVELOPE_SERVICE: -> @$redis ?= {}
 
     # A hook that will be called prior to unregistering the service
     # implementation. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
-    # This implementation correctly ends Mongo connection, if any.
+    # This implementation correctly ends Redis connection, if any.
     unregister: (kernel, router, next) ->
-        @constructor.MONGO_ENVELOPE ?= -> kernel
-        envelope = this.constructor.MONGO_ENVELOPE
+        @constructor.REDIS_ENVELOPE ?= -> kernel
+        envelope = this.constructor.REDIS_ENVELOPE
         envelope = try envelope.apply this, arguments
-        return next() unless _.isObject envelope.mongo
-        database = envelope.mongo._db or envelope.mongo
-        assert _.isObject(database), "invalid DB present"
-        {host, port, options} = try database.serverConfig
-        message = "Disconnecting from the Mongo at %s:%s"
-        warning = "Latest Mongo envelope was not a kernel"
+        return next() unless _.isObject envelope.redis
+        {host, port, options} = envelope.redis or Object()
+        assert host and port and options, "invalid Redis"
+        message = "Disconnecting from the Redis at %s:%s"
+        warning = "Latest Redis envelope was not a kernel"
         logger.info message.underline.magenta, host, port
         logger.debug warning.grey unless envelope is kernel
-        try @emit "mongo-gone", envelope.mongo, envelope
-        try kernel.emit? "mongo-gone", envelope.mongo, @
-        envelope.mongo.close(); delete envelope.mongo
+        try @emit "redis-gone", envelope.redis, envelope
+        try kernel.emit? "redis-gone", envelope.redis, @
+        try envelope.redis.end(); delete envelope.redis
         next.call this, undefined; return this
 
     # A hook that will be called prior to registering the service
@@ -101,49 +100,30 @@ assert module.exports.MongoClient = class MongoClient extends Service
     # information on the parameters it accepts. Beware, this hook
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
-    # This implementation open a new Mongo connection, if configed.
+    # This implementation open a new Redis connection, if configed.
     register: (kernel, router, next) ->
-        @constructor.MONGO_ENVELOPE ?= -> kernel
-        envelope = this.constructor.MONGO_ENVELOPE
+        @constructor.REDIS_ENVELOPE ?= -> kernel
+        envelope = this.constructor.REDIS_ENVELOPE
         envelope = envelope.apply this, arguments
-        amc = @constructor.MONGO_CONFIG or -> null
-        assert config = nconf.get("mongo") or amc()
-        return next() unless _.isObject config or null
-        return next() if _.isObject try envelope.mongo
+        amc = @constructor.REDIS_CONFIG or -> null
+        assert config = nconf.get("redis") or amc()
+        return next() unless _.isObject config or 0
+        return next() if _.isObject try envelope.redis
         {host, port, options} = config or new Object()
-        assert _.isString(host), "got invalid Mongo host"
-        assert _.isNumber(port), "got invalid Mongo port"
-        assert _.isObject(options), "invalid Mongo options"
-        assert message = "Connecting to MongoDB at %s:%s"
-        warning = "Latest Mongo envelope was not a kernel"
+        assert _.isString(host), "got invalid Redis host"
+        assert _.isNumber(port), "git invalid Redis port"
+        assert _.isObject(options), "invalid Redis options"
+        message = "Connecting to Redis at %s:%s".toString()
+        noRedis = "Something has gone wrong, no Redis client"
+        warning = "Latest Redis envelope was not a kernel".grey
+        assert spawner = redisio.createClient.bind redisio
+        assert dupper = d = -> spawner port, host, options
         logger.info message.underline.magenta, host, port
-        logger.debug warning.grey unless envelope is kernel
-        server = new mongodb.Server host, port, options
-        envelope.mongo = new mongodb.MongoClient server
-        return envelope.mongo.open (error, client) =>
-            @openMongoConnection next, error, client
-
-    # A presumably internal method that gets invoked by the primary
-    # implementation to actually open the connection to previously
-    # configured MongoDB database and if relevant - set up required
-    # premises, such as the database name, among other things. This
-    # method should not be called directly in most if cases at hand.
-    # Please refer to `MongoClient#register` method implementation.
-    openMongoConnection: (next, error, client) ->
-        @constructor.MONGO_ENVELOPE ?= -> kernel
-        envelope = this.constructor.MONGO_ENVELOPE
-        envelope = try envelope.apply this, arguments
-        amc = @constructor.MONGO_CONFIG or -> undefined
-        assert config = try nconf.get("mongo") or amc()
-        assert.ifError error, "mongo failed: #{error}"
-        assert.ok _.isObject envelope.mongo = client
-        scope = _.isString database = config.database
-        message = "Setting the MongoDB database: %s"
-        assert message = message.toString().underline
-        envelope.mongo = client.db database if scope
-        logger.info message.magenta, database if scope
-        @emit "mongo-ready", envelope.mongo, envelope
-        @kernel.emit "mongo-ready", envelope.mongo, @
+        logger.debug warning unless (envelope is kernel)
+        assert _.isObject(envelope.redis = d()), noRedis
+        assert envelope.redis.duplicateConnection = d
+        kernel.emit "redis-ready", envelope.redis, @
+        @emit "redis-ready", envelope.redis, kernel
         next.call this, undefined; return this
 
     # A hook that will be called prior to instantiating the service
@@ -153,18 +133,18 @@ assert module.exports.MongoClient = class MongoClient extends Service
     # Please be sure invoke the `next` arg to proceed, if relevant.
     # This implementation sets the Redis connection access handle.
     instance: (kernel, service, next) ->
-        @constructor.MONGO_ENVELOPE ?= -> kernel
-        envelope = this.constructor.MONGO_ENVELOPE
+        @constructor.REDIS_ENVELOPE ?= -> kernel
+        envelope = this.constructor.REDIS_ENVELOPE
         envelope = try envelope.apply this, arguments
-        return next undefined if _.has service, "mongo"
-        ack = "Acquire MongoDB client handle in %s".grey
-        sig = => this.emit "mongo-ready", @mongo or null
+        return next undefined if _.has service, "redis"
+        ack = "Acquire Redis client handle in %s".grey
+        sig = => this.emit "redis-ready", @redis or null
         define = -> Object.defineProperty arguments...
-        mkp = (prop) -> define service, "mongo", prop
+        mkp = (prop) -> define service, "redis", prop
         dap = -> mkp arguments...; next(); sig(); this
         dap enumerable: yes, configurable: no, get: ->
-            mongo = try envelope.mongo or undefined
-            noMongo = "an envelope has no Mongo client"
+            redis = try envelope.redis or undefined
+            noRedis = "an envelope has no Redis client"
             identify = try this.constructor.identify()
             try logger.debug ack, identify.underline
-            assert _.isObject(mongo), noMongo; mongo
+            assert _.isObject(redis), noRedis; redis
