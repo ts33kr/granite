@@ -62,7 +62,7 @@ assert _.isObject exposure = module.exports.fringes
 assert _.isObject semantic = module.exports.gearbox
 assert _.isObject semantic = module.exports.applied
 assert _.isObject nucleus = module.exports.nucleus
-assert _.isObject bundled = module.exports.bundled
+assert _.isObject codones = module.exports.codones
 
 # Alias the cakefile routine for the easy access to the primary way
 # of referencing the built in Cakefile library, which is standard.
