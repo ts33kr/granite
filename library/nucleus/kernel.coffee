@@ -254,7 +254,7 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         assert _.isString(configs), "no configure layout"
         assert _.isString(library), "no library layouts"
         monitor = @scanner.monitorDirectory.bind @scanner
-        monitor paths.resolve __dirname, "../exposure"
+        monitor paths.resolve __dirname, "../fringes"
         monitor paths.resolve __dirname, "../semantic"
         monitor directory for directory in subjects
         monitor library; monitor configs; this

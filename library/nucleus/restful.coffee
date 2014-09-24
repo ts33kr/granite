@@ -137,7 +137,7 @@ module.exports.RestfulService = class RestfulService extends Service
         _.extend shadow, request: try weak request
         s = get: -> try request.session or undefined
         e = get: -> try request[symbol] or undefined
-        {AccessGate} = require "../exposure/access"
+        {AccessGate} = require "../fringes/access"
         symbol = try AccessGate.ACCESS_ENTITY_SYMBOL
         logger.debug m.grey, request.url?.underline
         Object.defineProperty shadow, "session", s
