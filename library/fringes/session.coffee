@@ -37,7 +37,7 @@ util = require "util"
 url = require "url"
 
 {Zombie} = require "../nucleus/zombie"
-{RedisClient} = require "../membrane/redis"
+{RedisClient} = require "../applied/redis"
 {GraniteKernel} = require "../nucleus/kernel"
 
 # This zombie service exposes session storage engine implementation.

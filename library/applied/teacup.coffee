@@ -42,9 +42,10 @@ util = require "util"
 {EOL} = require "os"
 {format} = require "util"
 {STATUS_CODES} = require "http"
-{Barebones} = require "./skeleton"
-{remote, external} = require "./remote"
-{coffee} = require "./runtime"
+
+{Barebones} = require "../membrane/skeleton"
+{remote, external} = require "../membrane/remote"
+{coffee} = require "../membrane/runtime"
 
 # This is an internal abstract base class that is not intended for
 # being used directly. The class is being used by the implementation

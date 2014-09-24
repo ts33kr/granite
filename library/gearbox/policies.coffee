@@ -35,9 +35,9 @@ https = require "https"
 http = require "http"
 util = require "util"
 
-{AccessGate} = require "./access"
 {Archetype} = require "../nucleus/arche"
 {Barebones} = require "../membrane/skeleton"
+{AccessGate} = require "../fringes/access"
 
 # An abstract base compound that provides an extensive functionality
 # and solution for managing different access and control policies of

@@ -45,13 +45,13 @@ util = require "util"
 {Extending} = require "../nucleus/extends"
 {Composition} = require "../nucleus/compose"
 {Archetype} = require "../nucleus/arche"
+{BowerToolkit} = require "../applied/bower"
 
 {remote, external} = require "./remote"
 {TransferToolkit} = require "./transfer"
 {TransitToolkit} = require "./transit"
 {EventsToolkit} = require "./events"
 {LinksToolkit} = require "./linkage"
-{BowerToolkit} = require "./bower"
 
 # This abstract base class service is a combination of `Screenplay`
 # and `Zombie` for the further environment initialization and seting

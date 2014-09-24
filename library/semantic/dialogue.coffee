@@ -30,7 +30,7 @@ assert = require "assert"
 {Widget} = require "./abstract"
 {Archetype} = require "../nucleus/arche"
 {remote, cc} = require "../membrane/remote"
-{GoogleFonts} = require "../exposure/fonting"
+{GoogleFonts} = require "../fringes/fonting"
 
 # This frontend widget implements a simple dialogue, rendered as a
 # modal window. The HTML markup (and therefore the exterior looks)

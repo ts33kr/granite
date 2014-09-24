@@ -39,8 +39,8 @@ os = require "os"
 
 {Archetype} = require "../nucleus/arche"
 {Barebones} = require "../membrane/skeleton"
-{RedisClient} = require "../membrane/redis"
-{MongoClient} = require "../membrane/mongo"
+{RedisClient} = require "../applied/redis"
+{MongoClient} = require "../applied/mongo"
 
 # An abstract class compound that provides unique API to be used in
 # application code to programatically log, publish (via Redis) and

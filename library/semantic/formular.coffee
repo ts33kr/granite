@@ -30,7 +30,7 @@ assert = require "assert"
 {Widget} = require "./abstract"
 {Archetype} = require "../nucleus/arche"
 {remote, cc} = require "../membrane/remote"
-{GoogleFonts} = require "../exposure/fonting"
+{GoogleFonts} = require "../fringes/fonting"
 
 # This is a user interface widget abstraction that provides protocol
 # that is used to work with the forms and input controls in general.

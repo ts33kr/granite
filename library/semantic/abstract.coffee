@@ -32,7 +32,7 @@ assert = require "assert"
 {Archetype} = require "../nucleus/arche"
 {remote, cc} = require "../membrane/remote"
 {Composition} = require "../nucleus/compose"
-{GoogleFonts} = require "../exposure/fonting"
+{GoogleFonts} = require "../fringes/fonting"
 
 # This is an abstract base class for all the front-end widgets. It
 # is important to understand that widgets are not services. They do

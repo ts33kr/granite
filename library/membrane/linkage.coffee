@@ -38,10 +38,10 @@ path = require "path"
 http = require "http"
 util = require "util"
 
-{BowerSupport} = require "./bower"
 {Barebones} = require "./skeleton"
 {Extending} = require "../nucleus/extends"
 {Composition} = require "../nucleus/compose"
+{BowerSupport} = require "../applied/bower"
 {Archetype} = require "../nucleus/arche"
 
 # A complementary part of the preflight procedures that provides the

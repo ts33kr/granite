@@ -25,8 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 assert = require "assert"
 
-{Pinpoint} = require "../exposure/pinpoint"
-{Localized} = require "../exposure/localized"
+{Pinpoint} = require "../gearbox/pinpoint"
+{Localized} = require "../fringes/localized"
 {Bilateral} = require "../membrane/bilateral"
 {Auxiliaries} = require "../membrane/auxes"
 {Embedded} = require "../membrane/embed"

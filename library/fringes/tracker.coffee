@@ -30,7 +30,7 @@ colors = require "colors"
 async = require "async"
 nconf = require "nconf"
 
-{Behavior} = require "../exposure/behavior"
+{Behavior} = require "../gearbox/behavior"
 {DuplexCore} = require "../membrane/duplex"
 
 # This compound is a parasite that hosts itself to all standalone

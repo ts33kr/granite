@@ -49,11 +49,11 @@ compose = require "../nucleus/compose"
 {Barebones} = require "./skeleton"
 {remote, external} = require "./remote"
 {TransferToolkit} = require "./transfer"
-{TemplateToolkit} = require "./template"
+{TemplateToolkit} = require "../applied/teacup"
+{BowerToolkit} = require "../applied/bower"
 {TransitToolkit} = require "./transit"
 {EventsToolkit} = require "./events"
 {LinksToolkit} = require "./linkage"
-{BowerToolkit} = require "./bower"
 {coffee} = require "./runtime"
 
 # This is an abstract service that provides the unique functionality

@@ -29,7 +29,7 @@ assert = require "assert"
 {external} = require "../membrane/remote"
 {Dialogue} = require "../semantic/dialogue"
 {BoxFormular} = require "../semantic/standard"
-{Behavior} = require "../exposure/behavior"
+{Behavior} = require "../gearbox/behavior"
 
 # This is a abstract base class compound that combines modal window
 # with a data form. Basically, this component provides the skeleton

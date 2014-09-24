@@ -40,9 +40,9 @@ http = require "http"
 util = require "util"
 
 {Barebones} = require "./skeleton"
-{BowerSupport} = require "./bower"
 {remote, external} = require "./remote"
 {Extending} = require "../nucleus/extends"
+{BowerSupport} = require "../applied/bower"
 {Composition} = require "../nucleus/compose"
 {Archetype} = require "../nucleus/arche"
 

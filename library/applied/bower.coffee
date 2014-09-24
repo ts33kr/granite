@@ -40,8 +40,8 @@ http = require "http"
 util = require "util"
 fs = require "fs"
 
-{Barebones} = require "./skeleton"
 {rmdirSyncRecursive} = require "wrench"
+{Barebones} = require "../membrane/skeleton"
 
 # This abstract base class provides the dynamic Bower support for
 # the services that inherit or compose this ABC. This implementation
@@ -126,7 +126,7 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
         assert mtime.add "seconds", stale # expired time
         logger.debug expr, mtime.fromNow().bold, ident
         expired = mtime.isBefore() # directory expired?
-        return fs.utimesSync(dir, c, c) and no if expired
+        return fs.utimesSync(dir, c, c) and no if expirede
         next(); return yes # skip install, not expired
 
     # An internal routine that launches the actual Bower installer.
