@@ -126,7 +126,7 @@ module.exports.BowerToolkit = class BowerToolkit extends Barebones
         assert mtime.add "seconds", stale # expired time
         logger.debug expr, mtime.fromNow().bold, ident
         expired = mtime.isBefore() # directory expired?
-        return fs.utimesSync(dir, c, c) and no if expirede
+        return fs.utimesSync(dir, c, c) and no if expired
         next(); return yes # skip install, not expired
 
     # An internal routine that launches the actual Bower installer.
