@@ -56,9 +56,9 @@ module.exports.cachedKernel = @cachedKernel
 # framework is indeed loaded and are not missing. This is precaution
 # to make sure that the framework is in usable state, once is loaded.
 # You can refer to this definitions from the outside of the framework.
+assert _.isObject nucleus = module.exports.nucleus
 assert _.isObject membrane = module.exports.membrane
 assert _.isObject semantic = module.exports.semantic
-assert _.isObject nucleus = module.exports.nucleus
 assert _.isObject gearbox = module.exports.gearbox
 assert _.isObject applied = module.exports.applied
 assert _.isObject fringes = module.exports.fringes
