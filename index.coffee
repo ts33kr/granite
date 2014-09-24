@@ -58,10 +58,10 @@ module.exports.cachedKernel = @cachedKernel
 # You can refer to this definitions from the outside of the framework.
 assert _.isObject membrane = module.exports.membrane
 assert _.isObject semantic = module.exports.semantic
-assert _.isObject exposure = module.exports.fringes
 assert _.isObject nucleus = module.exports.nucleus
 assert _.isObject gearbox = module.exports.gearbox
 assert _.isObject applied = module.exports.applied
+assert _.isObject fringes = module.exports.fringes
 assert _.isObject rapid = module.exports.rapid
 
 # Alias the cakefile routine for the easy access to the primary way
