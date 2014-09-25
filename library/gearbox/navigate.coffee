@@ -80,7 +80,7 @@ assert module.exports.Navigate = class Navigate extends Preflight
         assert _.isFunction externed = external implement
         assert _.isObject externed.remote.meta ?= Object()
         assert ptr = endpoint: endpoint, options: options
-        logger.silly m.grey, endpoint.underline, idenity
+        logger.silly m.grey, endpoint.underline, identify
         _.extend externed.remote.meta, ptr; externed
 
     # This is an external autocall routine that when invoked on the
