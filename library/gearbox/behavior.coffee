@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 assert = require "assert"
 
 {Pinpoint} = require "../gearbox/pinpoint"
+{Exchange} = require "../gearbox/exchange"
 {Localized} = require "../fringes/localized"
 {Bilateral} = require "../membrane/bilateral"
 {Auxiliaries} = require "../membrane/auxes"
@@ -51,7 +52,7 @@ assert module.exports.Behavior = class Behavior extends Embedded
     # Please take a look at the `Composition` class implementation
     # for all sorts of information on the composition system itself.
     # Each of these will be dynamicall integrated in class hierarchy.
-    @implanting Auxiliaries, Bilateral, Localized, Pinpoint
+    @implanting Auxiliaries, Bilateral, Localized, Pinpoint, Exchange
 
     # This method is part of an internal integrity assurance toolkit.
     # Once the behavior-enabled service emits a signal that indicate
