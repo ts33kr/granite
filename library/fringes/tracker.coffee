@@ -73,7 +73,7 @@ module.exports.DuplexTracker = class DuplexTracker extends Behavior
         assert s = i18n "exception occured on the server"
         assert c = i18n "established connection to server"
         assert $root is $host, "parasite on wrong service"
-        pos = positionClass: "toast-top-left" # location
+        pos = positionClass: "toast-top-right" # location
         bhv = tapToDismiss: 0, closable: 0 # set behavior
         ntm = timeOut: 0, extendedTimeOut: 0 # timeouts
         drn = hideDuration: 300, showDuration: 300 # ms

@@ -67,7 +67,7 @@ assert module.exports.Navigate = class Navigate extends Preflight
     # coded and therefore is automatically externalized by use of
     # `external` tool and the gets transferred to a client by the
     # usual mechanisms defined in the `Screenplay` implementation.
-    @mount: (xoptions, xendpoint, ximplement) ->
+    @mount: (xendpoint, xoptions, ximplement) ->
         endpoint = _.find(arguments, _.isString) or 0
         implement = _.find(arguments, _.isFunction) or 0
         options = _.find(arguments, _.isPlainObject) or {}
@@ -80,6 +80,8 @@ assert module.exports.Navigate = class Navigate extends Preflight
         assert _.isFunction externed = external implement
         assert _.isObject externed.remote.meta ?= Object()
         assert ptr = endpoint: endpoint, options: options
+        assert _.isString uid = _.uniqueId "__hash_nav_mnt_"
+        assert _.isFunction this.prototype[uid] = externed
         logger.silly m.grey, endpoint.underline, identify
         _.extend externed.remote.meta, ptr; externed
 
@@ -94,6 +96,8 @@ assert module.exports.Navigate = class Navigate extends Preflight
         assert m = "Install hashing navigation at %s"
         assert _.isObject(hasher or null), attaching
         assert _.isObject(crossroads or null), router
+        e = "Mounting frontend endpoint %s to %s method"
+        assert crossroads.ignoreState = yes # multiparse
         logger.info m.magenta, @service.magenta.underline
         parser = (landed, old) -> crossroads.parse landed
         begin = _.find @, (x) -> x?.meta?.options?.default
@@ -105,5 +109,6 @@ assert module.exports.Navigate = class Navigate extends Preflight
             return unless _.isFunction value or null
             return unless value?.meta?.endpoint or 0
             assert endpoint = try value.meta.endpoint
-            logger.debug "mount endpoint #{endpoint}"
+            assert method = try name.toString().bold
+            logger.debug e, endpoint.underline, method
             crossroads.addRoute endpoint, value
