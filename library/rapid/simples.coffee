@@ -56,6 +56,14 @@ assert module.exports.SimpleEntry = class SimpleEntry extends Behavior
     @considering TFormular: BoxFormular
     @reconfigure TDialogue: Dialogue
 
+    # This is an isolated server provider that gets called once the
+    # working data is being submitted into a simple entry component.
+    # The provider is responsible for handling the data and giving
+    # off the feadback on that data, as in its validity and stuff.
+    # Please refer to the `confirmedSubmission` method of component
+    # for more information on the data submission and handing logic.
+    dataSubmission: @isolated (data, callback) ->
+
     # Once the service has been successfully booted, this method is
     # going to set up all the necessary scaffolding for the service.
     # It means setting up all the required UIX widgets, binding it
