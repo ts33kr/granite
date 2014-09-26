@@ -36,7 +36,7 @@ assert = require "assert"
 # Plese refer to the implementation for the usage information. Also,
 # see the methods to get the idea of what is available and what not.
 # Reference the `Formular` abstraction for the internal information.
-module.exports.BoxFormular = cc -> class BoxFormular extends Formular
+module.exports.BoxedFormular = cc -> class BoxedFormular extends Formular
 
     # Group the two previously created fields (passed by either as
     # direct object or the selectors) into a one horizontal field
