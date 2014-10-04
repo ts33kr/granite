@@ -58,6 +58,13 @@ module.exports.Preflight = class Preflight extends Screenplay
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # This block define a set of meta tags that specify or tweak
+    # the way a client browser treats the content that it has got
+    # from the server site. Please refer to the HTML5 specification
+    # for more information on the exact semantics of any meta tag.
+    # Reference the `Preflight` for the implementation guidance.
+    @metatag generator: "github.com/ts33kr/granite"
+
     # This block here defines a set of Bower dependencies that are
     # going to be necessary no matter what sort of functionality is
     # is going to be implemented. Most of these libraries required
