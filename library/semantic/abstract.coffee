@@ -106,6 +106,7 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
         missing = "the root element of widget not located"
         incomps = "the root element of widget seem broken"
         message = "Generating HTML toolkit in a %s widget"
+        deducts = (fx) -> (fx.element and fx.$) or $(fx)
         assert cident = @constructor.identify().underline
         assert _.isObject(@element or undefined), missing
         assert (try @element?.length or no) >= 0, incomps
@@ -114,6 +115,7 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
         Object.defineProperty this, "$", get: => @element
         Object.defineProperty this, "id", value: uuid.v1()
         assert @element.attr id: @id.toString() # UUID v1
+        assert @add = (fx) => @element.append deducts fx
         assert @classes = => return @element.attr "class"
         assert @siblings = => return $(".#{@reference}")
         assert @show = => this.element.show arguments...
