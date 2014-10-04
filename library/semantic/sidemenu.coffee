@@ -51,6 +51,29 @@ module.exports.SideMenu = cc -> class SideMenu extends Widget
     # Also, please refer to the `Teacup` manual for reference.
     element: -> div ".ui.pointing.menu.vertical"
 
+    # Insert a new major group node into the side menu. Every group
+    # should have the name that will be rendered to the display, an
+    # icon and the optionally the group identification string. Group
+    # looks like a major item, but it is not clickable and cannot be
+    # activated. Insted, it serves as the container for minor items.
+    # The `href` can be a navagiation link (usually hash route).
+    majorGroup: (name, icon, href, group) ->
+        group = name unless _.isString group or null
+        href = "#" unless _.isString href or undefined
+        incorrect = "if present, actor must be function"
+        assert _.isString(name), "missing the item name"
+        assert _.isString(icon), "missing an icon class"
+        assert _.isString(href), "missing link reference"
+        assert _.isObject item = $ "<div>", class: "item"
+        assert _.isObject texting = $("<b>").text name
+        assert wrapper = $("<a>").append texting or no
+        assert icon = try $ "<i>", class: "icon #{icon}"
+        assert submenu = $ "<div>", class: "menu submenu"
+        item.data "menu-group": group # set the group id
+        item.attr href: href.toString() if href or null
+        item.append(wrapper, icon, submenu) # assemble
+        item.appendTo @element or null; return item
+
     # Insert a new minor item node into the side menu. Every item
     # should have the name that will be rendered to the display,
     # and group name that identifies the container to use for the
@@ -77,29 +100,6 @@ module.exports.SideMenu = cc -> class SideMenu extends Widget
         items = _.filter @element.find(".item"), grouped
         item.appendTo $(items).find(".menu") # add to sub
         item.append texting; return item # assemling
-
-    # Insert a new major group node into the side menu. Every group
-    # should have the name that will be rendered to the display, an
-    # icon and the optionally the group identification string. Group
-    # looks like a major item, but it is not clickable and cannot be
-    # activated. Insted, it serves as the container for minor items.
-    # The `href` can be a navagiation link (usually hash route).
-    majorGroup: (name, icon, href, group) ->
-        group = name unless _.isString group or null
-        href = "#" unless _.isString href or undefined
-        incorrect = "if present, actor must be function"
-        assert _.isString(name), "missing the item name"
-        assert _.isString(icon), "missing an icon class"
-        assert _.isString(href), "missing link reference"
-        assert _.isObject item = $ "<div>", class: "item"
-        assert _.isObject texting = $("<b>").text name
-        assert wrapper = $("<a>").append texting or no
-        assert icon = try $ "<i>", class: "icon #{icon}"
-        assert submenu = $ "<div>", class: "menu submenu"
-        item.data "menu-group": group # set the group id
-        item.attr href: href.toString() if href or null
-        item.append(wrapper, icon, submenu) # assemble
-        item.appendTo @element or null; return item
 
     # Insert a new major item node into the side menu. Every item
     # should have the name that will be rendered to the display,
