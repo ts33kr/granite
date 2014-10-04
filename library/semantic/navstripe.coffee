@@ -74,8 +74,10 @@ module.exports.NavStripe = cc -> class NavStripe extends Widget
         assert item = $ "<div>", class: "ui item dropdown"
         assert submenu = $ "<div>", class: "menu navsub"
         assert item.append(name.toString()).append(icon)
+        xh = (node, o) -> node.attr href: "#{href}/#{o}"
+        ai = (node, o) -> node.text o; xh(node, o); node
         sm = (e) -> submenu.append e; e.on "click", actor
-        sm $("<a>", class: "item").text o for o in options
+        sm ai $("<a>", class: "item"), o for o in options
         rightMenu = => return @element.find ".right.menu"
         item.append(submenu).appendTo rightMenu()
         $(item).dropdown(); return item
@@ -101,6 +103,7 @@ module.exports.NavStripe = cc -> class NavStripe extends Widget
         do -> input.attr placeholder: synopsis.toString()
         wrapper.append(icon).append(input) # assemble it
         icon.on "click", -> actor item, button if actor
+        icon.on "click", -> location?.href = href if href
         rightMenu = => return @element.find ".right.menu"
         item.append(wrapper).appendTo rightMenu(); item
 
