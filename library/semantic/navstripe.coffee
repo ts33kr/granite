@@ -28,6 +28,7 @@ teacup = require "teacup"
 assert = require "assert"
 
 {Widget} = require "./abstract"
+{Coloring} = require "./coloring"
 {Archetype} = require "../nucleus/arche"
 {remote, cc} = require "../membrane/remote"
 
@@ -38,6 +39,13 @@ assert = require "assert"
 # used layouts for the navigation bars that will allow to quickly
 # create the navigation menus without too much hassle involved.
 module.exports.NavStripe = cc -> class NavStripe extends Widget
+
+    # These declarations below are implantations of the abstracted
+    # components by the means of the dynamic recomposition system.
+    # Please take a look at the `Composition` class implementation
+    # for all sorts of information on the composition system itself.
+    # Each of these will be dynamicall integrated in class hierarchy.
+    @implanting Coloring
 
     # Bring the tags definitions of the `Teacup` template engine
     # to the current class scope on the client and server sites.
