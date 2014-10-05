@@ -44,7 +44,7 @@ util = require "util"
 # The memory monitor service is a zombie services that tracks usage
 # of the RAM by this process (ergo, by this node). The service drives
 # from the kernel beacon and runs the monitoring on each heartbeat of
-# the beacon. If the memory usage exceed the configurable max limit,
+# the beacon. If the memory usage exceeds the configurable max limit,
 # this service should gracefully notify the kernel and reboot kernel.
 module.exports.MemoryMonitor = class MemoryMonitor extends Zombie
 
