@@ -75,7 +75,7 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
     # will be wrapped with the special class instance of `Widget`.
     # This is a shortcut for quick widget design and composition.
     @subwidget: (signature) ->
-        blueprint = this # save the class as blueprint
+        blueprint = this # save to use it from closure
         token = (try _.first(_.keys(signature))) or no
         value = (try _.first(_.values(signature))) or no
         invalid = "received invalid invocation signature"
