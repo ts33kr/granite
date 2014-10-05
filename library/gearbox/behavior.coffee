@@ -27,6 +27,8 @@ assert = require "assert"
 
 {Pinpoint} = require "../gearbox/pinpoint"
 {Exchange} = require "../gearbox/exchange"
+{Policies} = require "../gearbox/policies"
+{GrandCentral} = require "../gearbox/central"
 {Localized} = require "../fringes/localized"
 {Bilateral} = require "../membrane/bilateral"
 {Auxiliaries} = require "../membrane/auxes"
@@ -52,7 +54,16 @@ assert module.exports.Behavior = class Behavior extends Embedded
     # Please take a look at the `Composition` class implementation
     # for all sorts of information on the composition system itself.
     # Each of these will be dynamicall integrated in class hierarchy.
-    @implanting Auxiliaries, Bilateral, Localized, Pinpoint, Exchange
+    # P.S. These are the core definitions for every active component.
+    @implanting Auxiliaries, Bilateral, Policies
+
+    # These declarations below are implantations of the abstracted
+    # components by the means of the dynamic recomposition system.
+    # Please take a look at the `Composition` class implementation
+    # for all sorts of information on the composition system itself.
+    # Each of these will be dynamicall integrated in class hierarchy.
+    # P.S. These are the secondary essentials for every active comp.
+    @implanting Localized, Pinpoint, Exchange, GrandCentral
 
     # This method is part of an internal integrity assurance toolkit.
     # Once the behavior-enabled service emits a signal that indicate
