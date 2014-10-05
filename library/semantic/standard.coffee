@@ -66,7 +66,8 @@ module.exports.BoxedFormular = cc -> class BoxedFormular extends Formular
     # while it is being typed in. The field has the asterisk to it
     # and can optionally attach an icon to the field (recommended).
     # In other ways, it is structurally equal to `starred` field.
-    hidden: (identity, synopsis, icon) ->
+    # Please refer to `Widget` class for reference on subwidgets.
+    @subwidget hidden: (identity, synopsis, icon) ->
         assert _.isString(identity), "invalid field identity"
         assert _.isString(synopsis), "invalid field synopsis"
         assert _.isObject label = $ "<label>", class: "label"
@@ -90,7 +91,8 @@ module.exports.BoxedFormular = cc -> class BoxedFormular extends Formular
     # either required or has some remarks to it or simply indicates
     # an elevated attention to the field. Oterwise, it is a simple
     # textual field that can optionally be tagged with a left icon.
-    starred: (identity, synopsis, icon) ->
+    # Please refer to `Widget` class for reference on subwidgets.
+    @subwidget starred: (identity, synopsis, icon) ->
         assert _.isString(identity), "invalid field identity"
         assert _.isString(synopsis), "invalid field synopsis"
         assert _.isObject input = $ "<input>", type: "text"
@@ -114,7 +116,8 @@ module.exports.BoxedFormular = cc -> class BoxedFormular extends Formular
     # It is usually a good idea for indicating options selection
     # or agreement to some legal terms and conditions. The field
     # that it creates is rendered as inline (see semantic man).
-    checkbox: (identity, synopsis, onpos, onneg) ->
+    # Please refer to `Widget` class for reference on subwidgets.
+    @subwidget checkbox: (identity, synopsis, onpos, onneg) ->
         assert _.isString(identity), "invalid field identity"
         assert _.isString(synopsis), "invalid field synopsis"
         assert _.isString what = "ui checkbox" # wrapping sel
@@ -135,7 +138,8 @@ module.exports.BoxedFormular = cc -> class BoxedFormular extends Formular
     # It is usually a good idea for indicating options selection
     # or agreement to some legal terms and conditions. The field
     # that it creates is rendered as inline (see semantic man).
-    sliding: (identity, synopsis, onpos, onneg) ->
+    # Please refer to `Widget` class for reference on subwidgets.
+    @subwidget sliding: (identity, synopsis, onpos, onneg) ->
         assert _.isString(identity), "invalid field identity"
         assert _.isString(synopsis), "invalid field synopsis"
         assert _.isString what = "ui checkbox slider" # wrap sel
@@ -156,7 +160,8 @@ module.exports.BoxedFormular = cc -> class BoxedFormular extends Formular
     # It is usually a good idea for indicating options selection
     # or agreement to some legal terms and conditions. The field
     # that it creates is rendered as inline (see semantic man).
-    toggling: (identity, synopsis, onpos, onneg) ->
+    # Please refer to `Widget` class for reference on subwidgets.
+    @subwidget toggling: (identity, synopsis, onpos, onneg) ->
         assert _.isString(identity), "invalid field identity"
         assert _.isString(synopsis), "invalid field synopsis"
         assert _.isString what = "ui checkbox toggle" # wrap sel
@@ -177,7 +182,8 @@ module.exports.BoxedFormular = cc -> class BoxedFormular extends Formular
     # can be tagged by an icon on the left side of the field. It is
     # a good idea to use such a field for inputting sorts data that
     # is not strictly required, but is usually optional, as example.
-    regular: (identity, synopsis, icon) ->
+    # Please refer to `Widget` class for reference on subwidgets.
+    @subwidget regular: (identity, synopsis, icon) ->
         assert _.isString(identity), "invalid field identity"
         assert _.isString(synopsis), "invalid field synopsis"
         assert _.isObject input = $ "<input>", type: "text"
