@@ -1,0 +1,114 @@
+<!DOCTYPE html><html lang="en"><head><title>semantic/sidemenu</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="semantic/sidemenu"><meta name="groc-project-path" content="library/semantic/sidemenu.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/semantic/sidemenu.coffee">library/semantic/sidemenu.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;&#105;&#108;&#x74;&#x6f;:&#116;&#115;&#51;&#x33;k&#114;&#64;&#103;&#x6d;&#97;&#x69;&#108;&#46;&#99;&#111;&#109;">&#116;&#115;&#51;&#x33;k&#114;&#64;&#103;&#x6d;&#97;&#x69;&#108;&#46;&#99;&#111;&#109;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ol>
+<li>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</li>
+</ol>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div class="code"><div class="wrapper"><span class="nv">_ = </span><span class="nx">require</span> <span class="s">&quot;lodash&quot;</span>
+<span class="nv">teacup = </span><span class="nx">require</span> <span class="s">&quot;teacup&quot;</span>
+<span class="nv">assert = </span><span class="nx">require</span> <span class="s">&quot;assert&quot;</span>
+
+<span class="p">{</span><span class="nx">Widget</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;./abstract&quot;</span>
+<span class="p">{</span><span class="nx">Archetype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../nucleus/arche&quot;</span>
+<span class="p">{</span><span class="nx">remote</span><span class="p">,</span> <span class="nx">cc</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This frontend widget implements a side navigation menu for the
+generic use. The HTML markup (and therefore the exterior looks)
+is driven by the Semantic-UI framework. The widget provides not
+just the markup skeleton, but also some shortcutting of usually
+used layouts for the side nav menus that will allow to quickly
+create the navigation menus without too much hassle involved.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.SideMenu = </span><span class="nx">cc</span> <span class="nf">-&gt;</span> <span class="k">class</span> <span class="nx">SideMenu</span> <span class="k">extends</span> <span class="nx">Widget</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Bring the tags definitions of the <code>Teacup</code> template engine
+to the current class scope on the client and server sites.
+Remember, that the <code>teacup</code> symbol is constantly available
+on both sites, respecitvely. Also, take into consideration
+that when you need a client-site template in the service,
+this is all done automatically and there if no need for
+Please see the <code>TemplateToolkit</code> class for more information.</p></div></div><div class="code"><div class="wrapper">    <span class="p">{</span><span class="nx">div</span><span class="p">}</span> <span class="o">=</span> <span class="nx">teacup</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This prototype definition is a template-function driven by
+the <code>Teacup</code> templating engine. When widget instantiated,
+this defintion is used to render the root DOM element of
+the widget and store it in the widget instance under the
+instance variable with the same name of <code>element</code>. Please
+refer to the <code>TemplateToolkit</code> class for an information.
+Also, please refer to the <code>Teacup</code> manual for reference.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">element: </span><span class="nf">-&gt;</span> <span class="nx">div</span> <span class="s">&quot;.ui.pointing.menu.vertical&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Insert a new major group node into the side menu. Every group
+should have the name that will be rendered to the display, an
+icon and the optionally the group identification string. Group
+looks like a major item, but it is not clickable and cannot be
+activated. Insted, it serves as the container for minor items.
+The <code>href</code> can be a navagiation link (usually hash route).</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@subwidget</span> <span class="nv">majorGroup: </span><span class="nf">(name, icon, href, group) -&gt;</span>
+        <span class="nv">group = </span><span class="nx">name</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">group</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nv">href = </span><span class="s">&quot;</span><span class="err">#</span><span class="s">&quot;</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">href</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nv">incorrect = </span><span class="s">&quot;if present, actor must be function&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">name</span><span class="p">),</span> <span class="s">&quot;missing the item name&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">icon</span><span class="p">),</span> <span class="s">&quot;missing an icon class&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">href</span><span class="p">),</span> <span class="s">&quot;missing link reference&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">item = </span><span class="nx">$</span> <span class="s">&quot;&lt;div&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;item&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">texting = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&lt;b&gt;&quot;</span><span class="p">).</span><span class="nx">text</span> <span class="nx">name</span>
+        <span class="nx">assert</span> <span class="nv">wrapper = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&lt;a&gt;&quot;</span><span class="p">).</span><span class="nx">append</span> <span class="nx">texting</span> <span class="o">or</span> <span class="kc">no</span>
+        <span class="nx">assert</span> <span class="nv">icon = </span><span class="k">try</span> <span class="nx">$</span> <span class="s">&quot;&lt;i&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;icon </span><span class="si">#{</span><span class="nx">icon</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nx">assert</span> <span class="nv">submenu = </span><span class="nx">$</span> <span class="s">&quot;&lt;div&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;menu submenu&quot;</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">data</span> <span class="s">&quot;menu-group&quot;</span><span class="o">:</span> <span class="nx">group</span> <span class="c1"># set the group id</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">attr</span> <span class="nv">href: </span><span class="nx">href</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="k">if</span> <span class="nx">href</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">wrapper</span><span class="p">,</span> <span class="nx">icon</span><span class="p">,</span> <span class="nx">submenu</span><span class="p">)</span> <span class="c1"># assemble</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">appendTo</span> <span class="nx">@element</span> <span class="o">or</span> <span class="kc">null</span><span class="p">;</span> <span class="k">return</span> <span class="nx">item</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Insert a new minor item node into the side menu. Every item
+should have the name that will be rendered to the display,
+and group name that identifies the container to use for the
+insertion of the new minor node. If an actor function given,
+it will be invoked once the menu item is actived (clicked).
+The <code>href</code> can be a navagiation link (usually hash route).</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@subwidget</span> <span class="nv">minorItem: </span><span class="nf">(name, group, href, actor) -&gt;</span>
+        <span class="nv">href = </span><span class="s">&quot;</span><span class="err">#</span><span class="s">&quot;</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">href</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nv">incorrect = </span><span class="s">&quot;if present, actor must be function&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">name</span><span class="p">),</span> <span class="s">&quot;missing the item name&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">href</span><span class="p">),</span> <span class="s">&quot;missing link reference&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">group</span><span class="p">),</span> <span class="s">&quot;got no group reference&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">actor</span><span class="p">),</span> <span class="nx">incorrect</span> <span class="k">if</span> <span class="nx">actor</span><span class="o">?</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">item = </span><span class="nx">$</span> <span class="s">&quot;&lt;a&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;item&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">texting = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&lt;b&gt;&quot;</span><span class="p">).</span><span class="nx">text</span> <span class="nx">name</span>
+        <span class="nv">actives = </span><span class="o">=&gt;</span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">element</span><span class="p">.</span><span class="nx">find</span> <span class="s">&quot;.active&quot;</span>
+        <span class="nv">deactivate = </span><span class="nf">-&gt;</span> <span class="nx">actives</span><span class="p">().</span><span class="nx">removeClass</span> <span class="s">&quot;active&quot;</span>
+        <span class="nv">reactivate = </span><span class="nf">-&gt;</span> <span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">addClass</span> <span class="s">&quot;active&quot;</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;click&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">deactivate</span><span class="p">();</span> <span class="nx">reactivate</span><span class="p">()</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;click&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">actor</span> <span class="nx">item</span><span class="p">,</span> <span class="nx">actives</span> <span class="k">if</span> <span class="nx">actor</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;click&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@emit</span> <span class="s">&quot;route&quot;</span><span class="p">,</span> <span class="nx">item</span><span class="p">,</span> <span class="nx">actives</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">attr</span> <span class="nv">href: </span><span class="nx">href</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="k">if</span> <span class="nx">href</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nv">grouped = </span><span class="nf">(i) -&gt;</span> <span class="nx">$</span><span class="p">(</span><span class="nx">i</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s">&quot;menu-group&quot;</span><span class="p">)</span> <span class="o">is</span> <span class="nx">group</span>
+        <span class="nv">items = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">@element</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&quot;.item&quot;</span><span class="p">),</span> <span class="nx">grouped</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">appendTo</span> <span class="nx">$</span><span class="p">(</span><span class="nx">items</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s">&quot;.menu&quot;</span><span class="p">)</span> <span class="c1"># add to sub</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">append</span> <span class="nx">texting</span><span class="p">;</span> <span class="k">return</span> <span class="nx">item</span> <span class="c1"># assemling</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Insert a new major item node into the side menu. Every item
+should have the name that will be rendered to the display,
+and an icon. If supplied, the <code>actor</code> function is going to
+be invoked when the menu item is activated, that is when it
+it is being clicked on and set as currently an active item.
+The <code>href</code> can be a navagiation link (usually hash route).</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@subwidget</span> <span class="nv">majorItem: </span><span class="nf">(name, icon, href, actor) -&gt;</span>
+        <span class="nv">href = </span><span class="s">&quot;</span><span class="err">#</span><span class="s">&quot;</span> <span class="k">unless</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">href</span> <span class="o">or</span> <span class="kc">undefined</span>
+        <span class="nv">incorrect = </span><span class="s">&quot;if present, actor must be function&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">name</span><span class="p">),</span> <span class="s">&quot;missing the item name&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">icon</span><span class="p">),</span> <span class="s">&quot;missing an icon class&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">href</span><span class="p">),</span> <span class="s">&quot;missing link reference&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">actor</span><span class="p">),</span> <span class="nx">incorrect</span> <span class="k">if</span> <span class="nx">actor</span><span class="o">?</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">item = </span><span class="nx">$</span> <span class="s">&quot;&lt;a&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;item&quot;</span>
+        <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">texting = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&lt;b&gt;&quot;</span><span class="p">).</span><span class="nx">text</span> <span class="nx">name</span>
+        <span class="nv">actives = </span><span class="o">=&gt;</span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">element</span><span class="p">.</span><span class="nx">find</span> <span class="s">&quot;.active&quot;</span>
+        <span class="nv">deactivate = </span><span class="nf">-&gt;</span> <span class="nx">actives</span><span class="p">().</span><span class="nx">removeClass</span> <span class="s">&quot;active&quot;</span>
+        <span class="nv">reactivate = </span><span class="nf">-&gt;</span> <span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">addClass</span> <span class="s">&quot;active&quot;</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;click&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">deactivate</span><span class="p">();</span> <span class="nx">reactivate</span><span class="p">()</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;click&quot;</span><span class="p">,</span> <span class="nf">-&gt;</span> <span class="nx">actor</span> <span class="nx">item</span><span class="p">,</span> <span class="nx">actives</span> <span class="k">if</span> <span class="nx">actor</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;click&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">@emit</span> <span class="s">&quot;route&quot;</span><span class="p">,</span> <span class="nx">item</span><span class="p">,</span> <span class="nx">actives</span>
+        <span class="nx">assert</span> <span class="nv">icon = </span><span class="k">try</span> <span class="nx">$</span> <span class="s">&quot;&lt;i&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;icon </span><span class="si">#{</span><span class="nx">icon</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">attr</span> <span class="nv">href: </span><span class="nx">href</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="k">if</span> <span class="nx">href</span> <span class="o">or</span> <span class="kc">null</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">appendTo</span> <span class="nx">@element</span> <span class="c1"># add to widget container</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">icon</span><span class="p">).</span><span class="nx">append</span> <span class="nx">texting</span><span class="p">;</span> <span class="k">return</span> <span class="nx">item</span></div></div></div></div></body></html>

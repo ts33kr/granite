@@ -79,8 +79,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
     }, {
       "type": "folder",
       "data": {
-        "path": "exposure",
-        "title": "exposure"
+        "path": "applied",
+        "title": "applied"
       },
       "depth": 1,
       "children": [
@@ -97,10 +97,125 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/access.coffee",
-            "projectPath": "library/exposure/access.coffee",
-            "targetPath": "exposure/access",
-            "pageTitle": "exposure/access",
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/applied/bower.coffee",
+            "projectPath": "library/applied/bower.coffee",
+            "targetPath": "applied/bower",
+            "pageTitle": "applied/bower",
+            "title": "bower"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/applied/mailer.coffee",
+            "projectPath": "library/applied/mailer.coffee",
+            "targetPath": "applied/mailer",
+            "pageTitle": "applied/mailer",
+            "title": "mailer"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/applied/mongo.coffee",
+            "projectPath": "library/applied/mongo.coffee",
+            "targetPath": "applied/mongo",
+            "pageTitle": "applied/mongo",
+            "title": "mongo"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/applied/redis.coffee",
+            "projectPath": "library/applied/redis.coffee",
+            "targetPath": "applied/redis",
+            "pageTitle": "applied/redis",
+            "title": "redis"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/applied/teacup.coffee",
+            "projectPath": "library/applied/teacup.coffee",
+            "targetPath": "applied/teacup",
+            "pageTitle": "applied/teacup",
+            "title": "teacup"
+          },
+          "depth": 2,
+          "outline": []
+        }
+      ]
+    }, {
+      "type": "folder",
+      "data": {
+        "path": "fringes",
+        "title": "fringes"
+      },
+      "depth": 1,
+      "children": [
+        {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/fringes/access.coffee",
+            "projectPath": "library/fringes/access.coffee",
+            "targetPath": "fringes/access",
+            "pageTitle": "fringes/access",
             "title": "access"
           },
           "depth": 2,
@@ -118,31 +233,10 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/behavior.coffee",
-            "projectPath": "library/exposure/behavior.coffee",
-            "targetPath": "exposure/behavior",
-            "pageTitle": "exposure/behavior",
-            "title": "behavior"
-          },
-          "depth": 2,
-          "outline": []
-        }, {
-          "type": "file",
-          "data": {
-            "language": {
-              "nameMatchers": [".coffee", "Cakefile"],
-              "pygmentsLexer": "coffee-script",
-              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
-              "strictMultiLineEnd": false,
-              "singleLineComment": ["#"],
-              "ignorePrefix": "}",
-              "foldPrefix": "^",
-              "name": "CoffeeScript"
-            },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/caching.coffee",
-            "projectPath": "library/exposure/caching.coffee",
-            "targetPath": "exposure/caching",
-            "pageTitle": "exposure/caching",
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/fringes/caching.coffee",
+            "projectPath": "library/fringes/caching.coffee",
+            "targetPath": "fringes/caching",
+            "pageTitle": "fringes/caching",
             "title": "caching"
           },
           "depth": 2,
@@ -160,31 +254,10 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/central.coffee",
-            "projectPath": "library/exposure/central.coffee",
-            "targetPath": "exposure/central",
-            "pageTitle": "exposure/central",
-            "title": "central"
-          },
-          "depth": 2,
-          "outline": []
-        }, {
-          "type": "file",
-          "data": {
-            "language": {
-              "nameMatchers": [".coffee", "Cakefile"],
-              "pygmentsLexer": "coffee-script",
-              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
-              "strictMultiLineEnd": false,
-              "singleLineComment": ["#"],
-              "ignorePrefix": "}",
-              "foldPrefix": "^",
-              "name": "CoffeeScript"
-            },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/fonting.coffee",
-            "projectPath": "library/exposure/fonting.coffee",
-            "targetPath": "exposure/fonting",
-            "pageTitle": "exposure/fonting",
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/fringes/fonting.coffee",
+            "projectPath": "library/fringes/fonting.coffee",
+            "targetPath": "fringes/fonting",
+            "pageTitle": "fringes/fonting",
             "title": "fonting"
           },
           "depth": 2,
@@ -202,10 +275,10 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/inventory.coffee",
-            "projectPath": "library/exposure/inventory.coffee",
-            "targetPath": "exposure/inventory",
-            "pageTitle": "exposure/inventory",
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/fringes/inventory.coffee",
+            "projectPath": "library/fringes/inventory.coffee",
+            "targetPath": "fringes/inventory",
+            "pageTitle": "fringes/inventory",
             "title": "inventory"
           },
           "depth": 2,
@@ -223,10 +296,10 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/localized.coffee",
-            "projectPath": "library/exposure/localized.coffee",
-            "targetPath": "exposure/localized",
-            "pageTitle": "exposure/localized",
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/fringes/localized.coffee",
+            "projectPath": "library/fringes/localized.coffee",
+            "targetPath": "fringes/localized",
+            "pageTitle": "fringes/localized",
             "title": "localized"
           },
           "depth": 2,
@@ -244,10 +317,10 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/memory.coffee",
-            "projectPath": "library/exposure/memory.coffee",
-            "targetPath": "exposure/memory",
-            "pageTitle": "exposure/memory",
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/fringes/memory.coffee",
+            "projectPath": "library/fringes/memory.coffee",
+            "targetPath": "fringes/memory",
+            "pageTitle": "fringes/memory",
             "title": "memory"
           },
           "depth": 2,
@@ -265,73 +338,10 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/navigate.coffee",
-            "projectPath": "library/exposure/navigate.coffee",
-            "targetPath": "exposure/navigate",
-            "pageTitle": "exposure/navigate",
-            "title": "navigate"
-          },
-          "depth": 2,
-          "outline": []
-        }, {
-          "type": "file",
-          "data": {
-            "language": {
-              "nameMatchers": [".coffee", "Cakefile"],
-              "pygmentsLexer": "coffee-script",
-              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
-              "strictMultiLineEnd": false,
-              "singleLineComment": ["#"],
-              "ignorePrefix": "}",
-              "foldPrefix": "^",
-              "name": "CoffeeScript"
-            },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/pinpoint.coffee",
-            "projectPath": "library/exposure/pinpoint.coffee",
-            "targetPath": "exposure/pinpoint",
-            "pageTitle": "exposure/pinpoint",
-            "title": "pinpoint"
-          },
-          "depth": 2,
-          "outline": []
-        }, {
-          "type": "file",
-          "data": {
-            "language": {
-              "nameMatchers": [".coffee", "Cakefile"],
-              "pygmentsLexer": "coffee-script",
-              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
-              "strictMultiLineEnd": false,
-              "singleLineComment": ["#"],
-              "ignorePrefix": "}",
-              "foldPrefix": "^",
-              "name": "CoffeeScript"
-            },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/policies.coffee",
-            "projectPath": "library/exposure/policies.coffee",
-            "targetPath": "exposure/policies",
-            "pageTitle": "exposure/policies",
-            "title": "policies"
-          },
-          "depth": 2,
-          "outline": []
-        }, {
-          "type": "file",
-          "data": {
-            "language": {
-              "nameMatchers": [".coffee", "Cakefile"],
-              "pygmentsLexer": "coffee-script",
-              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
-              "strictMultiLineEnd": false,
-              "singleLineComment": ["#"],
-              "ignorePrefix": "}",
-              "foldPrefix": "^",
-              "name": "CoffeeScript"
-            },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/session.coffee",
-            "projectPath": "library/exposure/session.coffee",
-            "targetPath": "exposure/session",
-            "pageTitle": "exposure/session",
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/fringes/session.coffee",
+            "projectPath": "library/fringes/session.coffee",
+            "targetPath": "fringes/session",
+            "pageTitle": "fringes/session",
             "title": "session"
           },
           "depth": 2,
@@ -349,11 +359,147 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/exposure/tracker.coffee",
-            "projectPath": "library/exposure/tracker.coffee",
-            "targetPath": "exposure/tracker",
-            "pageTitle": "exposure/tracker",
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/fringes/tracker.coffee",
+            "projectPath": "library/fringes/tracker.coffee",
+            "targetPath": "fringes/tracker",
+            "pageTitle": "fringes/tracker",
             "title": "tracker"
+          },
+          "depth": 2,
+          "outline": []
+        }
+      ]
+    }, {
+      "type": "folder",
+      "data": {
+        "path": "gearbox",
+        "title": "gearbox"
+      },
+      "depth": 1,
+      "children": [
+        {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/gearbox/behavior.coffee",
+            "projectPath": "library/gearbox/behavior.coffee",
+            "targetPath": "gearbox/behavior",
+            "pageTitle": "gearbox/behavior",
+            "title": "behavior"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/gearbox/central.coffee",
+            "projectPath": "library/gearbox/central.coffee",
+            "targetPath": "gearbox/central",
+            "pageTitle": "gearbox/central",
+            "title": "central"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/gearbox/exchange.coffee",
+            "projectPath": "library/gearbox/exchange.coffee",
+            "targetPath": "gearbox/exchange",
+            "pageTitle": "gearbox/exchange",
+            "title": "exchange"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/gearbox/navigate.coffee",
+            "projectPath": "library/gearbox/navigate.coffee",
+            "targetPath": "gearbox/navigate",
+            "pageTitle": "gearbox/navigate",
+            "title": "navigate"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/gearbox/pinpoint.coffee",
+            "projectPath": "library/gearbox/pinpoint.coffee",
+            "targetPath": "gearbox/pinpoint",
+            "pageTitle": "gearbox/pinpoint",
+            "title": "pinpoint"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/gearbox/policies.coffee",
+            "projectPath": "library/gearbox/policies.coffee",
+            "targetPath": "gearbox/policies",
+            "pageTitle": "gearbox/policies",
+            "title": "policies"
           },
           "depth": 2,
           "outline": []
@@ -443,53 +589,11 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/bower.coffee",
-            "projectPath": "library/membrane/bower.coffee",
-            "targetPath": "membrane/bower",
-            "pageTitle": "membrane/bower",
-            "title": "bower"
-          },
-          "depth": 2,
-          "outline": []
-        }, {
-          "type": "file",
-          "data": {
-            "language": {
-              "nameMatchers": [".coffee", "Cakefile"],
-              "pygmentsLexer": "coffee-script",
-              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
-              "strictMultiLineEnd": false,
-              "singleLineComment": ["#"],
-              "ignorePrefix": "}",
-              "foldPrefix": "^",
-              "name": "CoffeeScript"
-            },
             "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/duplex.coffee",
             "projectPath": "library/membrane/duplex.coffee",
             "targetPath": "membrane/duplex",
             "pageTitle": "membrane/duplex",
             "title": "duplex"
-          },
-          "depth": 2,
-          "outline": []
-        }, {
-          "type": "file",
-          "data": {
-            "language": {
-              "nameMatchers": [".coffee", "Cakefile"],
-              "pygmentsLexer": "coffee-script",
-              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
-              "strictMultiLineEnd": false,
-              "singleLineComment": ["#"],
-              "ignorePrefix": "}",
-              "foldPrefix": "^",
-              "name": "CoffeeScript"
-            },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/emailer.coffee",
-            "projectPath": "library/membrane/emailer.coffee",
-            "targetPath": "membrane/emailer",
-            "pageTitle": "membrane/emailer",
-            "title": "emailer"
           },
           "depth": 2,
           "outline": []
@@ -590,53 +694,11 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/mongo.coffee",
-            "projectPath": "library/membrane/mongo.coffee",
-            "targetPath": "membrane/mongo",
-            "pageTitle": "membrane/mongo",
-            "title": "mongo"
-          },
-          "depth": 2,
-          "outline": []
-        }, {
-          "type": "file",
-          "data": {
-            "language": {
-              "nameMatchers": [".coffee", "Cakefile"],
-              "pygmentsLexer": "coffee-script",
-              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
-              "strictMultiLineEnd": false,
-              "singleLineComment": ["#"],
-              "ignorePrefix": "}",
-              "foldPrefix": "^",
-              "name": "CoffeeScript"
-            },
             "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/preflight.coffee",
             "projectPath": "library/membrane/preflight.coffee",
             "targetPath": "membrane/preflight",
             "pageTitle": "membrane/preflight",
             "title": "preflight"
-          },
-          "depth": 2,
-          "outline": []
-        }, {
-          "type": "file",
-          "data": {
-            "language": {
-              "nameMatchers": [".coffee", "Cakefile"],
-              "pygmentsLexer": "coffee-script",
-              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
-              "strictMultiLineEnd": false,
-              "singleLineComment": ["#"],
-              "ignorePrefix": "}",
-              "foldPrefix": "^",
-              "name": "CoffeeScript"
-            },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/redis.coffee",
-            "projectPath": "library/membrane/redis.coffee",
-            "targetPath": "membrane/redis",
-            "pageTitle": "membrane/redis",
-            "title": "redis"
           },
           "depth": 2,
           "outline": []
@@ -721,27 +783,6 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "targetPath": "membrane/skeleton",
             "pageTitle": "membrane/skeleton",
             "title": "skeleton"
-          },
-          "depth": 2,
-          "outline": []
-        }, {
-          "type": "file",
-          "data": {
-            "language": {
-              "nameMatchers": [".coffee", "Cakefile"],
-              "pygmentsLexer": "coffee-script",
-              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
-              "strictMultiLineEnd": false,
-              "singleLineComment": ["#"],
-              "ignorePrefix": "}",
-              "foldPrefix": "^",
-              "name": "CoffeeScript"
-            },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/membrane/template.coffee",
-            "projectPath": "library/membrane/template.coffee",
-            "targetPath": "membrane/template",
-            "pageTitle": "membrane/template",
-            "title": "template"
           },
           "depth": 2,
           "outline": []
@@ -1198,11 +1239,11 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
-            "sourcePath": "/Users/ts33kr/Projects/granite/library/rapid/separate.coffee",
-            "projectPath": "library/rapid/separate.coffee",
-            "targetPath": "rapid/separate",
-            "pageTitle": "rapid/separate",
-            "title": "separate"
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/rapid/simple.coffee",
+            "projectPath": "library/rapid/simple.coffee",
+            "targetPath": "rapid/simple",
+            "pageTitle": "rapid/simple",
+            "title": "simple"
           },
           "depth": 2,
           "outline": []
@@ -1297,6 +1338,48 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "targetPath": "semantic/formular",
             "pageTitle": "semantic/formular",
             "title": "formular"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/semantic/navstripe.coffee",
+            "projectPath": "library/semantic/navstripe.coffee",
+            "targetPath": "semantic/navstripe",
+            "pageTitle": "semantic/navstripe",
+            "title": "navstripe"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/ts33kr/Projects/granite/library/semantic/sidemenu.coffee",
+            "projectPath": "library/semantic/sidemenu.coffee",
+            "targetPath": "semantic/sidemenu",
+            "pageTitle": "semantic/sidemenu",
+            "title": "sidemenu"
           },
           "depth": 2,
           "outline": []

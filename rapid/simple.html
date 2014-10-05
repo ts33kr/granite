@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>rapid/separate</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="rapid/separate"><meta name="groc-project-path" content="library/rapid/separate.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/rapid/separate.coffee">library/rapid/separate.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#x6d;&#97;&#105;&#x6c;&#x74;&#x6f;:&#116;&#x73;&#51;&#x33;&#x6b;&#x72;&#64;&#x67;&#109;&#x61;&#105;&#108;&#46;&#99;&#111;m">&#116;&#x73;&#51;&#x33;&#x6b;&#x72;&#64;&#x67;&#109;&#x61;&#105;&#108;&#46;&#99;&#111;m</a>
+<!DOCTYPE html><html lang="en"><head><title>rapid/simple</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="rapid/simple"><meta name="groc-project-path" content="library/rapid/simple.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/rapid/simple.coffee">library/rapid/simple.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;&#x69;&#108;&#x74;&#x6f;:&#116;&#x73;&#51;&#x33;k&#x72;&#x40;g&#x6d;&#x61;&#105;&#108;&#x2e;&#99;&#x6f;&#x6d;">&#116;&#x73;&#51;&#x33;k&#x72;&#x40;g&#x6d;&#x61;&#105;&#108;&#x2e;&#99;&#x6f;&#x6d;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -26,24 +26,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div></div><div
 
 <span class="p">{</span><span class="nx">external</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../membrane/remote&quot;</span>
 <span class="p">{</span><span class="nx">Dialogue</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../semantic/dialogue&quot;</span>
-<span class="p">{</span><span class="nx">BoxFormular</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../semantic/standard&quot;</span>
-<span class="p">{</span><span class="nx">Behavior</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../exposure/behavior&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a abstract base class compound that combines modal window
+<span class="p">{</span><span class="nx">BoxedFormular</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../semantic/standard&quot;</span>
+<span class="p">{</span><span class="nx">Behavior</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&quot;../gearbox/behavior&quot;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a abstract base class compound that combines modal window
 with a data form. Basically, this component provides the skeleton
 that scrapes the boilerplate routine of form submission and then
 reacting to the response away and lets you focus on what matters
 to your functionality, that is setting up the layout and fields.
-As a basis, the service uses <code>BoxFormular</code> &amp; <code>Dialogue</code> widgets.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.ModalFormular = </span><span class="k">class</span> <span class="nx">ModalFormular</span> <span class="k">extends</span> <span class="nx">Behavior</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
+As a basis, the service uses <code>BoxFormular</code> &amp; <code>Dialogue</code> widgets.</p></div></div><div class="code"><div class="wrapper"><span class="nx">assert</span> <span class="nv">module.exports.SimpleEntry = </span><span class="k">class</span> <span class="nx">SimpleEntry</span> <span class="k">extends</span> <span class="nx">Behavior</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is a marker that indicates to some internal subsystems
 that this class has to be considered abstract and therefore
 can not be treated as a complete class implementation. This
 mainly is used to exclude or account for abstract classes.
 Once inherited from, the inheritee is not abstract anymore.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@abstract</span> <span class="kc">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Define a set of considerations used by this service. An every
 consideration is one key/value pair. Where the key corresponds
-to the type name (also known as token) and the value is holding
+to the type name (also known as token) and the  value is holding
 either an implementation function or a remotable type (an alias).
 This allows you to override type definitions that may be used in
 the parent classes, without having to replace implementation code.
-Allows to inject arbitrary lexical-local values to external fns.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@considering</span> <span class="nv">TFormular: </span><span class="nx">BoxFormular</span>
-    <span class="nx">@reconfigure</span> <span class="nv">TDialogue: </span><span class="nx">Dialogue</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Once the service has been successfully booted, this method is
+Allows to inject arbitrary lexical-local values to external fns.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@considering</span> <span class="nv">TFormular: </span><span class="nx">BoxedFormular</span>
+    <span class="nx">@reconfigure</span> <span class="nv">TDialogue: </span><span class="nx">Dialogue</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is an isolated server provider that gets called once the
+working data is being submitted into a simple entry component.
+The provider is responsible for handling the data and giving
+off the feadback on that data, as in its validity and stuff.
+Please refer to the <code>confirmedSubmission</code> method of component
+for more information on the data submission and handing logic.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">dataSubmission: </span><span class="nx">@isolated</span> <span class="nf">(data, callback) -&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Once the service has been successfully booted, this method is
 going to set up all the necessary scaffolding for the service.
 It means setting up all the required UIX widgets, binding it
 all together and coupling with the service, adding a desigred

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>semantic/standard</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="semantic/standard"><meta name="groc-project-path" content="library/semantic/standard.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/semantic/standard.coffee">library/semantic/standard.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#x61;i&#108;&#x74;&#111;:&#116;&#115;&#51;&#51;&#107;&#114;&#x40;&#x67;m&#97;&#105;&#x6c;&#46;&#x63;&#111;&#109;">&#116;&#115;&#51;&#51;&#107;&#114;&#x40;&#x67;m&#97;&#105;&#x6c;&#46;&#x63;&#111;&#109;</a>
+<!DOCTYPE html><html lang="en"><head><title>semantic/standard</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="semantic/standard"><meta name="groc-project-path" content="library/semantic/standard.coffee"><meta name="groc-github-url" content="https://github.com/ts33kr/granite"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/ts33kr/granite/blob/master/library/semantic/standard.coffee">library/semantic/standard.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><p>Copyright (c) 2013, Alexander Cherniuk <a href="&#109;&#97;i&#x6c;&#x74;&#x6f;:&#116;&#x73;&#x33;&#x33;&#107;&#x72;&#64;&#103;&#x6d;&#97;&#x69;&#108;&#46;&#x63;&#111;&#x6d;">&#116;&#x73;&#x33;&#x33;&#107;&#x72;&#64;&#103;&#x6d;&#97;&#x69;&#108;&#46;&#x63;&#111;&#x6d;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@ shipped within the Semantic UI framework. It contains most of the
 shipped controls (field and inputs) cobered in the Semantic manual.
 Plese refer to the implementation for the usage information. Also,
 see the methods to get the idea of what is available and what not.
-Reference the <code>Formular</code> abstraction for the internal information.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.BoxFormular = </span><span class="nx">cc</span> <span class="nf">-&gt;</span> <span class="k">class</span> <span class="nx">BoxFormular</span> <span class="k">extends</span> <span class="nx">Formular</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Group the two previously created fields (passed by either as
+Reference the <code>Formular</code> abstraction for the internal information.</p></div></div><div class="code"><div class="wrapper"><span class="nv">module.exports.BoxedFormular = </span><span class="nx">cc</span> <span class="nf">-&gt;</span> <span class="k">class</span> <span class="nx">BoxedFormular</span> <span class="k">extends</span> <span class="nx">Formular</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Group the two previously created fields (passed by either as
 direct object or the selectors) into a one horizontal field
 that is going to equally share the space between two fields.
 This method is going to internally insert the grouper right
@@ -55,7 +55,8 @@ before the first field and them move both fields to grouper.</p></div></div><div
 password or similar information that should not be displayed
 while it is being typed in. The field has the asterisk to it
 and can optionally attach an icon to the field (recommended).
-In other ways, it is structurally equal to <code>starred</code> field.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">hidden: </span><span class="nf">(identity, synopsis, icon) -&gt;</span>
+In other ways, it is structurally equal to <code>starred</code> field.
+Please refer to <code>Widget</code> class for reference on subwidgets.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@subwidget</span> <span class="nv">hidden: </span><span class="nf">(identity, synopsis, icon) -&gt;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">identity</span><span class="p">),</span> <span class="s">&quot;invalid field identity&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">synopsis</span><span class="p">),</span> <span class="s">&quot;invalid field synopsis&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">label = </span><span class="nx">$</span> <span class="s">&quot;&lt;label&gt;&quot;</span><span class="p">,</span> <span class="k">class</span><span class="o">:</span> <span class="s">&quot;label&quot;</span>
@@ -76,7 +77,8 @@ In other ways, it is structurally equal to <code>starred</code> field.</p></div>
 (astetisk) on its right, that usually indicated the field is
 either required or has some remarks to it or simply indicates
 an elevated attention to the field. Oterwise, it is a simple
-textual field that can optionally be tagged with a left icon.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">starred: </span><span class="nf">(identity, synopsis, icon) -&gt;</span>
+textual field that can optionally be tagged with a left icon.
+Please refer to <code>Widget</code> class for reference on subwidgets.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@subwidget</span> <span class="nv">starred: </span><span class="nf">(identity, synopsis, icon) -&gt;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">identity</span><span class="p">),</span> <span class="s">&quot;invalid field identity&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">synopsis</span><span class="p">),</span> <span class="s">&quot;invalid field synopsis&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">input = </span><span class="nx">$</span> <span class="s">&quot;&lt;input&gt;&quot;</span><span class="p">,</span> <span class="nv">type: </span><span class="s">&quot;text&quot;</span>
@@ -97,7 +99,8 @@ textual field that can optionally be tagged with a left icon.</p></div></div><di
 with a text string attached next to it (on the right side).
 It is usually a good idea for indicating options selection
 or agreement to some legal terms and conditions. The field
-that it creates is rendered as inline (see semantic man).</p></div></div><div class="code"><div class="wrapper">    <span class="nv">checkbox: </span><span class="nf">(identity, synopsis, onpos, onneg) -&gt;</span>
+that it creates is rendered as inline (see semantic man).
+Please refer to <code>Widget</code> class for reference on subwidgets.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@subwidget</span> <span class="nv">checkbox: </span><span class="nf">(identity, synopsis, onpos, onneg) -&gt;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">identity</span><span class="p">),</span> <span class="s">&quot;invalid field identity&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">synopsis</span><span class="p">),</span> <span class="s">&quot;invalid field synopsis&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">what = </span><span class="s">&quot;ui checkbox&quot;</span> <span class="c1"># wrapping sel</span>
@@ -115,7 +118,8 @@ that it creates is rendered as inline (see semantic man).</p></div></div><div cl
 with a text string attached next to it (on the right side).
 It is usually a good idea for indicating options selection
 or agreement to some legal terms and conditions. The field
-that it creates is rendered as inline (see semantic man).</p></div></div><div class="code"><div class="wrapper">    <span class="nv">sliding: </span><span class="nf">(identity, synopsis, onpos, onneg) -&gt;</span>
+that it creates is rendered as inline (see semantic man).
+Please refer to <code>Widget</code> class for reference on subwidgets.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@subwidget</span> <span class="nv">sliding: </span><span class="nf">(identity, synopsis, onpos, onneg) -&gt;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">identity</span><span class="p">),</span> <span class="s">&quot;invalid field identity&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">synopsis</span><span class="p">),</span> <span class="s">&quot;invalid field synopsis&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">what = </span><span class="s">&quot;ui checkbox slider&quot;</span> <span class="c1"># wrap sel</span>
@@ -133,7 +137,8 @@ that it creates is rendered as inline (see semantic man).</p></div></div><div cl
 with a text string attached next to it (on the right side).
 It is usually a good idea for indicating options selection
 or agreement to some legal terms and conditions. The field
-that it creates is rendered as inline (see semantic man).</p></div></div><div class="code"><div class="wrapper">    <span class="nv">toggling: </span><span class="nf">(identity, synopsis, onpos, onneg) -&gt;</span>
+that it creates is rendered as inline (see semantic man).
+Please refer to <code>Widget</code> class for reference on subwidgets.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@subwidget</span> <span class="nv">toggling: </span><span class="nf">(identity, synopsis, onpos, onneg) -&gt;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">identity</span><span class="p">),</span> <span class="s">&quot;invalid field identity&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">synopsis</span><span class="p">),</span> <span class="s">&quot;invalid field synopsis&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nv">what = </span><span class="s">&quot;ui checkbox toggle&quot;</span> <span class="c1"># wrap sel</span>
@@ -151,7 +156,8 @@ that it creates is rendered as inline (see semantic man).</p></div></div><div cl
 contain anything other that the field itself. Optionally this
 can be tagged by an icon on the left side of the field. It is
 a good idea to use such a field for inputting sorts data that
-is not strictly required, but is usually optional, as example.</p></div></div><div class="code"><div class="wrapper">    <span class="nv">regular: </span><span class="nf">(identity, synopsis, icon) -&gt;</span>
+is not strictly required, but is usually optional, as example.
+Please refer to <code>Widget</code> class for reference on subwidgets.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">@subwidget</span> <span class="nv">regular: </span><span class="nf">(identity, synopsis, icon) -&gt;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">identity</span><span class="p">),</span> <span class="s">&quot;invalid field identity&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">synopsis</span><span class="p">),</span> <span class="s">&quot;invalid field synopsis&quot;</span>
         <span class="nx">assert</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span> <span class="nv">input = </span><span class="nx">$</span> <span class="s">&quot;&lt;input&gt;&quot;</span><span class="p">,</span> <span class="nv">type: </span><span class="s">&quot;text&quot;</span>
