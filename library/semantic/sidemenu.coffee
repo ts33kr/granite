@@ -31,6 +31,12 @@ assert = require "assert"
 {Archetype} = require "../nucleus/arche"
 {remote, cc} = require "../membrane/remote"
 
+# This frontend widget implements a side navigation menu for the
+# generic use. The HTML markup (and therefore the exterior looks)
+# is driven by the Semantic-UI framework. The widget provides not
+# just the markup skeleton, but also some shortcutting of usually
+# used layouts for the side nav menus that will allow to quickly
+# create the navigation menus without too much hassle involved.
 module.exports.SideMenu = cc -> class SideMenu extends Widget
 
     # Bring the tags definitions of the `Teacup` template engine
