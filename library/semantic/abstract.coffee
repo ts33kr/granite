@@ -67,6 +67,37 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
     # Also, please refer to the `Teacup` manual for reference.
     element: -> div ".generic-widget-element"
 
+    # Create a subwidget definition, using the supplied signature.
+    # The signature should be `token: method` object descriptor. It
+    # specifies the name of the subwidget and its implementation. A
+    # method will be created with this name. When called, a method
+    # should create and return a jQuery element. This element then
+    # will be wrapped with the special class instance of `Widget`.
+    # This is a shortcut for quick widget design and composition.
+    @subwidget: (signature) ->
+        blueprint = this # save the class as blueprint
+        token = (try _.first(_.keys(signature))) or no
+        value = (try _.first(_.values(signature))) or no
+        invalid = "received invalid invocation signature"
+        unnamed = "could not find correct subwidget name"
+        implement = "implementation has to be a function"
+        assert _.isObject(@prototype), "invalid context"
+        assert _.isObject(signature or false), invalid
+        assert _.isFunction(value or false), implement
+        assert _.isString(token or undefined), unnamed
+        return this.prototype[token] = (params...) ->
+            sbce = "failed to create subwidget element"
+            sbpc = "failed to properly init a subwidget"
+            widget = value.apply this, arguments or []
+            reference = "#{@reference}-#{token}" # ID
+            assert widget and widget.length is 1, sbce
+            anonym = class Subwidget extends blueprint
+            anonym::predefined = -> widget # constant
+            instance = new anonym @element, reference
+            instance.$.addClass "semantic-subwidget"
+            assert instance.element is widget, sbpc
+            return instance # return wrapped widget
+
     # This method is invoked if this widget has been declared for a
     # reconfiguration, with respect to some service. This is usually
     # achieved by the reconfiguration mechanism. What this method is
@@ -139,12 +170,14 @@ assert module.exports.Widget = cc -> class Widget extends Archetype
         noPayload = "something wrong with payload function"
         @$reconfigure?.apply this, arguments # if it exists
         @payload = (->) if _.isEmpty @payload or undefined
+        hasParents = => not _.isEmpty try @element.parent()
         assert _.isObject(@container or null), noContainer
         assert _.isString(@reference or null), noReference
         assert _.isFunction(@payload or null), noPayload
         assert _.isFunction(@constructor::element), ptf
         @element = $ renderable(@constructor::element) @
-        @element.appendTo (try @container or undefined)
+        @element = @constructor::predefined?() or @element
+        @element.appendTo @container unless hasParents()
         @generateToolkit(this.element) # makeup toolkit
         assert identify = @constructor.identify().bold
         super if _.isObject try @constructor.__super__

@@ -57,7 +57,7 @@ module.exports.SideMenu = cc -> class SideMenu extends Widget
     # looks like a major item, but it is not clickable and cannot be
     # activated. Insted, it serves as the container for minor items.
     # The `href` can be a navagiation link (usually hash route).
-    majorGroup: (name, icon, href, group) ->
+    @subwidget majorGroup: (name, icon, href, group) ->
         group = name unless _.isString group or null
         href = "#" unless _.isString href or undefined
         incorrect = "if present, actor must be function"
@@ -80,7 +80,7 @@ module.exports.SideMenu = cc -> class SideMenu extends Widget
     # insertion of the new minor node. If an actor function given,
     # it will be invoked once the menu item is actived (clicked).
     # The `href` can be a navagiation link (usually hash route).
-    minorItem: (name, group, href, actor) ->
+    @subwidget minorItem: (name, group, href, actor) ->
         href = "#" unless _.isString href or undefined
         incorrect = "if present, actor must be function"
         assert _.isString(name), "missing the item name"
@@ -107,7 +107,7 @@ module.exports.SideMenu = cc -> class SideMenu extends Widget
     # be invoked when the menu item is activated, that is when it
     # it is being clicked on and set as currently an active item.
     # The `href` can be a navagiation link (usually hash route).
-    majorItem: (name, icon, href, actor) ->
+    @subwidget majorItem: (name, icon, href, actor) ->
         href = "#" unless _.isString href or undefined
         incorrect = "if present, actor must be function"
         assert _.isString(name), "missing the item name"

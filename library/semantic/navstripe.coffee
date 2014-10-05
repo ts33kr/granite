@@ -63,7 +63,7 @@ module.exports.NavStripe = cc -> class NavStripe extends Widget
     # An actor should be a function that will be invoked if
     # one of the menu options is chosen (being clicked on).
     # The `href` can be a navagiation link (usually hashy).
-    menuOption: (name, options, href, actor) ->
+    @subwidget menuOption: (name, options, href, actor) ->
         href = "#" unless _.isString href or undefined
         incorrect = "if present, actor must be function"
         assert _.isString(name), "missing the item name"
@@ -88,7 +88,7 @@ module.exports.NavStripe = cc -> class NavStripe extends Widget
     # An actor - is optional function invoked once the input
     # is being activated. You can supply the optional icon.
     # The `href` can be a navagiation link (usually hashy).
-    menuInput: (synopsis, icon, href, actor) ->
+    @subwidget menuInput: (synopsis, icon, href, actor) ->
         icon = "search" unless _.isString icon or no
         href = "#" unless _.isString href or undefined
         incorrect = "if present, actor must be function"
@@ -113,7 +113,7 @@ module.exports.NavStripe = cc -> class NavStripe extends Widget
     # The name should be given, while the color is optional.
     # The actor may be invoked once the button being clicked.
     # The `href` can be a navagiation link (usually hashy).
-    menuButton: (name, color, href, actor) ->
+    @subwidget menuButton: (name, color, href, actor) ->
         color = String() unless _.isString color or no
         href = "#" unless _.isString href or undefined
         incorrect = "if present, actor must be function"
@@ -136,7 +136,7 @@ module.exports.NavStripe = cc -> class NavStripe extends Widget
     # Menu items are the primary items to use for navigation.
     # Optional actor function will be called upon activation.
     # The `href` can be a navagiation link (usually hashy).
-    menuItem: (name, icon, href, actor) ->
+    @subwidget menuItem: (name, icon, href, actor) ->
         href = "#" unless _.isString href or undefined
         incorrect = "if present, actor must be function"
         assert _.isString(name), "missing the item name"
