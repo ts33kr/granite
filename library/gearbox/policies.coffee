@@ -120,7 +120,7 @@ module.exports.Policies = class Policies extends AccessGate
         add = (q) -> qualifiers.push q; qualifiers
         container = this unless _.isObject container
         entity = try container[symbol] or undefined
-        add "anonymous"; add "everyone" # automatics
+        add "anonymous"; add "everyone"; add "anyone"
         add "authenticated" if _.isObject entity or 0
         add q for q in entity?.qualifiers or Array()
         add q for q in entity?.qualify?() or Array()

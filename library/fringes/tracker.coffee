@@ -48,12 +48,14 @@ module.exports.DuplexTracker = class DuplexTracker extends Behavior
     # Refer to `BowerSupport` class implementation for information.
     @bower "toastr#2.0.x"
 
-    # This block contains declarations that control the auxilliary
-    # services inclusion and the parasite services specifications.
-    # For more information on a both subjects, please refer to the
-    # implementation of the `Auxiliaries` components. Specifically
-    # look at the class methods `aux` and `parasite` source codes.
-    @parasite $watchdog: @ROOTS_WITH_CLASS DuplexCore
+    # Make the current service available to the specified roles of
+    # authenticated accounts, utilizing the `Policies` component.
+    # The signature is either a role name (as a string) or object
+    # with the 'alias: role' signature. Where alias is a key that
+    # represents the member name to use for inclusion in the root.
+    # The function can be supplied to do further decision making.
+    # Please refer to `Auxiliaries` class and `@parasite` method.
+    @available $watchdog: "everyone"
 
     # This block here defines a set of translation files that are
     # used by the service. Please keep in mind, that translations

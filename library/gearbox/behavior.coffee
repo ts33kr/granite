@@ -23,6 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###
 
+_ = require "lodash"
 assert = require "assert"
 
 {Pinpoint} = require "../gearbox/pinpoint"
@@ -64,6 +65,36 @@ assert module.exports.Behavior = class Behavior extends Embedded
     # Each of these will be dynamicall integrated in class hierarchy.
     # P.S. These are the secondary essentials for every active comp.
     @implanting Localized, Pinpoint, Exchange, GrandCentral
+
+    # Make the current service available to the specified roles of
+    # authenticated accounts, utilizing the `Policies` component.
+    # The signature is either a role name (as a string) or object
+    # with the 'alias: role' signature. Where alias is a key that
+    # represents the member name to use for inclusion in the root.
+    # The function can be supplied to do further decision making.
+    # Please refer to `Auxiliaries` class and `@parasite` method.
+    @available: (signature, proof) ->
+        unique = _.uniqueId "__behavior_" # prefix UID
+        normalize = -> d = {}; d[unique] = signature; d
+        signature = normalize() if _.isString signature
+        token = (try _.first(_.keys(signature))) or no
+        value = (try _.first(_.values(signature))) or no
+        invalid = "received invalid invocation signature"
+        unnamed = "could not find correct parasite name"
+        implement = "an availablility has to be string"
+        malforms = "proof has to be a function, if any"
+        assert _.isObject(signature or false), invalid
+        assert _.isString(value or undefined), implement
+        assert _.isString(token or undefined), unnamed
+        assert _.isFunction(proof), malforms if proof?
+        prefixed = (fx) -> dx = {}; dx[token] = fx; dx
+        @parasite prefixed (hosting, request, decide)->
+            failed = "cannot get the policy qualifiers"
+            qualifiers = try @entityQualifiers request
+            assert _.isArray(qualifiers or no), failed
+            return decide 0 unless value in qualifiers
+            return decide 1 unless _.isFunction proof
+            return proof.apply @, arguments # chained
 
     # This method is part of an internal integrity assurance toolkit.
     # Once the behavior-enabled service emits a signal that indicate
