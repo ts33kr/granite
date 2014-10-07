@@ -84,7 +84,7 @@ module.exports.Auxiliaries = class Auxiliaries extends Preflight
     # value is a function that evaluates inclusions conditions every
     # time when any auxilliary-powered services is being executed.
     @parasite: (signature) ->
-        assert uid = try _.uniqueId "parasite_"
+        assert uid = try _.uniqueId "__parasite_"
         vector = Auxiliaries.$parasites ?= Array()
         return vector unless arguments.length >= 1
         identity = try this?.identify?().toString?()
