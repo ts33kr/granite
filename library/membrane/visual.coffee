@@ -194,14 +194,8 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
         assert _.isString qualified = "#{symbol}.#{key}"
         assert not _.isEmpty src = refCache[src] or src
         spoofing = not (/function/.test src.toString())
-
-        console.log "SPOOF", qualified, spoofing
-        console.log src if qualified is "$root.__hash_nav_mnt_2"
-        console.log src if qualified is "$root.testIdRemote"
-
         set = "#{qualified} = (#{src}).call(#{symbol})\r\n"
         set = "#{qualified} = (#{src})\r\n" if spoofing
-
         try set += "#{qualified}.#{metadata} = #{blob}"
         assert refCache[src] = qualified # sym to cache
         return context.sources.push "\r\n#{set}\r\n"
