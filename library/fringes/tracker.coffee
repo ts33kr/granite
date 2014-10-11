@@ -41,13 +41,6 @@ nconf = require "nconf"
 # the connection event information, text and color coded, usually.
 module.exports.DuplexTracker = class DuplexTracker extends Behavior
 
-    # This block here defines a set of Bower dependencies that are
-    # required by the client site part of the code that constitutes
-    # this service or compound. Dependencies can be restricted to a
-    # certain version and also they can have customized entrypoint.
-    # Refer to `BowerSupport` class implementation for information.
-    @bower "toastr#2.0.x"
-
     # Make the current service available to the specified roles of
     # authenticated accounts, utilizing the `Policies` component.
     # The signature is either a role name (as a string) or object
