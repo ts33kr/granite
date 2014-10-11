@@ -111,7 +111,7 @@ module.exports.NavStripe = cc -> class NavStripe extends Widget
         do -> input.attr placeholder: synopsis.toString()
         wrapper.append(icon).append(input) # assemble it
         icon.on "click", -> actor item, button if actor
-        icon.on "click", -> location?.href = href if href
+        icon.on "click", -> location.href = href if href
         rightMenu = => return @element.find ".right.menu"
         item.append(wrapper).appendTo rightMenu(); item
 
@@ -134,6 +134,7 @@ module.exports.NavStripe = cc -> class NavStripe extends Widget
         button = $ "<div>", class: "ui #{color} button"
         button.on "click", -> actor item, button if actor
         button.on "click", => @emit "action", item, button
+        button.on "click", -> location.href = href if href
         button.attr href: href.toString() if href or null
         button.text name.toString() # set button texting
         item.append(button).appendTo rightMenu(); item
@@ -158,6 +159,7 @@ module.exports.NavStripe = cc -> class NavStripe extends Widget
         item.on "click", -> deactivate(); reactivate()
         item.on "click", -> actor item, actives if actor
         item.on "click", => @emit "route", item, actives
+        item.on "click", -> location.href = href if href
         assert icon = try $ "<i>", class: "icon #{icon}"
         item.attr href: href.toString() if href or null
         item.appendTo @element # add to widget container

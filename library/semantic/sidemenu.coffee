@@ -109,6 +109,7 @@ module.exports.SideMenu = cc -> class SideMenu extends Widget
         item.on "click", -> deactivate(); reactivate()
         item.on "click", -> actor item, actives if actor
         item.on "click", => @emit "route", item, actives
+        item.on "click", -> location.href = href if href
         item.attr href: href.toString() if href or null
         grouped = (i) -> $(i).data("menu-group") is group
         items = _.filter @element.find(".item"), grouped
@@ -136,6 +137,7 @@ module.exports.SideMenu = cc -> class SideMenu extends Widget
         item.on "click", -> deactivate(); reactivate()
         item.on "click", -> actor item, actives if actor
         item.on "click", => @emit "route", item, actives
+        item.on "click", -> location.href = href if href
         assert icon = try $ "<i>", class: "icon #{icon}"
         item.attr href: href.toString() if href or null
         item.appendTo @element # add to widget container
