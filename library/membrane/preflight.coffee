@@ -71,6 +71,7 @@ module.exports.Preflight = class Preflight extends Screenplay
     # by the internal implementations of the various subcomponents.
     # Refer to `BowerSupport` class implementation for information.
     @bower "eventemitter2"
+    @bower "toastr#2.0.x"
     @bower "js-signals"
     @bower "platform"
     @bower "loglevel"
