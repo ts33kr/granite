@@ -175,9 +175,10 @@ assert module.exports.Bilateral = class Bilateral extends DuplexCore
     # This method should not normally be used outside of the class.
     createLinkage: (socket, name, directives) ->
         assert identify = @constructor.identify()
-        try identify = identify.toString().underline
-        uplinking = "Invoking uplink %s at #{identify}"
-        responded = "Uplink %s at #{identify} responded"
+        idc = identify = identify.toString().underline
+        assert sid = (try socket.id.bold) or undefined
+        uplinking = "Invoke uplink %s at #{idc} on #{sid}"
+        responded = "Uplink %s at #{idc} responds on #{sid}"
         noBinder = "the container has got no valid binder"
         notify = "got incorrect callback for the uplink"
         assert _.isFunction o = -> try _.head arguments
