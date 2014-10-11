@@ -63,7 +63,7 @@ module.exports.DuplexTracker = class DuplexTracker extends Behavior
     # socket events that indicate successful and fail conditions.
     # When either one is happens, it emits the `toastr` notice. A
     # most recent method implementation uses `$root` as a subject.
-    monitoring: @awaiting "socketing", (socket, location) ->
+    tracking: @awaiting "socketing", (socket, location) ->
         assert l = i18n "server connection has been lost"
         assert s = i18n "exception occured on the server"
         assert c = i18n "established connection to server"
