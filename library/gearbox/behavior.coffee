@@ -89,15 +89,15 @@ assert module.exports.Behavior = class Behavior extends Embedded
         assert _.isString(token or undefined), unnamed
         assert _.isFunction(proof), malforms if proof?
         prefixed = (fx) -> dx = {}; dx[token] = fx; dx
-        @parasite prefixed (hosting, request, decide) ->
+        @parasite prefixed (hosting, request, say) ->
             failed = "cannot get the policy qualifiers"
             qualifiers = try @entityQualifiers request
             assert _.isArray(qualifiers or no), failed
-            ANY_ROOT_SERVICE hosting, request, (decision) ->
-                return decide 0 unless decision # not root
-                return decide 0 unless value in qualifiers
-                return decide 1 unless _.isFunction proof
-                return proof.apply @, arguments # chained
+            ANY_ROOT_SERVICE hosting, request, (root) ->
+                return say 0 unless root # must be root
+                return say 0 unless value in qualifiers
+                return say 1 unless _.isFunction proof
+                return proof.apply this, arguments
 
     # This method is part of an internal integrity assurance toolkit.
     # Once the behavior-enabled service emits a signal that indicate
