@@ -180,9 +180,9 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
     # This also includes an attempt for certain kinds of caching and
     # other sort of internal optimizations. Please see source code.
     inlineRemoteSym: (context, symbol, value, key) ->
-        blob = JSON.stringify value.remote.meta
         tabled = value.remote.tabled or undefined
         metadata = value.remote.metadata or "meta"
+        container = JSON.stringify value.remote.meta
         assert context.root, "no root context setup"
         assert closure = context.closure or Object()
         assert refCache = context.root.refCache ?= {}
@@ -193,12 +193,10 @@ assert module.exports.Screenplay = class Screenplay extends Barebones
         assert _.isString src = tabled(idefs) if tabled
         assert _.isString qualified = "#{symbol}.#{key}"
         assert not _.isEmpty src = refCache[src] or src
-        spoofing = not (/function/.test src.toString())
-        set = "#{qualified} = (#{src}).call(#{symbol})\r\n"
-        set = "#{qualified} = (#{src})\r\n" if spoofing
-        try set += "#{qualified}.#{metadata} = #{blob}"
-        assert refCache[src] = qualified # sym to cache
-        return context.sources.push "\r\n#{set}\r\n"
+        set = "#{qualified} = (#{src}).call(#{symbol})"
+        fix = "#{qualified}.#{metadata} = #{container}"
+        context.sources.push "\r\n#{set}\r\n#{fix}\r\n"
+        return _.last context.sources # what we pushed
 
     # Part of the internal implementation. For every remote symbol
     # that gets emited by the visual core, this routine performs the
