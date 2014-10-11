@@ -75,6 +75,7 @@ assert module.exports.Behavior = class Behavior extends Embedded
     # Please refer to `Auxiliaries` class and `@parasite` method.
     @available: (signature, proof) ->
         unique = _.uniqueId "__behavior_" # prefix UID
+        ANY_ROOT_SERVICE = Auxiliaries.ANY_ROOT_SERVICE
         normalize = -> d = {}; d[unique] = signature; d
         signature = normalize() if _.isString signature
         token = (try _.first(_.keys(signature))) or no
@@ -88,13 +89,15 @@ assert module.exports.Behavior = class Behavior extends Embedded
         assert _.isString(token or undefined), unnamed
         assert _.isFunction(proof), malforms if proof?
         prefixed = (fx) -> dx = {}; dx[token] = fx; dx
-        @parasite prefixed (hosting, request, decide)->
+        @parasite prefixed (hosting, request, decide) ->
             failed = "cannot get the policy qualifiers"
             qualifiers = try @entityQualifiers request
             assert _.isArray(qualifiers or no), failed
-            return decide 0 unless value in qualifiers
-            return decide 1 unless _.isFunction proof
-            return proof.apply @, arguments # chained
+            ANY_ROOT_SERVICE hosting, request, (decision) ->
+                return decide 0 unless decision # not root
+                return decide 0 unless value in qualifiers
+                return decide 1 unless _.isFunction proof
+                return proof.apply @, arguments # chained
 
     # This method is part of an internal integrity assurance toolkit.
     # Once the behavior-enabled service emits a signal that indicate
