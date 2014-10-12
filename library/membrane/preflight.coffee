@@ -71,7 +71,6 @@ module.exports.Preflight = class Preflight extends Screenplay
     # by the internal implementations of the various subcomponents.
     # Refer to `BowerSupport` class implementation for information.
     @bower "eventemitter2"
-    @bower "toastr#2.0.x"
     @bower "js-signals"
     @bower "platform"
     @bower "loglevel"
@@ -88,6 +87,7 @@ module.exports.Preflight = class Preflight extends Screenplay
     @bower "underscore.string", "dist/underscore.string.min.js"
     @bower "async", "lib/async.js"
     @bower "node-uuid", "uuid.js"
+    @bower "toastr#2.0.x"
 
     # This block here defines a set of remote dependencies that are
     # going to be necessary no matter what sort of functionality is
