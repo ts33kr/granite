@@ -34,7 +34,7 @@ assert = require "assert"
 # prerequisites necessary to properly make usage of the Semantic UI
 # frontend framework that are shipped within the primary framework.
 # This frontend scaffolding is used to style the provided components.
-assert module.exports.Semantic = class Semantic extends Preflight
+module.exports.Semantic = class Semantic extends Preflight
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

@@ -45,7 +45,7 @@ redisio = require "redis"
 # this service in. The initialization is performed only once. If the
 # configuration environment does not contains the necessary information
 # then this service will not attempt to setup a Redis client at all.
-assert module.exports.RedisClient = class RedisClient extends Service
+module.exports.RedisClient = class RedisClient extends Service
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

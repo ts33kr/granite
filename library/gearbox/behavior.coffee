@@ -41,7 +41,7 @@ assert = require "assert"
 # an auxiliary (embedded) service. It also implants a set of usual
 # suspects, that generally should be included in any service that
 # is actually implementing something useful, not just a stub one.
-assert module.exports.Behavior = class Behavior extends Embedded
+module.exports.Behavior = class Behavior extends Embedded
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

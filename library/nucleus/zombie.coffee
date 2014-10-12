@@ -44,7 +44,7 @@ scoping = require "./scoping"
 # does live within the service infrastructure. The zombie exhibits
 # singleton behavior. Typically zombies are used from outside of the
 # service infrastructure, yet zombies service themvselves reside in.
-assert module.exports.Zombie = class Zombie extends Service
+module.exports.Zombie = class Zombie extends Service
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

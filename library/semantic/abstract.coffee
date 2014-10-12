@@ -40,7 +40,7 @@ assert = require "assert"
 # All the widgets are only functional UIX components. They are meant
 # to be used for expressing visual abstractions and compounds that
 # are exposing some sort of functionality or some of internal API.
-assert module.exports.Widget = cc -> class Widget extends Archetype
+module.exports.Widget = cc -> class Widget extends Archetype
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

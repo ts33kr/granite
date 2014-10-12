@@ -54,7 +54,7 @@ compose = require "../nucleus/compose"
 # and an instance of the service that resides on the server site.
 # The component itself is built heavily on top of a code emission
 # and delivery platform, as implemented by `Screenplay` service.
-assert module.exports.DuplexCore = class DuplexCore extends Preflight
+module.exports.DuplexCore = class DuplexCore extends Preflight
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

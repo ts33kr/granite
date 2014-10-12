@@ -59,7 +59,7 @@ util = require "util"
 # `Screenplay` functionality you are going to implement. Currently the
 # purpose of preflight is drawing in the remotes and Bower packages.
 # It is intended for the embeddable services, such as auxilliaries.
-assert module.exports.Embedded = class Embedded extends Zombie
+module.exports.Embedded = class Embedded extends Zombie
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

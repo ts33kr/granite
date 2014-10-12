@@ -45,7 +45,7 @@ util = require "util"
 # site. It is well fitted within the framework architecture and is
 # the fusion of the server and client site environments, exposing a
 # convenient server API that that defined the client routing logic.
-assert module.exports.Navigate = class Navigate extends Preflight
+module.exports.Navigate = class Navigate extends Preflight
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

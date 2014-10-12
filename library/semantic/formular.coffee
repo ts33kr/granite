@@ -38,7 +38,7 @@ assert = require "assert"
 # such as downloading and uploading of data and the data validation.
 # Some of the provided methods can also be used on the server site.
 # Also, refer to the final implementations of abstraction for info.
-assert module.exports.Formular = cc -> class Formular extends Widget
+module.exports.Formular = cc -> class Formular extends Widget
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

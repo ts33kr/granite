@@ -46,7 +46,7 @@ url = require "url"
 # It is highly recommended to use this storage engine in production
 # environments. Please refer to `plumbs` module for how to make use.
 # Normally, you would not use this zombie class instance directly.
-assert module.exports.RedisSession = class RedisSession extends Zombie
+module.exports.RedisSession = class RedisSession extends Zombie
 
     # These declarations below are implantations of the abstracted
     # components by the means of the dynamic recomposition system.

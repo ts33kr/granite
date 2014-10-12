@@ -46,7 +46,7 @@ fs = require "fs"
 # routines that are used throughout the code. These definitions are
 # placed in this class in order to transfer it to the remote call site.
 # Some of them depend on other subsystems, such as dynamic composition.
-assert module.exports.Extending = cc -> class Extending extends Object
+module.exports.Extending = cc -> class Extending extends Object
 
     # Determine if the object that is bound to this invocation is a
     # subclass of the supplied archetype class (as argument). Of course

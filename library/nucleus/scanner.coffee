@@ -47,7 +47,7 @@ fs = require "fs"
 # When new modules are discobered, the toolkit scans a module content
 # to see if there are any service to be attached. The toolkit is also
 # taking care of monitoring when a module changes and handling that.
-assert module.exports.ModuleScanner = class ModuleScanner extends Zombie
+module.exports.ModuleScanner = class ModuleScanner extends Zombie
 
     # This defines the set of filename extensions that this service
     # should interpret as valid system modules, and therefore do the

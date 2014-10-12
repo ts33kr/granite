@@ -54,7 +54,7 @@ compose = require "../nucleus/compose"
 # compounds adds the service-to-client communication on top of that.
 # The component itself is built heavily on top of a code emission
 # and delivery platform, as implemented by `Screenplay` service.
-assert module.exports.Bilateral = class Bilateral extends DuplexCore
+module.exports.Bilateral = class Bilateral extends DuplexCore
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

@@ -46,7 +46,7 @@ nodemailer = require "nodemailer"
 # this compound in. It draws the necessary configuration data, then
 # sets up all the internal objects required. A mailer configuration
 # is done once only, then mailer persists on the kernel and reused.
-assert module.exports.EmailClient = class EmailClient extends Service
+module.exports.EmailClient = class EmailClient extends Service
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

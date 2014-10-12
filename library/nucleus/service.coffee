@@ -51,7 +51,7 @@ scoping = require "./scoping"
 # logics, to deal with paths. Remember that this service is just a
 # an internal base class, you generally should not use it directly.
 # Also, all of its functionality can be overriden by any service.
-assert module.exports.Service = class Service extends Archetype
+module.exports.Service = class Service extends Archetype
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore

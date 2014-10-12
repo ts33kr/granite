@@ -46,7 +46,7 @@ util = require "util"
 # recombinate the inheritance tree to include any number of compounds.
 # It allows you enable classes with some functionality by implanting
 # the component (another abstract class) that carries/implements it.
-assert module.exports.Composition = cc -> class Composition extends Object
+module.exports.Composition = cc -> class Composition extends Object
 
     # This method exists as a complementary part of the composition
     # system. The cloner is an implementation of the shader that is

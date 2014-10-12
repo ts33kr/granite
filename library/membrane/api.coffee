@@ -51,7 +51,7 @@ url = require "url"
 # the HTTP architecture is basically allowed and can be implemented.
 # The ABC provides not only the tool set for API definition, but also
 # an additional tool set for supplementing the APIs with documentation.
-assert module.exports.ApiService = class ApiService extends Barebones
+module.exports.ApiService = class ApiService extends Barebones
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
