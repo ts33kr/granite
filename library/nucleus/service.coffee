@@ -174,7 +174,7 @@ assert module.exports.Service = class Service extends Archetype
                 callback.call this, service, kernel
                 try service.emit "instance", kernel
 
-    # This method is used to obtain all the available dosposition
+    # This method is used to obtain all the available disposition
     # data of this services. Disposition data is basically the data
     # related to HTTP locations (supposedly) of the service using
     # the different variations. This also includes some of internal
