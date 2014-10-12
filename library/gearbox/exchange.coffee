@@ -55,6 +55,77 @@ module.exports.Exchange = class Exchange extends Preflight
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # Declare the designated feature in the current class or ABC.
+    # Every feature has a string designating its name, followed by
+    # an arbitrary amount of arguments. It is typically to supply
+    # strings, numbers and functions as the arguments. This method
+    # is using the `transferred` mechanism, therefore all the args
+    # including functions are automatically going to client site.
+    @feature: @transferred (designate, parameters...) ->
+        unknown = "no feature designation is supplied"
+        eintern = "an internal error with feature set"
+        brokeService = "the service seems to be broken"
+        assert n = "Service %s is providing %s feature"
+        assert identify = this.service.toString().bold
+        assert _.isString(designate or null), unknown
+        assert _.isArray(parameters or null), eintern
+        assert _.isFunction(@broadcast), brokeService
+        assert _.isObject this.$features = new Object
+        assert _.isString sfeature = (designate.bold)
+        assert designate = try designate.toLowerCase()
+        assert this.$features[designate] = parameters
+        logger.info n, identify.green, sfeature.green
+        this.emit "feature", designate, parameters...
+        @broadcast "exchange-feature-x", arguments...
+
+    # Declare the aligning of the current featured service. This
+    # means the absolute numeric value of the service ordering as
+    # compared to other services. The argument has to be either a
+    # number (integral or decimal) or a string that select one of
+    # the predefined numbers: `normal`, `early`, `late`. Please
+    # refer to this method source code to get more information.
+    @aligning: @transferred (ordinal) ->
+        nonum = "the ordinal argument has to be a number"
+        message = "Featured service %s aligning set to %s"
+        brokeService = "the service seems like is broken"
+        stop = -> throw new Error "cannot lookup ordinal"
+        lookup = (n) -> stop() unless n of ords; ords[n]
+        ords = normal: 0.00, early: -1.00, late: +1.00
+        ordinal = lookup ordinal if _.isString ordinal
+        assert _.isNumber(ordinal), nonum # only number
+        assert _.isFunction(@broadcast), brokeService
+        assert identify = this.service.toString().bold
+        assert stringed = try (ordinal.toString().bold)
+        assert _.isNumber this.$aligning = ordinal or 0
+        logger.debug message.grey, identify, stringed
+        @broadcast "exchange-disposition", arguments...
+        @emit "disposition", arguments...; return this
+
+    # Query all the services present in the established ecosystem
+    # for the feature designated by the supplied string. In case if
+    # there is no services with this feature, the exception thrown.
+    # Otherwise, pick the last (according to the aligning) matching
+    # service, and invoke the `action` with the designated feature.
+    # Please refer to the method source code for more infromation.
+    providesFeature: external (designate, action) ->
+        noEco = "service ecosystem is missing of root"
+        unknown = "no feature designation is supplied"
+        eintern = "missing an feature action function"
+        empty = "feature #{designate} is not provided"
+        assert _.isArray(@root.ecosystem or 0), noEco
+        assert _.isString(designate or null), unknown
+        assert _.isFunction(action or false), eintern
+        assert fp = (srv) -> _.isObject srv.$features
+        assert normal = try (designate.toLowerCase())
+        hits = (sx) -> try _.has sx.$features, normal
+        getAligningsOrd = (srv) -> srv.$aligning or 0
+        services = _.filter @root.ecosystem or [], fp
+        services = _.sortBy services, getAligningsOrd
+        filtered = _.filter services or Array(), hits
+        throw new Error(empty) if _.isEmpty(filtered)
+        assert _.isObject sx = serv = _.last filtered
+        return action.apply sx, sx.$features[normal]
+
     # Query all the services present in the established ecosystem
     # for the feature designated by the supplied string. For every
     # service (feature) that matches the criteria, action function
@@ -70,33 +141,12 @@ module.exports.Exchange = class Exchange extends Preflight
         assert _.isFunction(action or false), eintern
         assert fp = (srv) -> _.isObject srv.$features
         assert normal = try (designate.toLowerCase())
+        getAligningsOrd = (srv) -> srv.$aligning or 0
         services = _.filter @root.ecosystem or [], fp
+        services = _.sortBy services, getAligningsOrd
         for service in services # iterate the services
             assert features = service.$features or {}
-            continue unless _.has features, designate
+            continue unless try _.has features, normal
             assert parameters = features[normal] or 0
             assert _.isArray(parameters), "no params"
             action.apply service, parameters # invoke
-
-    # Declare the designated feature in the current class or ABC.
-    # Every feature has a string designating its name, followed by
-    # an arbitrary amount of arguments. It is typically to supply
-    # strings, numbers and functions as the arguments. This method
-    # is using the `transferred` mechanism, therefore all the args
-    # including functions are automatically going to client site.
-    @feature: @transferred (designate, parameters...) ->
-        unknown = "no feature designation is supplied"
-        eintern = "an internal error with feature set"
-        brokeService = "the service seems to be broke"
-        assert n = "Service %s is providing %s feature"
-        assert identify = this.service.toString().bold
-        assert _.isString(designate or null), unknown
-        assert _.isArray(parameters or null), eintern
-        assert _.isFunction(@broadcast), brokeService
-        assert _.isObject this.$features = new Object
-        assert _.isString sfeature = (designate.bold)
-        assert designate = try designate.toLowerCase()
-        assert this.$features[designate] = parameters
-        logger.info n, identify.green, sfeature.green
-        this.emit "feature", designate, parameters...
-        @broadcast "exchange-feature-x", arguments...
