@@ -55,13 +55,6 @@ fs = require "fs"
 # Normally this kernel should always be preferred over Generic one!
 module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
 
-    # This sets up the default identica for this kernel. It forms
-    # an identica of a certain recommended format and populates it
-    # with data takes from the `FRAMEWORK` definition in `Generic`
-    # kernel. Refer to that kernel and to `identica` method there
-    # for more information on semantics and the way of working it.
-    @identica -> "#{@APPLICATION.name}@#{@APPLICATION.version}"
-
     # Prepare and setup an HTTPS master server. This server is the
     # proxy server that is going to consume all the HTTPS requests
     # and load balance the request to some of the instances. Please
