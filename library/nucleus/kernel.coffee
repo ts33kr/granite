@@ -154,6 +154,10 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
     # it returns an instance to the invoker. If not, however, it
     # throws an assertion error about being unable to accquire.
     accquire: (kinded, silent=no) ->
+        usage = "method has been used incrorrectly"
+        sign = "should be called with the class arg"
+        assert (arguments.length or NaN) >= 1, usage
+        assert _.isObject(kinded or undefined), sign
         assert ident = try kinded.identify() or null
         error = "could not find a %s in the registry"
         noKinded = "the supplied arg has to be class"
