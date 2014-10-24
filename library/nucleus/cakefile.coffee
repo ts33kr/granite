@@ -145,7 +145,8 @@ module.exports = ->
         compiled = granite.collectPackages no, library
         assert _.isObject(compiled), "invalid library"
         conf = new Object master: yes, instance: yes
-        granite.cachedKernel(library).bootstrap conf
+        kernel = granite.nucleus.kernel.GraniteKernel
+        kernel.bootstrap conf # call original kernel
 
     # This task launches an instance of application where this task
     # is invoked at. It should be either an application build within
