@@ -272,18 +272,23 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
     # This implementation draws data from the config file and then
     # used it to obtain the necessary content and whater else needs.
     resolveSslDetails: ->
-        assert secure = nconf.get "secure"; options = {}
+        options = new Object() # container for SSL
+        missingKey = "the secure.key setting missing"
+        missingCert = "the secure.cert setting missing"
+        assert _.isObject secure = nconf.get "secure"
+        assert _.isString(try secure.key), missingKey
+        assert _.isString(try secure.cert), missingCert
         key = paths.relative process.cwd(), secure.key
         cert = paths.relative process.cwd(), secure.cert
         template = "Reading SSL %s file at %s".toString()
         logger.warn template.grey, "key".bold, key.underline
         logger.warn template.grey, "cert".bold, cert.underline
-        logger.debug "Assembling the HTTPS options".grey
-        options.key = fs.readFileSync paths.resolve key
-        options.cert = fs.readFileSync paths.resolve cert
+        logger.debug "Assembling the SSL/HTTPS options".green
+        do -> options.key = fs.readFileSync paths.resolve key
+        do -> options.cert = fs.readFileSync paths.resolve cert
         assert options.cert.length >= 64, "invalid SSL cert"
         assert options.key.length >= 64, "invalid SSL key"
-        options.secure = secure; return Object options
+        options.secure = secure; return options # SSL
 
     # Setup and launch either HTTP or HTTPS servers to listen at
     # the configured addresses and ports. This method reads up the
