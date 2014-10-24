@@ -72,10 +72,10 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
         assert _.isObject options = @resolveSslDetails()
         assert _.isString host = nconf.get "master:host"
         assert _.isNumber port = nconf.get "master:https"
-        assert registr = @makeRegistrar q, "http", undefined
-        assert selectr = @makeSelectors q, "http", undefined
-        assert forward = @makeForwarder q, "http", selectr
-        assert upgrade = @makeUpgraders q, "http", selectr
+        assert registr = @makeRegistrar q, "https", undefined
+        assert selectr = @makeSelectors q, "https", undefined
+        assert forward = @makeForwarder q, "https", selectr
+        assert upgrade = @makeUpgraders q, "https", selectr
         remove = (s) -> _.remove q, (x) -> s.uuid is x.uuid
         @secureProxy = https.createServer options, forward
         assert _.isObject @domain; @domain.add @secureProxy
