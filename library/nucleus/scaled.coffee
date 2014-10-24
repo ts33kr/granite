@@ -312,9 +312,12 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
         assert either, "no master and no instance mode"
         nmast = "incorrect master configuration object"
         message = "Kernel preemption at %s being invoked"
-        logger.silly message.red, (try identify.bold)
+        logger.debug message.red, (try identify.bold)
         return continuation() unless @options.master
-        logger.warn "The kernel is booting as master"
+        msg = "Enabling %s operation mode for kernel"
+        log = (mode) -> logger.warn msg.green, mode.bold
+        log "instance".toUpperCase() if @options.instance
+        log "master".toUpperCase() if @options.master
         assert _.isObject(nconf.get "master"), nmast
         assert not _.isEmpty @createSeaportServer()
         assert not _.isEmpty @startupHttpsMaster()
