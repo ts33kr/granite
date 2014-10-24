@@ -8,7 +8,7 @@
         "start": "cake single"
     },
 
-    "license": "Simplified BSDpush-3",
+    "license": "Simplified BSD-3",
     "description": "Rock solid Node.js web framework",
     "bugs": "http://github.com/ts33kr/granite/issues",
     "homepage": "http://ts33kr.github.io/granite",
