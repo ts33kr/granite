@@ -492,13 +492,21 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         throw new Error noLevel unless options.level
         assert console = logger.transports.Console
         try do -> logger.remove console catch error
-        logger.add console, options; return this
+        m = "Installed kernel logging facade of %s"
+        assert identify = this.constructor.identify()
+        logger.add console, options # re-assemble it
+        logger.silly m.yellow, identify.yellow.bold
+        return this # return self-ref for chaining
 
     # Create and wire in an appropriate Connext middleware that will
     # serve the specified directory as the directory with a static
     # content. That is, it will expose it to the world (not list it).
     # The serving aspects can be configured via a passed in options.
     serveStaticDirectory: (directory, options={}) ->
+        sdir = "no directory string is supplied"
+        usage = "method has been used a wrong way"
+        assert (arguments.length or 0) >= 1, usage
+        assert _.isString(directory or null), sdir
         assert cwd = try process.cwd().toString()
         solved = try paths.relative cwd, directory
         serving = "Serving %s as static assets dir"
