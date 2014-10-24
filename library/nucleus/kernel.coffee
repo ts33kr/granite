@@ -441,9 +441,14 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         opts = nconf.get "assets:opts" or Object()
         pub = -> _.find envs, (dir) -> dir is "pub"
         established = try "#{__dirname}/../../public"
+        stringOptions = (try JSON.stringify opts) or 0
         assert _.isString(pub()), "no pub environment"
         assert _.isObject(opts), "wrong assets options"
         assert _.isArray(dirs), "no assets directories"
+        m = "Connecting the endpoints for static assets"
+        o = "Setting static directory server options: %s"
+        logger.info m.toString().magenta # notification
+        logger.debug o.toString().grey, stringOptions
         @serveStaticDirectory d, opts for d in dirs
         @serveStaticDirectory established, Object()
         @serveStaticDirectory pub(); return this
