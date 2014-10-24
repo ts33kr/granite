@@ -334,7 +334,7 @@ module.exports.ScaledKernel = class ScaledKernel extends GraniteKernel
         util.puts require("os").EOL if (eol or false)
         this.emit "killed-scaled-kernel", arguments...
         message = "Graceful shutdown of Scaled kernel"
-        log = (message) -> logger.silly message.yellow
+        log = (message) -> logger.debug message.yellow
         log "Closing the Seaport servers" if @spserver
         log "Closing the server (HTTP) proxy instance"
         log "Closing the secure (HTTPS) proxy instance"
