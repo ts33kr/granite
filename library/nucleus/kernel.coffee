@@ -171,7 +171,7 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         logger.debug success.grey, try ident.underline
         try spoted.accquired? kinded, silent; spoted
 
-    # This routines sets up the infrastructure necessary for kernel
+    # This routine sets up the infrastructure necessary for kernel
     # to properly intercept and process errors and exceptions. This
     # includes synchronous exceptions as well as the asynchronous
     # errors. Depending on the instance configuration this method
@@ -181,12 +181,15 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         assert crash = "kernel:crashOnException"
         assert skill = @shutdownKernel.bind this
         assert @domain = require("domain").create()
+        m = "Install exception handling mechanisms of %s"
         fatal = => skill "Fatal kernel error at U=#{u}"
         str = (err) -> err.stack or err.message or err
         @on "panic", (e) -> logger.error bark, str(e)
         @on "panic", (e) -> fatal() if nconf.get crash
         @domain.on "error", (err) => @emit "panic", err
         bark = "Kernel domain panic at U=#{u}\r\n%s".red
+        assert identify = try this.constructor.identify()
+        logger.silly m.red, identify.toString().red.bold
         process.removeAllListeners "uncaughtException"
         process.on "uncaughtException", (error, arg) =>
             return no if str(error) is "socket end"
@@ -212,7 +215,7 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
             shutdown = "Shutting the kernel instance down"
             logger.warn shutdown.red; this.emit "shutdown"
             @scope?.disintegrate(); @domain?.dispose()
-            return process.exit -1
+            return process.exit -1 # crash process
 
     # The important internal routine that sets up and configures a
     # kernel beacon that gets fired once at each configured interval.

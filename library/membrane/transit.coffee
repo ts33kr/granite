@@ -116,7 +116,7 @@ module.exports.TransitToolkit = class TransitToolkit extends Barebones
         assert sourceCodes = -> try value.remote.source
         remotes.push value if (try value.remote.symbol)
         raw = (try value.remote.symbol) or sourceCodes()
-        logger.debug message.grey, token.bold, identify
+        logger.silly message.grey, token.bold, identify
         @considerations = previous.concat [[token, raw]]
 
     # This is a deviation of the `considering` toolkit defined in the
@@ -144,7 +144,7 @@ module.exports.TransitToolkit = class TransitToolkit extends Barebones
         remotes.push value if _.isObject(value.remote)
         mk = -> "#{sym}.reconfigure.bind(#{sym})(this)"
         assert _.isArray generated = try [[token, mk()]]
-        logger.debug message.grey, token.bold, identify
+        logger.silly message.grey, token.bold, identify
         @considerations = previous.concat generated
 
     # This is a highly specialized method that is defined solely for
