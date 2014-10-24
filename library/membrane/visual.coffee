@@ -57,7 +57,7 @@ compose = require "../nucleus/compose"
 {coffee} = require "./runtime"
 
 # This is an abstract service that provides the unique functionality
-# of rendering the server side store code on the client side with all
+# of transferring server side part of the code to client side with all
 # its dependencies, such as classes and class hierarchies and even more.
 # This ABC constitutes a primary tool for writing UI/UX with Granite.
 # Please consult the implementation for more information on the system.
