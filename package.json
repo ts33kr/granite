@@ -4,10 +4,6 @@
     "codename": "monolith",
     "main": "index.coffee",
 
-    "scripts": {
-        "start": "cake single"
-    },
-
     "license": "Simplified BSD-3",
     "description": "Rock solid Node.js web framework",
     "bugs": "http://github.com/ts33kr/granite/issues",
