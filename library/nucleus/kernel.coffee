@@ -71,20 +71,6 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
     # Each of these will be dynamicall integrated in class hierarchy.
     @implanting KernelTools
 
-    # This static property should contain the loaded NPM package
-    # module which is used by the kernel to draw different kinds
-    # of the information and data. This could be overridden by the
-    # modified kernels that are custom to arbitrary applications.
-    # This definition (package.json) should corellate to framework.
-    assert @FRAMEWORK = pkginfo.read(module).package
-
-    # This static property should contain the loaded NPM package
-    # module which is used by the kernel to draw different kinds
-    # of the information and data. This could be overridden by the
-    # modified kernels that are custom to arbitrary applications.
-    # This definition (package.json) should corellate to application.
-    assert @APPLICATION = pkginfo.read(0, process.cwd()).package
-
     # This sets up the default identica for this kernel. It forms
     # an identica of a certain recommended format and populates it
     # with data takes from the `FRAMEWORK` definition in `Generic`

@@ -61,6 +61,20 @@ module.exports.KernelTools = class KernelTools extends Archetype
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # This static property should contain the loaded NPM package
+    # module which is used by the kernel to draw different kinds
+    # of the information and data. This could be overridden by the
+    # modified kernels that are custom to arbitrary applications.
+    # This definition (package.json) should corellate to framework.
+    assert @FRAMEWORK = pkginfo.read(module).package
+
+    # This static property should contain the loaded NPM package
+    # module which is used by the kernel to draw different kinds
+    # of the information and data. This could be overridden by the
+    # modified kernels that are custom to arbitrary applications.
+    # This definition (package.json) should corellate to application.
+    assert @APPLICATION = pkginfo.read(0, process.cwd()).package
+
     # Create a new instance of the kernel, run all the prerequisites
     # that are necessary, do the configuration on the kernel, then
     # boot it up, using the hostname and port parameters from config.
