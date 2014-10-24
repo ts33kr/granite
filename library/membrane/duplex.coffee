@@ -317,7 +317,7 @@ module.exports.DuplexCore = class DuplexCore extends Preflight
     # Can be overriden to provide more meaningful feedback handlers.
     socketFeedback: external ->
         assert ulocation = @location.green.underline
-        c = "an error raised during socket connection:"
+        r = "an error raised during socket connection:"
         p = "an exception happend at the server provider:"
         connected = c = "Established connection at %s".green
         disconnect = "lost socket connection at #{@location}"
@@ -332,7 +332,7 @@ module.exports.DuplexCore = class DuplexCore extends Preflight
         forward "connect" # a successfull connection happended
         forward "exception" # server side indicates exception
         @socket.on "exception", (e) -> logger.error p, e.message
-        @socket.on "error", (e) -> logger.error c, e.message
+        @socket.on "error", (e) -> logger.error r, e.message
         @socket.on "disconnect", -> logger.error disconnect
         @socket.on "connect", -> logger.info c, ulocation
 
