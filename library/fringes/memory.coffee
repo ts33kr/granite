@@ -54,6 +54,7 @@ module.exports.MemoryMonitor = class MemoryMonitor extends Zombie
     # is asynchronously wired in, so consult with `async` package.
     # Please be sure invoke the `next` arg to proceed, if relevant.
     instance: (kernel, service, next) ->
+        assert _.isObject(kernel), "no kernel instance"
         assert limit = nconf.get("memory:limit") or null
         assert _.isNumber(limit), "invalid memory limits"
         note = "Setting kernel memory limit to %s bytes"
@@ -61,6 +62,8 @@ module.exports.MemoryMonitor = class MemoryMonitor extends Zombie
         logger.warn note.red, try limit.toString().bold
         trap = (fn) -> kernel.on "mem-stat", fn; next()
         return trap (memory, humanized, parameters) ->
+            assert _.isObject(memory), "mem get error"
+            assert _.isObject(humanized), "mem mistake"
             overflow = try memory.heapTotal >= limit
             detected = "#{humanized.heapTotal}".bold
             return undefined unless overflow is yes
@@ -75,6 +78,9 @@ module.exports.MemoryMonitor = class MemoryMonitor extends Zombie
     # Please be sure invoke the `next` arg to proceed, if relevant.
     beacon: (kernel, timestamp, next) ->
         assert _.isObject mem = process.memoryUsage()
+        assert _.isFunction(next), "signature mistake"
+        assert _.isObject(kernel), "no kernel instance"
+        assert _.isNumber(timestamp), "got not stamp"
         h = (size) -> return filesize(size).toString()
         c = (value, k) -> return k and _.isNumber value
         humanize = (a, v, k) -> a[k] = h(v) if c(v, k)
