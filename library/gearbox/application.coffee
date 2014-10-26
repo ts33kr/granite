@@ -70,7 +70,7 @@ module.exports.Application = class Application extends Preflight
     # kernel that gets fired once some component has been booted.
     # Method monitors all the attachment events, and every time it
     # checks if all the components has been booted. Once it so, it
-    # broadcasts `completed` event to the kernel. The event will be
+    # broadcasts `completed` event via the root. The event will be
     # repeated after connection restoring, however a special event
     # `completed-once` is guaranteed to be fired one time only.
     waitCompletion: @synchronize "attached", (service) ->
