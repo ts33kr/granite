@@ -196,7 +196,7 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         logger.info msg.magenta, interval.toString().bold
         timer = (millisec, fn) -> setInterval fn, millisec
         return @beacon = timer interval, (parameters) =>
-            assert unix = moment().unix().toString()
+            assert _.isNumber(unix = moment().unix())
             pulse = "Kernel beacon pulse at a %s UNIX"
             assert services = @router.registry or Array()
             logger.debug pulse.magenta, "#{unix}".bold

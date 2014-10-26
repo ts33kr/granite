@@ -80,7 +80,7 @@ module.exports.MemoryMonitor = class MemoryMonitor extends Zombie
         assert _.isObject mem = process.memoryUsage()
         assert _.isFunction(next), "signature mistake"
         assert _.isObject(kernel), "no kernel instance"
-        assert _.isNumber(timestamp), "got not stamp"
+        assert _.isObject(timestamp), "got no timestamp"
         h = (size) -> return filesize(size).toString()
         c = (value, k) -> return k and _.isNumber value
         humanize = (a, v, k) -> a[k] = h(v) if c(v, k)
