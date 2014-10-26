@@ -321,7 +321,7 @@ module.exports.DuplexCore = class DuplexCore extends Preflight
         p = "an exception happend at the server provider:"
         connected = c = "Established connection at %s".green
         disconnect = "lost socket connection at #{@location}"
-        @once "disconnect", -> @booted = false # connect lost
+        @once "disconnect", -> @booted = no # connection lost
         @seemsBroke = -> @outOfOrder() and not @bootloading
         @outOfOrder = -> return @initialized and not @booted
         @setInOrder = -> return try @initialized and @booted
