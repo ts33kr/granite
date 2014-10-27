@@ -23,14 +23,10 @@
 
 ---
 $translation-language: uk # set locale (code) for Ukrainian
-attempting to restore connection: намагаюсь відновити з'єднання
-established connection to server: зв'язок із сервером встановлено
-exception occured on the server: сталался помилка на сервері
-server connection has been lost: втрачено зв'зок із сервером
+please wait, system is starting up: будь-ласка зачекайте, система запускаєтся
+attempting to restore the connection: намагаюсь відновити серверне з'єднання
 
 ---
 $translation-language: ru # set locale (code) for Russian
-attempting to restore connection: пытаюсь восстановить соединение
-established connection to server: связь с сервером установлена
-exception occured on the server: произошла ошибка на сервере
-server connection has been lost: связь с сервером потеряна
+please wait, system is starting up: пожалуйста подождите, система запускается
+attempting to restore the connection: пытаюсь возобновить серверное соединение
