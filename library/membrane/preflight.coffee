@@ -84,7 +84,7 @@ module.exports.Preflight = class Preflight extends Screenplay
     # is going to be implemented. Most of these libraries required
     # by the internal implementations of the various subcomponents.
     # This blocks defines the directory-scopes deps, not bare ones.
-    @bower "underscore.string", "dist/underscore.string.min.js"
+    @bower "underscore.string#2.4.x"
     @bower "async", "lib/async.js"
     @bower "node-uuid", "uuid.js"
     @bower "toastr#2.0.x"
