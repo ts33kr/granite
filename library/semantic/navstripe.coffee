@@ -40,13 +40,6 @@ assert = require "assert"
 # create the navigation menus without too much hassle involved.
 module.exports.NavStripe = cc -> class NavStripe extends Widget
 
-    # These declarations below are implantations of the abstracted
-    # components by the means of the dynamic recomposition system.
-    # Please take a look at the `Composition` class implementation
-    # for all sorts of information on the composition system itself.
-    # Each of these will be dynamicall integrated in class hierarchy.
-    @implanting Coloring
-
     # Bring the tags definitions of the `Teacup` template engine
     # to the current class scope on the client and server sites.
     # Remember, that the `teacup` symbol is constantly available
@@ -55,6 +48,13 @@ module.exports.NavStripe = cc -> class NavStripe extends Widget
     # this is all done automatically and there if no need for it.
     # Please see the `TemplateToolkit` class for more information.
     {div} = teacup
+
+    # These declarations below are implantations of the abstracted
+    # components by the means of the dynamic recomposition system.
+    # Please take a look at the `Composition` class implementation
+    # for all sorts of information on the composition system itself.
+    # Each of these will be dynamicall integrated in class hierarchy.
+    @implanting Coloring
 
     # This prototype definition is a template-function driven by
     # the `Teacup` templating engine. When widget instantiated,
