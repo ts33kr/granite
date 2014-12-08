@@ -136,7 +136,7 @@ module.exports.DuplexCore = class DuplexCore extends Preflight
     # refer to the Node.js documentation for more information on
     # the domains and error handling itself. This method is generally
     # used only once per the domain declaration. See `provider`.
-    @guarded: (method, socket) ->
+    @guarded: (method, socket, explain) ->
         killOnError = "duplex:disconnectOnError"
         assert _.isFunction o = -> _.head arguments
         assert _.isFunction i = -> _.head arguments
@@ -146,7 +146,8 @@ module.exports.DuplexCore = class DuplexCore extends Preflight
         where = => _.findKey this.prototype, comparing
         _.extend guarded, body: method, socket: socket
         location = "Got interrupted around %s#%s".red
-        m = "Exception while running the provider:\r\n%s"
+        m = "Exception within the duplex core:\r\n%s"
+        m = "#{explain}:\r\n%s" if _.isString explain
         fx = (blob) => blob.call this; return guarded
         fx -> guarded.on "error", (error, optional) ->
             format = try where().toString().underline
@@ -214,10 +215,12 @@ module.exports.DuplexCore = class DuplexCore extends Preflight
     @covering: (method, socket, context, binder) ->
         assert _.isFunction o = -> try _.head arguments
         assert _.isFunction i = -> try _.head arguments
+        assert _.isFunction(method), "missing an method"
         socket.on "disconnect", -> try guarded.dispose()
         session = try socket.request.session unless session
         socket.disconnect "no session found" unless session
-        assert _.isObject guarded = @guarded method, socket
+        e = "Exception happend when executing server provider"
+        assert _.isObject guarded = @guarded method, socket, e
         assert _.isFunction g = guarded.run.bind guarded
         s = (f) => session.save -> f.apply this, arguments
         assert binder; return (parameters..., callback) ->

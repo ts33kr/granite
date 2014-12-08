@@ -122,10 +122,12 @@ module.exports.Bilateral = class Bilateral extends DuplexCore
     # function that is supplied as an implementation is automatocally
     # externalized and transferred (by the `Screenplay`) to a client.
     @uplink: (directives, implement) ->
-        invalidFunc = "got no function for the uplink"
+        invalid = "missing function for the uplink"
         implement = try _.find arguments, _.isFunction
         directives = {} unless _.isPlainObject directives
-        assert _.isFunction(implement or null), invalidFunc
+        assert _.isFunction(implement or false), invalid
+        assert _.isObject type = this # ref for closures
+        e = "Exception happend when processing the uplink"
         assert p = @prototype; overwrap = (container) ->
             assert _.isArray c = _.toArray arguments or []
             assert _.isArray s = [@__origin, socket: @socket]
@@ -133,7 +135,9 @@ module.exports.Bilateral = class Bilateral extends DuplexCore
             name = _.findKey p, (x) -> return x is overwrap
             assert socket = container?.socket or container
             assert socket._events?, "no container/socket"
-            return @createLinkage socket, name, directives
+            guarded = type.guarded implement, socket, e
+            assert run = guarded.run.bind(guarded) or no
+            @createLinkage socket, name, directives, run
         remoted = _.isObject(implement.remote or null)
         ext = if remoted then implement else undefined
         assert externalized = ext or external implement
@@ -173,7 +177,7 @@ module.exports.Bilateral = class Bilateral extends DuplexCore
     # the protocol for calling the specific uplink exported by the
     # client site. Please refer to `bilateral` method for more info.
     # This method should not normally be used outside of the class.
-    createLinkage: (socket, name, directives) ->
+    createLinkage: (socket, name, directives, run) ->
         assert identify = @constructor.identify()
         idc = identify = identify.toString().underline
         assert sid = (try socket.id.bold) or undefined
@@ -195,4 +199,4 @@ module.exports.Bilateral = class Bilateral extends DuplexCore
                 key = _.findKey socket.acks, (x) -> x is a
                 assert key, "ack"; delete socket.acks[key]
                 logger.debug responded.cyan, name.bold
-                return callback.apply this, i(arguments)
+                run => callback.apply @, i(arguments)
