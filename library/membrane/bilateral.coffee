@@ -134,8 +134,8 @@ module.exports.Bilateral = class Bilateral extends DuplexCore
             return overwrap.call(s...)(c...) if @__isolated
             name = _.findKey p, (x) -> return x is overwrap
             assert socket = container?.socket or container
-            assert socket._events?, "no container/socket"
-            guarded = type.guarded implement, socket, e
+            assert socket._events?, "no container or socket"
+            guarded = type.guarded externalized, socket, e
             assert run = guarded.run.bind(guarded) or no
             @createLinkage socket, name, directives, run
         remoted = _.isObject(implement.remote or null)
