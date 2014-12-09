@@ -90,7 +90,7 @@ module.exports.Dialogue = cc -> class Dialogue extends Widget
         stop = (e) -> try e.stopImmediatePropagation()
         action.click (e) -> stop e if $(@).is ".disabled"
         action.click (e) => stop e unless @setInOrder()
-        action.click (e) => this.emit event; stop e
+        action.click (e) => @emit event, action; stop e
         this.actions.prepend action; return action
 
     # The auto-runned method that uses algorithmic approach for
