@@ -103,6 +103,27 @@ module.exports.Exchange = class Exchange extends Preflight
 
     # Query all the services present in the established ecosystem
     # for the feature designated by the supplied string. In case if
+    # at least one implementation of the designated function found,
+    # the method will return a truthful value, indicating that this
+    # features is indeed implemented somewhere. In case if nothing
+    # is found, methods returns a false value to indicate sitation.
+    featureExists: external (designate) ->
+        noEco = "service ecosystem is missing of root"
+        unknown = "no feature designation is supplied"
+        empty = "feature #{designate} is not provided"
+        assert _.isArray(@root.ecosystem or 0), noEco
+        assert _.isString(designate or null), unknown
+        assert fp = (srv) -> _.isObject srv.$features
+        assert normal = try (designate.toLowerCase())
+        hits = (sx) -> try _.has sx.$features, normal
+        getAligningsOrd = (srv) -> srv.$aligning or 0
+        services = _.filter @root.ecosystem or [], fp
+        services = _.sortBy services, getAligningsOrd
+        filtered = _.filter services or Array(), hits
+        return if _.isEmpty(filtered) then no else yes
+
+    # Query all the services present in the established ecosystem
+    # for the feature designated by the supplied string. In case if
     # there is no services with this feature, the exception thrown.
     # Otherwise, pick the last (according to the aligning) matching
     # service, and invoke the `action` with the designated feature.
