@@ -110,7 +110,6 @@ module.exports.Exchange = class Exchange extends Preflight
     featureExists: external (designate) ->
         noEco = "service ecosystem is missing of root"
         unknown = "no feature designation is supplied"
-        empty = "feature #{designate} is not provided"
         assert _.isArray(@root.ecosystem or 0), noEco
         assert _.isString(designate or null), unknown
         assert fp = (srv) -> _.isObject srv.$features
@@ -121,6 +120,26 @@ module.exports.Exchange = class Exchange extends Preflight
         services = _.sortBy services, getAligningsOrd
         filtered = _.filter services or Array(), hits
         return if _.isEmpty(filtered) then no else yes
+
+    # Query all the services present in the established ecosystem
+    # for the feature designated by the supplied string. Every of
+    # the discovered features is assumed to be a function. If it
+    # is not a function - an exception will be thrown. Then, for
+    # every fueature - their function will be called by applying
+    # corresponding vector of parameters, supplied as the splat.
+    autoFeatures: external (designate, parameters...) ->
+        noEco = "service ecosystem is missing of root"
+        unknown = "no feature designation is supplied"
+        assert _.isArray(@root.ecosystem or 0), noEco
+        assert _.isString(designate or null), unknown
+        ctor = "the feature implementor has no CTOR"
+        m = "feature %s of %s has to be a function"
+        this.withFeatures designate, (feature) ->
+            assert _.isObject(@constructor), ctor
+            assert orig = @constructor.identify()
+            intyped = _.sprintf m, designate, orig
+            assert _.isFunction(feature), intyped
+            return feature.apply this, parameters
 
     # Query all the services present in the established ecosystem
     # for the feature designated by the supplied string. In case if
