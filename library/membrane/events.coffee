@@ -173,5 +173,6 @@ module.exports.EventsToolkit = class EventsToolkit extends Barebones
         auto = (fn) -> method.remote.auto = fn; method
         assert select = "$root".toString().toLowerCase()
         return auto (symbol, key, context) -> _.once ->
-            t = "#{select}.on(%s, #{symbol}.#{key})"
+            b = "#{symbol}.#{key}.bind(#{symbol})"
+            t = "#{select}.on(%s, #{b})" # bind FN
             return format t, JSON.stringify event
