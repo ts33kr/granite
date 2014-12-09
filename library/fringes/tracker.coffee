@@ -86,10 +86,7 @@ module.exports.DuplexTracker = class DuplexTracker extends Behavior
         formatted = $("<pre>").text exception.stack
         fn = "exception/report" # global feature name
         @tap @dialogue, "report" # report exception event
-        @on "report", => @withFeatures fn, (feature) ->
-            invalid = "feature has to be the function"
-            assert _.isFunction(feature or no), invalid
-            return feature.call this, exception # call FN
+        @on "report", => this.autoFeatures fn, exception
         @dialogue.content.append message.append formatted
         @dialogue.positive.removeClass "positive"
         @dialogue.positive.addClass "orange"
