@@ -31,6 +31,7 @@ async = require "async"
 nconf = require "nconf"
 
 {Behavior} = require "../gearbox/behavior"
+{Dialogue} = require "../semantic/dialogue"
 {DuplexCore} = require "../membrane/duplex"
 
 # This compound is a parasite that hosts itself to all standalone
@@ -50,12 +51,50 @@ module.exports.DuplexTracker = class DuplexTracker extends Behavior
     # Please refer to `Auxiliaries` class and `@parasite` method.
     @available $watchdog: "everyone"
 
+    # Define a set of considerations used by this service. An every
+    # consideration is one key/value pair. Where the key corresponds
+    # to the type name (also known as token) and the  value is holding
+    # either an implementation function or a remotable type (an alias).
+    # This allows you to override type definitions that may be used in
+    # the parent classes, without having to replace implementation code.
+    # Allows to inject arbitrary lexical-local values to external fns.
+    @reconfigure TDialogue: Dialogue
+
     # This block here defines a set of translation files that are
     # used by the service. Please keep in mind, that translations
     # are inherited from all of the base classes, and the tookit
     # then loads each translation file and combines all messages
     # into one translation table that is used throughout service.
     @translation "tracked.yaml", @EMBEDDED_LOCALE
+
+    # Hook that gets called when an exception happens on the root
+    # service. The implementation utilizes widgets and tools off
+    # the Semantic package to render a modal window with details
+    # on the exception that happend. At this points, it is just
+    # a traceback. Also, an error reporting functionality has
+    # been partially wired by employing the feature exchange.
+    detailed: @synchronize "exception", (exception) ->
+        neutralize = => @dialogue.hide(); @dialogue.remove()
+        @dialogue = new TDialogue $("body"), "tracker-stack"
+        @dialogue.title i18th "server side exception traceback"
+        @dialogue.actionButton("report", "bug", "left").teal()
+        @dialogue.positive.find("span").text @th "acknowledge"
+        @dialogue.closable no; @dialogue.show() # activate
+        @dialogue.content.css display: "block" # overflows
+        message = $ "<div>", class: "ui message warning"
+        message.css height: "320px", overflow: "scroll"
+        formatted = $("<pre>").text exception.stack
+        fn = "exception/report" # global feature name
+        @tap @dialogue, "report" # report exception event
+        @on "report", => @withFeatures fn, (feature) ->
+            invalid = "feature has to be the function"
+            assert _.isFunction(feature or no), invalid
+            return feature.call this, exception # call FN
+        @dialogue.content.append message.append formatted
+        @dialogue.positive.removeClass "positive"
+        @dialogue.positive.addClass "orange"
+        @dialogue.on "positive", neutralize
+        @dialogue.negative.remove()
 
     # This method awaits for the `socketing` signal that is emited
     # by the `DuplexCore` implementation once it successfuly creates
@@ -64,10 +103,10 @@ module.exports.DuplexTracker = class DuplexTracker extends Behavior
     # When either one is happens, it emits the `toastr` notice. A
     # most recent method implementation uses `$root` as a subject.
     tracking: @awaiting "socketing", (socket, location) ->
-        assert l = i18n "server connection has been lost"
-        assert s = i18n "exception occured on the server"
-        assert c = i18n "established connection to server"
-        assert $root is $host, "parasite on wrong service"
+        assert l = i18tn "server connection has been lost"
+        assert s = i18tn "exception occured on the server"
+        assert c = i18tn "established connection to server"
+        assert $root is $host, "parasiting wrong service"
         pos = positionClass: "toast-top-right" # location
         bhv = tapToDismiss: 0, closable: 0 # set behavior
         ntm = timeOut: 0, extendedTimeOut: 0 # timeouts

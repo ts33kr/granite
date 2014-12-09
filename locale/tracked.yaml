@@ -23,14 +23,18 @@
 
 ---
 $translation-language: uk # set locale (code) for Ukrainian
+server side exception traceback: деталізація серверної помилки
 attempting to restore connection: намагаюсь відновити з'єднання
 established connection to server: зв'язок із сервером встановлено
 exception occured on the server: сталался помилка на сервері
 server connection has been lost: втрачено зв'зок із сервером
+acknowledge: ознайомився
 
 ---
 $translation-language: ru # set locale (code) for Russian
+server side exception traceback: детализация серверной ошибки
 attempting to restore connection: пытаюсь восстановить соединение
 established connection to server: связь с сервером установлена
 exception occured on the server: произошла ошибка на сервере
 server connection has been lost: связь с сервером потеряна
+acknowledge: ознакомился
