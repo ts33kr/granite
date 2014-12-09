@@ -124,6 +124,10 @@ module.exports.Exchange = class Exchange extends Preflight
         filtered = _.filter services or Array(), hits
         throw new Error(empty) if _.isEmpty(filtered)
         assert _.isObject sx = serv = _.last filtered
+        m = "Exchange feature %s implementations: %s"
+        assert fmtnorm = normal.toString().green.bold
+        assert fmtctor = try sx.constructor.identify()
+        logger.debug m, fmtnorm, fmtctor.green.bold
         return action.apply sx, sx.$features[normal]
 
     # Query all the services present in the established ecosystem
@@ -144,6 +148,9 @@ module.exports.Exchange = class Exchange extends Preflight
         getAligningsOrd = (srv) -> srv.$aligning or 0
         services = _.filter @root.ecosystem or [], fp
         services = _.sortBy services, getAligningsOrd
+        m = "Exchange feature %s request: %s providers"
+        assert fmtnorm = normal.toString().green.bold
+        logger.debug m, fmtnorm, services.length or no
         for service in services # iterate the services
             assert features = service.$features or {}
             continue unless try _.has features, normal
