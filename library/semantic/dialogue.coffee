@@ -28,6 +28,7 @@ teacup = require "teacup"
 assert = require "assert"
 
 {Widget} = require "./abstract"
+{Coloring} = require "./coloring"
 {Archetype} = require "../nucleus/arche"
 {remote, cc} = require "../membrane/remote"
 
@@ -49,6 +50,13 @@ module.exports.Dialogue = cc -> class Dialogue extends Widget
     # Please see the `TemplateToolkit` class for more information.
     {div} = teacup
 
+    # These declarations below are implantations of the abstracted
+    # components by the means of the dynamic recomposition system.
+    # Please take a look at the `Composition` class implementation
+    # for all sorts of information on the composition system itself.
+    # Each of these will be dynamicall integrated in class hierarchy.
+    @implanting Coloring
+
     # This prototype definition is a template-function driven by
     # the `Teacup` templating engine. When widget instantiated,
     # this defintion is used to render the root DOM element of
@@ -57,6 +65,33 @@ module.exports.Dialogue = cc -> class Dialogue extends Widget
     # refer to the `TemplateToolkit` class for an information.
     # Also, please refer to the `Teacup` manual for reference.
     element: -> div ".ui.modal.dialogue-widget"
+
+    # Create and insert a new action button. The buttin will be
+    # placed within the actions container, where all the buttons
+    # reside by the default. This method is a subwidget, which
+    # means it will return a fully fledged widget object for it.
+    # When button is pressed, a corresponding event is going to
+    # be fired on the instance of this widget. If no event name
+    # is explicitly given, the name of the button will be used.
+    @subwidget actionButton: (name, icon, side, event) ->
+        event = name unless _.isString event or null
+        assert side = "right" unless _.isString side
+        assert _.isString(name), "missing button name"
+        assert _.isString(side), "missing an icon side"
+        assert _.isString(event), "no event name given"
+        assert action = try $ "<div>", class: "ui button"
+        action.addClass "#{side} labeled icon action-button"
+        assert s = (text) -> return $("<span>").text(text)
+        assert mnemonic = $ "<i>", class: "#{icon} icon"
+        mnemonic = undefined unless _.isString icon or 0
+        action.removeClass "#{side} icon" unless mnemonic
+        assert texting = $("<span>").html s this.t name
+        assert action.prepend(texting).append(mnemonic)
+        stop = (e) -> try e.stopImmediatePropagation()
+        action.click (e) -> stop e if $(@).is ".disabled"
+        action.click (e) => stop e unless @setInOrder()
+        action.click (e) => this.emit event; stop e
+        this.actions.prepend action; return action
 
     # The auto-runned method that uses algorithmic approach for
     # building the helpers for the dialogue. The helpers are an
