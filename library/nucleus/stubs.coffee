@@ -51,20 +51,6 @@ module.exports.RestfulStubs = class RestfulStubs extends RestfulService
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
-    # A hook that will be called prior to sending the content over
-    # to the requester. Please refer to this prototype signature for
-    # information on the parameters it accepts. Beware, this hook
-    # is asynchronously wired in, so consult with `async` package.
-    # Please be sure invoke the `next` arg to proceed, if relevant.
-    pushing: (response, content, next) -> next()
-
-    # A hook that will be called prior to sending the errors over
-    # to the requester. Please refer to this prototype signature for
-    # information on the parameters it accepts. Beware, this hook
-    # is asynchronously wired in, so consult with `async` package.
-    # Please be sure invoke the `next` arg to proceed, if relevant.
-    rejection: (response, content, next) -> next()
-
     # A hook that will be called once the Connect middleware writes
     # off the headers. Please refer to this prototype signature for
     # information on the parameters it accepts. Beware, this hook
