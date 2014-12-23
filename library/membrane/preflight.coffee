@@ -77,6 +77,7 @@ module.exports.Preflight = class Preflight extends Screenplay
     @bower "lodash"
     @bower "jquery"
     @bower "jwerty"
+    @bower "async"
     @bower "chai"
 
     # This block here defines a set of Bower dependencies that are
@@ -85,7 +86,6 @@ module.exports.Preflight = class Preflight extends Screenplay
     # by the internal implementations of the various subcomponents.
     # This blocks defines the directory-scopes deps, not bare ones.
     @bower "underscore.string#2.4.x"
-    @bower "async", "lib/async.js"
     @bower "node-uuid", "uuid.js"
     @bower "toastr#2.0.x"
 
