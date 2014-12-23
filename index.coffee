@@ -59,10 +59,10 @@ module.exports.cachedKernel = @cachedKernel
 assert _.isObject nucleus = module.exports.nucleus
 assert _.isObject membrane = module.exports.membrane
 assert _.isObject semantic = module.exports.semantic
+assert _.isObject assembly = module.exports.assembly
 assert _.isObject gearbox = module.exports.gearbox
 assert _.isObject applied = module.exports.applied
 assert _.isObject shipped = module.exports.shipped
-assert _.isObject rapid = module.exports.rapid
 
 # Alias the cakefile routine for the easy access to the primary way
 # of referencing the built in Cakefile library, which is standard.
