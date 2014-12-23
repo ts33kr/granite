@@ -78,6 +78,7 @@ module.exports.DuplexTracker = class DuplexTracker extends Behavior
         @dialogue = new TDialogue $("body"), "tracker-stack"
         @dialogue.title i18th "server side exception traceback"
         @dialogue.actionButton("report", "bug", "left").teal()
+        @dialogue.actionButton("reload", "repeat", "left").red()
         @dialogue.positive.find("span").text @th "acknowledge"
         @dialogue.closable no; @dialogue.show() # activate
         @dialogue.content.css display: "block" # overflows
@@ -85,8 +86,9 @@ module.exports.DuplexTracker = class DuplexTracker extends Behavior
         message.css height: "320px", overflow: "scroll"
         formatted = $("<pre>").text exception.stack
         fn = "exception/report" # global feature name
-        @tap @dialogue, "report" # report exception event
+        @taps @dialogue, "report", "reload" # tap events
         @on "report", => this.autoFeatures fn, exception
+        @on "reload", -> window.location.reload 1 # force
         @dialogue.content.append message.append formatted
         @dialogue.positive.removeClass "positive"
         @dialogue.positive.addClass "orange"

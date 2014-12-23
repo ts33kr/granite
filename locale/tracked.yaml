@@ -29,6 +29,7 @@ established connection to server: зв'язок із сервером встан
 exception occured on the server: сталался помилка на сервері
 server connection has been lost: втрачено зв'зок із сервером
 acknowledge: ознайомився
+reload: перезавантажити
 report: повідомити
 
 ---
@@ -39,4 +40,5 @@ established connection to server: связь с сервером установ�
 exception occured on the server: произошла ошибка на сервере
 server connection has been lost: связь с сервером потеряна
 acknowledge: ознакомился
+reload: перезагрузить
 report: сообщить
