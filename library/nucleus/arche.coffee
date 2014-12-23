@@ -72,6 +72,14 @@ module.exports.Archetype = cc -> class Archetype extends EventEmitter2
     # invoked this utility method. See implementation for the rest.
     tap: (xo, e1, e2) -> xo.on e1, => @emit e2 or e1, arguments...
 
+    # Exactly the same functionality as provided by the `tap` method
+    # original. The difference is: this method taps multuple events
+    # rather than single one. Renaming the events is not possible in
+    # this version; it is only possible with original `tap` method.
+    # Please refer to the original method and the implementation for
+    # more details on how to use this method and what to use it for.
+    taps: (xo, events...) -> @tap xo, event for event in events
+
     # An embedded system for adding ad-hoc configuration routines.
     # Supply the reasoning and the routine and this method will add
     # that routine to the configuration stack, to be launched once
