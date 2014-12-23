@@ -27,7 +27,7 @@ _ = require "lodash"
 assert = require "assert"
 
 {Preflight} = require "../membrane/preflight"
-{GoogleFonts} = require "../fringes/fonting"
+{GoogleFonts} = require "../shipped/fonting"
 
 # This is an abstract compound that is intended for the services to
 # be composed in. It customizes a hosting service to include all the

@@ -37,7 +37,7 @@ util = require "util"
 
 {Archetype} = require "../nucleus/arche"
 {Barebones} = require "../membrane/skeleton"
-{AccessGate} = require "../fringes/access"
+{AccessGate} = require "../shipped/access"
 
 # An abstract base compound that provides an extensive functionality
 # and solution for managing different access and control policies of

@@ -39,7 +39,7 @@ util = require "util"
 url = require "url"
 
 {Negotiator} = require "negotiator"
-{RedisSession} = require "../fringes/session"
+{RedisSession} = require "../shipped/session"
 
 # This middleware is really a wrapper around the `Connect` logger
 # that pipes all the request logs to the `Winston` instances that
