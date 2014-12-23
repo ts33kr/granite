@@ -27,21 +27,21 @@ _ = require "lodash"
 url = require "url"
 http = require "http"
 util = require "util"
-events = require "eventemitter2"
+assert = require "assert"
 colors = require "colors"
 logger = require "winston"
 
-extendz = require "./../nucleus/extends"
-compose = require "./../nucleus/compose"
+extendz = require "../nucleus/extends"
+compose = require "../nucleus/compose"
 
-{RestfulStubs} = require "./../nucleus/stubs"
+{RestfulService} = require "../nucleus/restful"
 
 # This is an abstract base class for every service in the system
 # and in the end user application that provides a REST interface
 # to some arbitrary resource, determined by HTTP path and guarded
 # by the domain matching. This is the crucial piece of framework.
 # It supports strictly methods defined in the HTTP specification.
-module.exports.Barebones = class Barebones extends RestfulStubs
+module.exports.Barebones = class Barebones extends RestfulService
 
     # This is a marker that indicates to some internal subsystems
     # that this class has to be considered abstract and therefore
@@ -50,11 +50,26 @@ module.exports.Barebones = class Barebones extends RestfulStubs
     # Once inherited from, the inheritee is not abstract anymore.
     @abstract yes
 
+    # A hook that will be called once the Connect middleware writes
+    # off the headers. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    headers: (request, response, resource, domain, next) -> next()
+
+    # A hook that will be called prior to invoking the API method
+    # implementation. Please refer to this prototype signature for
+    # information on the parameters it accepts. Beware, this hook
+    # is asynchronously wired in, so consult with `async` package.
+    # Please be sure invoke the `next` arg to proceed, if relevant.
+    processing: (request, response, resource, domain, next) -> next()
+
     # This method should generally be used to obtain HTTP methods that
     # are allowed on this resources. This is not the only possible way
     # of implementing this method, because it usually can have a lot of
     # different interpretations other than the one in the HTTP spec.
     # The method is an HTTP verb, coherent with the REST interface.
+    # Lookup the `RestfulService` for meaning of other parameters.
     OPTIONS: (request, response, resource, domain, session) ->
         assert knowns = try @constructor.SUPPORTED
         doesJson = response.accepts(/json/) or false
@@ -62,8 +77,11 @@ module.exports.Barebones = class Barebones extends RestfulStubs
         assert _.isString(pathname), "could not get path"
         assert _.isObject(request), "got invalid request"
         assert _.isObject(response), "got invalid response"
+        assert _.isArray(resource), "malformed resource"
+        assert _.isArray(domain), "malformed domain name"
         checkIfSupported = (m) => @[m] isnt @unsupported
-        supported = try _.filter knowns, checkIfSupported
+        existing = _.filter knowns, (name) => this[name]?
+        supported = try _.filter existing, checkIfSupported
         descriptor = methods: supported, resource: pathname
         return this.push response, descriptor if doesJson
         assert _.isString formatted = supported.join ", "

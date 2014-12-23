@@ -149,22 +149,23 @@ module.exports.RestfulService = class RestfulService extends Service
     # by this service of the internals that are comprising service.
     # Can be used from the outside, but generally should not be done.
     # Will be invoked if a method is not defined or not implemented.
-    unsupported: (request, response, next) ->
+    unsupported: (request, response, vars...) ->
         method = try request.method.toUpperCase()
         assert codes = http.STATUS_CODES or Object()
         assert methodNotAllowed = code = 405 # HTTP
         identify = @constructor?.identify().underline
         assert _.isObject(request), "got invalid request"
-        assert _.isFunction(next), "invalid continuation"
+        assert _.isObject(response), "got invalid response"
         notify = "Unsupported HTTP method call %s in %s"
         assert message = try codes[methodNotAllowed]
         doesJson = response.accepts(/json/) or false
         response.writeHead methodNotAllowed, message
         descriptor = error: "#{message}", code: code
-        @emit "unsupported", request, response, next
-        logger.debug notify.red, identify, method.bold
-        return response.send descriptor if doesJson
-        response.send message.toString(); return @
+        assert stringified = JSON.stringify descriptor
+        @emit "unsupported", request, response, vars...
+        logger.debug notify.red, method.bold, identify
+        return response.send stringified if doesJson
+        response.end message.toString(); return @
 
     # This method determines whether the supplied HTTP request
     # matches this service. This is determined by examining the
@@ -198,10 +199,9 @@ module.exports.RestfulService = class RestfulService extends Service
         method = request.method.toUpperCase()
         known = method in @constructor.SUPPORTED
         tokens = Service::process.apply @, arguments
-        return @unsupported arguments... unless known
+        fits = known and (method of this) # yay or nay
+        return @unsupported arguments... unless fits
         assert this.__isolated, "spin-off engine fail"
-        missing = "a #{method} method not implemented"
-        throw new Error missing unless method of this
         variables = [tokens.resource, tokens.domain]
         headers = @downstream headers: -> return null
         partial = _.partial headers, request, response

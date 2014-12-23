@@ -358,6 +358,7 @@ module.exports.Screenplay = class Screenplay extends Barebones
     # rule, this method does not have to alter any contents or data
     # of the resource. Use for unobtrusive retrieval of resources.
     # The method is an HTTP verb, coherent with the REST interface.
+    # Lookup the `RestfulService` for meaning of other parameters.
     GET: (request, response, resource, domain, session) ->
         assert identify = try @constructor.identify()
         assert predefined = toplevel: yes, isRoot: yes
