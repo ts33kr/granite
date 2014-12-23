@@ -66,29 +66,6 @@ module.exports.ApiInventory = class ApiInventory extends ApiService
     # different conditions, such as mobile only and desktop only.
     @condition (r, s, decide) -> decide nconf.get "api:inventory"
 
-    # This block defines a set of documentation directives. All of
-    # the directives will be attached to the first API endpoint of
-    # this services that is defined right after the documentations
-    # block using of the HTTP verb directives. Please refer to the
-    # implementation of the `ApiService` for further informtion on
-    # the API endpoint definition and the accompanied documentation.
-    @docs follow: "http://ts33kr.github.io/granite/exposure/inventory.html"
-    @docs github: ["ts33kr", "granite", "library/exposure/inventory.coffee"]
-    @docs returns: "A JSON array, where each item is an API endpoint object"
-    @docs synopsis: "Entire JSON inventory of all API services in the system"
-    @docs sidenote: "The responses are cached using request URL as the keys"
-    @docs version: GraniteKernel.FRAMEWORK.version, mime: "application/json"
-    @docs markings: ["framework", "api", "inventory", "discovery", "tool"]
-
-    # This block defines a set of parameter descriptions and a set
-    # of rules that may accompany these parameters. The definitions
-    # are somewhat similar the API service `docs` definitions, with
-    # the exception that everything defined here is related to argv
-    # (a parameter) that gets supplied to an API endpoint defined
-    # right after this block. Consult `ApiService` and Crossroads.
-    @argv uid: "Optional UUID to query the specific API endpoint"
-    @rule uid: /^[\w-]{36}$/ # an optional UUID v.1 identifier
-
     # A decorator strategy for wrapping the API endpoint function
     # with an LRU (least-recently-used) type of cache that normally
     # uses the `request.url` as its key. This given cache strategy
@@ -96,7 +73,7 @@ module.exports.ApiInventory = class ApiInventory extends ApiService
     # in order for the cache to work. Please see `plumbs` module
     # for more info on that. Also, depends on the spin off engine.
     # Please see the `lru-cache` package for more relevant info.
-    @cache: @memoryCache 25, 1000 * 60 * 60 # TTL, milliseconds
+    @cached: @memoryCache 25, 1000 * 60 * 60 # TTL, milliseconds
 
     # Define an API endpoint in the current API service. Endpoint
     # is declared using the class directives with the name of one
@@ -104,7 +81,16 @@ module.exports.ApiInventory = class ApiInventory extends ApiService
     # cased with no difference. Please see `RestfulService` class
     # for more information on verbs, especially `SUPPORTED` const.
     # Also, take a look at `ApiService` for advanced definitions.
-    @GET "/api/inventory/:uid:", @guard @cache (scoped) ->
+    @docs follow: "http://ts33kr.github.io/granite/exposure/inventory.html"
+    @docs github: ["ts33kr", "granite", "library/exposure/inventory.coffee"]
+    @docs returns: "A JSON array, where each item is an API endpoint object"
+    @docs synopsis: "Entire JSON inventory of all API services in the system"
+    @docs sidenote: "The responses are cached using request URL as the keys"
+    @docs version: GraniteKernel.FRAMEWORK.version, mime: "application/json"
+    @docs markings: ["framework", "api", "inventory", "discovery", "tool"]
+    @argv uid: "Optional UUID to query the specific API endpoint"
+    @rule uid: /^[\w-]{36}$/ # an optional UUID v.1 identifier
+    @get "/api/inventory/:uid:", @guard @cached (scoped) ->
         identify = try @constructor.identify().underline
         assert _.isObject Asc = ApiService # a shorthand
         malfReg = "the routing registry seems is broken"
