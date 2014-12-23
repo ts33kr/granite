@@ -29,7 +29,6 @@ assert = require "assert"
 {external} = require "../membrane/remote"
 {Dialogue} = require "../semantic/dialogue"
 {Semantic} = require "../semantic/flavours"
-{BoxedFormular} = require "../semantic/standard"
 {Application} = require "../gearbox/application"
 
 # This is an abstract base class that is intended to be used as the

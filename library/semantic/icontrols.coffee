@@ -32,11 +32,11 @@ assert = require "assert"
 
 # This is a formular implementation that provides standard controls
 # shipped within the Semantic UI framework. It contains most of the
-# shipped controls (field and inputs) cobered in the Semantic manual.
+# shipped controls (fields and inputs) covered in a Semantic manual.
 # Plese refer to the implementation for the usage information. Also,
 # see the methods to get the idea of what is available and what not.
 # Reference the `Formular` abstraction for the internal information.
-module.exports.BoxedFormular = cc -> class BoxedFormular extends Formular
+module.exports.InputControls = cc -> class InputControls extends Formular
 
     # Group the two previously created fields (passed by either as
     # direct object or the selectors) into a one horizontal field

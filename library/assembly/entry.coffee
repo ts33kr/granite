@@ -28,7 +28,7 @@ assert = require "assert"
 
 {external} = require "../membrane/remote"
 {Dialogue} = require "../semantic/dialogue"
-{BoxedFormular} = require "../semantic/standard"
+{InputControls} = require "../semantic/icontrols"
 {Behavior} = require "../gearbox/behavior"
 
 # This is a abstract base class compound that combines modal window
@@ -53,7 +53,7 @@ module.exports.EntryDialogue = class EntryDialogue extends Behavior
     # This allows you to override type definitions that may be used in
     # the parent classes, without having to replace implementation code.
     # Allows to inject arbitrary lexical-local values to external fns.
-    @considering TFormular: BoxedFormular
+    @considering TFormular: InputControls
     @reconfigure TDialogue: Dialogue
 
     # This is an isolated server provider that gets called once the
