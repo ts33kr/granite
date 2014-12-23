@@ -357,7 +357,7 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         @connect.use @accepts = plumbs.accepts this
         @connect.use @logger = plumbs.logger this
         @connect.use @send = plumbs.send this
-        @connect.use @middleware; return this
+        @connect.use @dispatching; this
 
     # This method sets up the necessary internal toolkits, such as
     # the determined scope and the router, which is then are wired
@@ -378,9 +378,9 @@ module.exports.GraniteKernel = class GraniteKernel extends Archetype
         logger.warn bare.toString().red unless mode
         logger.warn supd.toString().red, mode if mode
         assert @router = new routing.ServiceRouter @
-        assert @middleware = @router.middleware
-        @middleware = @middleware.bind @router
-        assert _.isFunction @middleware; this
+        assert @dispatching = @router.dispatching
+        @dispatching = @dispatching.bind @router
+        assert _.isFunction @dispatching; this
 
     # Setup a set of appropriate Connect middlewares that will take
     # care of serving static directory content for all configured

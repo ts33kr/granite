@@ -52,7 +52,7 @@ module.exports.ServiceRouter = class ServiceRouter extends Archetype
     # routable. If no corresponding routable is found, the method
     # transfers the control to the pre-installed, default routable.
     # A set of tests are performed to ensure the logical integrity.
-    middleware: (request, response, next) ->
+    dispatching: (request, response, next) ->
         assert incoming = try request.url.underline
         p = (i, c) -> i.matches request, response, c
         final = (service) -> service.abstract?() is no
